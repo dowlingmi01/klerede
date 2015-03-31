@@ -40,7 +40,7 @@ class PosLogConvert extends Command {
 		$fileName = $this->argument('file_name');
 		$element = simplexml_load_file($fileName);
 		$atts = ['RetailStoreID', 'WorkstationID', 'TillID', 'SequenceNumber', 'BeginDateTime', 'EndDateTime', 'OperatorID', 'CurrencyCode'];
-		$moreatts = ['TransactionStatus', 'ItemsSold', 'ItemsReturned', 'Total', 'TenderType', 'TenderID', 'CustomerName', 'CustomerActiveFlag', 'CustomerXStoreID', 'CustomerXStoreCustID'];
+		$moreatts = ['TransactionStatus', 'ItemsSold', 'ItemsReturned', 'Total', 'TenderType', 'TenderID', 'CustomerName', 'CustomerActiveFlag', 'CustomerXStoreID', 'CustomerXStoreCustID', 'VenueMemberNumber'];
 		$lines = [];
 		foreach($element->Transaction as $transaction) {
 			$dtvAt = $transaction->attributes('dtv', true);
@@ -55,6 +55,12 @@ class PosLogConvert extends Command {
 					$line['CustomerActiveFlag'] = $transaction->RetailTransaction->Customer->ActiveFlag;
 					$line['CustomerXStoreID'] = $transaction->RetailTransaction->Customer->AlternateKey[0]->AlternateID;
 					$line['CustomerXStoreCustID'] = $transaction->RetailTransaction->Customer->AlternateKey[1]->AlternateID;
+					$dtvCh = $transaction->children('dtv', true);
+					foreach( $dtvCh->PosTransactionProperties as $prop ) {
+						$dtvPropAt = $prop->children('dtv', true);
+						if($dtvPropAt->PosTransactionPropertyCode == 'VenueMemberNumber')
+							$line['VenueMemberNumber'] = $dtvPropAt->PosTransactionPropertyValue;
+					}
 				}
 				$quantitySold = 0;
 				$quantityReturned = 0;
