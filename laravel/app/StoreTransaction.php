@@ -8,6 +8,7 @@ class StoreTransaction extends Model {
 		$transaction = new StoreTransaction();
 		$transaction->venue_id = $xmlTran->RetailStoreID;
 		$transaction->sequence = $xmlTran->SequenceNumber;
+		$transaction->business_day = $xmlTran->BusinessDayDate;
 		$transaction->time_start = $xmlTran->BeginDateTime;
 		$transaction->time_end = $xmlTran->EndDateTime;
 		$transaction->operator_id = $xmlTran->OperatorID;

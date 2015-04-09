@@ -18,6 +18,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->integer('venue_id');
 			$table->integer('store_register_id');
 			$table->integer('sequence');
+			$table->date('business_day');
 			$table->dateTime('time_start');
 			$table->dateTime('time_end');
 			$table->integer('operator_id');
