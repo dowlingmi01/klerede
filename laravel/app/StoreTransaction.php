@@ -1,6 +1,7 @@
 <?php namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class StoreTransaction extends Model {
 	protected $table = 'store_transaction';
@@ -43,5 +44,22 @@ class StoreTransaction extends Model {
 			if( $dtvAt->TransactionType == 'RETAIL_SALE')
 				StoreTransaction::getForXML($xmlTran);
 		}
+	}
+	static function queryF($params) {
+		$query = DB::table('store_transaction')
+			->select('business_day', DB::raw('sum(net_amount) as amount'), DB::raw('count(*) as number'))
+			->where('business_day', '>=', $params->date_from)
+			->where('business_day', '<=', $params->date_to)
+			->groupBy('business_day')
+		;
+		if(isset($params->venue_id))
+			$query->where('venue_id', $params->venue_id);
+		if(isset($params->member)) {
+			if($params->member)
+				$query->whereNotNull('member_id');
+			else
+				$query->whereNull('member_id');
+		}
+		return $query->get();
 	}
 }
