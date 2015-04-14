@@ -28,7 +28,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->enum('payment_type', ['cash', 'card']);
 			$table->integer('card_type_id')->nullable();
 			$table->integer('member_id')->nullable();;
-			$table->text('source_xml')->nullable();
+			$table->mediumText('source_xml')->nullable();
 			$table->timestamps();
 		});
 		Schema::create('store_transaction_line', function(Blueprint $table)
