@@ -14,7 +14,7 @@ class StoreTransactionLine extends Model {
 		$xmlOp = $xmlLine->Sale ? $xmlLine->Sale : $xmlLine->Return;
 		$line->store_product_id = StoreProduct::getForXML($xmlOp)->id;
 		$line->retail_price = $xmlOp->RegularSalesUnitPrice;
-		$line->sale_price = $xmlOp->ActualSalesUnitPrice;
+		$line->sale_price = $xmlOp->ActualSalesUnitPrice->count() ? $xmlOp->ActualSalesUnitPrice : 0;
 		$line->quantity = $xmlLine->Sale ? $xmlOp->Quantity : -$xmlOp->Quantity;
 		$line->source_xml = $xmlLine->asXML();
 		$line->save();
