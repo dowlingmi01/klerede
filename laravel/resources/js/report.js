@@ -68,6 +68,8 @@ var ReportBox = React.createClass({
 			}]
 		};
 		for( var i = 0; i < newState.source_data.length; i++) {
+			if(newState.field === 'average')
+				newState.source_data[i].average = newState.source_data[i].amount / newState.source_data[i].number;
 			gdata.labels.push(newState.source_data[i].business_day);
 			gdata.datasets[0].data.push(newState.source_data[i][newState.field]);
 		}
@@ -91,6 +93,7 @@ var ReportBox = React.createClass({
 			<ButtonGroup>
 				<Button id="amount" onClick={this.handleField} active={this.state.field=="amount"}>$ Spent</Button>
 				<Button id="number" onClick={this.handleField} active={this.state.field=="number"}>Units</Button>
+				<Button id="average" onClick={this.handleField} active={this.state.field=="average"}>Avg. $/Tran</Button>
 			</ButtonGroup>
 			</div>
 			<LineChart data={this.state.data} redraw />
