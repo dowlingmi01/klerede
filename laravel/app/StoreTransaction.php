@@ -50,6 +50,7 @@ class StoreTransaction extends Model {
 			->select('business_day', DB::raw('sum(net_amount) as amount'), DB::raw('count(*) as number'))
 			->where('business_day', '>=', $params->date_from)
 			->where('business_day', '<=', $params->date_to)
+			->where('status', 'delivered')
 			->groupBy('business_day')
 		;
 		if(isset($params->venue_id))
