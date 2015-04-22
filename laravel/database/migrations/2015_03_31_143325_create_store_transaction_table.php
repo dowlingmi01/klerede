@@ -86,12 +86,12 @@ class CreateStoreTransactionTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('store_transaction_line');
-		Schema::drop('store_transaction');
-		Schema::drop('store_product');
-		Schema::drop('store_register');
-		Schema::drop('member');
-		Schema::drop('card_type');
+		Schema::dropIfExists('store_transaction_line');
+		Schema::dropIfExists('store_transaction');
+		Schema::dropIfExists('store_product');
+		Schema::dropIfExists('store_register');
+		Schema::dropIfExists('member');
+		Schema::dropIfExists('card_type');
 	}
 
 }
