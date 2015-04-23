@@ -47,7 +47,7 @@ class StoreTransaction extends Model {
 	}
 	static function queryF($params) {
 		$query = DB::table('store_transaction')
-			->select('business_day', DB::raw('sum(net_amount) as amount'), DB::raw('count(*) as number'))
+			->select('business_day')
 			->where('business_day', '>=', $params->date_from)
 			->where('business_day', '<=', $params->date_to)
 			->where('status', 'delivered')
@@ -61,6 +61,29 @@ class StoreTransaction extends Model {
 			else
 				$query->whereNull('member_id');
 		}
-		return $query->get();
+		if(isset($params->by_category)) {
+			$query->join('store_transaction_line', 'store_transaction_id', '=', 'store_transaction.id')
+				->join('store_product', 'store_product_id', '=', 'store_product.id')
+				->join('store_product_category', 'store_product_category_id', '=', 'store_product_category.id')
+				->groupBy('store_product_category.id', 'store_product_category.code')
+				->addSelect('store_product_category.code as category', DB::raw('sum(sale_price) as amount'), DB::raw('sum(quantity) as number'))
+				->orderBy('category', 'asc', 'business_day', 'asc');
+
+			$res = $query->get();
+			$result = [];
+			foreach($res as $line) {
+				$category = $line->category;
+				unset($line->category);
+				if(!array_key_exists($category, $result))
+					$result[$category] = ['category'=>$category, 'sales'=>[]];
+				$result[$category]['sales'][] = $line;
+			}
+			$result = array_values($result);
+		} else {
+			$query->addSelect(DB::raw('sum(net_amount) as amount'), DB::raw('count(*) as number'));
+			$result = $query->get();
+		}
+
+		return $result;
 	}
 }
