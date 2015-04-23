@@ -19,6 +19,7 @@ var ReportBox = React.createClass({
 			selected: 'tot',
 			field: 'amount',
 			data: gdata,
+			indexes: false,
 			source_data: [],
 			date_from: moment('2015-03-01'),
 			date_to: moment('2015-03-31')
@@ -32,6 +33,9 @@ var ReportBox = React.createClass({
 	},
 	handleField: function(event) {
 		this.prepareData({field: event.target.id});
+	},
+	handleIndexes: function(event) {
+		this.prepareData({indexes: (event.target.id==='ind')});
 	},
 	handleDateFromChange: function(date) {
 		this.getData({date_from: date});
@@ -67,11 +71,26 @@ var ReportBox = React.createClass({
 				data: []
 			}]
 		};
-		for( var i = 0; i < newState.source_data.length; i++) {
+		for( var i = 0; i < newState.source_data.length; i++)
 			if(newState.field === 'average')
 				newState.source_data[i].average = newState.source_data[i].amount / newState.source_data[i].number;
+		if(newState.indexes) {
+			var days = {};
+			for( var i = 0; i < 7; i++ )
+				days[i] = {count:0, total:0};
+			for( var i = 0; i < newState.source_data.length; i++) {
+				var day = moment(newState.source_data[i].business_day).day();
+				days[day].total += newState.source_data[i][newState.field];
+				days[day].count++;
+				days[day].avg = days[day].total / days[day].count;
+			}
+		}
+		for( var i = 0; i < newState.source_data.length; i++) {
 			gdata.labels.push(newState.source_data[i].business_day);
-			gdata.datasets[0].data.push(newState.source_data[i][newState.field]);
+			var value = newState.source_data[i][newState.field];
+			if(newState.indexes)
+				value = 100 * value / days[moment(newState.source_data[i].business_day).day()].avg;
+			gdata.datasets[0].data.push(value);
 		}
 		update.data = gdata;
 		this.setState(update);
@@ -94,6 +113,10 @@ var ReportBox = React.createClass({
 				<Button id="amount" onClick={this.handleField} active={this.state.field=="amount"}>$ Spent</Button>
 				<Button id="number" onClick={this.handleField} active={this.state.field=="number"}>Units</Button>
 				<Button id="average" onClick={this.handleField} active={this.state.field=="average"}>Avg. $/Tran</Button>
+			</ButtonGroup>
+			<ButtonGroup>
+				<Button id="abs" onClick={this.handleIndexes} active={!this.state.indexes}>Absolute</Button>
+				<Button id="ind" onClick={this.handleIndexes} active={this.state.indexes}>Indexes</Button>
 			</ButtonGroup>
 			</div>
 			<LineChart data={this.state.data} redraw />
