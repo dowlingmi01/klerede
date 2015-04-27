@@ -20,6 +20,7 @@ var ReportBox = React.createClass({
 			field: 'amount',
 			data: gdata,
 			indexes: false,
+			categories: false,
 			source_data: [],
 			date_from: moment('2015-03-01'),
 			date_to: moment('2015-03-31')
@@ -36,6 +37,9 @@ var ReportBox = React.createClass({
 	},
 	handleIndexes: function(event) {
 		this.prepareData({indexes: (event.target.id==='ind')});
+	},
+	handleCat: function(event) {
+		this.getData({categories: !this.state.categories});
 	},
 	handleDateFromChange: function(date) {
 		this.getData({date_from: date});
@@ -55,6 +59,9 @@ var ReportBox = React.createClass({
 		else if( newState.selected == 'non' )
 			data['member'] = false;
 
+		if( newState.categories )
+			data['by_category'] = true;
+
 		$.ajax({
 			url: '/api/v1/query/store_transactions',
 			data: data
@@ -67,33 +74,43 @@ var ReportBox = React.createClass({
 		var newState = $.extend(this.state, update);
 		var gdata = {
 			labels:[],
-			datasets: [{
-				data: []
-			}]
+			datasets: []
 		};
-		for( var i = 0; i < newState.source_data.length; i++)
+		for( var m = moment(newState.date_from); m <= newState.date_to; m.add(1, 'd') )
+			gdata.labels.push(m.format('YYYY-MM-DD'));
+		if(newState.categories) {
+			for(var i = 0; i < newState.source_data.length; i++)
+				this.prepareDataSeries(newState, gdata.labels, newState.source_data[i].sales, gdata.datasets, newState.source_data[i].category);
+		} else
+			this.prepareDataSeries(newState, gdata.labels, newState.source_data, gdata.datasets);
+		update.data = gdata;
+		this.setState(update);
+	},
+	prepareDataSeries: function(newState, dates, source_data, target, label) {
+		var datai = {};
+		for( var i = 0; i < source_data.length; i++) {
 			if(newState.field === 'average')
-				newState.source_data[i].average = newState.source_data[i].amount / newState.source_data[i].number;
+				source_data[i].average = source_data[i].amount / source_data[i].number;
+			datai[source_data[i].business_day] = source_data[i][newState.field];
+		}
+		var data = [];
+		for( var i = 0; i < dates.length; i++)
+			data.push(datai[dates[i]]||0);
+
 		if(newState.indexes) {
 			var days = {};
 			for( var i = 0; i < 7; i++ )
 				days[i] = {count:0, total:0};
-			for( var i = 0; i < newState.source_data.length; i++) {
-				var day = moment(newState.source_data[i].business_day).day();
-				days[day].total += newState.source_data[i][newState.field];
+			for( var i = 0; i < data.length; i++) {
+				var day = moment(dates[i]).day();
+				days[day].total += data[i];
 				days[day].count++;
 				days[day].avg = days[day].total / days[day].count;
 			}
+			for( var i = 0; i < data.length; i++)
+				data[i] = 100 * data[i] / days[moment(dates[i]).day()].avg || 0;
 		}
-		for( var i = 0; i < newState.source_data.length; i++) {
-			gdata.labels.push(newState.source_data[i].business_day);
-			var value = newState.source_data[i][newState.field];
-			if(newState.indexes)
-				value = 100 * value / days[moment(newState.source_data[i].business_day).day()].avg;
-			gdata.datasets[0].data.push(value);
-		}
-		update.data = gdata;
-		this.setState(update);
+		target.push({data: data, label: label});
 	},
 	render: function() {
 		return(<div>
@@ -118,8 +135,9 @@ var ReportBox = React.createClass({
 				<Button id="abs" onClick={this.handleIndexes} active={!this.state.indexes}>Absolute</Button>
 				<Button id="ind" onClick={this.handleIndexes} active={this.state.indexes}>Indexes</Button>
 			</ButtonGroup>
+			<label><input type="checkbox" onChange={this.handleCat} checked={this.state.categories}/> Categories</label>
 			</div>
-			<LineChart data={this.state.data} redraw />
+			<LineChart data={this.state.data} options={{datasetFill: false}} redraw />
 		</div>
 			);
 	}
