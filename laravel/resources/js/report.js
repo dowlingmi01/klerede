@@ -1,21 +1,18 @@
 var $ = require('jquery');
 var React = require('react/addons');
 var Chart = require('chart.js');
-var LineChart = require('react-chartjs').Line;
+var LineChart = require('react-d3-components').LineChart;
 Chart.defaults.global.responsive = true;
 var DatePicker = require('react-datepicker');
 var moment = require('moment');
 var Button = require('react-bootstrap').Button;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
+var d3 = require('d3');
 var ReportBox = React.createClass({
 	getInitialState: function() {
-		var gdata = {
-			labels:[],
-			datasets: [{
-				data: []
-			}]
-		};
+		var gdata = [];
 		return {
+			scale: d3.time.scale(),
 			selected: 'tot',
 			field: 'amount',
 			data: gdata,
@@ -72,18 +69,17 @@ var ReportBox = React.createClass({
 	},
 	prepareData: function(update) {
 		var newState = $.extend(this.state, update);
-		var gdata = {
-			labels:[],
-			datasets: []
-		};
+		var gdata = [], dates = [];
 		for( var m = moment(newState.date_from); m <= newState.date_to; m.add(1, 'd') )
-			gdata.labels.push(m.format('YYYY-MM-DD'));
+			dates.push(m.clone());
 		if(newState.categories) {
 			for(var i = 0; i < newState.source_data.length; i++)
-				this.prepareDataSeries(newState, gdata.labels, newState.source_data[i].sales, gdata.datasets, newState.source_data[i].category);
+				this.prepareDataSeries(newState, dates, newState.source_data[i].sales, gdata, newState.source_data[i].category);
 		} else
-			this.prepareDataSeries(newState, gdata.labels, newState.source_data, gdata.datasets);
+			this.prepareDataSeries(newState, dates, newState.source_data, gdata);
 		update.data = gdata;
+		update.scale = d3.time.scale().domain([dates[0].toDate(), dates[dates.length-1].toDate()]).range([0, 600]);
+//		update.scale = d3.time.scale().domain([dates[0].toDate(), dates[dates.length-1].toDate()]);
 		this.setState(update);
 	},
 	prepareDataSeries: function(newState, dates, source_data, target, label) {
@@ -95,24 +91,34 @@ var ReportBox = React.createClass({
 		}
 		var data = [];
 		for( var i = 0; i < dates.length; i++)
-			data.push(datai[dates[i]]||0);
+			data.push({x: dates[i].toDate(), y: datai[dates[i].format('YYYY-MM-DD')]||0});
 
 		if(newState.indexes) {
 			var days = {};
 			for( var i = 0; i < 7; i++ )
 				days[i] = {count:0, total:0};
 			for( var i = 0; i < data.length; i++) {
-				var day = moment(dates[i]).day();
-				days[day].total += data[i];
+				var day = dates[i].day();
+				days[day].total += data[i].y;
 				days[day].count++;
 				days[day].avg = days[day].total / days[day].count;
 			}
 			for( var i = 0; i < data.length; i++)
-				data[i] = 100 * data[i] / days[moment(dates[i]).day()].avg || 0;
+				data[i].y = 100 * data[i].y / days[dates[i].day()].avg || 0;
 		}
-		target.push({data: data, label: label});
+		target.push({values: data, label: label});
 	},
 	render: function() {
+		var chart;
+		if(this.state.data.length)
+//			chart = <LineChart data={this.state.data} width={600} height={400} xScale={this.state.scale}/>;
+			chart = <LineChart
+				data={this.state.data}
+				width={600} height={400}
+				xScale={this.state.scale}
+				xAxis={{tickValues: this.state.scale.ticks(d3.time.day, 2), tickFormat: d3.time.format("%m/%d")}}
+				margin={{top: 10, bottom: 50, left: 50, right: 20}}
+			/>;
 		return(<div>
 			<div>
 			<label>Date From:
@@ -137,7 +143,7 @@ var ReportBox = React.createClass({
 			</ButtonGroup>
 			<label><input type="checkbox" onChange={this.handleCat} checked={this.state.categories}/> Categories</label>
 			</div>
-			<LineChart data={this.state.data} options={{datasetFill: false}} redraw />
+			{chart}
 		</div>
 			);
 	}
