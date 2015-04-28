@@ -1,21 +1,16 @@
 var $ = require('jquery');
 var React = require('react/addons');
-var Chart = require('chart.js');
-var LineChart = require('react-d3-components').LineChart;
-Chart.defaults.global.responsive = true;
+var LineChart = require('react-d3').LineChart;
 var DatePicker = require('react-datepicker');
 var moment = require('moment');
 var Button = require('react-bootstrap').Button;
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
-var d3 = require('d3');
 var ReportBox = React.createClass({
 	getInitialState: function() {
-		var gdata = [];
 		return {
-			scale: d3.time.scale(),
 			selected: 'tot',
 			field: 'amount',
-			data: gdata,
+			data: [],
 			indexes: false,
 			categories: false,
 			source_data: [],
@@ -78,8 +73,6 @@ var ReportBox = React.createClass({
 		} else
 			this.prepareDataSeries(newState, dates, newState.source_data, gdata);
 		update.data = gdata;
-		update.scale = d3.time.scale().domain([dates[0].toDate(), dates[dates.length-1].toDate()]).range([0, 600]);
-//		update.scale = d3.time.scale().domain([dates[0].toDate(), dates[dates.length-1].toDate()]);
 		this.setState(update);
 	},
 	prepareDataSeries: function(newState, dates, source_data, target, label) {
@@ -106,18 +99,20 @@ var ReportBox = React.createClass({
 			for( var i = 0; i < data.length; i++)
 				data[i].y = 100 * data[i].y / days[dates[i].day()].avg || 0;
 		}
-		target.push({values: data, label: label});
+		target.push({values: data, name: label});
+	},
+	formatDate: function(x) {
+		return moment(x).format('MM.DD.YY');
 	},
 	render: function() {
 		var chart;
 		if(this.state.data.length)
-//			chart = <LineChart data={this.state.data} width={600} height={400} xScale={this.state.scale}/>;
 			chart = <LineChart
 				data={this.state.data}
-				width={600} height={400}
-				xScale={this.state.scale}
-				xAxis={{tickValues: this.state.scale.ticks(d3.time.day, 2), tickFormat: d3.time.format("%m/%d")}}
-				margin={{top: 10, bottom: 50, left: 50, right: 20}}
+				width={$(window).width()-50}
+				height={500}
+				legend={this.state.categories}
+				xAxisFormatter={this.formatDate}
 			/>;
 		return(<div>
 			<div>
