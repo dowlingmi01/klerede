@@ -66,7 +66,7 @@ class StoreTransaction extends Model {
 				->join('store_product', 'store_product_id', '=', 'store_product.id')
 				->join('store_product_category', 'store_product_category_id', '=', 'store_product_category.id')
 				->groupBy('store_product_category.id', 'store_product_category.code')
-				->addSelect('store_product_category.code as category', DB::raw('sum(sale_price) as amount'), DB::raw('sum(quantity) as number'))
+				->addSelect('store_product_category.code as category', DB::raw('sum(sale_price) as amount'), DB::raw('cast(sum(quantity) as signed) as number'))
 				->orderBy('category', 'asc', 'business_day', 'asc');
 
 			$res = $query->get();
