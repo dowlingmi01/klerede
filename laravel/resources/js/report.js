@@ -13,12 +13,14 @@ var ReportBox = React.createClass({
 			data: [],
 			indexes: false,
 			by_category: false,
+			categories: {},
 			source_data: [],
 			date_from: moment('2015-03-01'),
 			date_to: moment('2015-03-31')
 		};
 	},
 	componentDidMount: function() {
+		this.getCategories();
 		this.getData({});
 	},
 	handleClick: function(event) {
@@ -38,6 +40,12 @@ var ReportBox = React.createClass({
 	},
 	handleDateToChange: function(date) {
 		this.getData({date_to: date});
+	},
+	getCategories: function() {
+		var that = this;
+		$.get('/api/v1/store-product-category-group').then( function(data) {
+			that.setState({categories: data.store_product_category_groups});
+		});
 	},
 	getData: function(update) {
 		var that = this;
@@ -69,7 +77,7 @@ var ReportBox = React.createClass({
 			dates.push(m.clone());
 		if(newState.by_category) {
 			for(var i = 0; i < newState.source_data.length; i++)
-				this.prepareDataSeries(newState, dates, newState.source_data[i].sales, gdata, newState.source_data[i].category);
+				this.prepareDataSeries(newState, dates, newState.source_data[i].sales, gdata, newState.categories[newState.source_data[i].category].description );
 		} else
 			this.prepareDataSeries(newState, dates, newState.source_data, gdata);
 		update.data = gdata;
