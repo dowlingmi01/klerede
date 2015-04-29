@@ -23,6 +23,7 @@ Route::controllers([
 ]);
 
 Route::group(['prefix'=>'api/v1'], function() {
+	Route::resource('store-product-category-group', 'StoreProductCategoryGroupController');
 	Route::get('query/store_transactions', function() {
 		$input = Request::all();
 		$input = (object) $input;
