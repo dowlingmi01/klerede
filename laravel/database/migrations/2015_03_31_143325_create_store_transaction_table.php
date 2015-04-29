@@ -57,6 +57,14 @@ class CreateStoreTransactionTable extends Migration {
 		Schema::create('store_product_category', function(Blueprint $table)
 		{
 			$table->increments('id');
+			$table->integer('store_product_category_group_id');
+			$table->string('code');
+			$table->string('description')->nullable();
+			$table->timestamps();
+		});
+		Schema::create('store_product_category_group', function(Blueprint $table)
+		{
+			$table->increments('id');
 			$table->string('code');
 			$table->string('description')->nullable();
 			$table->timestamps();
@@ -98,6 +106,7 @@ class CreateStoreTransactionTable extends Migration {
 		Schema::dropIfExists('store_transaction');
 		Schema::dropIfExists('store_product');
 		Schema::dropIfExists('store_product_category');
+		Schema::dropIfExists('store_product_category_group');
 		Schema::dropIfExists('store_register');
 		Schema::dropIfExists('member');
 		Schema::dropIfExists('card_type');
