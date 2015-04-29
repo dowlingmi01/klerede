@@ -12,7 +12,7 @@ var ReportBox = React.createClass({
 			field: 'amount',
 			data: [],
 			indexes: false,
-			categories: false,
+			by_category: false,
 			source_data: [],
 			date_from: moment('2015-03-01'),
 			date_to: moment('2015-03-31')
@@ -31,7 +31,7 @@ var ReportBox = React.createClass({
 		this.prepareData({indexes: (event.target.id==='ind')});
 	},
 	handleCat: function(event) {
-		this.getData({categories: !this.state.categories});
+		this.getData({by_category: !this.state.by_category});
 	},
 	handleDateFromChange: function(date) {
 		this.getData({date_from: date});
@@ -51,7 +51,7 @@ var ReportBox = React.createClass({
 		else if( newState.selected == 'non' )
 			data['member'] = false;
 
-		if( newState.categories )
+		if( newState.by_category )
 			data['by_category'] = true;
 
 		$.ajax({
@@ -67,7 +67,7 @@ var ReportBox = React.createClass({
 		var gdata = [], dates = [];
 		for( var m = moment(newState.date_from); m <= newState.date_to; m.add(1, 'd') )
 			dates.push(m.clone());
-		if(newState.categories) {
+		if(newState.by_category) {
 			for(var i = 0; i < newState.source_data.length; i++)
 				this.prepareDataSeries(newState, dates, newState.source_data[i].sales, gdata, newState.source_data[i].category);
 		} else
@@ -111,7 +111,7 @@ var ReportBox = React.createClass({
 				data={this.state.data}
 				width={$(window).width()-50}
 				height={500}
-				legend={this.state.categories}
+				legend={this.state.by_category}
 				xAxisFormatter={this.formatDate}
 			/>;
 		return(<div>
@@ -136,7 +136,7 @@ var ReportBox = React.createClass({
 				<Button id="abs" onClick={this.handleIndexes} active={!this.state.indexes}>Absolute</Button>
 				<Button id="ind" onClick={this.handleIndexes} active={this.state.indexes}>Indexes</Button>
 			</ButtonGroup>
-			<label><input type="checkbox" onChange={this.handleCat} checked={this.state.categories}/> Categories</label>
+			<label><input type="checkbox" onChange={this.handleCat} checked={this.state.by_category}/> Categories</label>
 			</div>
 			{chart}
 		</div>
