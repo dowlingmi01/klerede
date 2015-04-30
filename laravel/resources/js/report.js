@@ -79,7 +79,7 @@ var ReportBox = React.createClass({
 			for(var i = 0; i < newState.source_data.length; i++)
 				this.prepareDataSeries(newState, dates, newState.source_data[i].sales, gdata, newState.categories[newState.source_data[i].category].description );
 		} else
-			this.prepareDataSeries(newState, dates, newState.source_data, gdata);
+			this.prepareDataSeries(newState, dates, newState.source_data, gdata, 'Gift Store');
 		update.data = gdata;
 		this.setState(update);
 	},
