@@ -24,17 +24,18 @@ CREATE VIEW transaction_line AS
 SELECT d.JnlTranID AS source_id
      , 1588 AS venue_id
      , d.JnlDetailID AS sequence
-	 , t.PLU AS box_office_product_code
+	 , ISNULL(t.PLU, i.PLU) AS box_office_product_code
 	 , t.VisualID AS ticket_code
 	 , d.Amount AS sale_price
 	 , d.Qty AS quantity
   FROM Galaxy1..JnlDetails d
   JOIN Galaxy1..JnlHeaders h WITH (INDEX(CIXJnlHeadersTranDate)) ON h.JnlTranID = d.JnlTranID
-  LEFT JOIN Galaxy1..JnlTickets t WITH (INDEX(pkjnlticketsjnldetailid)) ON d.AuxTableID = t.JnlDetailID
-  LEFT JOIN Galaxy1..Items i ON t.PLU = i.PLU
+  LEFT JOIN Galaxy1..JnlTickets t WITH (INDEX(pkjnlticketsjnldetailid)) ON d.JnlCodeID = 101 AND d.AuxTableID = t.JnlDetailID
+  LEFT JOIN Galaxy1..JnlItems i ON d.JnlCodeID BETWEEN 102 AND 104 AND d.AuxTableID = i.JnlItemID
  WHERE TranKind = 1
    AND CompanyID = 1
-   AND d.JnlCodeID = 101
+   AND d.JnlCodeID BETWEEN 101 AND 104
+   AND d.AccountID LIKE '0001%'
 GO
 IF object_id('item') IS NOT NULL
    DROP VIEW item;
