@@ -13,7 +13,7 @@ LINES TERMINATED BY '\r\n'
 LOAD DATA INFILE 'galaxyimport/item.txt'
 INTO TABLE box_office_product
 LINES TERMINATED BY '\r\n'
-(venue_id, code, description, kind, is_ga, delivery_method_id)
+(venue_id, code, description, account_code, kind, is_ga, delivery_method_id)
 ;
 
 INSERT box_office_transaction_line
