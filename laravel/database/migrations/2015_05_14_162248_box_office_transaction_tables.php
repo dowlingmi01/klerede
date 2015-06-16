@@ -56,6 +56,7 @@ class BoxOfficeTransactionTables extends Migration {
 			$table->integer('venue_id');
 			$table->string('code');
 			$table->string('description');
+			$table->string('account_code');
 			$table->enum('kind', ['ticket', 'pass', 'other']);
 			$table->boolean('is_ga');
 			$table->integer('visitor_category_id')->nullable();
