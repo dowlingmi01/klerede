@@ -44,6 +44,7 @@ CREATE VIEW item AS
 SELECT 1588 AS venue_id
      , PLU AS code
 	 , i.Descr AS description
+     , o.AccountID AS account_code
 	 , CASE WHEN i.PassKind > 0 THEN 'pass'
             WHEN i.Category < 800 THEN 'ticket'
             ELSE 'other'
@@ -57,6 +58,13 @@ SELECT 1588 AS venue_id
   LEFT JOIN ( Galaxy1..BankDetails d
 	   JOIN Galaxy1..AdmissionDetails a ON d.AdmissionID = a.AdmHeaderID and a.OperationID = 1
 	   ) ON c.BankHeaderID = d.BankHeaderID
+  LEFT JOIN Galaxy1..COA o ON i.Company = o.CompanyID AND i.Category = o.Category AND i.SubCat = o.SubCat
+     AND (i.Kind NOT IN (4, 8, 17, 18) AND o.GLCode = 101
+       OR i.Kind = 4 AND o.GLCode = 310
+       OR i.Kind = 8 AND o.GLCode = 102
+       OR i.Kind = 17 AND o.GLCode = 103
+       OR i.Kind = 18 AND o.GLCode = 104
+     )
  WHERE i.Company = 1
 GO
 IF object_id('visit') IS NOT NULL
