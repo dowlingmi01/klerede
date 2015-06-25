@@ -15,6 +15,11 @@ INTO TABLE box_office_product
 LINES TERMINATED BY '\r\n'
 (venue_id, code, description, account_code, kind, is_ga, delivery_method_id)
 ;
+UPDATE box_office_product
+   SET membership_kind_id = IF(description LIKE '%family%', 2, 1)
+ WHERE kind = 'pass'
+;
+
 
 INSERT box_office_transaction_line
      ( box_office_transaction_id, sequence, box_office_product_id, ticket_code, sale_price, quantity )
