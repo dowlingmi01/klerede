@@ -26,17 +26,14 @@ elixir.config.sourcemaps = false;
 gulp.task('clean', function () {
   del([
     'public/css/temp-less.css',
-    'public/css/temp-sass.css',
-    'public/js/temp-jquery.js',
-    'public/js/temp-react.js',
-    'public/js/temp-react-bootstrap.js'
+    'public/css/temp-sass.css'
   ]);
 });
 
 // GULP LINT: Check JS for errors (Not linting report)
 gulp.task('lint', function() {
     /* Array for multiple directories */
-    return gulp.src(['resources/js/*.js','!resources/js/report.js'])
+    return gulp.src(['resources/js/app/*.js','!resources/js/report.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
@@ -59,39 +56,21 @@ elixir(function(mix) {
 
     // MASTER SCRIPTS PROCESSING ... 1) Set scripts in order of concatenation, 2) declare destination, 3) set source path for scripts
     mix.scripts(
-        ['elixirtest.js', 'main.js'],
+        ['utils.js', 'dashboard.js'],
         'public/js/app.js',
-        'resources/js'
+        'resources/js/app'
     );
 
 });
 
-// GULP GETLIBS: Browserify npm packages for use on front-end
-gulp.task('getlibs', function(){
-    // JQUERY
-    var b = browserify();
-    b.require('jquery');
-    b.bundle()
-        .pipe(source('temp-jquery.js'))   // the output file is XYZ
-        .pipe(gulp.dest('public/js')); // and is put into dist folder
-    // REACT
-    b = browserify();
-    b.require('react');
-    b.bundle()
-        .pipe(source('temp-react.js'))   // the output file is XYZ
-        .pipe(gulp.dest('public/js')); // and is put into this folder
-    // BOOTSTRAP
-    b = browserify();
-    b.require('react-bootstrap');
-    b.bundle()
-        .pipe(source('temp-react-bootstrap.js'))   // the output file is XYZ
-        .pipe(gulp.dest('public/js')); // and is put into dist folder
-});
-
-// GULP MASHLIBS: Concatenate into one file and minify
-gulp.task('mashlibs', function(){
-    // Concatenate and minify
-    gulp.src(['public/js/temp-jquery.js','public/js/temp-react.js','public/js/temp-react-bootstrap.js'])
+// GULP LIBS: Concatenate into one file and minify
+gulp.task('libs', function(){
+    gulp.src([
+            'resources/js/libs/jquery-2.1.4.js',
+            'resources/js/libs/react-0.13.3.js',
+            'resources/js/libs/JSXTransformer-0.13.3.js',
+            'resources/js/libs/bootstrap.js'
+        ])
         .pipe(concat('libs.js'))
         .pipe(uglify({mangle: false}))
         .pipe(gulp.dest('public/js'));

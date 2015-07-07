@@ -1,2 +1,2 @@
 /******** MAIN DASHBOARD JS HUB ********/
-var test
+console.log('Dashboard loaded...');
