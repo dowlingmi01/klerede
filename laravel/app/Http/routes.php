@@ -33,3 +33,8 @@ Route::group(['prefix'=>'api/v1'], function() {
 		return Response::json($result);
 	});
 });
+
+Route::get('dashboard', function()
+{
+    return View::make('dashboard');
+});

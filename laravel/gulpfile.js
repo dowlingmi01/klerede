@@ -66,8 +66,8 @@ elixir(function(mix) {
 
 });
 
-// GULP LIBS: Browserify npm packages for use on front-end
-gulp.task('libs', function(){
+// GULP GETLIBS: Browserify npm packages for use on front-end
+gulp.task('getlibs', function(){
     // JQUERY
     var b = browserify();
     b.require('jquery');
@@ -86,6 +86,10 @@ gulp.task('libs', function(){
     b.bundle()
         .pipe(source('temp-react-bootstrap.js'))   // the output file is XYZ
         .pipe(gulp.dest('public/js')); // and is put into dist folder
+});
+
+// GULP MASHLIBS: Concatenate into one file and minify
+gulp.task('mashlibs', function(){
     // Concatenate and minify
     gulp.src(['public/js/temp-jquery.js','public/js/temp-react.js','public/js/temp-react-bootstrap.js'])
         .pipe(concat('libs.js'))
