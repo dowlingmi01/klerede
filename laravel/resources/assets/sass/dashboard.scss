@@ -6,6 +6,9 @@ $lightgrey: rgba(236,234,231,1);
 header {
     background-color: $darkgrey;
     height: 108px;
+    div {
+        height: 108px;
+    }
 }
 
 .logo-main {
@@ -16,7 +19,10 @@ header {
 .logo-client {
     border-right: 1px solid $lightgrey;
     float: right;
-    margin-top: 41px;
+    padding: 19px 28px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .menu {
@@ -26,6 +32,9 @@ header {
     ul {
         list-style: none;
         padding: 0;
+        li {
+            text-align: right;
+        }
     }
 }
 .test{}
