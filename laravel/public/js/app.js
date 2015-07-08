@@ -1,1 +1,1 @@
-console.log("testing elixir");var test;
+console.log("Utilities loaded..."),console.log("Dashboard loaded...");
