@@ -5,7 +5,10 @@
         <link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
     </head>
     <body>
-        <h1>Klerede Dashboard</h1>
+        <header>
+            <img src="img/logo-klerede.png" class="logo-main" />
+            <img src="img/logo-livingplanet.png" class="logo-client" />
+        </header>
 
         @yield('content')
 

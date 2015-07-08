@@ -22,7 +22,7 @@ elixir.config.sourcemaps = false;
 /******** TASKS ********/
 /***********************/
 
-// GULP defaults
+// GULP defaults ... 'gulp watch' will compile the scss, minify, AND move it to the public folder ... but gulp clean must be run after development to remove the temp files
 elixir(function(mix) {
     // Sergio's report task
     mix.browserify('report.js', elixir.jsOutput, 'resources/js', {debug:true});
