@@ -8,12 +8,14 @@ header {
     height: 108px;
     div {
         height: 108px;
+        text-align: right;
     }
 }
 
 .logo-main {
-    margin-left: 170px;
-    margin-top: 34px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .logo-client {

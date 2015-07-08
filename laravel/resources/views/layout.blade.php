@@ -7,8 +7,8 @@
     <body>
         <header class="container-fluid">
             <div class="row">
-                <div class="col-xs-6 col-md-6"><img src="img/logo-klerede.png" class="logo-main" /></div>
-                <div class="col-xs-6 col-md-6"><img src="img/logo-livingplanet.png" class="logo-client" /></div>
+                <div class="col-xs-2 col-md-2"><img src="img/logo-klerede.png" class="logo-main" /></div>
+                <div class="col-xs-10 col-md-10"><img src="img/logo-livingplanet.png" class="logo-client" /></div>
             </div>
         </header>
         <section class="container-fluid">
