@@ -4,5 +4,5 @@
 temp*.*
 public/css/app.css
 public/css/dashboard.css
-public/css/app.js
-public/css/libs.js
+public/js/app.js
+public/js/libs.js
