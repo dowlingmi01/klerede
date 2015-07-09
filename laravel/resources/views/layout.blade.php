@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/bootstrap.css">
-        <link rel="stylesheet" href="css/dashboard.css">
+        <link rel="stylesheet" href="css/dashboard/app.css">
         <link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
     </head>
     <body>
