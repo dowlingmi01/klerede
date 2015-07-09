@@ -2,7 +2,5 @@
 /node_modules
 .env
 temp*.*
-public/css/app.css
-public/css/dashboard.css
-public/js/app.js
-public/js/libs.js
+public/css/*
+public/js/*
