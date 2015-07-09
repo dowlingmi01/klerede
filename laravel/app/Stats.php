@@ -14,13 +14,14 @@ class Stats {
 		if($type != 'date')
 			$period = sprintf('%04d-%02d', $period / 100, $period % 100);
 	}
-	static function querySingle($query) {
+	static function querySingle($venue_id, $query) {
 		$specs = (object) $query->specs;
 		if($specs->type == 'visits')
 			$table = 'stat_visits';
 		else if($specs->type == 'sales')
 			$table = 'stat_sales';
 		$dbquery = DB::table($table);
+		$dbquery->where('venue_id', $venue_id);
 		$includePeriod = true;
 		if(is_string($query->periods))
 			$periods = (object) ['period'=>$query->periods];
@@ -55,10 +56,10 @@ class Stats {
 			$result = $result[0];
 		return $result;
 	}
-	static function queryMulti($queries) {
+	static function queryMulti($venue_id, $queries) {
 		$result = [];
 		foreach($queries as $name=>$query)
-			$result[$name] = self::querySingle((object) $query);
+			$result[$name] = self::querySingle($venue_id, (object) $query);
 		return $result;
 	}
 }

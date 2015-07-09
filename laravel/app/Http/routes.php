@@ -34,7 +34,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 	});
 	Route::post('stats/query', function() {
 		$input = Request::all();
-		$result = Stats::queryMulti($input);
+		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
 		return Response::json($result);
 	});
 });
