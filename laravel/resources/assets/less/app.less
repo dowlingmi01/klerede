@@ -39,7 +39,7 @@ header {
 .menu {
     background-color: @darkgrey;
     color: @mediumgrey;
-    height: calc(100vh - 108px);
+    height: ~"calc(100vh - 108px)";   /* ~"..." added to prevent LESS from breaking calc() during compilation */
     ul {
         list-style: none;
         padding: 0;
