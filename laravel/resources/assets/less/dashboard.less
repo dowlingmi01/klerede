@@ -1,10 +1,10 @@
 /* Colors */
-$darkgrey: rgba(37,33,34,1);
-$mediumgrey: rgba(135,135,135,1);
-$lightgrey: rgba(236,234,231,1);
+@darkgrey: rgba(37,33,34,1);
+@mediumgrey: rgba(135,135,135,1);
+@lightgrey: rgba(236,234,231,1);
 
 header {
-    background-color: $darkgrey;
+    background-color: @darkgrey;
     height: 108px;
     div {
         height: 108px;
@@ -19,7 +19,7 @@ header {
 }
 
 .logo-client {
-    border-right: 1px solid $lightgrey;
+    border-right: 1px solid @lightgrey;
     float: right;
     padding: 19px 28px;
     position: relative;
@@ -28,8 +28,8 @@ header {
 }
 
 .menu {
-    background-color: $darkgrey;
-    color: $mediumgrey;
+    background-color: @darkgrey;
+    color: @mediumgrey;
     height: calc(100vh - 108px);
     ul {
         list-style: none;
@@ -39,3 +39,4 @@ header {
         }
     }
 }
+.test{}
