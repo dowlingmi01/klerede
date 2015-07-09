@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/bootstrap.css">
-        <link rel="stylesheet" href="css/app.css">
+        <link rel="stylesheet" href="css/dashboard.css">
         <link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
     </head>
     <body>
@@ -24,9 +24,7 @@
                 <div class="col-xs-10 col-md-10">@yield('content')</div>
             </div>
         </section>
-
-        
-
+        <footer>&copy; 2015 Klerede. All rights reserved.</footer>
         <script src="js/libs.js"></script>
         <script src="js/app.js"></script>
     </body>
