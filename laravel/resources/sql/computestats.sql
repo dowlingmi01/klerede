@@ -18,9 +18,9 @@ INSERT stat_sales
      , membership_kind_id, members, online
      , units, amount )
 SELECT t.venue_id, date(t.time), year(t.time)
-     , year(v.time)*100 + quarter(v.time)
-     , year(v.time)*100 + month(v.time)
-     , year(v.time)*100 + week(v.time)
+     , year(t.time)*100 + quarter(t.time)
+     , year(t.time)*100 + month(t.time)
+     , year(t.time)*100 + week(t.time)
      , IF(p.kind = 'pass', 2, 1) as channel_id, m.box_office_product_kind_id
      , IFNULL(p.membership_kind_id, 0), IF(p.kind = 'pass', 1, 0) as members, IF(t.agency_id = 2, 1, 0) as online
      , sum(quantity), sum(sale_price)
