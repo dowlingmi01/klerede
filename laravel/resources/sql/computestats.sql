@@ -1,6 +1,9 @@
 INSERT stat_visits
      ( venue_id, date, year, quarter, month, week, box_office_product_kind_id, units )
-SELECT p.venue_id, date(v.time), year(v.time), quarter(v.time), month(v.time), week(v.time)
+SELECT p.venue_id, date(v.time), year(v.time)
+     , year(v.time)*100 + quarter(v.time)
+     , year(v.time)*100 + month(v.time)
+     , year(v.time)*100 + week(v.time)
      , m.box_office_product_kind_id, sum(quantity)
   FROM visit v
   JOIN box_office_product p ON v.box_office_product_id = p.id
@@ -14,7 +17,10 @@ INSERT stat_sales
 	 , channel_id, box_office_product_kind_id
      , membership_kind_id, members, online
      , units, amount )
-SELECT t.venue_id, date(t.time), year(t.time), quarter(t.time), month(t.time), week(t.time) 
+SELECT t.venue_id, date(t.time), year(t.time)
+     , year(v.time)*100 + quarter(v.time)
+     , year(v.time)*100 + month(v.time)
+     , year(v.time)*100 + week(v.time)
      , IF(p.kind = 'pass', 2, 1) as channel_id, m.box_office_product_kind_id
      , IFNULL(p.membership_kind_id, 0), IF(p.kind = 'pass', 1, 0) as members, IF(t.agency_id = 2, 1, 0) as online
      , sum(quantity), sum(sale_price)

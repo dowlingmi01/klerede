@@ -49,9 +49,9 @@ class StatsTables extends Migration {
 			$table->integer('venue_id');
 			$table->date('date');
 			$table->smallInteger('year');
-			$table->smallInteger('quarter');
-			$table->smallInteger('month');
-			$table->smallInteger('week');
+			$table->mediumInteger('quarter');
+			$table->mediumInteger('month');
+			$table->mediumInteger('week');
 			$table->smallInteger('box_office_product_kind_id');
 			$table->integer('units');
 			$table->timestamps();
@@ -63,9 +63,9 @@ class StatsTables extends Migration {
 			$table->integer('venue_id');
 			$table->date('date');
 			$table->smallInteger('year');
-			$table->smallInteger('quarter');
-			$table->smallInteger('month');
-			$table->smallInteger('week');
+			$table->mediumInteger('quarter');
+			$table->mediumInteger('month');
+			$table->mediumInteger('week');
 			$table->smallInteger('channel_id');
 			$table->smallInteger('box_office_product_kind_id');
 			$table->smallInteger('membership_kind_id');
