@@ -11,7 +11,7 @@
 |
 */
 
-use App\StoreTransaction;
+use App\StoreTransaction, App\Stats;
 
 Route::get('/', 'WelcomeController@index');
 
@@ -30,6 +30,11 @@ Route::group(['prefix'=>'api/v1'], function() {
 		if(isset($input->member))
 			$input->member = filter_var($input->member, FILTER_VALIDATE_BOOLEAN);
 		$result = StoreTransaction::queryF($input);
+		return Response::json($result);
+	});
+	Route::post('stats/query', function() {
+		$input = Request::all();
+		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
 		return Response::json($result);
 	});
 });

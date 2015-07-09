@@ -26,9 +26,8 @@ elixir.config.sourcemaps = false;
 elixir(function(mix) {
     // Sergio's report task
     mix.browserify('report.js', elixir.jsOutput, 'resources/js', {debug:true});
-    // Compile LESS, compile SASS, compile JS libraries, and compile custom JS
-    mix.less('app.less','public/css',{})
-        .sass('dashboard.scss','public/css/dashboard',{})
+    // Compile LESS, compile JS libraries, and compile custom JS
+    mix.less('app.less')
         .task('libs')
         .task('app');
 });
