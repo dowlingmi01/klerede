@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/app.css">
-        <link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
+        <link href="//fonts.googleapis.com/css?family=Raleway:700,400" rel="stylesheet" type="text/css">
     </head>
     <body>
         <header class="container-fluid">
@@ -20,10 +20,12 @@
                         <li>Campaigns</li>
                     </ul>
                 </div>
-                <div class="col-xs-10 col-md-10">@yield('content')</div>
+                <div class="col-xs-10 col-md-10">
+                    @yield('content')
+                    <footer>&copy; 2015 Klerede. All rights reserved.</footer>
+                </div>
             </div>
         </section>
-        <footer>&copy; 2015 Klerede. All rights reserved.</footer>
         <script src="js/libs.js"></script>
         <script src="js/app.js"></script>
     </body>
