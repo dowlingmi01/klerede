@@ -10,11 +10,12 @@ SELECT p.venue_id, date(v.time), year(v.time)
   JOIN box_office_product_kind_map m
         ON p.venue_id = m.venue_id
        AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
+       AND box_office_product_kind_id < 4
  GROUP BY p.venue_id, date(v.time), m.box_office_product_kind_id
 ;
 INSERT stat_sales
      ( venue_id, date, year, quarter, month, week
-	 , channel_id, box_office_product_kind_id
+     , channel_id, box_office_product_kind_id
      , membership_kind_id, members, online
      , units, amount )
 SELECT t.venue_id, date(t.time), year(t.time)
@@ -30,6 +31,6 @@ SELECT t.venue_id, date(t.time), year(t.time)
   JOIN box_office_product_kind_map m
         ON p.venue_id = m.venue_id
        AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-GROUP BY t.venue_id, date(t.time), channel_id, m.box_office_product_kind_id
-    , p.membership_kind_id, members, online
+ GROUP BY t.venue_id, date(t.time), channel_id, m.box_office_product_kind_id
+     , p.membership_kind_id, members, online
 ;
