@@ -41,6 +41,25 @@ class Stats {
 			else
 				$includePeriod = false;
 		}
+		if(isset($specs->kinds)) {
+			$dbquery->join('box_office_product_kind', 'box_office_product_kind_id', '=', 'box_office_product_kind.id')
+				->whereIn('box_office_product_kind.code', $specs->kinds);
+		}
+		if(isset($specs->channel)) {
+			$dbquery->join('channel', 'channel_id', '=', 'channel.id')
+				->where('channel.code', $specs->channel);
+		}
+		if(isset($specs->members)) {
+			$dbquery->where('members', $specs->members ? 1 : 0);
+		}
+		if(isset($specs->membership_type)) {
+			$dbquery->join('membership_kind', 'membership_kind_id', '=', 'membership_kind.id')
+				->where('membership_kind.code', $specs->membership_type);
+		}
+		if(isset($specs->online)) {
+			$dbquery->where('online', $specs->online ? 1 : 0);
+		}
+
 		if($includePeriod)
 			$dbquery->addSelect("$periods->type as period");
 
