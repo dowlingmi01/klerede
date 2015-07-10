@@ -22,16 +22,21 @@ class Stats {
 			$table = 'stat_sales';
 		$dbquery = DB::table($table);
 		$dbquery->where('venue_id', $venue_id);
-		$includePeriod = true;
 		if(is_string($query->periods))
 			$periods = (object) ['period'=>$query->periods];
 		else
 			$periods = (object) $query->periods;
 		if(!isset($periods->type))
 			$periods->type = 'date';
+		$includePeriod = $periods->type;
 		if(isset($periods->period)) {
 			self::validatePeriod($periods->period, $periods->type);
 			$dbquery->where($periods->type, $periods->period);
+			if(isset($periods->subperiod)) {
+				$dbquery->groupBy($periods->subperiod);
+				$includePeriod = $periods->subperiod;
+			}
+
 		} else {
 			self::validatePeriod($periods->from, $periods->type);
 			self::validatePeriod($periods->to, $periods->type);
@@ -61,7 +66,7 @@ class Stats {
 		}
 
 		if($includePeriod)
-			$dbquery->addSelect("$periods->type as period");
+			$dbquery->addSelect("$includePeriod as period");
 
 		$dbquery->addSelect(DB::raw('sum(units) as units'));
 		if($specs->type == 'sales')
@@ -70,7 +75,7 @@ class Stats {
 		$result = $dbquery->get();
 		if($includePeriod)
 			foreach($result as &$res)
-				self::formatPeriod($res->period, $periods->type);
+				self::formatPeriod($res->period, $includePeriod);
 		if(count($result) == 1)
 			$result = $result[0];
 		return $result;
