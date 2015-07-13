@@ -33,7 +33,7 @@ class StoreTransaction extends Model {
 			}
 		$transaction->save();
 		foreach($xmlTran->RetailTransaction->LineItem as $xmlLine)
-			if($xmlLine->Sale || $xmlLine->Return) {
+			if( $xmlLine['VoidFlag'] != 'true' && ($xmlLine->Sale || $xmlLine->Return)) {
 				StoreTransactionLine::getForXML($transaction->id, $xmlLine);
 			}
 		return $transaction;
