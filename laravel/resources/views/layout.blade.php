@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/app.css">
-        <link href="//fonts.googleapis.com/css?family=Raleway:700,400" rel="stylesheet" type="text/css">
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,500,700" rel="stylesheet" type="text/css">
     </head>
     <body>
         <header class="container-fluid">
