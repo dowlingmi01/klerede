@@ -3,40 +3,99 @@
 @btn-font-weight: 300;
 @font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
 
+/* Main font weights are 400, 500, 600, 700 */
+@font-main: 'Raleway', sans-serif;
+
 body, label, .checkbox label {
-    font-family: 'Raleway', sans-serif;
-	font-weight: 300;
+    font-family: @font-main;
+	font-weight: 400;
 }
 
 /* Colors */
+@bg_page: rgba(225,222,222,1);
+
 @darkgrey: rgba(37,33,34,1);
 @mediumgrey: rgba(135,135,135,1);
 @lightgrey: rgba(236,234,231,1);
 
+@aqua: rgba(88,167,226,1);
+@gold: rgba(220,179,53,1);
+@white: rgba(255,255,255,1);
+
+body {
+    background-color: @bg_page;
+}
 header {
     background-color: @darkgrey;
+    color: @white;
     height: 108px;
-    div {
+    .klerede-logo {
         height: 108px;
         text-align: right;
+        img {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
     }
-}
+    .user-info {
+        height: 108px;
+        text-align: right;
+        .logo-client {
+            border-right: 1px solid @lightgrey;
+            display: inline-block;
+            margin-right: 28px;
+            padding: 19px 28px;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .user-image {
+            background-color: @gold;
+            background-image: url('/img/user-no-image.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-radius: 20px;
+            display: inline-block;
+            height: 40px;
+            margin-right: 14px;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+        }
+        .utilities-wrapper {
+            display: inline-block;
+            position: relative;
+            top: 50%;
+            text-align: left;
+            transform: translateY(-50%);
+            .user-name {
+                color: @gold;
+            }
+            .utilities {
+                display: inline-block;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                li {
+                    float: left;
+                    margin-right: 14px;
+                    a {
+                        color: @white;
+                        text-decoration: none;
+                    }
+                    a:hover {
+                        color: @gold;
+                    }
+                }
+            }
+        }
+        
+    }
 
-.logo-main {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
 }
-
-.logo-client {
-    border-right: 1px solid @lightgrey;
-    float: right;
-    padding: 19px 28px;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
 .menu {
     background-color: @darkgrey;
     color: @mediumgrey;
@@ -45,11 +104,16 @@ header {
         list-style: none;
         padding: 0;
         li {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 22px 37px 22px 0;
             text-align: right;
         }
     }
 }
-
 h1 {
     font-family: 'Raleway', sans-serif;
+}
+footer {
+    text-align: right;
 }
