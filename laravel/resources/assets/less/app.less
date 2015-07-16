@@ -3,7 +3,7 @@
 @btn-font-weight: 300;
 @font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
 
-/* Main font weights are 400, 500, 600, 700 */
+/* Main font weights are 400 (normal), 500 (medium), 600 (semi-bold), 700 (bold) */
 @font-main: 'Raleway', sans-serif;
 
 body, label, .checkbox label {
@@ -25,6 +25,12 @@ body, label, .checkbox label {
 body {
     background-color: @bg_page;
 }
+a {
+    color: @aqua;
+}
+a:hover {
+    color: @gold;
+}
 header {
     background-color: @darkgrey;
     color: @white;
@@ -34,6 +40,7 @@ header {
         text-align: right;
         img {
             position: relative;
+            right: 24px;
             top: 50%;
             transform: translateY(-50%);
         }
@@ -98,17 +105,52 @@ header {
 }
 .menu {
     background-color: @darkgrey;
-    color: @mediumgrey;
     height: ~"calc(100vh - 108px)";   /* ~"..." added to prevent LESS from breaking calc() during compilation */
+    padding: 0;
+    text-align: right;
     ul {
+        display: inline-block;
         list-style: none;
+        margin-top: 51px;
         padding: 0;
         li {
             font-size: 18px;
             font-weight: 600;
             padding: 22px 37px 22px 0;
-            text-align: right;
+            text-align: left;
+            position: relative;
+            a {
+                color: @mediumgrey;
+                cursor: pointer;
+            }
+            a:hover {
+                color: @gold;
+                text-decoration: none;
+            }
         }
+        li.active:after {
+            bottom: 18px;
+            right: 0;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+            border-color: rgba(21, 45, 65, 0);
+            border-right-color: @bg_page;
+            border-width: 16px;
+        }
+    }
+}
+.main-content {
+    padding: 20px;
+}
+.welcome-text {
+    font-size: 20px;
+    font-weight: 600;
+    .user-name {
+        color: @gold;
     }
 }
 h1 {

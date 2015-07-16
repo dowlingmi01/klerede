@@ -25,13 +25,14 @@
             <div class="row">
                 <div class="col-xs-2 col-md-2 menu">
                     <ul>
-                        <li>Dashboard</li>
-                        <li>Tool Box</li>
-                        <li>Members</li>
-                        <li>Campaigns</li>
+                        <li class="active"><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/toolbox">Tool Box</a></li>
+                        <li><a href="/members">Members</a></li>
+                        <li><a href="/campaigns">Campaigns</a></li>
                     </ul>
                 </div>
-                <div class="col-xs-10 col-md-10">
+                <div class="col-xs-10 col-md-10 main-content">
+                    <div class="welcome-text">Hi <span class="user-name">Joe!</span> Things are looking good.</div>
                     @yield('content')
                     <footer>&copy; 2015 <a href="//klerede.com/" target="_blank">Klerede</a>. All rights reserved.</footer>
                 </div>
