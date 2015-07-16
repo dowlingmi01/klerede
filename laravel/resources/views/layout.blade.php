@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="col-xs-2 col-md-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.png" /></a></div>
                 <div class="col-xs-10 col-md-10 user-info">
-                    <img src="img/logo-livingplanet.png" class="logo-client" />
+                    <div class="client-name">The Living Planet</div>
                     <div class="user-image"></div>
                     <div class="utilities-wrapper">
                         <div class="user-name">Joe Bagadonuts</div>
