@@ -7,6 +7,7 @@ var elixir = require('laravel-elixir'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
     jshint = require('gulp-jshint'),
+    react = require('gulp-react'),
     browserify = require('browserify'),
     source = require("vinyl-source-stream");
 
@@ -56,9 +57,9 @@ gulp.task('libs', function(){
 // Custom JavaScript
 gulp.task('app', function(){
     gulp.src([
-            'resources/js/app/utils.js',
-            'resources/js/app/dashboard.js'
+            'resources/js/app/*.js'
         ])
+        .pipe(react())
         .pipe(concat('app.js'))
         .pipe(uglify({mangle: false}))
         .pipe(gulp.dest('public/js'));
