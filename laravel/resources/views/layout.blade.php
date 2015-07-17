@@ -32,7 +32,7 @@
                     </ul>
                 </div>
                 <div class="col-xs-10 col-md-10 main-content">
-                    <div id="welcome-text" class="welcome-text">XYZ</div>
+                    <div id="welcome-text"></div>
                     @yield('content')
                     <footer>&copy; 2015 <a href="//klerede.com/" target="_blank">Klerede</a>. All rights reserved.</footer>
                 </div>
