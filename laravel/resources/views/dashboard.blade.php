@@ -8,7 +8,7 @@
         <div class="col-xs-2 col-md-2">
             <div class="stat-block total-visitors">
                 <div class="label">Total Visitors</div>
-                <div class="stat">10,450</div>
+                <div class="stat" id="totalVisitors">...</div>
                 <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 9,980</div>
             </div>
         </div>

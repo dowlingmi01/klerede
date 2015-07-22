@@ -55,7 +55,7 @@ console.log('Utilities loaded...');
 
 /******** TEST JSON ********/
 JSONTest = function() {
-    var resultDiv = $("#totalSalesGoals");
+    var resultDiv = $("#totalVisitors");
     $.ajax({
             url: "/api/v1/stats/query",
             type: "POST",
