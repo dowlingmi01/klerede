@@ -161,13 +161,23 @@ header {
 }
 #welcome-text {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 500;
     .user-name {
         color: @gold;
     }
     .time-date {
         float: right;
+        .time-period {
+            color: @mediumgrey;
+            padding-right: 30px;
+        }
+        .month-year {
+            color: @mediumgrey;
+        }
     }
+}
+.time-date-modifier {
+    color: @mediumgrey;
 }
 .stat-block {
     background-color: @aqua;
