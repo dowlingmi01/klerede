@@ -47,6 +47,8 @@ gulp.task('libs', function(){
             'resources/js/libs/jquery-2.1.4.js',
             'resources/js/libs/react-0.13.3.js',
             //'resources/js/libs/JSXTransformer-0.13.3.js',   // Not needed now with the addition of gulp-react to pre-process the JSX
+            'resources/js/libs/hashtable.js',
+            'resources/js/libs/jquery.numberformatter-1.2.4.jsmin.js',
             'resources/js/libs/bootstrap.js'
         ])
         .pipe(concat('libs.js'))

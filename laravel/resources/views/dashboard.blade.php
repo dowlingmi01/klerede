@@ -50,7 +50,7 @@
     </div>
     <div class="row">
         <div class="col-xs-6 col-md-6">
-            <div class="widget">Total Sales Goals</div>
+            <div class="widget" id="totalSalesGoals">Total Sales Goals</div>
         </div>
         <div class="col-xs-6 col-md-6">
             <div class="widget">Channels</div>
