@@ -72,12 +72,11 @@ JSONTest = function() {
                     processResponse(result);
                     break;
                 default:
-            console.log(result);
-                resultDiv.html(result.visits_total.units).formatNumber({format:"#,###", locale:"us"});     //.formatNumber({format:"#,###.00", locale:"us"})
-                /*
-                .parseNumber({format:"#,###", locale:"us"})
-                .formatNumber({format:"#,###", locale:"us"})
-                */
+                    resultDiv.html(result.visits_total.units).formatNumber({format:"#,###", locale:"us"});     //.formatNumber({format:"#,###.00", locale:"us"})
+                    /*
+                    .parseNumber({format:"#,###", locale:"us"})
+                    .formatNumber({format:"#,###", locale:"us"})
+                    */
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {

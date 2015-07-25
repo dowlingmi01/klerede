@@ -30,6 +30,8 @@ body, label, .checkbox label {
 
 body {
     background-color: @bg_page;
+    /* Setting base font size to work with expected font unit conversion (pt --> %) for Raleway font family */
+    font-size: 12px;
 }
 a {
     color: @aqua;
@@ -58,9 +60,9 @@ header {
             border-right: 1px solid @lightgrey;
             color: @lightgrey;
             display: inline-block;
-            font-size: 30px;
-            font-weight: 600;
-            margin-right: 28px;
+            font-size: 245%;
+            font-weight: 500;
+            margin-right: 24px;
             padding: 9px 28px;
             position: relative;
             top: 50%;
@@ -75,7 +77,7 @@ header {
             border-radius: 20px;
             display: inline-block;
             height: 40px;
-            margin-right: 14px;
+            margin-right: 9px;
             position: relative;
             top: 50%;
             transform: translateY(-50%);
@@ -84,16 +86,17 @@ header {
         .utilities-wrapper {
             display: inline-block;
             position: relative;
-            top: 46%;
+            top: 43%;
             text-align: left;
-            transform: translateY(-50%);
+            transform: translateY(-43%);
             .user-name {
                 color: @gold;
+                font-size: 120%;
             }
             .utilities {
                 display: inline-block;
                 list-style: none;
-                font-size: 12px;
+                font-size: 80%;
                 margin: 0;
                 padding: 0;
                 li {
@@ -124,7 +127,7 @@ header {
         margin-top: 51px;
         padding: 0;
         li {
-            font-size: 18px;
+            font-size: 150%;
             font-weight: 600;
             padding: 22px 37px 22px 0;
             text-align: left;
@@ -160,7 +163,7 @@ header {
     padding-bottom: 20px;
 }
 #welcome-text {
-    font-size: 20px;
+    font-size: 160%;
     font-weight: 500;
     .user-name {
         color: @gold;
@@ -187,13 +190,13 @@ header {
     text-transform: uppercase;
     .label,
     .change {
-        font-size: 20px;
+        font-size: 160%;
         font-weight: 400;
         padding: 0;
         white-space: normal;
     }
     .stat {
-        font-size: 38px;
+        font-size: 317%;
         font-weight: 500;
     }
 }
