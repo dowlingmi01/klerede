@@ -1,4 +1,4 @@
-/* Welcome Text */
+/* The welcome text at the top of the page; including the user's name and the current local time and date. */
 var WelcomeText = React.createClass({
     getInitialState: function() {
         return {

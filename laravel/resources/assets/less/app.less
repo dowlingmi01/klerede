@@ -159,8 +159,9 @@ header {
 .main-content {
     padding: 20px;
 }
-.row {
-    padding-bottom: 20px;
+.main-content .row {
+    margin-bottom: 20px;
+    overflow: hidden;
 }
 #welcome-text {
     font-size: 160%;
@@ -185,7 +186,8 @@ header {
 .stat-block {
     background-color: @aqua;
     color: @white;
-    padding: 15px;
+    margin-bottom: -99999px;
+    padding: 10px 10px 100010px 10px;
     text-align: center;
     text-transform: uppercase;
     .label,
@@ -208,7 +210,8 @@ header {
 .stat-block.total-gate {background-color: @aqua;}
 .widget {
     background-color: @white;
-    padding: 15px;
+    margin-bottom: -99999px;
+    padding: 15px 15px 100015px 15px;
 }
 .stat-block.stats-bottom {
     background-color: @white;
