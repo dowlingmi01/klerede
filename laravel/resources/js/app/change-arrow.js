@@ -2,15 +2,15 @@
 var ChangeArrow = React.createClass({
     render: function() {
         return (
-            <div>
-                Hello
-            </div>
+            <svg height={this.props.height} width={this.props.width}>
+                <circle cx="50" cy="50" r="25" fill="#ff0099">{this.props.children}</circle>
+            </svg>
         );
     }
 });
 
 React.render(
-  <ChangeArrow width="134.915px" height="134.915px" />,
-  document.getElementById('test-svg')
+    <ChangeArrow height="50" width="50"></ChangeArrow>,
+    document.getElementById('test-svg')
 );
 console.log('Change arrow loaded...');
