@@ -121,6 +121,11 @@ header {
     height: 100%;   /* ~"..." added to prevent LESS from breaking calc() during compilation  ....  ~"calc(100% - 108px)"*/
     padding: 0;
     text-align: right;
+    @media (max-width: 767px) {
+        display: none;   /* TEMPORARY until the main layout is settled */
+        position: absolute;
+        z-index: 2000;
+    }
     ul {
         display: inline-block;
         list-style: none;
@@ -194,10 +199,16 @@ header {
     text-align: center;
     text-transform: uppercase;
     .label {
-        font-size: 160%;
+        font-size: 1.2vw;   /* 160% */
         font-weight: 400;
         padding: 0;
         white-space: normal;
+        @media (max-width: 1199px) {
+            font-size: 160%;
+        }
+        @media (max-width: 767px) {
+            font-size: 120%;
+        }
     }
     .change {
         font-size: 160%;
@@ -210,8 +221,18 @@ header {
         white-space: nowrap;
     }
     .stat {
-        font-size: 317%;
+        font-size: 2.5vw;
         font-weight: 500;
+        left: 50%;
+        position: absolute;
+        top: 46%;
+        transform: translate(-50%,-50%);
+        @media (max-width: 1199px) {
+            font-size: 317%;
+        }
+        @media (max-width: 767px) {
+            font-size: 6.5vw;
+        }
     }
 }
 .stat-block.total-visitors {background-color: @cobalt;}
@@ -252,5 +273,10 @@ footer {
         -ms-transform: scale(.4);
         -webkit-transform: scale(.4);
 }
-
+/* Breakpoints are ... 1200, 992, 768
+XS = Extra small devices Phones (<768px)
+SM = Small devices Tablets (≥768px)
+MD = Medium devices Desktops (≥992px)
+LG = Large devices Desktops (≥1200px)
+*/
 

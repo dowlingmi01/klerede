@@ -23,7 +23,7 @@
         </header>
         <section class="container-fluid">
             <div class="row">
-                <div class="col-xs-2 col-md-2 menu">
+                <div class="col-xs-6 col-sm-2 menu">
                     <ul>
                         <li class="active"><a href="/dashboard">Dashboard</a></li>
                         <li><a href="/toolbox">Tool Box</a></li>
@@ -31,7 +31,7 @@
                         <li><a href="/campaigns">Campaigns</a></li>
                     </ul>
                 </div>
-                <div class="col-xs-10 col-md-10 main-content">
+                <div class="col-xs-12 col-sm-10 main-content">
                     @yield('content')
                     <footer>&copy; 2015 <a href="//klerede.com/" target="_blank">Klerede</a>. All rights reserved.</footer>
                 </div>
