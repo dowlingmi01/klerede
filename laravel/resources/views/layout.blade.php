@@ -1,5 +1,6 @@
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <link rel="stylesheet" href="css/app.css">
         <link href="//fonts.googleapis.com/css?family=Raleway:400,500,600,700" rel="stylesheet" type="text/css">
     </head>
