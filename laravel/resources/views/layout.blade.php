@@ -25,7 +25,7 @@
         </header>
         <section class="container-fluid">
             <div class="row main-row">
-                <div class="col-xs-6 col-sm-2 menu">
+                <div class="col-xs-12 col-sm-2 menu">
                     <ul>
                         <li class="active"><a href="/dashboard">Dashboard</a></li>
                         <li><a href="/toolbox">Tool Box</a></li>
