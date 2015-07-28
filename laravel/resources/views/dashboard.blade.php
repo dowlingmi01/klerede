@@ -51,22 +51,13 @@
     <div class="row">
         <div class="col-xs-6 col-md-6">
             <div class="widget" id="totalSalesGoals">
-                Total Sales Goals (testing SVG)
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="134.915px" height="134.915px" viewBox="0 0 134.915 134.915" enable-background="new 0 0 134.915 134.915" xml:space="preserve">
-                    <style>
-                        .style0 {
-                            stroke: #000000;
-                            stroke-width: 3;
-                            stroke-miterlimit: 10;
-                            fill: #E30613;
-                        }
-                    </style>
-                    <circle cx="67.5" cy="67.5" r="66" class="style0"/>
-                </svg>
+                Total Sales Goals (testing SVG Arrows...)
+                <div id="arrow-1"></div>
+                <div id="arrow-2"></div>
             </div>
         </div>
         <div class="col-xs-6 col-md-6">
-            <div class="widget" id="test-svg">Channels</div>
+            <div class="widget">Channels</div>
         </div>
     </div>
     <div class="row">

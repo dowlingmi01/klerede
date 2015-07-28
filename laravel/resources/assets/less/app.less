@@ -160,8 +160,10 @@ header {
     padding: 20px;
 }
 .main-content .row {
-    margin-bottom: 20px;
-    overflow: hidden;
+    margin-bottom: 10px;
+    div[class^='col-'] {
+        margin-bottom: 10px;
+    }
 }
 #welcome-text {
     font-size: 160%;
@@ -186,16 +188,26 @@ header {
 .stat-block {
     background-color: @aqua;
     color: @white;
-    margin-bottom: -99999px;
-    padding: 10px 10px 100010px 10px;
+    height: 140px;
+    overflow: hidden;
+    padding: 10px;
     text-align: center;
     text-transform: uppercase;
-    .label,
-    .change {
+    .label {
         font-size: 160%;
         font-weight: 400;
         padding: 0;
         white-space: normal;
+    }
+    .change {
+        font-size: 160%;
+        font-weight: 400;
+        left: 50%;
+        padding: 0;
+        position: absolute;
+        bottom: 10px;
+        transform: translateX(-50%);
+        white-space: nowrap;
     }
     .stat {
         font-size: 317%;
@@ -210,8 +222,8 @@ header {
 .stat-block.total-gate {background-color: @aqua;}
 .widget {
     background-color: @white;
-    margin-bottom: -99999px;
-    padding: 15px 15px 100015px 15px;
+    overflow: hidden;
+    padding: 15px;
 }
 .stat-block.stats-bottom {
     background-color: @white;
@@ -229,11 +241,16 @@ footer {
 
 
 
-.row-eq-height {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    align-content: stretch;
-    align-items: stretch;
+.arrow-line {
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-miterlimit: 10;
 }
+#arrow-1, #arrow-2 {
+    float: left;
+    transform: scale(.4);
+        -ms-transform: scale(.4);
+        -webkit-transform: scale(.4);
+}
+
+
