@@ -6,17 +6,19 @@
     <body>
         <header class="container-fluid">
             <div class="row">
-                <div class="col-xs-2 col-md-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.png" /></a></div>
-                <div class="col-xs-10 col-md-10 user-info">
+                <div class="col-xs-2 col-sm-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.png" /></a></div>
+                <div class="col-xs-10 col-sm-10 user-info">
                     <div class="client-name">The Living Planet</div>
-                    <div class="user-image"></div>
-                    <div class="utilities-wrapper">
-                        <div class="user-name">Joe Bagadonuts</div>
-                        <ul class="utilities">
-                            <li><a href="/settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a></li>
-                            <li><a href="/help">Help</a></li>
-                            <li><a href="/logout">Logout</a></li>
-                        </ul>
+                    <div class="user-wrapper">
+                        <div class="user-image"></div>
+                        <div class="utilities-wrapper">
+                            <div class="user-name">Joe Bagadonuts</div>
+                            <ul class="utilities">
+                                <li><a href="/settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a></li>
+                                <li><a href="/help">Help</a></li>
+                                <li><a href="/logout">Logout</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

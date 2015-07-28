@@ -46,11 +46,23 @@ header {
     .klerede-logo {
         height: 108px;
         text-align: right;
+        @media (max-width: 767px) {
+            text-align: left;
+        }
         img {
             position: relative;
             right: 24px;
             top: 50%;
             transform: translateY(-50%);
+            @media (max-width: 991px) {
+                width: 11vw;
+            }
+            @media (max-width: 767px) {
+                left: 0;
+                top: 0;
+                transform: rotate(270deg) translateX(-50%) translateY(-100%);
+                width: 80px;
+            }
         }
     }
     .user-info {
@@ -63,10 +75,40 @@ header {
             font-size: 245%;
             font-weight: 500;
             margin-right: 24px;
+            overflow: hidden;
             padding: 9px 28px;
             position: relative;
+            text-overflow: ellipsis;
             top: 50%;
             transform: translateY(-50%);
+            white-space: nowrap;
+            width: 60%;
+            @media (max-width: 767px) {
+                border-right: none;
+                display: block;
+                float: right;
+                font-size: 150%;
+                margin-right: 0;
+                padding: 9px 0;
+                top: 0;
+                transform: translateY(0);
+                width: 100%;
+            }
+        }
+        .user-wrapper {
+            display: inline-block;
+            position: relative;
+            top: 20%;
+            transform: translateY(-20%);
+            @media (max-width: 767px) {
+                border-top: 1px solid @lightgrey;
+                clear: both;
+                display: block;
+                float: right;
+                padding-top: 9px;
+                top: 0;
+                transform: translateY(0);
+            }
         }
         .user-image {
             background-color: @gold;
@@ -78,17 +120,19 @@ header {
             display: inline-block;
             height: 40px;
             margin-right: 9px;
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
             width: 40px;
+            @media (max-width: 767px) {
+                top: 0;
+                transform: translateY(0);
+            }
         }
         .utilities-wrapper {
             display: inline-block;
-            position: relative;
-            top: 43%;
             text-align: left;
-            transform: translateY(-43%);
+            @media (max-width: 767px) {
+                top: 0;
+                transform: translateY(0);
+            }
             .user-name {
                 color: @gold;
                 font-size: 120%;
@@ -175,6 +219,12 @@ header {
 #welcome-text {
     font-size: 160%;
     font-weight: 500;
+    @media (max-width: 767px) {
+        font-size: 130%;
+    }
+    @media (max-width: 480px) {
+        display: none;
+    }
     .user-name {
         color: @gold;
     }
@@ -275,7 +325,7 @@ footer {
         -ms-transform: scale(.4);
         -webkit-transform: scale(.4);
 }
-/* Breakpoints are ... 1200, 992, 768
+/* Breakpoints are ... 1199/1200, 991/992, 767/768
 XS = Extra small devices Phones (<768px)
 SM = Small devices Tablets (≥768px)
 MD = Medium devices Desktops (≥992px)
