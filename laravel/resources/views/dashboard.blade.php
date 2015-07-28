@@ -70,10 +70,14 @@
     </div>
     <div class="row">
         <div class="col-xs-8 col-md-8">
-            <div class="widget">Revenue</div>
+            <div class="widget">
+                Revenue
+            </div>
         </div>
         <div class="col-xs-4 col-md-4">
-            <div class="widget">Revenue</div>
+            <div class="widget">
+                Revenue
+            </div>
         </div>
     </div>
     <div class="row row-eq-height">

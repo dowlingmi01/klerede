@@ -117,8 +117,6 @@ header {
 
 }
 .menu {
-    background-color: @black;
-    height: 100%;   /* ~"..." added to prevent LESS from breaking calc() during compilation  ....  ~"calc(100% - 108px)"*/
     padding: 0;
     text-align: right;
     @media (max-width: 767px) {
@@ -161,7 +159,11 @@ header {
         }
     }
 }
+.main-row {
+    background-color: @black;
+}
 .main-content {
+    background-color: @bg_page;
     padding: 20px;
 }
 .main-content .row {
