@@ -5,23 +5,31 @@
         <div class="col-xs-12 col-md-12" id="welcome-text"></div>
     </div>
     <div class="row">
+        <div class="col-xs-6 col-sm-4 col-lg-2">
+            <div class="filter" id="tempDate">YESTERDAY</div>
+        </div>
+        <div class="col-xs-6 col-sm-4 col-lg-2">
+            <div class="filter">Compared to: XYZ</div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-total">
-            <!-- ReactJS Component: visits-total -->
+            <!-- ReactJS Component: visits-blocks -->
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-ga">
-            <!-- ReactJS Component: visits-ga -->
+            <!-- ReactJS Component: visits-blocks -->
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-groups">
-            <!-- ReactJS Component: visits-groups -->
+            <!-- ReactJS Component: visits-blocks -->
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-members">
-            <!-- ReactJS Component: visits-members -->
+            <!-- ReactJS Component: visits-blocks -->
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-nonmembers">
-            <!-- ReactJS Component: visits-nonmembers -->
+            <!-- ReactJS Component: visits-blocks -->
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2" id="sales-gate">
-            <!-- ReactJS Component: sales-gate -->
+            <!-- ReactJS Component: visits-blocks -->
         </div>
     </div>
     <div class="row">

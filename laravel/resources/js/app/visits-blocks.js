@@ -15,27 +15,27 @@ var VisitsBlock = React.createClass({
 });
 
 React.render(
-    <VisitsBlock label="Total Visitors" tempData="9,981" changeDirection="up" />,
+    <VisitsBlock label="Total Visitors" tempData="9,980" changeDirection="up" />,
     document.getElementById('visits-total')
 );
 React.render(
-    <VisitsBlock label="Gen Admission" tempData="9,981" changeDirection="up" />,
+    <VisitsBlock label="Gen Admission" tempData="9,456" changeDirection="up" />,
     document.getElementById('visits-ga')
 );
 React.render(
-    <VisitsBlock label="Groups" tempData="9,981" changeDirection="down" />,
+    <VisitsBlock label="Groups" tempData="4,640" changeDirection="down" />,
     document.getElementById('visits-groups')
 );
 React.render(
-    <VisitsBlock label="Members" tempData="9,981" changeDirection="up" />,
+    <VisitsBlock label="Members" tempData="5,220" changeDirection="up" />,
     document.getElementById('visits-members')
 );
 React.render(
-    <VisitsBlock label="Non-members" tempData="9,981" changeDirection="down" />,
+    <VisitsBlock label="Non-members" tempData="4,340" changeDirection="down" />,
     document.getElementById('visits-nonmembers')
 );
 React.render(
-    <VisitsBlock label="Total Gate" tempData="9,981" changeDirection="up" />,
+    <VisitsBlock label="Total Gate" tempData="$13,102" changeDirection="up" />,
     document.getElementById('sales-gate')
 );
 console.log('Visits blocks loaded...');

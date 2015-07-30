@@ -58,6 +58,9 @@ console.log('Utilities loaded...');
 
 
 
+
+
+
 /******** TEST JSON ********/
 $(function(){
     JSONTest = function() {
@@ -76,7 +79,7 @@ $(function(){
                     visits_total: { specs: { type: 'visits' }, periods: '2015-05-06' },
                     visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: '2015-05-06' },
                     visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: '2015-05-06' },
-                    visits_members: { specs: { type: 'visits', kinds: ['member'] }, periods: '2015-05-06' },
+                    visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: '2015-05-06' },
                     visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: '2015-05-06' },
                     sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: '2015-05-06' }
                 }
@@ -108,6 +111,10 @@ $(function(){
         });
     };
     JSONTest();
+    $today = new Date();
+    $yesterday = new Date($today);
+    $yesterday.setDate($today.getDate() - 1);
+    $('#tempDate').html(($yesterday.getMonth()+1)+'/'+$yesterday.getDate()+'/'+$yesterday.getFullYear());
 });
 
 
