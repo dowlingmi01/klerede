@@ -2,7 +2,7 @@
 var ChangeArrow = React.createClass({
     render: function() {
         return (
-            <svg height={this.props.height} width={this.props.width}>
+            <svg height={this.props.height} width={this.props.width} className={this.props.className}>
                 <g>
                     <line className="arrow-line" stroke={this.props.color} x1="30.75" y1="65" x2="30.75" y2="4"/>
                     <line className="arrow-line" stroke={this.props.color} x1="30.75" y1="4" x2="4" y2="30.75"/>
@@ -13,12 +13,4 @@ var ChangeArrow = React.createClass({
     }
 });
 
-React.render(
-    <ChangeArrow width="62" height="69" color="#ccebeb"></ChangeArrow>,
-    document.getElementById('arrow-1')
-);
-React.render(
-    <ChangeArrow width="62" height="69" color="#ff0000"></ChangeArrow>,
-    document.getElementById('arrow-2')
-);
 console.log('Change arrow loaded...');

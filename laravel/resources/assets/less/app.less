@@ -284,6 +284,16 @@ header {
         bottom: 10px;
         transform: translateX(-50%);
         white-space: nowrap;
+        .down {
+            margin: 0 -15px 0 -30px;
+            opacity: 0.5;
+            transform: rotate(180deg) scale(0.3) translate(0%,-130%);
+        }
+        .up {
+            margin: 0 -15px 0 -30px;
+            opacity: 0.5;
+            transform: scale(0.3) translate(0%,130%);
+        }
     }
     .stat {
         font-size: 2.5vw;
@@ -300,12 +310,12 @@ header {
         }
     }
 }
-.stat-block#visitsTotal {background-color: @cobalt;}
-.stat-block#visitsGA {background-color: @teal;}
-.stat-block#visitsGroups {background-color: @darkgrey;}
-.stat-block#visitsMembers {background-color: @purple;}
-.stat-block#visitsNonmembers {background-color: @gold;}
-.stat-block#salesGate {background-color: @aqua;}
+#visits-total .stat-block {background-color: @cobalt;}
+#visits-ga .stat-block {background-color: @teal;}
+#visits-groups .stat-block {background-color: @darkgrey;}
+#visits-members .stat-block {background-color: @purple;}
+#visits-nonmembers .stat-block {background-color: @gold;}
+#sales-gate .stat-block {background-color: @aqua;}
 .widget {
     background-color: @white;
     overflow: hidden;

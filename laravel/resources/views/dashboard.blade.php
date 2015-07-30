@@ -5,51 +5,29 @@
         <div class="col-xs-12 col-md-12" id="welcome-text"></div>
     </div>
     <div class="row">
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="total-visitors">
-            <!-- ReactJS Component: total-visitors -->
+        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-total">
+            <!-- ReactJS Component: visits-total -->
         </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block" id="visitsGA">
-                <div class="label">Gen Admission</div>
-                <div class="stat">...</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 9,456</div>
-            </div>
+        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-ga">
+            <!-- ReactJS Component: visits-ga -->
         </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block" id="visitsGroups">
-                <div class="label">Groups</div>
-                <div class="stat">...</div>
-                <div class="change down"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> 4,640</div>
-            </div>
+        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-groups">
+            <!-- ReactJS Component: visits-groups -->
         </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block" id="visitsMembers">
-                <div class="label">Members</div>
-                <div class="stat">...</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 5,220</div>
-            </div>
+        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-members">
+            <!-- ReactJS Component: visits-members -->
         </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block" id="visitsNonmembers">
-                <div class="label">Non-members</div>
-                <div class="stat">...</div>
-                <div class="change down"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> 4,340</div>
-            </div>
+        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-nonmembers">
+            <!-- ReactJS Component: visits-nonmembers -->
         </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block" id="salesGate">
-                <div class="label">Total Gate</div>
-                <div class="stat">...</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> $13,102</div>
-            </div>
+        <div class="col-xs-6 col-sm-4 col-lg-2" id="sales-gate">
+            <!-- ReactJS Component: sales-gate -->
         </div>
     </div>
     <div class="row">
         <div class="col-xs-6 col-md-6">
             <div class="widget" id="totalSalesGoals">
-                Total Sales Goals (testing SVG Arrows...)
-                <div id="arrow-1"></div>
-                <div id="arrow-2"></div>
+                Total Sales Goals
             </div>
         </div>
         <div class="col-xs-6 col-md-6">
