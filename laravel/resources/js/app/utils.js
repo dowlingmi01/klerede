@@ -25,6 +25,7 @@ var wnt ={
             period;
         // Handle zeros in front of minutes
         minutes = minutes < 10 ? '0'+minutes : minutes;
+        // Format hours and period (AM/PM)
         if(hours === 0){
             time = '12:'+minutes;
             period = 'AM';
@@ -32,6 +33,10 @@ var wnt ={
         else if(hours < 12){
             time = hours+':'+minutes;
             period = 'AM';
+        }
+        else if(hours === 12){
+            time = hours+':'+minutes;
+            period = 'PM';
         }
         else {
             time = (hours-12)+':'+minutes;
@@ -55,14 +60,24 @@ console.log('Utilities loaded...');
 
 /******** TEST JSON ********/
 JSONTest = function() {
-    var resultDiv = $("#totalVisitors");
+    var visitsTotal = $("#visitsTotal .stat"),
+        visitsGA = $("#visitsGA .stat"),
+        visitsGroups = $("#visitsGroups .stat"),
+        visitsMembers = $("#visitsMembers .stat"),
+        visitsNonmembers = $("#visitsNonmembers .stat"),
+        salesGate = $("#salesGate .stat");
     $.ajax({
             url: "/api/v1/stats/query",
             type: "POST",
             data: {
             venue_id: 1588,
             queries: {
-                visits_total: { specs: { type: 'visits' }, periods: '2015-05-06' }
+                visits_total: { specs: { type: 'visits' }, periods: '2015-05-06' },
+                visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: '2015-05-06' },
+                visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: '2015-05-06' },
+                visits_members: { specs: { type: 'visits', kinds: ['member'] }, periods: '2015-05-06' },
+                visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: '2015-05-06' },
+                sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: '2015-05-06' }
             }
         },
         dataType: "json",
@@ -72,7 +87,13 @@ JSONTest = function() {
                     processResponse(result);
                     break;
                 default:
-                    resultDiv.html(result.visits_total.units).formatNumber({format:"#,###", locale:"us"});     //.formatNumber({format:"#,###.00", locale:"us"})
+                    visitsTotal.html(result.visits_total.units).formatNumber({format:"#,###", locale:"us"});     //.formatNumber({format:"#,###.00", locale:"us"})
+                    visitsGA.html(result.visits_ga.units).formatNumber({format:"#,###", locale:"us"});
+                    visitsGroups.html(result.visits_groups.units).formatNumber({format:"#,###", locale:"us"});
+                    visitsMembers.html(result.visits_members.units).formatNumber({format:"#,###", locale:"us"});
+                    visitsNonmembers.html(result.visits_nonmembers.units).formatNumber({format:"#,###", locale:"us"});
+                    salesGate.html(result.sales_gate.units).formatNumber({format:"#,###", locale:"us"});
+                    console.log(result);
                     /*
                     .parseNumber({format:"#,###", locale:"us"})
                     .formatNumber({format:"#,###", locale:"us"})
@@ -103,7 +124,9 @@ Where each queryX has the format:
     }
 }
 */
-//{"visits_total":{"period":"2015-05-06","units":"2474”}}
+//  {"visits_total":{"period":"2015-05-06","units":"2474”}}
+
+
 
 
 
