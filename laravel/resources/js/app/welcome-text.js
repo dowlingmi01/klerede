@@ -1,4 +1,5 @@
-/* The welcome text at the top of the page; including the user's name and the current local time and date. */
+/******** The welcome text at the top of the page; including the user's name and the current local time and date. ********/
+
 var WelcomeText = React.createClass({
     getInitialState: function() {
         return {
@@ -6,11 +7,11 @@ var WelcomeText = React.createClass({
             clock: wnt.updateClock()
         };
     },
-    updateClock: function(){
+    updateClock: function() {
         this.setState({ clock: wnt.updateClock() });
         setTimeout(this.updateClock, 1000);  //change to 60000?
     },
-    componentDidMount: function(){
+    componentDidMount: function() {
         this.updateClock();
     },
     render: function() {

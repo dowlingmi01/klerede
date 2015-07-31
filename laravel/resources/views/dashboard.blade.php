@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-xs-12 col-md-12" id="welcome-text"></div>
+        <div class="col-xs-12 col-md-12" id="welcome-text"><!-- ReactJS component: WelcomeText --></div>
     </div>
     <div class="row">
         <div class="col-xs-6 col-sm-4 col-lg-2">
@@ -12,26 +12,7 @@
             <div class="filter">Compared to: XYZ</div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-total">
-            <!-- ReactJS Component: visits-blocks -->
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-ga">
-            <!-- ReactJS Component: visits-blocks -->
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-groups">
-            <!-- ReactJS Component: visits-blocks -->
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-members">
-            <!-- ReactJS Component: visits-blocks -->
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-nonmembers">
-            <!-- ReactJS Component: visits-blocks -->
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="sales-gate">
-            <!-- ReactJS Component: visits-blocks -->
-        </div>
-    </div>
+    <div id="visits-blocks-set"><!-- ReactJS component: VisitsBlocksSet --></div>
     <div class="row">
         <div class="col-xs-6 col-md-6">
             <div class="widget" id="totalSalesGoals">

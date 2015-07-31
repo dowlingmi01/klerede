@@ -1,4 +1,5 @@
-/* The change arrow (up or down) displayed next to metrics which have increased or decreased. */
+/******** The change arrow (up or down) displayed next to metrics which have increased or decreased. ********/
+
 var ChangeArrow = React.createClass({
     render: function() {
         return (
