@@ -4,12 +4,53 @@ var WelcomeText = React.createClass({
     getInitialState: function() {
         return {
             firstName: 'Joe',
-            clock: wnt.updateClock()
+            clock: ''
         };
     },
     updateClock: function() {
-        this.setState({ clock: wnt.updateClock() });
-        setTimeout(this.updateClock, 1000);  //change to 60000?
+        var today = new Date(),
+            hours = today.getHours(),
+            minutes = today.getMinutes(),
+            date = today.getDate(),
+            months = [
+                'January', 
+                'February', 
+                'March', 
+                'April', 
+                'May', 
+                'June', 
+                'July', 
+                'August', 
+                'September', 
+                'October', 
+                'November', 
+                'December'
+            ],
+            month = months[today.getMonth()],
+            year = today.getFullYear(),
+            time,
+            period;
+        // Handle zeros in front of minutes
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        // Format hours and period (AM/PM)
+        if(hours === 0){
+            time = '12:'+minutes;
+            period = 'AM';
+        }
+        else if(hours < 12){
+            time = hours+':'+minutes;
+            period = 'AM';
+        }
+        else if(hours === 12){
+            time = hours+':'+minutes;
+            period = 'PM';
+        }
+        else {
+            time = (hours-12)+':'+minutes;
+            period = 'PM';
+        }
+        this.setState({ clock: [time, period, date, month+' '+year] });
+        setTimeout(this.updateClock, 1000);
     },
     componentDidMount: function() {
         this.updateClock();

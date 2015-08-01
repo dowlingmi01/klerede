@@ -1,60 +1,11 @@
 /******** The top row of stat blocks for visits. ********/
 
-var blockData = function() {
-    var visitsTotal = $('#visits-total').find('.stat'),
-        visitsGA = $("#visits-ga .stat"),
-        visitsGroups = $("#visits-groups .stat"),
-        visitsMembers = $("#visits-members .stat"),
-        visitsNonmembers = $("#visits-nonmembers .stat"),
-        salesGate = $("#sales-gate .stat");
-    $.ajax({
-            url: "/api/v1/stats/query",
-            type: "POST",
-            data: {
-            venue_id: 1588,
-            queries: {
-                visits_total: { specs: { type: 'visits' }, periods: '2015-05-06' },
-                visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: '2015-05-06' },
-                visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: '2015-05-06' },
-                visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: '2015-05-06' },
-                visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: '2015-05-06' },
-                sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: '2015-05-06' }
-            }
-        },
-        dataType: "json",
-        success: function(result) {
-            switch (result) {
-                case true:
-                    processResponse(result);
-                    break;
-                default:
-                    visitsTotal.html(result.visits_total.units).formatNumber({format:"#,###", locale:"us"});
-                    visitsGA.html(result.visits_ga.units).formatNumber({format:"#,###", locale:"us"});
-                    visitsGroups.html(result.visits_groups.units).formatNumber({format:"#,###", locale:"us"});
-                    visitsMembers.html(result.visits_members.units).formatNumber({format:"#,###", locale:"us"});
-                    visitsNonmembers.html(result.visits_nonmembers.units).formatNumber({format:"#,###", locale:"us"});
-                    salesGate.html(result.sales_gate.units).formatNumber({format:"$#,###", locale:"us"});
-            }
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(thrownError);
-        }/*,
-        complete: function (jqXHR[object], textStatus[string]) {
-            // A function to be called when the request finishes (after success and error callbacks are executed)
-            // textStatus can be "success", "notmodified", "nocontent", "error", "timeout", "abort", or "parsererror"
-            // Can run an array of functions
-        }
-        */
-    });
-};
-
 var VisitsBlock = React.createClass({
     render: function() {
         return (
             <div className="stat-block">
                 <div className="label">{this.props.label}</div>
-                <div className="stat">...</div>
+                <div className="stat">{this.props.stat}</div>
                 <div className="change">
                     <ChangeArrow width="62" height="69" color="#ffffff" className={this.props.changeDirection} />
                     {this.props.tempData}
@@ -65,26 +16,72 @@ var VisitsBlock = React.createClass({
 });
 
 var VisitsBlocksSet = React.createClass({
+    /*
+    Fetch data in componentDidMount. When the response arrives, store the data in state, triggering a render to update the UI. When processing the response of an asynchronous request, be sure to check that the component is still mounted before updating its state by using this.isMounted().
+    */
+    getInitialState: function() {
+        return {
+            visitsTotal: '...',
+            visitsGA: '...',
+            visitsGroups: '...',
+            visitsMembers: '...',
+            visitsNonmembers: '...',
+            salesGate: '...'
+        };
+    },
+    componentDidMount: function() {
+        $.post(
+            this.props.source,
+            {
+                venue_id: this.props.venueID,
+                queries: {
+                    visits_total: { specs: { type: 'visits' }, periods: '2015-05-06' },
+                    visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: '2015-05-06' },
+                    visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: '2015-05-06' },
+                    visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: '2015-05-06' },
+                    visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: '2015-05-06' },
+                    sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: '2015-05-06' }
+                }
+            }
+        )
+        .done(function(result) {
+            console.log('Visits data loaded...');
+            if(this.isMounted()) {
+                this.setState({
+                    visitsTotal: result.visits_total.units,
+                    visitsGA: result.visits_ga.units,
+                    visitsGroups: result.visits_groups.units,
+                    visitsMembers: result.visits_members.units,
+                    visitsNonmembers: result.visits_nonmembers.units,
+                    salesGate: result.sales_gate.amount
+                });
+            }
+        }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
+        .fail(function(result) {
+            console.log('VISITS DATA ERROR!');
+            console.log(result);
+        });
+    },
     render: function() {
         return (
             <div className="row">
                 <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-total">
-                    <VisitsBlock label="Total Visitors" tempData="9,980" changeDirection="up" />
+                    <VisitsBlock label="Total Visitors" stat={this.state.visitsTotal} tempData="9,980" changeDirection="up" />
                 </div>
                 <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-ga">
-                    <VisitsBlock label="Gen Admission" tempData="9,456" changeDirection="up" />
+                    <VisitsBlock label="Gen Admission" stat={this.state.visitsGA} tempData="9,456" changeDirection="up" />
                 </div>
                 <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-groups">
-                    <VisitsBlock label="Groups" tempData="4,640" changeDirection="down" />
+                    <VisitsBlock label="Groups" stat={this.state.visitsGroups} tempData="4,640" changeDirection="down" />
                 </div>
                 <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-members">
-                    <VisitsBlock label="Members" tempData="5,220" changeDirection="up" />
+                    <VisitsBlock label="Members" stat={this.state.visitsMembers} tempData="5,220" changeDirection="up" />
                 </div>
                 <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-nonmembers">
-                    <VisitsBlock label="Non-members" tempData="4,340" changeDirection="down" />
+                    <VisitsBlock label="Non-members" stat={this.state.visitsNonmembers} tempData="4,340" changeDirection="down" />
                 </div>
                 <div className="col-xs-6 col-sm-4 col-lg-2" id="sales-gate">
-                    <VisitsBlock label="Total Gate" tempData="$13,102" changeDirection="up" />
+                    <VisitsBlock label="Total Gate" stat={this.state.salesGate} tempData="$13,102" changeDirection="up" />
                 </div>
             </div>
         );
@@ -92,9 +89,28 @@ var VisitsBlocksSet = React.createClass({
 });
 
 React.render(
-    <VisitsBlocksSet />,
+    <VisitsBlocksSet source="/api/v1/stats/query" venueID="1588" />,
     document.getElementById('visits-blocks-set')
 );
+
 console.log('Visits blocks loaded...');
 
-blockData();
+
+
+
+
+/******** TESTS ********/
+$(function(){
+    $today = new Date();
+    $yesterday = new Date($today);
+    $yesterday.setDate($today.getDate() - 1);
+    $('#tempDate').html(($yesterday.getMonth()+1)+'/'+$yesterday.getDate()+'/'+$yesterday.getFullYear());
+});
+
+
+
+
+
+
+
+
