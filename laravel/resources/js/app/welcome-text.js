@@ -31,7 +31,7 @@ var WelcomeText = React.createClass({
             time,
             period;
         // Handle zeros in front of minutes
-        minutes = minutes < 10 ? '0'+minutes : minutes;
+        minutes = wnt.doubleDigits(minutes);
         // Format hours and period (AM/PM)
         if(hours === 0){
             time = '12:'+minutes;
