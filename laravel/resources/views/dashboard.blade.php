@@ -7,6 +7,12 @@
     <div class="row">
         <div class="col-xs-6 col-sm-4 col-lg-2">
             <div class="filter" id="tempDate">YESTERDAY</div>
+            <!--
+        - "Trend over last two days"
+- "Yesterday compared to same day last year"
+- "Yesterday compared to average for 2015"
+
+-->
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2">
             <div class="filter">Compared to: XYZ</div>
