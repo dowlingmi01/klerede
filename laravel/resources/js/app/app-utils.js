@@ -16,8 +16,11 @@ var wnt = {
 wnt.today = new Date();
 wnt.yesterday = new Date(wnt.today);
 wnt.yesterday.setDate(wnt.today.getDate() - 1);
+wnt.daybeforeyesterday = new Date(wnt.today);
+wnt.daybeforeyesterday.setDate(wnt.today.getDate() - 2);
 wnt.today = wnt.formatDate(wnt.today);
 wnt.yesterday = wnt.formatDate(wnt.yesterday);
+wnt.daybeforeyesterday = wnt.formatDate(wnt.yesterday);
 
 console.log('App utilities loaded...');
 

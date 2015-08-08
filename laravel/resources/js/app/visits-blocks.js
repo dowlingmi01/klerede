@@ -18,7 +18,7 @@ var VisitsBlock = React.createClass({
 var VisitsBlocksSet = React.createClass({
     getInitialState: function() {
         return {
-            visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
+            visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday  ...  also have wnt.daybeforeyesterday now
             visitsTotal: '...',
             visitsGA: '...',
             visitsGroups: '...',
@@ -38,12 +38,34 @@ var VisitsBlocksSet = React.createClass({
                     visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDate },
                     visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDate },
                     visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDate },
-                    sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDate }
+                    sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDate },
+                    /* Need last year, rolling year average, and day before
+                    - "Trend over last two days"
+                    - "Yesterday compared to same day last year"
+                    - "Yesterday compared to average for 2015"
+                    periods: {
+                        type: 'date' (default) / 'week' / 'month' / 'quarter' / 'year'
+                        period: XXXX-XX / from: XXXX-XX, to: XXXX-XX
+                        subperiod (optional): 'date' / 'week' / 'month' / 'quarter'
+                        kind: 'detail' (default) / 'sum' / 'average'
+                    }
+                    */
+                    visits_total_compare_daybefore: { specs: { type: 'visits' }, periods: '2015-05-05' },
+                    visits_total_compare_lastyear: { specs: { type: 'visits' }, periods: '2014-05-06' },            
+                    /* NOTE: Sergio said average isn't ready yet */
+                    visits_total_compare_rolling: { specs: { type: 'visits' }, periods: {
+                        period: {
+                            from: '2014-05-06',
+                            to: '2015-05-06'
+                        },
+                        kind: 'average'
+                    } }
                 }
             }
         )
         .done(function(result) {
             console.log('Visits data loaded...');
+            console.log(result);
             if(this.isMounted()) {
                 this.setState({
                     visitsTotal: result.visits_total.units,
@@ -132,9 +154,34 @@ var VisitsBlocksSet = React.createClass({
     }
 });
 
+var VisitsBlocksFilter = React.createClass({
+    handleChange: function(event) {
+        console.log('FILTER CHANGED!!!');
+    },
+    render: function() {
+        return (
+            <div className="filter">
+                <form>
+                    <select className="form-control" onChange={this.handleChange}>
+                        <option>Trend over last two days</option>
+                        <option>Yesterday compared to same day last year</option>
+                        <option>Yesterday compared to average for the past year</option>
+                    </select>
+                </form>
+               
+            </div>
+        );
+    }
+});
+
 React.render(
     <VisitsBlocksSet source="/api/v1/stats/query" venueID="1588" />,
     document.getElementById('visits-blocks-set')
+);
+
+React.render(
+    <VisitsBlocksFilter />,
+    document.getElementById('visits-blocks-filter')
 );
 
 console.log('Visits blocks loaded...');
