@@ -33,8 +33,8 @@ var VisitsBlocksSet = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
-                    visits_total: { specs: { type: 'visits' }, periods: this.state.visitsDate },  //  this.state.visitsDate
-                    visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: '2015-07-31' },
+                    visits_total: { specs: { type: 'visits' }, periods: this.state.visitsDate },
+                    visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDate },
                     visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDate },
                     visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDate },
                     visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDate },
@@ -53,7 +53,7 @@ var VisitsBlocksSet = React.createClass({
                     visitsNonmembers: result.visits_nonmembers.units,
                     salesGate: result.sales_gate.amount
                 });
-                // Set null data to 'No Data'
+                // Set null data to '-'
                 var self = this;
                 $.each(this.state, function(stat, value){
                     if(value === null){
