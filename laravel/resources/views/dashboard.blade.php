@@ -1,15 +1,19 @@
 @extends('layout')
 
 @section('content')
+
+
+
     <div class="row">
         <div class="col-xs-12 col-md-12" id="welcome-text"><!-- ReactJS component: WelcomeText --></div>
     </div>
-    <div class="row">
-        <div class="col-xs-6 col-sm-4 col-lg-2" id="visits-blocks-filter">
-            <!-- ReactJS component: VisitsBlocksFilter -->
-        </div>
-    </div>
-    <div id="visits-blocks-set"><!-- ReactJS component: VisitsBlocksSet --></div>
+
+
+
+    <div id="visits-blocks-widget"><!-- ReactJS component: VisitsBlocksSet --></div>
+
+
+
     <div class="row">
         <div class="col-xs-6 col-md-6">
             <div class="widget" id="totalSalesGoals">
