@@ -1,25 +1,5 @@
 /******** The top row of stat blocks for visits. ********/
 
-var VisitsBlocksFilter = React.createClass({
-    handleChange: function(event) {
-        console.log('FILTER CHANGED!!!');
-        console.log(event.target.value);
-    },
-    render: function() {
-        return (
-            <div className="filter">
-                <form>
-                    <select className="form-control" onChange={this.handleChange}>
-                        <option value="twoDays">Trend over last two days</option>
-                        <option value="lastYear">Yesterday compared to same day last year</option>
-                    </select>
-                </form>
-               
-            </div>
-        );
-    }
-});
-
 var VisitsBlock = React.createClass({
     render: function() {
         return (
@@ -41,6 +21,7 @@ var VisitsBlocksSet = React.createClass({
             // ADD ALL DATA AS STATES OR STATE VALUES
             visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
             visitsDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
+            visitsDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Need to calculate
             
             visitsTotal: '...',
             visitsTotalCompareTo: '...',
@@ -75,7 +56,7 @@ var VisitsBlocksSet = React.createClass({
                 queries: {
                     visits_total: { specs: { type: 'visits' }, periods: this.state.visitsDate },
                     visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.visitsDayBefore },
-                    visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: '2014-05-06' },            
+                    visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.visitsDayLastYear },            
                     /* NOTE: Sergio said average isn't ready yet */
                     /*<option>Yesterday compared to average for the past year</option>*/
                     visits_total_compareto_rolling: { 
@@ -94,22 +75,27 @@ var VisitsBlocksSet = React.createClass({
 
                     visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDate },
                     visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDayBefore },
+                    visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDayLastYear },
 
 
                     visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDate },
                     visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayBefore },
+                    visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayLastYear },
 
 
                     visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDate },
                     visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDayBefore },
+                    visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDayLastYear },
 
 
                     visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDate },
                     visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayBefore },
+                    visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayLastYear },
 
 
                     sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDate },
-                    sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayBefore }
+                    sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayBefore },
+                    sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayLastYear }
 
                 }
             }
@@ -207,12 +193,43 @@ var VisitsBlocksSet = React.createClass({
             console.log(result);
         });
     },
+    handleChange: function(event) {
+        var filter = event.target.value;
+        console.log('FILTER CHANGED TO ... ' + filter);
+        if(filter === 'lastYear'){
+            this.setState({
+                visitsTotalCompareTo: wnt.visits.visits_total_compareto_lastyear.units,
+                visitsGACompareTo: wnt.visits.visits_ga_compareto_lastyear.units,
+                visitsGroupsCompareTo: wnt.visits.visits_groups_compareto_lastyear.units,
+                visitsMembersCompareTo: wnt.visits.visits_members_compareto_lastyear.units,
+                visitsNonmembersCompareTo: wnt.visits.visits_nonmembers_compareto_lastyear.units,
+                salesGateCompareTo: wnt.visits.sales_gate_compareto_lastyear.amount
+            });
+        } else {
+            this.setState({
+                visitsTotalCompareTo: wnt.visits.visits_total_compareto_daybefore.units,
+                visitsGACompareTo: wnt.visits.visits_ga_compareto_daybefore.units,
+                visitsGroupsCompareTo: wnt.visits.visits_groups_compareto_daybefore.units,
+                visitsMembersCompareTo: wnt.visits.visits_members_compareto_daybefore.units,
+                visitsNonmembersCompareTo: wnt.visits.visits_nonmembers_compareto_daybefore.units,
+                salesGateCompareTo: wnt.visits.sales_gate_compareto_daybefore.amount
+            });
+        }
+    },
     render: function() {
         return (
             <div>
                 <div className="row">
                     <div className="col-xs-12 col-sm-8 col-lg-4">
-                        <VisitsBlocksFilter />
+                        <div className="filter">
+                            <form>
+                                <select className="form-control" onChange={this.handleChange}>
+                                    <option value="twoDays">Trend over last two days</option>
+                                    <option value="lastYear">Yesterday compared to same day last year</option>
+                                </select>
+                            </form>
+                           
+                        </div>
                     </div>
                 </div>
                 <div className="row">
