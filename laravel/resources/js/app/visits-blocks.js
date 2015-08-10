@@ -176,16 +176,7 @@ var VisitsBlocksSet = React.createClass({
                         }
                     }
                 });
-                // Format comparison stats
-                $.each($('#visits-blocks-widget .compare-to'), function(index,stat){
-                    if($(stat).html() !== '-'){
-                        if(index === 5){
-                            $(stat).formatNumber({format:"$#,###", locale:"us"});
-                        } else {
-                            $(stat).formatNumber({format:"#,###", locale:"us"});
-                        }
-                    }
-                });
+                this.formatNumbers;
             }
         }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
         .fail(function(result) {
@@ -195,7 +186,6 @@ var VisitsBlocksSet = React.createClass({
     },
     handleChange: function(event) {
         var filter = event.target.value;
-        console.log('FILTER CHANGED TO ... ' + filter);
         if(filter === 'lastYear'){
             this.setState({
                 visitsTotalCompareTo: wnt.visits.visits_total_compareto_lastyear.units,
@@ -215,6 +205,28 @@ var VisitsBlocksSet = React.createClass({
                 salesGateCompareTo: wnt.visits.sales_gate_compareto_daybefore.amount
             });
         }
+    },
+    setChangeDirection: function(){
+        console.log('SET CHANGE DIRECTION');
+    },
+    formatNumbers: function(){
+        // Format comparison stats
+        $.each($('#visits-blocks-widget .compare-to'), function(index,stat){
+            console.log($(stat).html());
+            if($(stat).html() !== '-'){
+                if(index === 5){
+                    $(stat).parseNumber({format:"$#,###", locale:"us"});
+                    $(stat).formatNumber({format:"$#,###", locale:"us"});   //.parseNumber({format:"#,###.00", locale:"us"});
+                } else {
+                    $(stat).parseNumber({format:"#,###", locale:"us"});
+                    $(stat).formatNumber({format:"#,###", locale:"us"});
+                }
+            }
+        });
+    },
+    componentDidUpdate: function(){
+        this.setChangeDirection;
+        this.formatNumbers();   //Not calling the formatting.  Adding () does, but then initial load doesn't work right, only subsequent loads
     },
     render: function() {
         return (
