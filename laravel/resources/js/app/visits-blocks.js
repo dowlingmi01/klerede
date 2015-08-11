@@ -1,4 +1,6 @@
-/******** The top row of stat blocks for visits. ********/
+/***************************************************/
+/******** TOP ROW OF STAT BLOCKS FOR VISITS ********/
+/***************************************************/
 
 var VisitsBlock = React.createClass({
     render: function() {
@@ -225,7 +227,7 @@ var VisitsBlocksSet = React.createClass({
         });
     },
     componentDidUpdate: function(){
-        this.setChangeDirection;
+        this.setChangeDirection();
         this.formatNumbers();   //Not calling the formatting.  Adding () does, but then initial load doesn't work right, only subsequent loads
     },
     render: function() {

@@ -1,4 +1,7 @@
-/******** Global helpers ********/
+/********************************/
+/******** GLOBAL HELPERS ********/
+/********************************/
+
 var wnt = {
     formatDate: function(dateObj) {
         var mm = dateObj.getMonth()+1,
@@ -12,7 +15,10 @@ var wnt = {
     }
 };
 
-/******** Globally accessible API-formatted dates ********/
+/********************************************/
+/******** GLOBAL API-FORMATTED DATES ********/
+/********************************************/
+
 wnt.today = new Date();
 wnt.yesterday = new Date(wnt.today);
 wnt.yesterday.setDate(wnt.today.getDate() - 1);
