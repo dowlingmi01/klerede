@@ -18,34 +18,67 @@
         <div class="col-xs-6 col-md-6">
             <div class="widget" id="totalSalesGoals">
                 Total Sales Goals
+                <form>
+                    <select class="form-control">
+                        <option>XYZ</option>
+                        <option>XYZ</option>
+                    </select>
+                </form>
             </div>
         </div>
         <div class="col-xs-6 col-md-6">
             <div class="widget">
-                Channels
-                <div id='outer'>
-                    <div id="main">
-                        <div id="div1"></div>
-                        <div id="div2"></div>
-                        <div id="div3"></div>
-                        <div id="div4"></div>
-                    </div>
-                </div>
+                Earned Revenue Channels
+                <form>
+                    <select class="form-control">
+                        <option>XYZ</option>
+                        <option>XYZ</option>
+                    </select>
+                </form>
+                <div id="div1"></div>
+                <div id="div2"></div>
+                <div id="div3"></div>
+                <div id="div4"></div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-xs-6 col-md-6">
-            <div class="widget">Total Membership Goals</div>
+            <div class="widget">
+                Total Membership Goals
+                <form>
+                    <select class="form-control">
+                        <option>XYZ</option>
+                        <option>XYZ</option>
+                    </select>
+                </form>
+            </div>
         </div>
         <div class="col-xs-6 col-md-6">
-            <div class="widget">Membership</div>
+            <div class="widget">
+                Membership
+                <form>
+                    <select class="form-control">
+                        <option>XYZ</option>
+                        <option>XYZ</option>
+                    </select>
+                </form>
+                <div id="div5"></div>
+                <div id="div6"></div>
+                <div id="div7"></div>
+            </div>
         </div>
     </div>
     <div class="row">
         <div class="col-xs-8 col-md-8">
             <div class="widget">
                 Revenue
+                <form>
+                    <select class="form-control">
+                        <option>XYZ</option>
+                        <option>XYZ</option>
+                    </select>
+                </form>
             </div>
         </div>
         <div class="col-xs-4 col-md-4">
@@ -54,48 +87,11 @@
             </div>
         </div>
     </div>
-    <div class="row row-eq-height">
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block stats-bottom member-conversion">
-                <div class="label">Member Conversion</div>
-                <div class="stat">4.0%</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 4.8%</div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block stats-bottom average">
-                <div class="label">Memberships Expired</div>
-                <div class="stat">4.1%</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 3.8%</div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block stats-bottom frequency">
-                <div class="label">Member Frequency</div>
-                <div class="stat">3.6</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 3.2</div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block stats-bottom regency">
-                <div class="label">Member Recency</div>
-                <div class="stat">4.1</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 4.8</div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block stats-bottom members">
-                <div class="label">Total Members</div>
-                <div class="stat">4.2k</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 3.8k</div>
-            </div>
-        </div>
-        <div class="col-xs-6 col-sm-4 col-lg-2">
-            <div class="stat-block stats-bottom renewal-velocity">
-                <div class="label">Renewal Velocity</div>
-                <div class="stat">5.1</div>
-                <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 4.8</div>
-            </div>
-        </div>
-    </div>
+
+
+
+    <div id="members-blocks-widget"><!-- ReactJS component: MembersBlocksSet --></div>
+
+
+   
 @stop

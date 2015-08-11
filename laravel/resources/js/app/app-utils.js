@@ -60,6 +60,21 @@ function onClick4() {
     div4.attr("class","selectedRadial");
 }
 
+function onClick5() {
+    deselect();
+    div5.attr("class","selectedRadial");
+}
+
+function onClick6() {
+    deselect();
+    div6.attr("class","selectedRadial");
+}
+
+function onClick7() {
+    deselect();
+    div7.attr("class","selectedRadial");
+}
+
 function labelFunction(val,min,max) {
 
 }
@@ -69,6 +84,9 @@ function deselect() {
     div2.attr("class","radial");
     div3.attr("class","radial");
     div4.attr("class","radial");
+    div5.attr("class","radial");
+    div6.attr("class","radial");
+    div7.attr("class","radial");
 }
 
 function start() {
@@ -103,6 +121,27 @@ function start() {
             .minValue(100)
             .maxValue(200)
             .value(187)
+            .render();
+
+    var rp5 = radialProgress(document.getElementById('div5'))
+            .label("RADIAL 5")
+            .onClick(onClick5)
+            .diameter(150)
+            .value(53)
+            .render();
+
+    var rp6 = radialProgress(document.getElementById('div6'))
+            .label("RADIAL 6")
+            .onClick(onClick6)
+            .diameter(150)
+            .value(67)
+            .render();
+
+    var rp7 = radialProgress(document.getElementById('div7'))
+            .label("RADIAL 7")
+            .onClick(onClick7)
+            .diameter(150)
+            .value(80)
             .render();
 
 }

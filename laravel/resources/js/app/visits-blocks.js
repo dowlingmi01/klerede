@@ -20,7 +20,6 @@ var VisitsBlock = React.createClass({
 var VisitsBlocksSet = React.createClass({
     getInitialState: function() {
         return {
-            // ADD ALL DATA AS STATES OR STATE VALUES
             visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
             visitsDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
             visitsDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Need to calculate

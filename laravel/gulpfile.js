@@ -61,7 +61,11 @@ gulp.task('libs', function(){
 // Custom JavaScript
 gulp.task('app', function(){
     gulp.src([
-            'resources/js/app/*.js'
+            'resources/js/app/app-utils.js',
+            'resources/js/app/svg-icons.js',
+            'resources/js/app/welcome-text.js',
+            'resources/js/app/visits-blocks.js',
+            'resources/js/app/members-blocks.js'
         ])
         .pipe(react())
         .pipe(concat('app.js'))
