@@ -21,7 +21,17 @@
             </div>
         </div>
         <div class="col-xs-6 col-md-6">
-            <div class="widget">Channels</div>
+            <div class="widget">
+                Channels
+                <div id='outer'>
+                    <div id="main">
+                        <div id="div1"></div>
+                        <div id="div2"></div>
+                        <div id="div3"></div>
+                        <div id="div4"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -54,28 +64,28 @@
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2">
             <div class="stat-block stats-bottom average">
-                <div class="label">Average</div>
+                <div class="label">Memberships Expired</div>
                 <div class="stat">4.1%</div>
                 <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 3.8%</div>
             </div>
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2">
             <div class="stat-block stats-bottom frequency">
-                <div class="label">Frequency</div>
+                <div class="label">Member Frequency</div>
                 <div class="stat">3.6</div>
                 <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 3.2</div>
             </div>
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2">
             <div class="stat-block stats-bottom regency">
-                <div class="label">Regency</div>
+                <div class="label">Member Recency</div>
                 <div class="stat">4.1</div>
                 <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 4.8</div>
             </div>
         </div>
         <div class="col-xs-6 col-sm-4 col-lg-2">
             <div class="stat-block stats-bottom members">
-                <div class="label">Members</div>
+                <div class="label">Total Members</div>
                 <div class="stat">4.2k</div>
                 <div class="change up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> 3.8k</div>
             </div>
