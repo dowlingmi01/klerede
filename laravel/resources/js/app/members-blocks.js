@@ -31,27 +31,27 @@ var MembersBlocksSet = React.createClass({
             membersDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
             membersDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Need to calculate
             
-            membersConversion: '...',
+            membersConversion: '000',
             membersConversionCompareTo: '...',
             membersConversionChange: 'none',
             
-            membersExpired: '...',
+            membersExpired: '000',
             membersExpiredCompareTo: '...',
             membersExpiredChange: 'none',
 
-            membersFrequency: '...',
+            membersFrequency: '000',
             membersFrequencyCompareTo: '...',
             membersFrequencyChange: 'none',
 
-            membersRecency: '...',
+            membersRecency: '000',
             membersRecencyCompareTo: '...',
             membersRecencyChange: 'none',
 
-            membersTotal: '...',
+            membersTotal: '000',
             membersTotalCompareTo: '...',
             membersTotalChange: 'none',
 
-            membersVelocity: '...',
+            membersVelocity: '000',
             membersVelocityCompareTo: '...',
             membersVelocityChange: 'none'
         };

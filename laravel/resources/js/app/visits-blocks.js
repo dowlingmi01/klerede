@@ -208,12 +208,12 @@ var VisitsBlocksSet = React.createClass({
         }
     },
     setChangeDirection: function(){
-        console.log('SET CHANGE DIRECTION');
+        //console.log('SET CHANGE DIRECTION');   //runs 6 times
     },
     formatNumbers: function(){
         // Format comparison stats
         $.each($('#visits-blocks-widget .compare-to'), function(index,stat){
-            console.log($(stat).html());
+            //console.log($(stat).html());   //runs 6 times
             if($(stat).html() !== '-'){
                 if(index === 5){
                     $(stat).parseNumber({format:"$#,###", locale:"us"});

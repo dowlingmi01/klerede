@@ -22,9 +22,14 @@ body, label, .checkbox label {
 
 @aqua: rgba(88,167,226,1);
 @gold: rgba(220,179,53,1);
-@purple: rgba(67,56,92,1);
+@darkpurple1: rgba(67,56,92,1);
+@darkpurple2: rgba(76,4,67,1);
+@mediumpurple: rgba(112,27,125,1);
+@lightpurple: rgba(176,141,181,1);
 @teal: rgba(35,145,146,1);
 @cobalt: rgba(52,62,112,1);
+@rust: rgba(141,55,8,1);
+@slateblue: rgba(156,186,204,1);
 
 @grid-gutter-width: 15px;
 
@@ -316,9 +321,17 @@ header {
 #visits-total .stat-block {background-color: @cobalt;}
 #visits-ga .stat-block {background-color: @teal;}
 #visits-groups .stat-block {background-color: @darkgrey;}
-#visits-members .stat-block {background-color: @purple;}
+#visits-members .stat-block {background-color: @darkpurple1;}
 #visits-nonmembers .stat-block {background-color: @gold;}
 #sales-gate .stat-block {background-color: @aqua;}
+
+
+.accordion {
+    list-style: none;
+    padding: 0;
+}
+
+
 .widget {
     background-color: @white;
     overflow: hidden;
@@ -331,8 +344,14 @@ header {
         color: @darkgrey;
     }
 }
+#members-conversion .stat {color: @rust;}
+#members-expired .stat {color: @darkpurple1;}
+#members-frequency .stat {color: @slateblue;}
+#members-recency .stat {color: @gold;}
+#members-total .stat {color: @cobalt;}
+#members-velocity .stat {color: @darkgrey;}
 h1 {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway', sans-serif;   /* CURRENTLY NO H1 TAG */
 }
 footer {
     text-align: right;
@@ -368,7 +387,9 @@ LG = Large devices Desktops (≥1200px)
 
 
 
-
+/***********************************************************************************/
+/***********************************************************************************/
+/***********************************************************************************/
 /* TEST DIALS */
 .background {
     fill: #FFFFFF;
@@ -421,37 +442,37 @@ LG = Large devices Desktops (≥1200px)
 
 #div1 .arc {
     stroke-weight: 0.1;
-    fill: #f0a417;
+    fill: @cobalt;
 }
 
 #div2 .arc2 {
     stroke-weight: 0.1;
-    fill: #b00d08;
+    fill: @teal;
 }
 
 #div3 .arc {
     stroke-weight: 0.1;
-    fill: #1d871b;
+    fill: @aqua;
 }
 
 #div4 .arc {
     stroke-weight: 0.1;
-    fill: #1d871b;
+    fill: @gold;
 }
 
 #div5 .arc {
     stroke-weight: 0.1;
-    fill: #1d871b;
+    fill: @mediumpurple;
 }
 
 #div6 .arc {
     stroke-weight: 0.1;
-    fill: #1d871b;
+    fill: @lightpurple;
 }
 
 #div7 .arc {
     stroke-weight: 0.1;
-    fill: #1d871b;
+    fill: @darkpurple2;
 }
 
 
@@ -470,3 +491,18 @@ LG = Large devices Desktops (≥1200px)
     color: #000;
 
 }
+
+
+
+
+/* TEST BULLETS */
+.bullet { font: 10px sans-serif; }
+.bullet .marker { stroke: #000; stroke-width: 2px; }
+.bullet .tick line { stroke: #666; stroke-width: .5px; }
+.bullet .range.s0 { fill: #eee; }
+.bullet .range.s1 { fill: #ddd; }
+.bullet .range.s2 { fill: #ccc; }
+.bullet .measure.s0 { fill: lightsteelblue; }
+.bullet .measure.s1 { fill: steelblue; }
+.bullet .title { font-size: 14px; font-weight: bold; }
+.bullet .subtitle { fill: #999; }
