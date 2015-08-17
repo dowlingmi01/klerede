@@ -100,7 +100,9 @@
         <div class="col-xs-4 col-md-4">
             <div class="widget" id="earned-revenue">
                 <div class="weather-bar">
-                    Weather Bar
+                    <div class="weather-icon">[Icon]</div>
+                    <div class="temperature">68&deg; F</div>
+                    Weekly Average: Partly Cloudy
                     <div class="action-menu">+</div>
                 </div>
                 <h2>Earned Revenue</h2>

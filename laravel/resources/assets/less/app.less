@@ -30,6 +30,8 @@ body, label, .checkbox label {
 @cobalt: rgba(52,62,112,1);
 @rust: rgba(141,55,8,1);
 @slateblue: rgba(156,186,204,1);
+@lightblue: rgba(212,233,246,1);
+@verylightblue: rgba(239,247,252,1);
 
 @grid-gutter-width: 15px;
 
@@ -342,11 +344,6 @@ header {
         margin: 0;
         text-transform: uppercase;
     }
-    .action-menu {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-    }
     .form-control {
         background-color: @lightgrey;
         border: none;
@@ -361,6 +358,12 @@ header {
 #earned-revenue {
     height: 675px;
 }
+.widget#earned-revenue {
+    padding: 0;
+    h2 {
+        padding: 0 15px;
+    }
+}
 .bar-meter {
     background: linear-gradient(to right, Red, Orange, Yellow, YellowGreen);
         background: -webkit-linear-gradient(left, red, green);
@@ -371,13 +374,28 @@ header {
     height: 27px;
     width: 100%;
 }
+.weather-bar {
+    background-color: @lightblue;
+    height: 84px;
+    padding: 7px;
+    .weather-icon {
+        background-color: @verylightblue;
+        float: left;
+        height: 100%;
+        margin-right: 7px;
+        width: 93px;
+    }
+    .temperature {
+        font-size: 255%;
+    }
+}
 .accordion {
     list-style: none;
     padding: 0;
     li {
         border-top: 1px solid @lightgrey;
         font-size: 160%;
-        padding: 10px 0;
+        padding: 10px 15px;
         li {
             font-size: 100%;
         }
@@ -393,6 +411,12 @@ header {
     background-color: @white;
     overflow: hidden;
     padding: 15px;
+    position: relative;
+    .action-menu {
+        position: absolute;
+        right: 7px;
+        top: 7px;
+    }
 }
 .stat-block.stats-bottom {
     background-color: @white;
