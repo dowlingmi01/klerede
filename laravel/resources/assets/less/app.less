@@ -38,6 +38,9 @@ body {
     /* Setting base font size to work with expected font unit conversion (pt --> %) for Raleway font family */
     font-size: 12px;
 }
+form {
+    margin-bottom: 0;
+}
 a {
     color: @aqua;
 }
@@ -318,20 +321,74 @@ header {
         }
     }
 }
+.clear {
+    clear: both;
+}
 #visits-total .stat-block {background-color: @cobalt;}
 #visits-ga .stat-block {background-color: @teal;}
 #visits-groups .stat-block {background-color: @darkgrey;}
 #visits-members .stat-block {background-color: @darkpurple1;}
 #visits-nonmembers .stat-block {background-color: @gold;}
 #sales-gate .stat-block {background-color: @aqua;}
-
-
+#total-sales-goals,
+#earned-revenue-channels,
+#total-membership-goals,
+#membership {
+    height: 234px;
+    position: relative;
+    h2 {
+        float: left;
+        font-size: 160%;
+        margin: 0;
+        text-transform: uppercase;
+    }
+    .action-menu {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+    .form-control {
+        background-color: @lightgrey;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        float: right;
+        transition: none;
+        width: 180px;
+    }
+}
+#revenue,
+#earned-revenue {
+    height: 675px;
+}
+.bar-meter {
+    background: linear-gradient(to right, Red, Orange, Yellow, YellowGreen);
+        background: -webkit-linear-gradient(left, red, green);
+        background: -o-linear-gradient(right, red, green);
+        background: -moz-linear-gradient(right, red, green);
+    border: 1px solid @mediumgrey;
+    border-radius: 3px;
+    height: 27px;
+    width: 100%;
+}
 .accordion {
     list-style: none;
     padding: 0;
+    li {
+        border-top: 1px solid @lightgrey;
+        font-size: 160%;
+        padding: 10px 0;
+        li {
+            font-size: 100%;
+        }
+    }
+    .notes { color: @darkgrey; }
+    .box-office { color: @cobalt; }
+    .groups { color: @darkpurple1; }
+    .cafe { color: @teal; }
+    .gift-store { color: @aqua; }
+    .membership { color: @gold; }
 }
-
-
 .widget {
     background-color: @white;
     overflow: hidden;

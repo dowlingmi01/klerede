@@ -104,21 +104,21 @@ function deselect() {
 function start() {
 
     var rp1 = radialProgress(document.getElementById('div1'))
-            .label("RADIAL 1")
+            .label("")
             .onClick(onClick1)
             .diameter(150)
             .value(78)
             .render();
 
     var rp2 = radialProgress(document.getElementById('div2'))
-            .label("RADIAL 2")
+            .label("")
             .onClick(onClick2)
             .diameter(150)
-            .value(132)
+            .value(95)
             .render();
 
     var rp3 = radialProgress(document.getElementById('div3'))
-            .label("RADIAL 3")
+            .label("")
             .onClick(onClick3)
             .diameter(150)
             .minValue(100)
@@ -127,7 +127,7 @@ function start() {
             .render();
 
     var rp4 = radialProgress(document.getElementById('div4'))
-            .label("RADIAL 4")
+            .label("")
             .onClick(onClick4)
             .diameter(150)
             .minValue(100)
@@ -136,21 +136,21 @@ function start() {
             .render();
 
     var rp5 = radialProgress(document.getElementById('div5'))
-            .label("RADIAL 5")
+            .label("")
             .onClick(onClick5)
             .diameter(150)
             .value(53)
             .render();
 
     var rp6 = radialProgress(document.getElementById('div6'))
-            .label("RADIAL 6")
+            .label("")
             .onClick(onClick6)
             .diameter(150)
             .value(67)
             .render();
 
     var rp7 = radialProgress(document.getElementById('div7'))
-            .label("RADIAL 7")
+            .label("")
             .onClick(onClick7)
             .diameter(150)
             .value(80)
