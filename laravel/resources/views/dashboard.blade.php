@@ -15,7 +15,7 @@
 
 
     <div class="row">
-        <div class="col-xs-6 col-md-6">
+        <div class="col-xs-6 col-md-6 arrow-connector">
             <div class="widget" id="total-sales-goals">
                 <h2>Total Sales Goals</h2>
                 <div class="action-menu">+</div>
@@ -54,7 +54,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-6 col-md-6">
+        <div class="col-xs-6 col-md-6 arrow-connector">
             <div class="widget" id="total-membership-goals">
                 <h2>Total Membership Goals</h2>
                 <div class="action-menu">+</div>
