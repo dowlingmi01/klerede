@@ -9,7 +9,7 @@ var VisitsBlock = React.createClass({
                 <div className="label">{this.props.label}</div>
                 <div className="stat">{this.props.stat}</div>
                 <div className="change">
-                    <ChangeArrow width="62" height="69" color="#ffffff" className={this.props.changeDirection} />
+                    <ChangeArrow width="62" height="69" color="#ffffff" className="up" />
                     <span className="compare-to">{this.props.comparedTo}</span>
                 </div>
             </div>
@@ -26,27 +26,21 @@ var VisitsBlocksSet = React.createClass({
             
             visitsTotal: '...',
             visitsTotalCompareTo: '...',
-            visitsTotalChange: 'none',
             
             visitsGA: '...',
             visitsGACompareTo: '...',
-            visitsGAChange: 'none',
 
             visitsGroups: '...',
             visitsGroupsCompareTo: '...',
-            visitsGroupsChange: 'none',
 
             visitsMembers: '...',
             visitsMembersCompareTo: '...',
-            visitsMembersChange: 'none',
 
             visitsNonmembers: '...',
             visitsNonmembersCompareTo: '...',
-            visitsNonmembersChange: 'none',
 
             salesGate: '...',
             salesGateCompareTo: '...',
-            salesGateChange: 'none'
         };
     },
     componentDidMount: function() {
@@ -136,47 +130,6 @@ var VisitsBlocksSet = React.createClass({
                         self.setState(stateObject);
                     }
                 });
-                // TO DO: STREAMLINE CHANGE DIRECTION
-                if(parseInt(this.state.visitsTotal) > parseInt(this.state.visitsTotalCompareTo)){
-                    this.setState({ visitsTotalChange: 'up' });
-                } else if(parseInt(this.state.visitsTotal) < parseInt(this.state.visitsTotalCompareTo)){
-                    this.setState({ visitsTotalChange: 'down' });                    
-                }
-                if(parseInt(this.state.visitsGA) > parseInt(this.state.visitsGACompareTo)){
-                    this.setState({ visitsGAChange: 'up' });
-                } else if(parseInt(this.state.visitsGA) < parseInt(this.state.visitsGACompareTo)){
-                    this.setState({ visitsGAChange: 'down' });                    
-                }
-                if(parseInt(this.state.visitsGroups) > parseInt(this.state.visitsGroupsCompareTo)){
-                    this.setState({ visitsGroupsChange: 'up' });
-                } else if(parseInt(this.state.visitsGroups) < parseInt(this.state.visitsGroupsCompareTo)){
-                    this.setState({ visitsGroupsChange: 'down' });                    
-                }
-                if(parseInt(this.state.visitsMembers) > parseInt(this.state.visitsMembersCompareTo)){
-                    this.setState({ visitsMembersChange: 'up' });
-                } else if(parseInt(this.state.visitsMembers) < parseInt(this.state.visitsMembersCompareTo)){
-                    this.setState({ visitsMembersChange: 'down' });                    
-                }
-                if(parseInt(this.state.visitsNonmembers) > parseInt(this.state.visitsNonmembersCompareTo)){
-                    this.setState({ visitsNonmembersChange: 'up' });
-                } else if(parseInt(this.state.visitsNonmembers) < parseInt(this.state.visitsNonmembersCompareTo)){
-                    this.setState({ visitsNonmembersChange: 'down' });                    
-                }
-                if(parseInt(this.state.salesGate) > parseInt(this.state.salesGateCompareTo)){
-                    this.setState({ salesGateChange: 'up' });
-                } else if(parseInt(this.state.salesGate) < parseInt(this.state.salesGateCompareTo)){
-                    this.setState({ salesGateChange: 'down' });                    
-                }
-                // Format stats
-                $.each($('#visits-blocks-widget .stat'), function(index,stat){
-                    if($(stat).html() !== '-'){
-                        if(index === 5){
-                            $(stat).formatNumber({format:"$#,###", locale:"us"});
-                        } else {
-                            $(stat).formatNumber({format:"#,###", locale:"us"});
-                        }
-                    }
-                });
                 this.formatNumbers;
             }
         }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
@@ -196,6 +149,15 @@ var VisitsBlocksSet = React.createClass({
                 visitsNonmembersCompareTo: wnt.visits.visits_nonmembers_compareto_lastyear.units,
                 salesGateCompareTo: wnt.visits.sales_gate_compareto_lastyear.amount
             });
+        } else if(filter === 'lastYearAverage'){
+            this.setState({
+                visitsTotalCompareTo: 235,
+                visitsGACompareTo: 123,
+                visitsGroupsCompareTo: 222,
+                visitsMembersCompareTo: 567,
+                visitsNonmembersCompareTo: 789,
+                salesGateCompareTo: 786
+            });
         } else {
             this.setState({
                 visitsTotalCompareTo: wnt.visits.visits_total_compareto_daybefore.units,
@@ -207,27 +169,30 @@ var VisitsBlocksSet = React.createClass({
             });
         }
     },
-    setChangeDirection: function(){
-        //console.log('SET CHANGE DIRECTION');   //runs 6 times
-    },
     formatNumbers: function(){
-        // Format comparison stats
-        $.each($('#visits-blocks-widget .compare-to'), function(index,stat){
-            //console.log($(stat).html());   //runs 6 times
-            if($(stat).html() !== '-'){
-                if(index === 5){
-                    $(stat).parseNumber({format:"$#,###", locale:"us"});
-                    $(stat).formatNumber({format:"$#,###", locale:"us"});   //.parseNumber({format:"#,###.00", locale:"us"});
+        // Format numbers and set the direction of the change arrows
+        $.each($('#visits-blocks-widget .stat-block'), function(index, statblock){
+            var newstat = $(statblock).find('.stat');
+            var oldstat = $(statblock).find('.compare-to');
+            var change = $(statblock).find('svg');
+            if( ($(newstat).html() !== '-') && ($(oldstat).html() !== '-') ){
+                if($(newstat).parseNumber({format:"$#,###", locale:"us"}) > $(oldstat).parseNumber({format:"$#,###", locale:"us"})){
+                    $(change).attr('class','up');
                 } else {
-                    $(stat).parseNumber({format:"#,###", locale:"us"});
-                    $(stat).formatNumber({format:"#,###", locale:"us"});
+                    $(change).attr('class','down');
+                }
+                if(index === 5){
+                    $(newstat).formatNumber({format:"$#,###", locale:"us"});
+                    $(oldstat).formatNumber({format:"$#,###", locale:"us"});
+                } else {
+                    $(newstat).formatNumber({format:"#,###", locale:"us"});
+                    $(oldstat).formatNumber({format:"#,###", locale:"us"});
                 }
             }
         });
     },
     componentDidUpdate: function(){
-        this.setChangeDirection();
-        this.formatNumbers();   //Not calling the formatting.  Adding () does, but then initial load doesn't work right, only subsequent loads
+        this.formatNumbers();
     },
     render: function() {
         return (
@@ -239,6 +204,7 @@ var VisitsBlocksSet = React.createClass({
                                 <select className="form-control" onChange={this.handleChange}>
                                     <option value="twoDays">Trend over last two days</option>
                                     <option value="lastYear">Yesterday compared to same day last year</option>
+                                    <option value="lastYearAverage">Yesterday compared to average for the past year</option>
                                 </select>
                             </form>
                            
@@ -250,43 +216,37 @@ var VisitsBlocksSet = React.createClass({
                         <VisitsBlock 
                             label="Total Visitors" 
                             stat={this.state.visitsTotal} 
-                            comparedTo={this.state.visitsTotalCompareTo}
-                            changeDirection={this.state.visitsTotalChange} />
+                            comparedTo={this.state.visitsTotalCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-ga">
                         <VisitsBlock 
                             label="Gen Admission" 
                             stat={this.state.visitsGA} 
-                            comparedTo={this.state.visitsGACompareTo} 
-                            changeDirection={this.state.visitsGAChange} />
+                            comparedTo={this.state.visitsGACompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-groups">
                         <VisitsBlock 
                             label="Groups" 
                             stat={this.state.visitsGroups} 
-                            comparedTo={this.state.visitsGroupsCompareTo} 
-                            changeDirection={this.state.visitsGroupsChange} />
+                            comparedTo={this.state.visitsGroupsCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-members">
                         <VisitsBlock
                             label="Members"
                             stat={this.state.visitsMembers}
-                            comparedTo={this.state.visitsMembersCompareTo}
-                            changeDirection={this.state.visitsMembersChange} />
+                            comparedTo={this.state.visitsMembersCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="visits-nonmembers">
                         <VisitsBlock
                             label="Non-members"
                             stat={this.state.visitsNonmembers}
-                            comparedTo={this.state.visitsNonmembersCompareTo}
-                            changeDirection={this.state.visitsNonmembersChange} />
+                            comparedTo={this.state.visitsNonmembersCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="sales-gate">
                         <VisitsBlock
                             label="Total Gate"
                             stat={this.state.salesGate}
-                            comparedTo={this.state.salesGateCompareTo}
-                            changeDirection={this.state.salesGateChange} />
+                            comparedTo={this.state.salesGateCompareTo} />
                     </div>
                 </div>
             </div>
