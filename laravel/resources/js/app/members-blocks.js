@@ -29,7 +29,7 @@ var MembersBlocksSet = React.createClass({
         return {
             membersDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
             membersDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
-            membersDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Need to calculate
+            membersDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Should be wnt.yesterdaylastyear
             
             membersConversion: '...',
             membersConversionCompareTo: '...',

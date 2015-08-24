@@ -22,7 +22,7 @@ var VisitsBlocksSet = React.createClass({
         return {
             visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
             visitsDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
-            visitsDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Need to calculate
+            visitsDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Should be wnt.yesterdaylastyear
             
             visitsTotal: '...',
             visitsTotalCompareTo: '...',
@@ -52,17 +52,10 @@ var VisitsBlocksSet = React.createClass({
                     visits_total: { specs: { type: 'visits' }, periods: this.state.visitsDate },
                     visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.visitsDayBefore },
                     visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.visitsDayLastYear },            
-                    /* NOTE: Sergio said average isn't ready yet */
-                    /*<option>Yesterday compared to average for the past year</option>*/
-                    visits_total_compareto_rolling: { 
-                        specs: { 
-                            type: 'visits'
-                        },
+                    visits_total_compareto_rolling: { specs: { type: 'visits'},
                         periods: {
-                            period: {
-                                from: '2014-05-06',
-                                to: '2015-05-06'
-                            },
+                            from: this.state.visitsDayLastYear,
+                            to: this.state.visitsDate,
                             kind: 'average'
                         }
                     },
@@ -71,26 +64,61 @@ var VisitsBlocksSet = React.createClass({
                     visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDate },
                     visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDayBefore },
                     visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDayLastYear },
+                    visits_ga_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] }, 
+                        periods: {
+                            from: this.state.visitsDayLastYear,
+                            to: this.state.visitsDate,
+                            kind: 'average'
+                        }
+                    },
 
 
                     visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDate },
                     visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayBefore },
                     visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayLastYear },
+                    visits_groups_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] }, 
+                        periods: {
+                            from: this.state.visitsDayLastYear,
+                            to: this.state.visitsDate,
+                            kind: 'average'
+                        }
+                    },
 
 
                     visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDate },
                     visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDayBefore },
                     visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDayLastYear },
+                    visits_members_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
+                        periods: {
+                            from: this.state.visitsDayLastYear,
+                            to: this.state.visitsDate,
+                            kind: 'average'
+                        }
+                    },
 
 
                     visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDate },
                     visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayBefore },
                     visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayLastYear },
+                    visits_nonmembers_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] }, 
+                        periods: {
+                            from: this.state.visitsDayLastYear,
+                            to: this.state.visitsDate,
+                            kind: 'average'
+                        }
+                    },
 
 
                     sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDate },
                     sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayBefore },
-                    sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayLastYear }
+                    sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayLastYear },
+                    sales_gate_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
+                        periods: {
+                            from: '2014-05-06',
+                            to: '2015-05-06',
+                            kind: 'average'
+                        }
+                    }
 
                 }
             }
@@ -151,12 +179,12 @@ var VisitsBlocksSet = React.createClass({
             });
         } else if(filter === 'lastYearAverage'){
             this.setState({
-                visitsTotalCompareTo: 235,
-                visitsGACompareTo: 123,
-                visitsGroupsCompareTo: 222,
-                visitsMembersCompareTo: 567,
-                visitsNonmembersCompareTo: 789,
-                salesGateCompareTo: 786
+                visitsTotalCompareTo: wnt.visits.visits_total_compareto_rolling.units,
+                visitsGACompareTo: wnt.visits.visits_ga_compareto_rolling.units,
+                visitsGroupsCompareTo: wnt.visits.visits_groups_compareto_rolling.units,
+                visitsMembersCompareTo: wnt.visits.visits_members_compareto_rolling.units,
+                visitsNonmembersCompareTo: wnt.visits.visits_nonmembers_compareto_rolling.units,
+                salesGateCompareTo: wnt.visits.sales_gate_compareto_rolling.amount
             });
         } else {
             this.setState({
