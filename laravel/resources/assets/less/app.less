@@ -264,7 +264,6 @@ header {
 }
 .filter {
     background-color: @white;
-    padding: 10px;
 }
 .time-date-modifier {
     color: @mediumgrey;
@@ -332,6 +331,14 @@ header {
 #visits-members .stat-block {background-color: @darkpurple1;}
 #visits-nonmembers .stat-block {background-color: @gold;}
 #sales-gate .stat-block {background-color: @aqua;}
+#visits-blocks-widget,
+#members-blocks-widget {
+    .form-control {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
 #total-sales-goals,
 #earned-revenue-channels,
 #total-membership-goals,
