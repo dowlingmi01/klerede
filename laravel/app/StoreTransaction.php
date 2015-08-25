@@ -20,7 +20,8 @@ class StoreTransaction extends Model {
 			$xmlTran->TillID)->id;
 		$transaction->source_xml = $xmlTran->asXML();
 		if($xmlTran->RetailTransaction->Customer)
-			$transaction->member_xstore_id = MemberXstore::getForXML($xmlTran->RetailTransaction->Customer,
+			$transaction->member_xstore_id = MemberXstore::getForXML($transaction->venue_id,
+				$xmlTran->RetailTransaction->Customer,
 				$xmlTran->children('dtv', true)->PosTransactionProperties)->id;
 		foreach($xmlTran->RetailTransaction->LineItem as $xmlLine)
 			if($xmlLine->Tender) {

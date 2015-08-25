@@ -73,6 +73,7 @@ class CreateStoreTransactionTable extends Migration {
 		Schema::create('member_xstore', function(Blueprint $table)
 		{
 			$table->increments('id');
+			$table->string('venue_id');
 			$table->string('xstore_id');
 			$table->string('xstore_cust_id');
 			$table->string('venue_member_number')->nullable();

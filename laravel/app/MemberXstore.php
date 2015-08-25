@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 class MemberXstore extends Model {
 	protected $table = 'member_xstore';
 	protected $guarded = [];
-	static function getForXML(\SimpleXMLElement $custXML, \SimpleXMLElement $tranPropXML) {
+	static function getForXML($venue_id, \SimpleXMLElement $custXML, \SimpleXMLElement $tranPropXML) {
 		$name = $custXML->Name;
 		$active = filter_var($custXML->ActiveFlag, FILTER_VALIDATE_BOOLEAN);
 		$xstore_id = $custXML->AlternateKey[0]->AlternateID;
@@ -16,12 +16,12 @@ class MemberXstore extends Model {
 			if($dtvPropAt->PosTransactionPropertyCode == 'VenueMemberNumber')
 				$venue_member_number = $dtvPropAt->PosTransactionPropertyValue;
 		}
-		$member = MemberXstore::firstOrNew(['xstore_id'=>$xstore_id, 'xstore_cust_id'=>$xstore_cust_id
+		$member = MemberXstore::firstOrNew(['venue_id'=>$venue_id, 'xstore_id'=>$xstore_id
+			, 'xstore_cust_id'=>$xstore_cust_id
 			, 'venue_member_number'=>$venue_member_number]);
 		$member->name = $name;
 		$member->active = $active;
 		$member->save();
 		return $member;
 	}
-
 }
