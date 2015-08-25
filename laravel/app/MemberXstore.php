@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class Member extends Model {
-	protected $table = 'member';
+class MemberXstore extends Model {
+	protected $table = 'member_xstore';
 	protected $guarded = [];
 	static function getForXML(\SimpleXMLElement $custXML, \SimpleXMLElement $tranPropXML) {
 		$name = $custXML->Name;
@@ -16,7 +16,7 @@ class Member extends Model {
 			if($dtvPropAt->PosTransactionPropertyCode == 'VenueMemberNumber')
 				$venue_member_number = $dtvPropAt->PosTransactionPropertyValue;
 		}
-		$member = Member::firstOrNew(['xstore_id'=>$xstore_id, 'xstore_cust_id'=>$xstore_cust_id
+		$member = MemberXstore::firstOrNew(['xstore_id'=>$xstore_id, 'xstore_cust_id'=>$xstore_cust_id
 			, 'venue_member_number'=>$venue_member_number]);
 		$member->name = $name;
 		$member->active = $active;

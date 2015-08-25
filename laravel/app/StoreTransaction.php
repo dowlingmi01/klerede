@@ -20,7 +20,7 @@ class StoreTransaction extends Model {
 			$xmlTran->TillID)->id;
 		$transaction->source_xml = $xmlTran->asXML();
 		if($xmlTran->RetailTransaction->Customer)
-			$transaction->member_id = Member::getForXML($xmlTran->RetailTransaction->Customer,
+			$transaction->member_xstore_id = MemberXstore::getForXML($xmlTran->RetailTransaction->Customer,
 				$xmlTran->children('dtv', true)->PosTransactionProperties)->id;
 		foreach($xmlTran->RetailTransaction->LineItem as $xmlLine)
 			if($xmlLine->Tender) {
@@ -57,9 +57,9 @@ class StoreTransaction extends Model {
 			$query->where('venue_id', $params->venue_id);
 		if(isset($params->member)) {
 			if($params->member)
-				$query->whereNotNull('member_id');
+				$query->whereNotNull('member_xstore_id');
 			else
-				$query->whereNull('member_id');
+				$query->whereNull('member_xstore_id');
 		}
 		if(isset($params->by_category)) {
 			$query->join('store_transaction_line', 'store_transaction_id', '=', 'store_transaction.id')

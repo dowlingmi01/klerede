@@ -28,6 +28,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->enum('payment_type', ['cash', 'card']);
 			$table->integer('card_type_id')->nullable();
 			$table->integer('member_id')->nullable();;
+			$table->integer('member_xstore_id')->nullable();;
 			$table->mediumText('source_xml')->nullable();
 			$table->timestamps();
 		});
@@ -69,7 +70,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->string('description')->nullable();
 			$table->timestamps();
 		});
-		Schema::create('member', function(Blueprint $table)
+		Schema::create('member_xstore', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('xstore_id');
@@ -108,6 +109,7 @@ class CreateStoreTransactionTable extends Migration {
 		Schema::dropIfExists('store_product_category');
 		Schema::dropIfExists('store_product_category_group');
 		Schema::dropIfExists('store_register');
+		Schema::dropIfExists('member_xstore');
 		Schema::dropIfExists('member');
 		Schema::dropIfExists('card_type');
 	}
