@@ -80,6 +80,7 @@ class Stats {
 			$dbquery->addSelect(DB::raw('avg(units) as units'));
 			if($specs->type == 'sales')
 				$dbquery->addSelect(DB::raw('avg(amount) as amount'));
+			$includePeriod = false;
 		}
 
 		$result = $dbquery->get();
