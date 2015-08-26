@@ -459,13 +459,69 @@ header {
     .label {
         color: @darkgrey;
     }
+    .stat {
+        font-weight: 700;
+    }
 }
-#members-conversion .stat {color: @rust;}
-#members-expired .stat {color: @darkpurple1;}
-#members-frequency .stat {color: @slateblue;}
-#members-recency .stat {color: @gold;}
-#members-total .stat {color: @cobalt;}
-#members-velocity .stat {color: @darkgrey;}
+#members-conversion {
+    .stat,
+    .change {
+        color: @rust;
+    }
+    .stat:after {
+        content: '%';
+        font-size: 50%;
+        position: relative;
+        top: -7px;
+    }
+}
+#members-expired {
+    .stat,
+    .change {
+        color: @darkpurple1;
+    }
+    .stat:after {
+        content: '%';
+        font-size: 50%;
+        position: relative;
+        top: -7px;
+    }
+}
+#members-frequency {
+    .stat,
+    .change {
+        color: @slateblue;
+    }
+    .label:after {
+        color: @mediumgrey;
+        content: '# of visits per year';
+        display: block;
+        font-size: 80%;
+        text-transform: lowercase;
+    }
+}
+#members-recency {
+    .stat,
+    .change {
+        color: @gold;
+    }
+}
+#members-total {
+    .stat,
+    .change {
+        color: @cobalt;
+    }
+    .stat:after {
+        content: 'k';
+        font-size: 50%;
+    }
+}
+#members-velocity {
+    .stat,
+    .change {
+        color: @darkgrey;
+    }
+}
 h1 {
     font-family: 'Raleway', sans-serif;   /* CURRENTLY NO H1 TAG */
 }

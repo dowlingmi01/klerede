@@ -1,14 +1,7 @@
 /***********************************************************/
 /******** BOTTOM ROW OF STAT BLOCKS FOR MEMBERSHIPS ********/
 /***********************************************************/
-/*
-membersConversion   members_conversion
-membersExpired      members_expired
-membersFrequency    members_frequency
-membersRecency      members_recency
-membersTotal        members_total
-membersVelocity     members_velocity
-*/
+
 var MembersBlock = React.createClass({
     render: function() {
         return (
@@ -16,7 +9,7 @@ var MembersBlock = React.createClass({
                 <div className="label">{this.props.label}</div>
                 <div className="stat">{this.props.stat}</div>
                 <div className="change">
-                    <ChangeArrow width="62" height="69" color="#000000" className={this.props.changeDirection} />
+                    <ChangeArrow width="62" height="69" color="#000000" className="up" />
                     <span className="compare-to">{this.props.comparedTo}</span>
                 </div>
             </div>
@@ -31,29 +24,24 @@ var MembersBlocksSet = React.createClass({
             membersDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
             membersDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Should be wnt.yesterdaylastyear
             
-            membersConversion: '...',
-            membersConversionCompareTo: '...',
-            membersConversionChange: 'none',
+            // TO DO: REMOVE DUMMY DATA AND WIRE-UP API (COMMENTED-OUT BELOW)... AND SET FORMATS
+            membersConversion: '4.0',
+            membersConversionCompareTo: '4.8',
             
-            membersExpired: '...',
-            membersExpiredCompareTo: '...',
-            membersExpiredChange: 'none',
+            membersExpired: '4.1',
+            membersExpiredCompareTo: '3.8',
 
-            membersFrequency: '...',
-            membersFrequencyCompareTo: '...',
-            membersFrequencyChange: 'none',
+            membersFrequency: '3.6',
+            membersFrequencyCompareTo: '3.1',
 
-            membersRecency: '...',
-            membersRecencyCompareTo: '...',
-            membersRecencyChange: 'none',
+            membersRecency: '4.1',
+            membersRecencyCompareTo: '4.8',
 
-            membersTotal: '...',
-            membersTotalCompareTo: '...',
-            membersTotalChange: 'none',
+            membersTotal: '4.2',
+            membersTotalCompareTo: '3.8',
 
-            membersVelocity: '...',
-            membersVelocityCompareTo: '...',
-            membersVelocityChange: 'none'
+            membersVelocity: '5.1',
+            membersVelocityCompareTo: '4.8'
         };
     },
     componentDidMount: function() {
@@ -63,46 +51,72 @@ var MembersBlocksSet = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
+
                     members_conversion: { specs: { type: 'visits' }, periods: this.state.membersDate },
                     members_conversion_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.membersDayBefore },
                     members_conversion_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.membersDayLastYear },
-                    members_conversion_compareto_rolling: { 
-                        specs: { 
-                            type: 'visits'
-                        },
+                    members_conversion_compareto_rolling: { specs: { type: 'visits'},
                         periods: {
-                            period: {
-                                from: '2014-05-06',
-                                to: '2015-05-06'
-                            },
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
                             kind: 'average'
                         }
                     },
 
-
                     members_expired: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.membersDate },
                     members_expired_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.membersDayBefore },
                     members_expired_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.membersDayLastYear },
-
+                    members_expired_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] },
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    },
 
                     members_frequency: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.membersDate },
                     members_frequency_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.membersDayBefore },
                     members_frequency_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.membersDayLastYear },
-
+                    members_frequency_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] },
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    },
 
                     members_recency: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.membersDate },
                     members_recency_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.membersDayBefore },
                     members_recency_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.membersDayLastYear },
-
+                    members_recency_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    },
 
                     members_total: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.membersDate },
                     members_total_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.membersDayBefore },
                     members_total_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.membersDayLastYear },
-
+                    members_total_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] },
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    },
 
                     members_velocity: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.membersDate },
                     members_velocity_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.membersDayBefore },
-                    members_velocity_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.membersDayLastYear }
+                    members_velocity_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.membersDayLastYear },
+                    members_velocity_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    }
 
                 }
             }
@@ -110,7 +124,6 @@ var MembersBlocksSet = React.createClass({
         .done(function(result) {
             console.log('Members data loaded...');
             wnt.members = result;
-            console.log(wnt.members);
             if(this.isMounted()) {
                 this.setState({
                     membersConversion: result.members_conversion.units,
@@ -143,47 +156,6 @@ var MembersBlocksSet = React.createClass({
                         self.setState(stateObject);
                     }
                 });
-                // TO DO: STREAMLINE CHANGE DIRECTION
-                if(parseInt(this.state.membersConversion) > parseInt(this.state.membersConversionCompareTo)){
-                    this.setState({ membersConversionChange: 'up' });
-                } else if(parseInt(this.state.membersConversion) < parseInt(this.state.membersConversionCompareTo)){
-                    this.setState({ membersConversionChange: 'down' });                    
-                }
-                if(parseInt(this.state.membersExpired) > parseInt(this.state.membersExpiredCompareTo)){
-                    this.setState({ membersExpiredChange: 'up' });
-                } else if(parseInt(this.state.membersExpired) < parseInt(this.state.membersExpiredCompareTo)){
-                    this.setState({ membersExpiredChange: 'down' });                    
-                }
-                if(parseInt(this.state.membersFrequency) > parseInt(this.state.membersFrequencyCompareTo)){
-                    this.setState({ membersFrequencyChange: 'up' });
-                } else if(parseInt(this.state.membersFrequency) < parseInt(this.state.membersFrequencyCompareTo)){
-                    this.setState({ membersFrequencyChange: 'down' });                    
-                }
-                if(parseInt(this.state.membersRecency) > parseInt(this.state.membersRecencyCompareTo)){
-                    this.setState({ membersRecencyChange: 'up' });
-                } else if(parseInt(this.state.membersRecency) < parseInt(this.state.membersRecencyCompareTo)){
-                    this.setState({ membersRecencyChange: 'down' });                    
-                }
-                if(parseInt(this.state.membersTotal) > parseInt(this.state.membersTotalCompareTo)){
-                    this.setState({ membersTotalChange: 'up' });
-                } else if(parseInt(this.state.membersTotal) < parseInt(this.state.membersTotalCompareTo)){
-                    this.setState({ membersTotalChange: 'down' });                    
-                }
-                if(parseInt(this.state.membersVelocity) > parseInt(this.state.membersVelocityCompareTo)){
-                    this.setState({ membersVelocityChange: 'up' });
-                } else if(parseInt(this.state.membersVelocity) < parseInt(this.state.membersVelocityCompareTo)){
-                    this.setState({ membersVelocityChange: 'down' });                    
-                }
-                // Format stats
-                $.each($('#members-blocks-widget .stat'), function(index,stat){
-                    if($(stat).html() !== '-'){
-                        if(index === 5){
-                            $(stat).formatNumber({format:"$#,###", locale:"us"});
-                        } else {
-                            $(stat).formatNumber({format:"#,###", locale:"us"});
-                        }
-                    }
-                });
                 this.formatNumbers;
             }
         }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
@@ -204,6 +176,15 @@ var MembersBlocksSet = React.createClass({
                 membersTotalCompareTo: wnt.members.members_total_compareto_lastyear.units,
                 membersVelocityCompareTo: wnt.members.members_velocity_compareto_lastyear.amount
             });
+        } else if(filter === 'lastYearAverage'){
+            this.setState({
+                membersConversionCompareTo: wnt.members.members_conversion_compareto_rolling.units,
+                membersExpiredCompareTo: wnt.members.members_expired_compareto_rolling.units,
+                membersFrequencyCompareTo: wnt.members.members_frequency_compareto_rolling.units,
+                membersRecencyCompareTo: wnt.members.members_recency_compareto_rolling.units,
+                membersTotalCompareTo: wnt.members.members_total_compareto_rolling.units,
+                membersVelocityCompareTo: wnt.members.members_velocity_compareto_rolling.amount
+            });
         } else {
             this.setState({
                 membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore.units,
@@ -215,27 +196,30 @@ var MembersBlocksSet = React.createClass({
             });
         }
     },
-    setChangeDirection: function(){
-        console.log('SET CHANGE DIRECTION');
-    },
     formatNumbers: function(){
-        // Format comparison stats
-        $.each($('#members-blocks-widget .compare-to'), function(index,stat){
-            console.log($(stat).html());
-            if($(stat).html() !== '-'){
-                if(index === 5){
-                    $(stat).parseNumber({format:"$#,###", locale:"us"});
-                    $(stat).formatNumber({format:"$#,###", locale:"us"});   //.parseNumber({format:"#,###.00", locale:"us"});
+        // Format numbers and set the direction of the change arrows
+        $.each($('#members-blocks-widget .stat-block'), function(index, statblock){
+            var newstat = $(statblock).find('.stat');
+            var oldstat = $(statblock).find('.compare-to');
+            var change = $(statblock).find('svg');
+            if( ($(newstat).html() !== '-') && ($(oldstat).html() !== '-') ){
+                if($(newstat).parseNumber({format:"$#,###", locale:"us"}) > $(oldstat).parseNumber({format:"$#,###", locale:"us"})){
+                    $(change).attr('class','up');
                 } else {
-                    $(stat).parseNumber({format:"#,###", locale:"us"});
-                    $(stat).formatNumber({format:"#,###", locale:"us"});
+                    $(change).attr('class','down');
+                }
+                if(index === 5){
+                    $(newstat).formatNumber({format:"$#,###", locale:"us"});
+                    $(oldstat).formatNumber({format:"$#,###", locale:"us"});
+                } else {
+                    $(newstat).formatNumber({format:"#,###", locale:"us"});
+                    $(oldstat).formatNumber({format:"#,###", locale:"us"});
                 }
             }
         });
     },
     componentDidUpdate: function(){
-        this.setChangeDirection();
-        this.formatNumbers();   //Not calling the formatting.  Adding () does, but then initial load doesn't work right, only subsequent loads
+        this.formatNumbers();
     },
     render: function() {
         return (
@@ -247,9 +231,9 @@ var MembersBlocksSet = React.createClass({
                                 <select className="form-control" onChange={this.handleChange}>
                                     <option value="twoDays">Trend over last two days</option>
                                     <option value="lastYear">Yesterday compared to same day last year</option>
+                                    <option value="lastYearAverage">Yesterday compared to average for the past year</option>
                                 </select>
                             </form>
-                           
                         </div>
                     </div>
                 </div>
@@ -258,43 +242,37 @@ var MembersBlocksSet = React.createClass({
                         <MembersBlock 
                             label="Member Conversion" 
                             stat={this.state.membersConversion} 
-                            comparedTo={this.state.membersConversionCompareTo}
-                            changeDirection={this.state.membersConversionChange} />
+                            comparedTo={this.state.membersConversionCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-expired">
                         <MembersBlock 
                             label="Memberships Expired" 
                             stat={this.state.membersExpired} 
-                            comparedTo={this.state.membersExpiredCompareTo} 
-                            changeDirection={this.state.membersExpiredChange} />
+                            comparedTo={this.state.membersExpiredCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-frequency">
                         <MembersBlock 
                             label="Member Frequency" 
                             stat={this.state.membersFrequency} 
-                            comparedTo={this.state.membersFrequencyCompareTo} 
-                            changeDirection={this.state.membersFrequencyChange} />
+                            comparedTo={this.state.membersFrequencyCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-recency">
                         <MembersBlock
                             label="Member Recency"
                             stat={this.state.membersRecency}
-                            comparedTo={this.state.membersRecencyCompareTo}
-                            changeDirection={this.state.membersRecencyChange} />
+                            comparedTo={this.state.membersRecencyCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-total">
                         <MembersBlock
                             label="Total Members"
                             stat={this.state.membersTotal}
-                            comparedTo={this.state.membersTotalCompareTo}
-                            changeDirection={this.state.membersTotalChange} />
+                            comparedTo={this.state.membersTotalCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-velocity">
                         <MembersBlock
                             label="Renewal Velocity"
                             stat={this.state.membersVelocity}
-                            comparedTo={this.state.membersVelocityCompareTo}
-                            changeDirection={this.state.membersVelocityChange} />
+                            comparedTo={this.state.membersVelocityCompareTo} />
                     </div>
                 </div>
             </div>

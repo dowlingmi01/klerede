@@ -49,6 +49,7 @@ var VisitsBlocksSet = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
+
                     visits_total: { specs: { type: 'visits' }, periods: this.state.visitsDate },
                     visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.visitsDayBefore },
                     visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.visitsDayLastYear },            
@@ -59,7 +60,6 @@ var VisitsBlocksSet = React.createClass({
                             kind: 'average'
                         }
                     },
-
 
                     visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDate },
                     visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDayBefore },
@@ -72,7 +72,6 @@ var VisitsBlocksSet = React.createClass({
                         }
                     },
 
-
                     visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDate },
                     visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayBefore },
                     visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayLastYear },
@@ -83,7 +82,6 @@ var VisitsBlocksSet = React.createClass({
                             kind: 'average'
                         }
                     },
-
 
                     visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDate },
                     visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDayBefore },
@@ -96,7 +94,6 @@ var VisitsBlocksSet = React.createClass({
                         }
                     },
 
-
                     visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDate },
                     visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayBefore },
                     visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayLastYear },
@@ -107,7 +104,6 @@ var VisitsBlocksSet = React.createClass({
                             kind: 'average'
                         }
                     },
-
 
                     sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDate },
                     sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayBefore },
@@ -235,7 +231,6 @@ var VisitsBlocksSet = React.createClass({
                                     <option value="lastYearAverage">Yesterday compared to average for the past year</option>
                                 </select>
                             </form>
-                           
                         </div>
                     </div>
                 </div>
