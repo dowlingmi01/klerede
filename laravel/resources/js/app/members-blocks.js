@@ -246,25 +246,25 @@ var MembersBlocksSet = React.createClass({
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-expired">
                         <MembersBlock 
-                            label="Memberships Expired" 
+                            label="Capture Rate" 
                             stat={this.state.membersExpired} 
                             comparedTo={this.state.membersExpiredCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-frequency">
                         <MembersBlock 
-                            label="Member Frequency" 
+                            label="Frequency" 
                             stat={this.state.membersFrequency} 
                             comparedTo={this.state.membersFrequencyCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-recency">
                         <MembersBlock
-                            label="Member Recency"
+                            label="Recency"
                             stat={this.state.membersRecency}
                             comparedTo={this.state.membersRecencyCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-total">
                         <MembersBlock
-                            label="Total Members"
+                            label="Members"
                             stat={this.state.membersTotal}
                             comparedTo={this.state.membersTotalCompareTo} />
                     </div>

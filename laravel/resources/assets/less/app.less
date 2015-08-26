@@ -467,6 +467,13 @@ header {
     .stat,
     .change {
         color: @rust;
+        .up,
+        .down {
+            opacity: 1;
+        }
+        path {
+            fill: @rust;
+        }
     }
     .stat:after {
         content: '%';
@@ -479,6 +486,13 @@ header {
     .stat,
     .change {
         color: @darkpurple1;
+        .up,
+        .down {
+            opacity: 1;
+        }
+        path {
+            fill: @darkpurple1;
+        }
     }
     .stat:after {
         content: '%';
@@ -491,25 +505,60 @@ header {
     .stat,
     .change {
         color: @slateblue;
+        .up,
+        .down {
+            opacity: 1;
+        }
+        path {
+            fill: @slateblue;
+        }
     }
     .label:after {
         color: @mediumgrey;
         content: '# of visits per year';
         display: block;
         font-size: 80%;
-        text-transform: lowercase;
+        text-transform: initial;
     }
 }
 #members-recency {
     .stat,
     .change {
         color: @gold;
+        .up,
+        .down {
+            opacity: 1;
+        }
+        path {
+            fill: @gold;
+        }
+    }
+    .label:after {
+        color: @mediumgrey;
+        content: 'Time since last visit (months)';
+        display: block;
+        font-size: 80%;
+        text-transform: initial;
     }
 }
 #members-total {
     .stat,
     .change {
         color: @cobalt;
+        .up,
+        .down {
+            opacity: 1;
+        }
+        path {
+            fill: @cobalt;
+        }
+    }
+    .label:after {
+        color: @mediumgrey;
+        content: 'Total #';
+        display: block;
+        font-size: 80%;
+        text-transform: initial;
     }
     .stat:after {
         content: 'k';
@@ -520,6 +569,20 @@ header {
     .stat,
     .change {
         color: @darkgrey;
+        .up,
+        .down {
+            opacity: 1;
+        }
+        path {
+            fill: @darkgrey;
+        }
+    }
+    .label:after {
+        color: @mediumgrey;
+        content: 'Time to renewal (months)';
+        display: block;
+        font-size: 80%;
+        text-transform: initial;
     }
 }
 h1 {
