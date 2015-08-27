@@ -1,6 +1,6 @@
 USE export
 GO
-IF object_id('export..transaction_header') IS NOT NULL
+IF object_id('transaction_header') IS NOT NULL
    DROP VIEW transaction_header;
 GO
 CREATE VIEW transaction_header AS
@@ -89,4 +89,35 @@ SELECT u.UsageID AS source_id
   LEFT JOIN Galaxy1..Passes p ON u.VisualID = p.VisualID
  WHERE code = 0 AND u.Status = 0
  GROUP BY u.UsageID, u.ACP, u.VisualID, u.OperationID, u.Qty, u.UseNo, u.UseTime
+GO
+IF object_id('membership') IS NOT NULL
+   DROP VIEW membership;
+GO
+CREATE VIEW membership AS
+SELECT 1588 AS venue_id
+     , PassAcct as member_code
+     , VisualID as code
+     , PassNo as sequence
+     , PLU as box_office_product_code
+     , CASE WHEN ValidFrom IS NOT NULL AND ValidFrom > '2000-01-01'
+            THEN ValidFrom
+            ELSE DateOpened
+       END as date_from
+     , ValidUntil as date_to
+     , DOB as dob
+     , AdultQty as adult_qty
+     , ChildQty as child_qty
+     , First as first
+     , Middle as middle
+     , Last as last
+     , Street1 as street_1
+     , Street2 as street_2
+     , City as city
+     , State as state
+     , 'US' as country
+     , Phone as phone
+  FROM Galaxy1..Passes
+ WHERE VisualID != ''
+   AND ValidUntil IS NOT NULL
+   AND (ValidFrom > '2000-01-01' OR DateOpened IS NOT NULL)
 GO
