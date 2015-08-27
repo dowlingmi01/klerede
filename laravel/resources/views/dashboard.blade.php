@@ -14,6 +14,18 @@
 
 
 
+    <div id="sales-goals-widget"><!-- ReactJS component: SalesGoals --></div>
+
+
+
+    <div id="membership-goals-widget"><!-- ReactJS component: MembershipGoals --></div>
+
+
+
+    <div id="revenue-row-widget"><!-- ReactJS component: Revenue --></div>
+
+
+
     <div class="row">
         <div class="col-xs-6 col-md-6 arrow-connector-right">
             <div class="widget" id="total-sales-goals">
