@@ -4,6 +4,13 @@
 
 var Revenue = React.createClass({
     render: function() {
+        $.get('http://api.openweathermap.org/data/2.5/weather', {
+            APPID: '86376bb7c673c089067f51ae70a6e79e',
+            id: '524901'
+        })
+        .done(function(result) {
+            console.log(result.weather[0].description);
+        });
         return (
             <div>
                 TEMP REVENUE ROW
