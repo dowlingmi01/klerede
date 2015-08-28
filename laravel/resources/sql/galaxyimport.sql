@@ -74,8 +74,8 @@ INSERT membership
 SELECT g.venue_id, m.id, a.id, n.id, g.code, g.sequence, p.id
      , date_from, date_to, dob, adult_qty, child_qty
   FROM membership_galaxy g
-  JOIN member m ON g.venue_id = m.venue_id AND g.member_code = m.code
-  JOIN box_office_product p ON g.venue_id = p.venue_id AND g.box_office_product_code = p.code
+  STRAIGHT_JOIN member m ON g.venue_id = m.venue_id AND g.member_code = m.code
+  STRAIGHT_JOIN box_office_product p ON g.venue_id = p.venue_id AND g.box_office_product_code = p.code
   JOIN member_address a ON g.street_1 = a.street_1 AND g.street_2 = a.street_2 AND g.city = a.city
        AND g.state = a.state AND g.country = a.country AND g.phone = a.phone
   JOIN member_name n ON g.first = n.first AND g.middle = n.middle AND g.last = n.last
