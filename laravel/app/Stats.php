@@ -20,6 +20,9 @@ class Stats {
 			$table = 'stat_visits';
 		else if($specs->type == 'sales')
 			$table = 'stat_sales';
+		else if($specs->type == 'members')
+			$table = 'stat_members';
+
 		$dbquery = DB::table($table);
 		$dbquery->where('venue_id', $venue_id);
 		if(is_string($query->periods))
@@ -69,9 +72,13 @@ class Stats {
 		if($includePeriod)
 			$dbquery->addSelect("$includePeriod as period");
 
-		$dbquery->addSelect(DB::raw('sum(units) as units'));
-		if($specs->type == 'sales')
-			$dbquery->addSelect(DB::raw('sum(amount) as amount'));
+		if($specs->type == 'members')
+			$dbquery->addSelect(['current_members', 'frequency', 'recency']);
+		else {
+			$dbquery->addSelect(DB::raw('sum(units) as units'));
+			if($specs->type == 'sales')
+				$dbquery->addSelect(DB::raw('sum(amount) as amount'));
+		}
 
 		if($periods->kind == 'average') {
 			$subquery = $dbquery;
