@@ -44,6 +44,7 @@ SELECT source_id, v.venue_id, acp_id, p.id, ticket_code, v.kind, operation_id, q
 ;
 
 LOAD DATA INFILE 'galaxyimport/membership.txt'
+REPLACE
 INTO TABLE membership_galaxy
 FIELDS ESCAPED BY ''
 LINES TERMINATED BY '\r\n'
