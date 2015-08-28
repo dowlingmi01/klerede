@@ -94,12 +94,14 @@ class BoxOfficeTransactionTables extends Migration {
 			$table->integer('acp_id');
 			$table->integer('box_office_product_id');
 			$table->string('ticket_code');
+			$table->integer('membership_id')->nullable();
 			$table->enum('kind', ['ticket', 'pass', 'other']);
 			$table->integer('operation_id');
 			$table->integer('quantity');
 			$table->integer('use_no');
 			$table->dateTime('time');
 			$table->timestamps();
+			$table->index(['membership_id']);
 		});
 	}
 
