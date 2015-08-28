@@ -29,19 +29,6 @@ SELECT t.id, l.sequence, p.id, l.ticket_code, l.sale_price, l.quantity
   STRAIGHT_JOIN box_office_product p ON l.box_office_product_code = p.code AND t.venue_id = p.venue_id
 ;
 
-LOAD DATA INFILE 'galaxyimport/visit.txt'
-INTO TABLE visit_galaxy
-LINES TERMINATED BY '\r\n'
-(source_id, venue_id, acp_id, box_office_product_code, ticket_code, kind, operation_id, quantity, use_no, time)
-;
-
-INSERT visit
-     ( source_id, venue_id, acp_id, box_office_product_id, ticket_code, kind, operation_id, quantity, use_no, time)
-SELECT source_id, v.venue_id, acp_id, p.id, ticket_code, v.kind, operation_id, quantity, use_no, time
-  FROM visit_galaxy v, box_office_product p
- WHERE v.box_office_product_code = p.code
-   AND v.venue_id = p.venue_id
-;
 
 LOAD DATA INFILE 'galaxyimport/membership.txt'
 REPLACE
@@ -83,4 +70,26 @@ SELECT g.venue_id, m.id, a.id, n.id, g.code, g.sequence, p.id
 UPDATE member, (SELECT member_id, max(id) as maxid FROM membership GROUP BY member_id) x
    SET member.last_membership_id = x.maxid
  WHERE member.id = x.member_id
+;
+
+
+LOAD DATA INFILE 'galaxyimport/visit.txt'
+INTO TABLE visit_galaxy
+LINES TERMINATED BY '\r\n'
+(source_id, venue_id, acp_id, box_office_product_code, ticket_code, kind, operation_id, quantity, use_no, time)
+;
+
+INSERT visit
+     ( source_id, venue_id, acp_id, box_office_product_id, ticket_code, membership_id
+     , kind, operation_id, quantity, use_no, time)
+SELECT source_id, v.venue_id, acp_id, p.id, ticket_code, m.id
+     , v.kind, operation_id, quantity, use_no, time
+  FROM visit_galaxy v
+  JOIN box_office_product p
+    ON v.box_office_product_code = p.code
+   AND v.venue_id = p.venue_id
+  LEFT JOIN membership m USE INDEX FOR JOIN (membership_venue_id_code_unique)
+    ON v.ticket_code = m.code
+   AND v.venue_id = m.venue_id
+   AND v.kind = 'pass'
 ;
