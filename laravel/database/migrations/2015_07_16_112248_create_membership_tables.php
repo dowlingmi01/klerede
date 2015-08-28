@@ -38,6 +38,8 @@ class CreateMembershipTables extends Migration {
 			$table->integer('child_qty');
 			$table->timestamps();
 			$table->unique(['venue_id', 'sequence']);
+			$table->unique(['venue_id', 'code']);
+			$table->index(['member_id']);
 		});
 		Schema::create('member_name', function(Blueprint $table)
 		{
@@ -82,6 +84,7 @@ class CreateMembershipTables extends Migration {
 			$table->string('country');
 			$table->string('phone');
 			$table->timestamps();
+			$table->unique(['venue_id', 'code']);
 		});
 	}
 
