@@ -158,7 +158,7 @@ var VisitsBlocksSet = React.createClass({
             }
         }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
         .fail(function(result) {
-            console.log('VISITS DATA ERROR!');
+            console.log('VISITS DATA ERROR! ... ' + result.statusText);
             console.log(result);
         });
     },

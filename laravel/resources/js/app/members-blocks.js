@@ -160,8 +160,7 @@ var MembersBlocksSet = React.createClass({
             }
         }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
         .fail(function(result) {
-            console.log('MEMBERS DATA ERROR!');
-            console.log(result);
+            console.log('MEMBERS DATA ERROR! ... ' + result.statusText);
         });
         */
     },

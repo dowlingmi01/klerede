@@ -59,13 +59,15 @@ var WelcomeText = React.createClass({
     },
     render: function() {
         return (
-            <div>
-                Hi&#160;
-                <span className='user-name'>{this.state.firstName}!</span>&#160;
-                Things are looking good.
-                <div className='time-date'>
-                    {this.state.clock[0]} <span className="time-period">{this.state.clock[1]}</span>
-                    {this.state.clock[2]} <span className="month-year">{this.state.clock[3]}</span>
+            <div className="row">
+                <div className="col-xs-12 col-md-12">
+                    Hi&#160;
+                    <span className='user-name'>{this.state.firstName}!</span>&#160;
+                    Things are looking good.
+                    <div className='time-date'>
+                        {this.state.clock[0]} <span className="time-period">{this.state.clock[1]}</span>
+                        {this.state.clock[2]} <span className="month-year">{this.state.clock[3]}</span>
+                    </div>
                 </div>
             </div>
         );

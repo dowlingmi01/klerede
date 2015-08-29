@@ -5,42 +5,91 @@
 var Revenue = React.createClass({
     getInitialState: function() {
         return {
-            iconDomain: 'http://openweathermap.org/img/w/',
-            iconFilename: '',   // e.g. 01d (add domain, path, and .png)
-            iconExtension: '.png',
-            temp: '',   // round to a whole number and add symbol and 'F' ... Math.round(78.4); // 78
+            icon: '',
+            temp: '',
             description: ''
         };
     },
     componentDidMount: function() {
+        // TO DO: ADD POST TO API OR CREATE DIFFERENT COMPONENT???
         $.get('http://api.openweathermap.org/data/2.5/weather', {
             APPID: '86376bb7c673c089067f51ae70a6e79e',
             units: 'imperial',
-            zip: '20132,us'   // TO DO: Pull from venue address
+            zip: '20132,us'   // TO DO: PULL ZIP FROM VENDOR ADDRESS
         })
         .done(function(result) {
             wnt.weather = result;
             if(this.isMounted()) {
                 this.setState({
-                    iconFilename: result.weather[0].icon,
+                    icon: 'http://openweathermap.org/img/w/'+result.weather[0].icon+'.png',   // TO DO: CHANGE DOMAIN TO OUR ICONS
                     temp: Math.round(result.main.temp),
                     description: result.weather[0].description
                 });
             }
             console.log('Weather data loaded...');
-            console.log(this.state.iconFilename);
-            console.log(this.state.temp);
-            console.log(this.state.description);
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
-            console.log('WEATHER DATA ERROR!');
-            console.log(result);
+            console.log('WEATHER DATA ERROR! ... ' + result.statusText);
         });
     },
     render: function() {
         return (
-            <div>
-                TEMP REVENUE ROW
+            <div className="row">
+                <div className="col-xs-8 col-md-8">
+                    <div className="widget" id="revenue">
+                        <h2>Revenue</h2>
+                        <form>
+                            <select className="form-control">
+                                <option>XYZ</option>
+                                <option>XYZ</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+                <div className="col-xs-4 col-md-4 arrow-connector-left">
+                    <div className="widget" id="earned-revenue">
+                        <div className="weather-bar">
+                            <div className="weather-icon"><img src={this.state.icon} alt="Weather icon" /></div>
+                            <div className="temperature">{this.state.temp}&deg; F</div>
+                            <div className="weather-text">{this.state.description}</div>
+                            <div className="action-menu">+</div>
+                        </div>
+                        <h2>Earned Revenue</h2>
+                        <ul className="accordion">
+                            <li className="notes">Notes</li>
+                            <li className="box-office">Box Office Total
+                                <ul className="accordion">
+                                    <li>down 4.5% $14,878 --&gt; $15,400
+                                        <ul className="accordion">
+                                            <li>Offline</li>
+                                            <li>Online</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>  
+                            <li className="groups">Groups
+                                <ul className="accordion">
+                                    <li>up 1.2% $9,765 --&gt; $8,765</li>
+                                </ul>
+                            </li>
+                            <li className="cafe">Cafe Total
+                                <ul className="accordion">
+                                    <li>up 1.2% $9,765 --&gt; $8,765</li>
+                                </ul>
+                            </li>
+                            <li className="gift-store">Gift Store Total
+                                <ul className="accordion">
+                                    <li>up 1.9% $6,256 --&gt; $4,234</li>
+                                </ul>
+                            </li>  
+                            <li className="membership">Membership
+                                <ul className="accordion">
+                                    <li>up 1.9% $6,256 --&gt; $4,234</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         );
     }
