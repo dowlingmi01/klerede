@@ -40,8 +40,10 @@ var Revenue = React.createClass({
                         <h2>Revenue</h2>
                         <form>
                             <select className="form-control">
-                                <option>XYZ</option>
-                                <option>XYZ</option>
+                                <option value="year">Current Year ({wnt.thisYear})</option>
+                                <option value="quarter">Current Quarter ({wnt.thisQuarter})</option>
+                                <option value="month">Current Month ({wnt.thisMonth})</option>
+                                <option value="custom">Custom</option>
                             </select>
                         </form>
                     </div>
@@ -52,7 +54,7 @@ var Revenue = React.createClass({
                             <div className="weather-icon"><img src={this.state.icon} alt="Weather icon" /></div>
                             <div className="temperature">{this.state.temp}&deg; F</div>
                             <div className="weather-text">{this.state.description}</div>
-                            <div className="action-menu">+</div>
+                            <div className="action-menu"><PlusSign width="10" height="10" color="#000000" className="none" /></div>
                         </div>
                         <h2>Earned Revenue</h2>
                         <ul className="accordion">

@@ -41,8 +41,10 @@ var MembershipGoals = React.createClass({
                         <div className="action-menu">+</div>
                         <form>
                             <select className="form-control">
-                                <option>XYZ</option>
-                                <option>XYZ</option>
+                                <option value="year">Current Year ({wnt.thisYear})</option>
+                                <option value="quarter">Current Quarter ({wnt.thisQuarter})</option>
+                                <option value="month">Current Month ({wnt.thisMonth})</option>
+                                <option value="custom">Custom</option>
                             </select>
                         </form>
                         <div className="clear">Membership Goal: #4,500</div>
@@ -56,8 +58,10 @@ var MembershipGoals = React.createClass({
                         <div className="action-menu">+</div>
                         <form>
                             <select className="form-control">
-                                <option>XYZ</option>
-                                <option>XYZ</option>
+                                <option value="year">Current Year ({wnt.thisYear})</option>
+                                <option value="quarter">Current Quarter ({wnt.thisQuarter})</option>
+                                <option value="month">Current Month ({wnt.thisMonth})</option>
+                                <option value="custom">Custom</option>
                             </select>
                         </form>
                         <div id="div5" className="clear"></div>

@@ -12,7 +12,21 @@ var wnt = {
     doubleDigits: function(num) {
         num = num < 10 ? '0'+num : num;
         return num;
-    }
+    },
+    months: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ]
 };
 
 /********************************************/
@@ -20,6 +34,18 @@ var wnt = {
 /********************************************/
 
 wnt.today = new Date();
+wnt.thisYear = wnt.today.getFullYear();
+wnt.thisMonth = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
+if(wnt.thisMonth < 3){
+    wnt.thisQuarter = 'Q1';
+} else if(wnt.thisMonth < 6){
+    wnt.thisQuarter = 'Q2';
+} else if(wnt.thisMonth < 9){
+    wnt.thisQuarter = 'Q3';
+} else {
+    wnt.thisQuarter = 'Q4';
+}
+wnt.thisMonth = wnt.months[wnt.thisMonth];   // Set month to string
 wnt.yesterday = new Date(wnt.today);
 wnt.yesterday.setDate(wnt.today.getDate() - 1);
 wnt.yesterdaylastyear = new Date(wnt.today);
