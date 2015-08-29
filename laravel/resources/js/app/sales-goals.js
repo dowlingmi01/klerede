@@ -5,6 +5,7 @@
 var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
+            visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
             sample: 'value'
         };
     },
@@ -19,7 +20,7 @@ var SalesGoals = React.createClass({
             }
         )
         .done(function(result) {
-            console.log('XYZ data loaded...');
+            console.log('Sales Goals data loaded...');
             wnt.visits = result;
             if(this.isMounted()) {
                 this.setState({
