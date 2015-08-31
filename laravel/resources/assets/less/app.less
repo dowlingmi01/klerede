@@ -302,10 +302,16 @@ header {
             margin: 0 5px 0 0;
             opacity: 0.5;
             transform: rotate(180deg);
+            path {
+                fill: @white;
+            }
         }
         .up {
             margin: 0 5px 0 0;
             opacity: 0.5;
+            path {
+                fill: @white;
+            }
         }
     }
     .stat {
@@ -389,6 +395,10 @@ header {
     left: -24px;
     transform: translateY(50%);
     width: 0;    
+}
+.plus-sign-menu {
+    height: 8px;
+    width: 8px;
 }
 #revenue,
 #earned-revenue {
@@ -604,7 +614,7 @@ footer {
 }
 
 
-
+/* WHAT ARE THESE FOR?  I DON'T RECALL  ... quick search says they're not currently used in the site.  Hanging onto them until I can remember why I created these. */
 .arrow-line {
     stroke-width: 8;
     stroke-linecap: round;

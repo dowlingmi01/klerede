@@ -54,7 +54,7 @@ var Revenue = React.createClass({
                             <div className="weather-icon"><img src={this.state.icon} alt="Weather icon" /></div>
                             <div className="temperature">{this.state.temp}&deg; F</div>
                             <div className="weather-text">{this.state.description}</div>
-                            <div className="action-menu"><PlusSign width="10" height="10" color="#000000" className="none" /></div>
+                            <div className="action-menu"><PlusSign className="plus-sign-menu" /></div>
                         </div>
                         <h2>Earned Revenue</h2>
                         <ul className="accordion">

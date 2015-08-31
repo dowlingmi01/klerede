@@ -9,7 +9,7 @@ var VisitsBlock = React.createClass({
                 <div className="label">{this.props.label}</div>
                 <div className="stat">{this.props.stat}</div>
                 <div className="change">
-                    <ChangeArrow width="62" height="69" color="#ffffff" className="up" />
+                    <ChangeArrow className="up" />
                     <span className="compare-to">{this.props.comparedTo}</span>
                 </div>
             </div>
