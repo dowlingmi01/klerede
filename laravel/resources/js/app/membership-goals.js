@@ -54,7 +54,7 @@ var MembershipGoals = React.createClass({
                 </div>
                 <div className="col-xs-6 col-md-6">
                     <div className="widget" id="membership">
-                        <h2>Membership</h2>
+                        <h2>Membership / Donors</h2>
                         <div className="action-menu"><PlusSign className="plus-sign-menu" /></div>
                         <form>
                             <select className="form-control">
