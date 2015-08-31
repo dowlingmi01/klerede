@@ -47,9 +47,9 @@ var SalesGoals = React.createClass({
                                 <option value="custom">Custom</option>
                             </select>
                         </form>
-                        <div className="clear">Goal: $2,000,000</div>
-                        <div>Status: Ahead</div>
-                        <div className="bar-meter"></div>
+                        <div className="clear goal">Goal: <span className="goalAmount">$2,000,000</span></div>
+                        <div className="goalStatus">Status: <span className="goalStatusText ahead">Ahead</span></div>
+                        <div className="bar-meter clear"></div>
                     </div>
                 </div>
                 <div className="col-xs-6 col-md-6">
@@ -58,22 +58,41 @@ var SalesGoals = React.createClass({
                         <div className="action-menu"><PlusSign className="plus-sign-menu" /></div>
                         <form>
                             <select className="form-control">
-                                <option value="year">Current Year ({wnt.thisYear})</option>
-                                <option value="quarter">Current Quarter ({wnt.thisQuarter})</option>
-                                <option value="month">Current Month ({wnt.thisMonth})</option>
-                                <option value="custom">Custom</option>
+                                <option value="dollars">Dollars</option>
                             </select>
                         </form>
-                        <div id="div1" className="clear"></div>
-                        <div>
-                            Box Office
-                            $18,456
-                            Goal: $25,000
-                            Behind
+                        <div id="div1" className="clear dial">
+                            <div className="channel-info">
+                                <div className="channel-name">Box Office</div>
+                                <div className="channel-amount">$18,456</div>
+                                <div className="channel-goal">Goal: $25,000</div>
+                                <div className="channel-status behind">Behind</div>
+                            </div>
                         </div>
-                        <div id="div2"></div>
-                        <div id="div3"></div>
-                        <div id="div4"></div>
+                        <div id="div2" className="dial">
+                            <div className="channel-info">
+                                <div className="channel-name">Cafe</div>
+                                <div className="channel-amount">$8,123</div>
+                                <div className="channel-goal">Goal: $14,000</div>
+                                <div className="channel-status ahead">Ahead</div>
+                            </div>
+                        </div>
+                        <div id="div3" className="dial">
+                            <div className="channel-info">
+                                <div className="channel-name">Gift Store</div>
+                                <div className="channel-amount">$10,123</div>
+                                <div className="channel-goal">Goal: $18,000</div>
+                                <div className="channel-status on-track">On Track</div>
+                            </div>
+                        </div>
+                        <div id="div4" className="dial">
+                            <div className="channel-info">
+                                <div className="channel-name">Membership</div>
+                                <div className="channel-amount">$4,123</div>
+                                <div className="channel-goal">Goal: $6,000</div>
+                                <div className="channel-status ahead">Ahead</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

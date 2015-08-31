@@ -134,55 +134,55 @@ $(function(){
     function start() {
 
         var rp1 = radialProgress(document.getElementById('div1'))
-                .label("")
+                .label('')
                 .onClick(onClick1)
-                .diameter(150)
+                .diameter(140)
                 .value(78)
                 .render();
 
         var rp2 = radialProgress(document.getElementById('div2'))
-                .label("")
+                .label('')
                 .onClick(onClick2)
-                .diameter(150)
+                .diameter(140)
                 .value(95)
                 .render();
 
         var rp3 = radialProgress(document.getElementById('div3'))
-                .label("")
+                .label('')
                 .onClick(onClick3)
-                .diameter(150)
+                .diameter(140)
                 .minValue(100)
                 .maxValue(200)
                 .value(150)
                 .render();
 
         var rp4 = radialProgress(document.getElementById('div4'))
-                .label("")
+                .label('')
                 .onClick(onClick4)
-                .diameter(150)
+                .diameter(140)
                 .minValue(100)
                 .maxValue(200)
                 .value(187)
                 .render();
 
         var rp5 = radialProgress(document.getElementById('div5'))
-                .label("")
+                .label('')
                 .onClick(onClick5)
-                .diameter(150)
+                .diameter(140)
                 .value(53)
                 .render();
 
         var rp6 = radialProgress(document.getElementById('div6'))
-                .label("")
+                .label('')
                 .onClick(onClick6)
-                .diameter(150)
+                .diameter(140)
                 .value(67)
                 .render();
 
         var rp7 = radialProgress(document.getElementById('div7'))
-                .label("")
+                .label('')
                 .onClick(onClick7)
-                .diameter(150)
+                .diameter(140)
                 .value(80)
                 .render();
 

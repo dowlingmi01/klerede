@@ -1,3 +1,6 @@
+/***************************************/
+/******** IMPORTS AND VARIABLES ********/
+/***************************************/
 @import "bootstrap/bootstrap";
 
 @btn-font-weight: 300;
@@ -33,13 +36,23 @@ body, label, .checkbox label {
 @lightblue: rgba(212,233,246,1);
 @verylightblue: rgba(239,247,252,1);
 
+@green: rgba(100,168,17,1);
+@red: rgba(173,29,14,1);
+@orange: rgba(241,135,13,1);
+
 @grid-gutter-width: 15px;
 
+/*************************/
+/******** GLOBALS ********/
+/*************************/
 body {
     background-color: @bg_page;
     /* Setting base font size to work with expected font unit conversion (pt --> %) for Raleway font family */
     font-size: 12px;
     letter-spacing: .05em;
+}
+h1 {
+    font-family: 'Raleway', sans-serif;   /* CURRENTLY NO H1 TAG */
 }
 form {
     margin-bottom: 0;
@@ -50,6 +63,9 @@ a {
 a:hover {
     color: @gold;
 }
+/************************/
+/******** HEADER ********/
+/************************/
 header {
     background-color: @black;
     color: @white;
@@ -171,6 +187,9 @@ header {
     }
 
 }
+/**********************/
+/******** MENU ********/
+/**********************/
 .menu {
     padding: 0;
     text-align: right;
@@ -227,6 +246,9 @@ header {
         }
     }
 }
+/***********************************/
+/******** MAIN CONTENT AREA ********/
+/***********************************/
 .main-row {
     background-color: @black;
 }
@@ -240,6 +262,9 @@ header {
         margin-bottom: 10px;
     }
 }
+/******************************/
+/******** WELCOME TEXT ********/
+/******************************/
 #welcome-text {
     font-size: 160%;
     font-weight: 500;
@@ -269,6 +294,9 @@ header {
 .time-date-modifier {
     color: @mediumgrey;
 }
+/****************************************/
+/******** TOP VISITS STAT BLOCKS ********/
+/****************************************/
 .stat-block {
     background-color: @aqua;
     color: @white;
@@ -346,15 +374,20 @@ header {
         box-shadow: none;
     }
 }
+/******************************************************/
+/******** SALES, MEMBERSHIPS, AND REVENUE ROWS ********/
+/******************************************************/
 #total-sales-goals,
 #earned-revenue-channels,
 #total-membership-goals,
-#membership {
+#membership,
+#revenue,
+#earned-revenue {
     height: 234px;
     position: relative;
     h2 {
         float: left;
-        font-size: 160%;
+        font-size: 150%;
         margin: 0;
         text-transform: uppercase;
     }
@@ -400,6 +433,67 @@ header {
     height: 8px;
     width: 8px;
 }
+#total-sales-goals,
+#total-membership-goals {
+    .goal {
+        float: left;
+        margin-top: 20px;
+        text-transform: uppercase;
+    }
+    .goalAmount {
+        font-weight: 800;
+        margin-right: 20px;
+    }
+    .goalStatus {
+        float: left;
+        margin-top: 20px;
+        text-transform: uppercase;
+    }
+    .goalStatusText {
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+}
+.ahead {
+    color: @green;
+}
+.behind {
+    color: @red;
+}
+.on-track {
+    color: @orange;
+}
+.dial {
+    margin-right: 10px;
+    position: relative;
+    .channel-info {
+        position: absolute;
+        text-align: center;
+        text-transform: uppercase;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        .channel-name {
+            font-size: 80%;
+            font-weight: 800;
+        }
+        .channel-amount {
+            font-size: 140%;
+            font-weight: 500;
+        }
+        .channel-goal {
+            font-size: 75%;
+            font-weight: 500;
+        }
+        .channel-status {
+            font-size: 100%;
+            font-weight: 800;
+        }
+    }
+}
+.dial:last-child {
+    margin-right: 0;
+}
 #revenue,
 #earned-revenue {
     height: 675px;
@@ -418,6 +512,8 @@ header {
     border: 1px solid @mediumgrey;
     border-radius: 3px;
     height: 27px;
+    position: relative;
+    top: 20px;
     width: 100%;
 }
 .weather-bar {
@@ -472,6 +568,9 @@ header {
         top: 7px;
     }
 }
+/***********************************************/
+/******** BOTTOM MEMBERSHIP STAT BLOCKS ********/
+/***********************************************/
 .stat-block.stats-bottom {
     background-color: @white;
     color: @darkgrey;
@@ -606,12 +705,19 @@ header {
         text-transform: initial;
     }
 }
-h1 {
-    font-family: 'Raleway', sans-serif;   /* CURRENTLY NO H1 TAG */
-}
+/************************/
+/******** FOOTER ********/
+/************************/
 footer {
     text-align: right;
 }
+
+
+
+
+
+
+
 
 
 /* WHAT ARE THESE FOR?  I DON'T RECALL  ... quick search says they're not currently used in the site.  Hanging onto them until I can remember why I created these. */
@@ -634,8 +740,10 @@ LG = Large devices Desktops (≥1200px)
 */
 
 
-
-
+/******** TEMPORARY ********/
+.radial-svg .labels {
+    display: none;
+}
 
 
 
@@ -690,8 +798,8 @@ LG = Large devices Desktops (≥1200px)
 }
 
 #div1, #div2, #div3, #div4, #div5, #div6, #div7 {
-    width: 130px;
-    height: 160px;
+    width: 110px;
+    height: 110px;
     box-sizing: border-box;
     float: left;
 }
