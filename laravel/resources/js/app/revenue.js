@@ -15,7 +15,7 @@ var Revenue = React.createClass({
         $.get('http://api.openweathermap.org/data/2.5/weather', {
             APPID: '86376bb7c673c089067f51ae70a6e79e',
             units: 'imperial',
-            zip: '20132,us'   // TO DO: PULL ZIP FROM VENDOR ADDRESS
+            zip: '84020,us'   // TO DO: PULL ZIP FROM VENDOR ADDRESS (hard-coded Living Planet zip)
         })
         .done(function(result) {
             wnt.weather = result;
@@ -45,6 +45,7 @@ var Revenue = React.createClass({
                                 <option value="month">Current Month ({wnt.thisMonth})</option>
                                 <option value="custom">Custom</option>
                             </select>
+                            <Caret className="filter-caret" />
                         </form>
                     </div>
                 </div>

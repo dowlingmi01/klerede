@@ -262,6 +262,19 @@ header {
         margin-bottom: 10px;
     }
 }
+.filter-caret {
+    height: 7px;
+    position: absolute;
+    right: 20px;
+    top: 30px;
+    width: 11px;
+}
+#visits-blocks-widget,
+#members-blocks-widget {
+    .filter-caret {
+        top: 15px;
+    }
+}
 /******************************/
 /******** WELCOME TEXT ********/
 /******************************/
@@ -369,6 +382,9 @@ header {
 #visits-blocks-widget,
 #members-blocks-widget {
     .form-control {
+        appearance: none;
+            -moz-appearance: none;
+            -webkit-appearance: none;
         border: none;
         border-radius: 0;
         box-shadow: none;
@@ -388,10 +404,13 @@ header {
     h2 {
         float: left;
         font-size: 150%;
-        margin: 0;
+        margin: 10px 0 0 0;
         text-transform: uppercase;
     }
     .form-control {
+        appearance: none;
+            -moz-appearance: none;
+            -webkit-appearance: none;
         background-color: @lightgrey;
         border: none;
         border-radius: 0;
@@ -399,6 +418,7 @@ header {
         float: right;
         transition: none;
         width: 180px;
+
     }
 }
 .arrow-connector-right:after {

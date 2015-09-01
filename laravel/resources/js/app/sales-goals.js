@@ -46,6 +46,7 @@ var SalesGoals = React.createClass({
                                 <option value="month">Current Month ({wnt.thisMonth})</option>
                                 <option value="custom">Custom</option>
                             </select>
+                            <Caret className="filter-caret" />
                         </form>
                         <div className="clear goal">Goal: <span className="goalAmount">$2,000,000</span></div>
                         <div className="goalStatus">Status: <span className="goalStatusText ahead">Ahead</span></div>
@@ -60,6 +61,7 @@ var SalesGoals = React.createClass({
                             <select className="form-control">
                                 <option value="dollars">Dollars</option>
                             </select>
+                            <Caret className="filter-caret" />
                         </form>
                         <div id="div1" className="clear dial">
                             <div className="channel-info">

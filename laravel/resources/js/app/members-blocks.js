@@ -232,6 +232,7 @@ var MembersBlocksSet = React.createClass({
                                     <option value="lastYear">Yesterday compared to same day last year</option>
                                     <option value="lastYearAverage">Yesterday compared to average for the past year</option>
                                 </select>
+                                <Caret className="filter-caret" />
                             </form>
                         </div>
                     </div>
