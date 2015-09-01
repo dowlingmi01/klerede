@@ -21,7 +21,7 @@ var Revenue = React.createClass({
             wnt.weather = result;
             if(this.isMounted()) {
                 this.setState({
-                    icon: 'http://openweathermap.org/img/w/'+result.weather[0].icon+'.png',   // TO DO: CHANGE DOMAIN TO OUR ICONS
+                    icon: '/img/'+result.weather[0].icon+'.svg',
                     temp: Math.round(result.main.temp),
                     description: result.weather[0].description
                 });
