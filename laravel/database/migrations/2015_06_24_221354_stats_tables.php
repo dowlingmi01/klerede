@@ -33,6 +33,7 @@ class StatsTables extends Migration {
 			['id'=>2, 'code'=>'membership'],
 			['id'=>3, 'code'=>'group'],
 			['id'=>4, 'code'=>'other'],
+			['id'=>5, 'code'=>'donation'],
 		]);
 		Schema::create('membership_kind', function(Blueprint $table)
 		{
@@ -93,6 +94,10 @@ class StatsTables extends Migration {
 			['venue_id'=>1588, 'account_code_from'=>'000110110000'
 				, 'account_code_to'=>'000110119999', 'box_office_product_kind_id' => 2],
 			['venue_id'=>1588, 'account_code_from'=>'000110120000'
+				, 'account_code_to'=>'000110179999', 'box_office_product_kind_id' => 4],
+			['venue_id'=>1588, 'account_code_from'=>'000110180000'
+				, 'account_code_to'=>'000110189999', 'box_office_product_kind_id' => 5],
+			['venue_id'=>1588, 'account_code_from'=>'000110190000'
 				, 'account_code_to'=>'000110499999', 'box_office_product_kind_id' => 4],
 		]);
 	}
