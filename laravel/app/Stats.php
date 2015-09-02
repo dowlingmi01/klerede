@@ -11,7 +11,7 @@ class Stats {
 		}
 	}
 	static protected function formatPeriod(&$period, $type) {
-		if($type != 'date')
+		if($type != 'date' && $type != 'year')
 			$period = sprintf('%04d-%02d', $period / 100, $period % 100);
 	}
 	static function querySingle($venue_id, $query) {
