@@ -26,7 +26,16 @@ var wnt = {
         'October',
         'November',
         'December'
-    ]
+    ],
+    period: function(monthStart, monthStop, abbr){   // EXAMPLE: wnt.period(0,3,true) returns ['Jan','Feb','Mar']
+        var selectedMonths = wnt.months.slice(monthStart, monthStop);
+        if(abbr === true){
+            $.each(selectedMonths, function(index,value){
+                selectedMonths[index] = value.substring(0,3);
+            });
+        }
+        return selectedMonths;
+    }
 };
 
 /********************************************/

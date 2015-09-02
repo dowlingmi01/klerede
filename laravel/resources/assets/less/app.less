@@ -449,9 +449,10 @@ header {
     transform: translateY(50%);
     width: 0;    
 }
-.plus-sign-menu {
-    height: 8px;
-    width: 8px;
+.report-actions {
+    li {
+        float: left;
+    }
 }
 #total-sales-goals,
 #total-membership-goals {
@@ -581,13 +582,17 @@ header {
 }
 .widget {
     background-color: @white;
-    overflow: hidden;
+    /*overflow: hidden;*/
     padding: 15px;
     position: relative;
-    .action-menu {
+    .plus-sign-menu {
         position: absolute;
         right: 7px;
         top: 7px;
+        .plus-sign-button {
+            height: 8px;
+            width: 8px;
+        }
     }
 }
 /***********************************************/
