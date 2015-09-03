@@ -44,17 +44,21 @@ var wnt = {
 
 wnt.today = new Date();
 wnt.thisYear = wnt.today.getFullYear();
-wnt.thisMonth = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
-if(wnt.thisMonth < 3){
-    wnt.thisQuarter = 'Q1';
-} else if(wnt.thisMonth < 6){
-    wnt.thisQuarter = 'Q2';
-} else if(wnt.thisMonth < 9){
-    wnt.thisQuarter = 'Q3';
+wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
+wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
+if(wnt.thisMonthNum < 3){
+    wnt.thisQuarterNum = [0,3];
+    wnt.thisQuarterText = 'Q1';
+} else if(wnt.thisMonthNum < 6){
+    wnt.thisQuarterNum = [3,6];
+    wnt.thisQuarterText = 'Q2';
+} else if(wnt.thisMonthNum < 9){
+    wnt.thisQuarterNum = [6,9];
+    wnt.thisQuarterText = 'Q3';
 } else {
-    wnt.thisQuarter = 'Q4';
+    wnt.thisQuarterNum = [9,12];
+    wnt.thisQuarterText = 'Q4';
 }
-wnt.thisMonth = wnt.months[wnt.thisMonth];   // Set month to string
 wnt.yesterday = new Date(wnt.today);
 wnt.yesterday.setDate(wnt.today.getDate() - 1);
 wnt.yesterdaylastyear = new Date(wnt.today);

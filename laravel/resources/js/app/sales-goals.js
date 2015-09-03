@@ -6,7 +6,7 @@ var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
             visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
-            sample: 'value'
+            barSegments: wnt.period(0,12,true)
         };
     },
     componentDidMount: function() {
@@ -31,8 +31,45 @@ var SalesGoals = React.createClass({
         .fail(function(result) {
             console.log('SALES GOALS DATA ERROR! ... ' + result.statusText);
         });
+
+
+
+        d3.select('#total-sales-goals .bar-meter')
+            .selectAll('div')
+            .data(wnt.mytest)
+            .enter().append('div')
+            .text(function(d) { return d; });
+
+        d3.selectAll('#total-sales-goals .bar-meter div').data(wnt.mytest).exit().remove();
+
+    },
+    handleChange: function(event) {
+        var filter = event.target.value;
+        if(filter === 'year'){
+            this.setState({
+                barSegments: wnt.period(0, 12, true)
+            });
+        } else if(filter === 'quarter'){
+            this.setState({
+                barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true)
+            });
+        }  else if(filter === 'month'){
+            this.setState({
+                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum+1, true)
+            });
+        } else {
+            this.setState({
+                barSegments: wnt.period(0, 12, true)
+            });
+        }
+    },
+    componentDidUpdate: function(){
+        console.log('HELLO');
+
     },
     render: function() {
+        wnt.mytest = this.state.barSegments;
+        console.log(this.state.barSegments);
         return (
             <div className="row">
                 <div className="col-xs-6 col-md-6 arrow-connector-right">
@@ -40,17 +77,23 @@ var SalesGoals = React.createClass({
                         <h2>Total Sales Goals</h2>
                         <ActionMenu />
                         <form>
-                            <select className="form-control">
+                            <select className="form-control" onChange={this.handleChange}>
                                 <option value="year">Current Year ({wnt.thisYear})</option>
-                                <option value="quarter">Current Quarter ({wnt.thisQuarter})</option>
-                                <option value="month">Current Month ({wnt.thisMonth})</option>
+                                <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
+                                <option value="month">Current Month ({wnt.thisMonthText})</option>
                                 <option value="custom">Custom</option>
                             </select>
                             <Caret className="filter-caret" />
                         </form>
                         <div className="clear goal">Goal: <span className="goalAmount">$2,000,000</span></div>
                         <div className="goalStatus">Status: <span className="goalStatusText ahead">Ahead</span></div>
+
+
+                        
                         <div className="bar-meter clear"></div>
+
+
+
                     </div>
                 </div>
                 <div className="col-xs-6 col-md-6">
@@ -60,6 +103,7 @@ var SalesGoals = React.createClass({
                         <form>
                             <select className="form-control">
                                 <option value="dollars">Dollars</option>
+                                <option value="percap">Per Cap</option>
                             </select>
                             <Caret className="filter-caret" />
                         </form>

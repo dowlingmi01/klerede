@@ -40,9 +40,9 @@ var Revenue = React.createClass({
                         <h2>Revenue</h2>
                         <form>
                             <select className="form-control">
-                                <option value="year">Current Year ({wnt.thisYear})</option>
-                                <option value="quarter">Current Quarter ({wnt.thisQuarter})</option>
-                                <option value="month">Current Month ({wnt.thisMonth})</option>
+                                <option value="totals">Totals</option>
+                                <option value="members">Members</option>
+                                <option value="nonmembers">Non-members</option>
                                 <option value="custom">Custom</option>
                             </select>
                             <Caret className="filter-caret" />

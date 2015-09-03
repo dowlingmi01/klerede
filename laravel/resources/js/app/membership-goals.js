@@ -42,8 +42,8 @@ var MembershipGoals = React.createClass({
                         <form>
                             <select className="form-control">
                                 <option value="year">Current Year ({wnt.thisYear})</option>
-                                <option value="quarter">Current Quarter ({wnt.thisQuarter})</option>
-                                <option value="month">Current Month ({wnt.thisMonth})</option>
+                                <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
+                                <option value="month">Current Month ({wnt.thisMonthText})</option>
                                 <option value="custom">Custom</option>
                             </select>
                             <Caret className="filter-caret" />
@@ -60,6 +60,7 @@ var MembershipGoals = React.createClass({
                         <form>
                             <select className="form-control">
                                 <option value="dollars">Dollars</option>
+                                <option value="percap">Per Cap</option>
                             </select>
                             <Caret className="filter-caret" />
                         </form>
