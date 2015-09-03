@@ -71,6 +71,7 @@ var MembershipGoals = React.createClass({
                         <div className="clear goal">Membership Goal: <span className="goalAmount">#4,500</span></div>
                         <div className="goalStatus">Status: <span className="goalStatusText behind">Behind</span></div>
                         <div className="bar-meter clear">
+                            <div className="bar-meter-marker">#2,300</div>
                             <table className="bar-meter-segments">
                                 <tr>
                                     { this.state.barSegments.map(function(segment) {

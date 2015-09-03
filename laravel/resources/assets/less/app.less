@@ -552,6 +552,29 @@ header {
             padding: 5px 0 0 3px;
         }
     }
+    .bar-meter-marker {
+        background-color: @darkgrey;
+        border-radius: 3px;
+        color: @white;
+        left: 50%;
+        padding: 5px 10px;
+        position: absolute;
+        top: -34px;
+    }
+    .bar-meter-marker:after {
+        border: solid transparent;
+        border-color: rgba(21, 45, 65, 0);
+        border-top-color: @darkgrey;
+        border-width: 10px;
+        bottom: -20px;
+        content: " ";
+        height: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 50%;
+        transform: translateX(50%);
+        width: 0;
+    }
 }
 .weather-bar {
     background-color: @lightblue;
