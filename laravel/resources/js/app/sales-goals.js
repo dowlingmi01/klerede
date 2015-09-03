@@ -31,17 +31,6 @@ var SalesGoals = React.createClass({
         .fail(function(result) {
             console.log('SALES GOALS DATA ERROR! ... ' + result.statusText);
         });
-
-
-
-        d3.select('#total-sales-goals .bar-meter')
-            .selectAll('div')
-            .data(wnt.mytest)
-            .enter().append('div')
-            .text(function(d) { return d; });
-
-        d3.selectAll('#total-sales-goals .bar-meter div').data(wnt.mytest).exit().remove();
-
     },
     handleChange: function(event) {
         var filter = event.target.value;
@@ -63,13 +52,7 @@ var SalesGoals = React.createClass({
             });
         }
     },
-    componentDidUpdate: function(){
-        console.log('HELLO');
-
-    },
     render: function() {
-        wnt.mytest = this.state.barSegments;
-        console.log(this.state.barSegments);
         return (
             <div className="row">
                 <div className="col-xs-6 col-md-6 arrow-connector-right">
@@ -87,13 +70,11 @@ var SalesGoals = React.createClass({
                         </form>
                         <div className="clear goal">Goal: <span className="goalAmount">$2,000,000</span></div>
                         <div className="goalStatus">Status: <span className="goalStatusText ahead">Ahead</span></div>
-
-
-                        
-                        <div className="bar-meter clear"></div>
-
-
-
+                        <div className="bar-meter clear">
+                            { this.state.barSegments.map(function(segment) {
+                                return <Segment label={segment} />;
+                            }) }
+                        </div>
                     </div>
                 </div>
                 <div className="col-xs-6 col-md-6">

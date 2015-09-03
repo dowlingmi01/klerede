@@ -12,4 +12,14 @@ var ActionMenu = React.createClass({
     }
 });
 
+var Segment = React.createClass({
+    render: function() {
+        return (
+            <div>
+                {this.props.label}
+            </div>
+        );
+    }
+});
+
 console.log('Reusable parts loaded...');

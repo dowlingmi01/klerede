@@ -6,7 +6,7 @@ var MembershipGoals = React.createClass({
     getInitialState: function() {
         return {
             visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
-            sample: 'value'
+            barSegments: wnt.period(0,12,true)
         };
     },
     componentDidMount: function() {
@@ -32,6 +32,26 @@ var MembershipGoals = React.createClass({
             console.log('MEMBERSHIP GOALS DATA ERROR! ... ' + result.statusText);
         });
     },
+    handleChange: function(event) {
+        var filter = event.target.value;
+        if(filter === 'year'){
+            this.setState({
+                barSegments: wnt.period(0, 12, true)
+            });
+        } else if(filter === 'quarter'){
+            this.setState({
+                barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true)
+            });
+        }  else if(filter === 'month'){
+            this.setState({
+                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum+1, true)
+            });
+        } else {
+            this.setState({
+                barSegments: wnt.period(0, 12, true)
+            });
+        }
+    },
     render: function() {
         return (
             <div className="row">
@@ -40,7 +60,7 @@ var MembershipGoals = React.createClass({
                         <h2>Total Membership Goals</h2>
                         <ActionMenu />
                         <form>
-                            <select className="form-control">
+                            <select className="form-control" onChange={this.handleChange}>
                                 <option value="year">Current Year ({wnt.thisYear})</option>
                                 <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
                                 <option value="month">Current Month ({wnt.thisMonthText})</option>
@@ -50,7 +70,11 @@ var MembershipGoals = React.createClass({
                         </form>
                         <div className="clear goal">Membership Goal: <span className="goalAmount">#4,500</span></div>
                         <div className="goalStatus">Status: <span className="goalStatusText behind">Behind</span></div>
-                        <div className="bar-meter clear"></div>
+                        <div className="bar-meter clear">
+                            { this.state.barSegments.map(function(segment) {
+                                return <Segment label={segment} />;
+                            }) }
+                        </div>
                     </div>
                 </div>
                 <div className="col-xs-6 col-md-6">
