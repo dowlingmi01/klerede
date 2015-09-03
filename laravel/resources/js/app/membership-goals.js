@@ -38,7 +38,7 @@ var MembershipGoals = React.createClass({
                 <div className="col-xs-6 col-md-6 arrow-connector-right">
                     <div className="widget" id="total-membership-goals">
                         <h2>Total Membership Goals</h2>
-                        <div className="plus-sign-menu"><PlusSign className="plus-sign-button" /></div>
+                        <ActionMenu />
                         <form>
                             <select className="form-control">
                                 <option value="year">Current Year ({wnt.thisYear})</option>
@@ -56,7 +56,7 @@ var MembershipGoals = React.createClass({
                 <div className="col-xs-6 col-md-6">
                     <div className="widget" id="membership">
                         <h2>Membership / Donors</h2>
-                        <div className="plus-sign-menu"><PlusSign className="plus-sign-button" /></div>
+                        <ActionMenu />
                         <form>
                             <select className="form-control">
                                 <option value="dollars">Dollars</option>

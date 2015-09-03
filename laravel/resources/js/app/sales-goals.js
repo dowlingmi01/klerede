@@ -31,10 +31,6 @@ var SalesGoals = React.createClass({
         .fail(function(result) {
             console.log('SALES GOALS DATA ERROR! ... ' + result.statusText);
         });
-
-
-        $('.plus-sign-menu').popover();
-
     },
     render: function() {
         return (
@@ -42,9 +38,7 @@ var SalesGoals = React.createClass({
                 <div className="col-xs-6 col-md-6 arrow-connector-right">
                     <div className="widget" id="total-sales-goals">
                         <h2>Total Sales Goals</h2>
-                        <div className="plus-sign-menu" data-toggle="popover" data-html="true" data-content="<strong>Edit</strong> | <a href='www.google.com'>Save</a> | Email | Print" data-placement="top">
-                            <PlusSign className="plus-sign-button" />
-                        </div>
+                        <ActionMenu />
                         <form>
                             <select className="form-control">
                                 <option value="year">Current Year ({wnt.thisYear})</option>
@@ -62,9 +56,7 @@ var SalesGoals = React.createClass({
                 <div className="col-xs-6 col-md-6">
                     <div className="widget" id="earned-revenue-channels">
                         <h2>Earned Revenue Channels</h2>
-                        <div className="plus-sign-menu" data-toggle="popover" data-html="true" data-content="<strong>Edit</strong> | <a href='www.google.com'>Save</a> | Email? | Print" data-placement="top">
-                            <PlusSign className="plus-sign-button" />
-                        </div>
+                        <ActionMenu />
                         <form>
                             <select className="form-control">
                                 <option value="dollars">Dollars</option>

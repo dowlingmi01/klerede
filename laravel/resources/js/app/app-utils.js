@@ -66,6 +66,14 @@ wnt.yesterday = wnt.formatDate(wnt.yesterday);
 wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
 
+/*********************************************/
+/******** GLOBAL DOM-READY PROCESSING ********/
+/*********************************************/
+
+$(function(){
+    $('.plus-sign-menu').popover();
+});
+
 console.log('App utilities loaded...');
 
 
@@ -194,6 +202,5 @@ $(function(){
                 .diameter(140)
                 .value(80)
                 .render();
-
     }
 });
