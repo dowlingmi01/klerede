@@ -52,6 +52,16 @@ var MembershipGoals = React.createClass({
             });
         }
     },
+    componentDidUpdate: function(){
+        $('#total-membership-goals .bar-meter-marker')
+            .animate({
+                left: '50%',
+                transform: 'translateX(-50%)'
+            },
+            2000,
+            'easeOutElastic'
+        );
+    },
     render: function() {
         return (
             <div className="row">

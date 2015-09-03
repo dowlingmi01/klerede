@@ -52,6 +52,16 @@ var SalesGoals = React.createClass({
             });
         }
     },
+    componentDidUpdate: function(){
+        $('#total-sales-goals .bar-meter-marker')
+            .animate({
+                left: '25%',
+                transform: 'translateX(-25%)'
+            },
+            2000,
+            'easeOutElastic'
+        );
+    },
     render: function() {
         return (
             <div className="row">
