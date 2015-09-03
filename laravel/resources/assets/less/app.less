@@ -9,8 +9,9 @@
 /* Main font weights are 300 (light), 400 (normal), 500 (medium), 600 (semi-bold), 700 (bold), 800 (extra-bold) */
 @font-main: 'Raleway', sans-serif;
 
-body, label, .checkbox label {
+body, p, td, label, .checkbox label {
     font-family: @font-main;
+    font-size: 12px;
 	font-weight: 400;
 }
 
@@ -48,7 +49,6 @@ body, label, .checkbox label {
 body {
     background-color: @bg_page;
     /* Setting base font size to work with expected font unit conversion (pt --> %) for Raleway font family */
-    font-size: 12px;
     letter-spacing: .05em;
 }
 h1 {
@@ -536,12 +536,21 @@ header {
     position: relative;
     top: 20px;
     width: 100%;
-    div {
+    /*div {
         border-left: 1px solid #000;
         display: inline-block;
         float: left;
         margin: 26px 10px 0 0;
         padding: 5px 0 0 3px;
+    }*/
+    .bar-meter-segments {
+        position: relative;
+        top: 26px;
+        width: 100%;
+        .bar-meter-segment {
+            border-left: 1px solid #000;
+            padding: 5px 0 0 3px;
+        }
     }
 }
 .weather-bar {

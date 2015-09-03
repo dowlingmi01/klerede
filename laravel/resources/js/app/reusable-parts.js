@@ -15,9 +15,9 @@ var ActionMenu = React.createClass({
 var Segment = React.createClass({
     render: function() {
         return (
-            <div>
+            <td className="bar-meter-segment">
                 {this.props.label}
-            </div>
+            </td>
         );
     }
 });
