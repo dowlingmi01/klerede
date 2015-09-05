@@ -21,7 +21,7 @@ var MembershipGoals = React.createClass({
         )
         .done(function(result) {
             console.log('Membership Goals data loaded...');
-            wnt.members = result;
+            wnt.membersGoals = result;
             if(this.isMounted()) {
                 this.setState({
                     sample: result.myQuery.units
