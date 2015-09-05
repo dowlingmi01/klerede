@@ -127,3 +127,45 @@ SELECT source_id, v.venue_id, acp_id, p.id, ticket_code, m.id
    AND v.venue_id = m.venue_id
    AND v.kind = 'pass'
 ;
+
+
+
+LOAD DATA INFILE 'galaxyimport/cafetranheader.txt'
+INTO TABLE cafe_transaction
+LINES TERMINATED BY '\r\n'
+(source_id, venue_id, register_id, sequence, business_day, time, operator_id, agency_id)
+;
+
+LOAD DATA INFILE 'galaxyimport/cafetranline.txt'
+INTO TABLE cafe_transaction_line_galaxy
+LINES TERMINATED BY '\r\n'
+(source_id, venue_id, sequence, cafe_product_code, sale_price, quantity)
+;
+
+LOAD DATA INFILE 'galaxyimport/cafetranmemberinfo.txt'
+REPLACE
+INTO TABLE cafe_transaction_galaxy_member_info
+LINES TERMINATED BY '\r\n'
+(source_id, venue_id, @company_id, member_code)
+;
+
+UPDATE cafe_transaction_galaxy_member_info i
+STRAIGHT_JOIN cafe_transaction t
+    ON t.venue_id = i.venue_id AND t.source_id = i.source_id
+STRAIGHT_JOIN member m on i.venue_id = m.venue_id AND i.member_code = m.code
+   SET t.member_id = m.id
+;
+
+LOAD DATA INFILE 'galaxyimport/cafeitem.txt'
+INTO TABLE cafe_product
+LINES TERMINATED BY '\r\n'
+(venue_id, code, description, account_code)
+;
+
+INSERT cafe_transaction_line
+     ( cafe_transaction_id, sequence, cafe_product_id, sale_price, quantity )
+SELECT t.id, l.sequence, p.id, l.sale_price, l.quantity
+  FROM cafe_transaction_line_galaxy l
+STRAIGHT_JOIN cafe_transaction t ON l.venue_id = t.venue_id AND l.source_id = t.source_id
+STRAIGHT_JOIN cafe_product p ON l.cafe_product_code = p.code AND t.venue_id = p.venue_id
+;
