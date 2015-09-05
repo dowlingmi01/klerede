@@ -141,6 +141,7 @@ SELECT 1588 AS venue_id
      , Street2 as street_2
      , City as city
      , State as state
+     , Zip as zip
      , 'US' as country
      , Phone as phone
   FROM Galaxy1..Passes
