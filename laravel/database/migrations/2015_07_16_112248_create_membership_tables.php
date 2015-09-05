@@ -57,6 +57,7 @@ class CreateMembershipTables extends Migration {
 			$table->string('street_2');
 			$table->string('city');
 			$table->string('state');
+			$table->string('zip');
 			$table->string('country');
 			$table->string('phone');
 			$table->timestamps();
@@ -81,6 +82,7 @@ class CreateMembershipTables extends Migration {
 			$table->string('street_2');
 			$table->string('city');
 			$table->string('state');
+			$table->string('zip');
 			$table->string('country');
 			$table->string('phone');
 			$table->timestamps();
