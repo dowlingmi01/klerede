@@ -164,3 +164,56 @@ SELECT d.JnlTranID AS source_id
  WHERE TranKind = 1
    AND d.JnlCodeID = 1014
 GO
+IF object_id('cafe_transaction_header') IS NOT NULL
+   DROP VIEW cafe_transaction_header;
+GO
+CREATE VIEW cafe_transaction_header AS
+SELECT JnlTranID AS source_id
+     , 1588 AS venue_id
+     , NodeNo AS register_id
+     , TranNo AS sequence
+     , FiscalDate AS business_day
+     , TranDate AS time
+     , UserId AS operator_id
+     , n.Agency AS agency_id
+  FROM Galaxy1..JnlHeaders h
+  JOIN Galaxy1..Nodes n ON h.NodeNo = n.NodeNumber
+ WHERE TranKind = 1
+   AND CompanyID = 3
+GO
+IF object_id('cafe_transaction_line') IS NOT NULL
+   DROP VIEW cafe_transaction_line;
+GO
+CREATE VIEW cafe_transaction_line AS
+SELECT d.JnlTranID AS source_id
+     , 1588 AS venue_id
+     , d.JnlDetailID AS sequence
+	 , i.PLU AS cafe__product_code
+	 , d.Amount AS sale_price
+	 , d.Qty AS quantity
+  FROM Galaxy1..JnlDetails d
+  JOIN Galaxy1..JnlHeaders h WITH (INDEX(CIXJnlHeadersTranDate)) ON h.JnlTranID = d.JnlTranID
+  JOIN Galaxy1..JnlItems i ON d.AuxTableID = i.JnlItemID
+ WHERE TranKind = 1
+   AND CompanyID = 3
+   AND d.JnlCodeID BETWEEN 101 AND 104
+   AND d.AccountID LIKE '0003%'
+GO
+IF object_id('cafe_item') IS NOT NULL
+   DROP VIEW cafe_item;
+GO
+CREATE VIEW cafe_item AS
+SELECT 1588 AS venue_id
+     , PLU AS code
+	 , i.Descr AS description
+     , o.AccountID AS account_code
+  FROM Galaxy1..Items i
+  LEFT JOIN Galaxy1..COA o ON i.Company = o.CompanyID AND i.Category = o.Category AND i.SubCat = o.SubCat
+     AND (i.Kind NOT IN (4, 8, 17, 18) AND o.GLCode = 101
+       OR i.Kind = 4 AND o.GLCode = 310
+       OR i.Kind = 8 AND o.GLCode = 102
+       OR i.Kind = 17 AND o.GLCode = 103
+       OR i.Kind = 18 AND o.GLCode = 104
+     )
+ WHERE i.Company = 3
+GO
