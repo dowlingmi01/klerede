@@ -51,97 +51,41 @@ var MembersBlocksSet = React.createClass({
                 venue_id: this.props.venueID,
                 queries: {
 
-                    members_conversion: { specs: { type: 'members' }, periods: this.state.membersDate },
-                    members_conversion_compareto_daybefore: { specs: { type: 'members' }, periods: this.state.membersDayBefore },
-                    members_conversion_compareto_lastyear: { specs: { type: 'members' }, periods: this.state.membersDayLastYear },
-                    members_conversion_compareto_rolling: { specs: { type: 'members'},
-                        periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
-                            kind: 'average'
-                        }
-                    },
+                    // TO DO: CONVERSION, CAPTURE, RENEWAL ... AND ... YEAR AVERAGE
 
-                    members_expired: { specs: { type: 'members', kinds: ['ga'] }, periods: this.state.membersDate },
-                    members_expired_compareto_daybefore: { specs: { type: 'members', kinds: ['ga'] }, periods: this.state.membersDayBefore },
-                    members_expired_compareto_lastyear: { specs: { type: 'members', kinds: ['ga'] }, periods: this.state.membersDayLastYear },
-                    members_expired_compareto_rolling: { specs: { type: 'members', kinds: ['ga'] },
-                        periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
-                            kind: 'average'
-                        }
-                    },
-
-                    members_frequency: { specs: { type: 'members', kinds: ['group'] }, periods: this.state.membersDate },
-                    members_frequency_compareto_daybefore: { specs: { type: 'members', kinds: ['group'] }, periods: this.state.membersDayBefore },
-                    members_frequency_compareto_lastyear: { specs: { type: 'members', kinds: ['group'] }, periods: this.state.membersDayLastYear },
-                    members_frequency_compareto_rolling: { specs: { type: 'members', kinds: ['group'] },
-                        periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
-                            kind: 'average'
-                        }
-                    },
-
-                    members_recency: { specs: { type: 'members', kinds: ['membership'] }, periods: this.state.membersDate },
-                    members_recency_compareto_daybefore: { specs: { type: 'members', kinds: ['membership'] }, periods: this.state.membersDayBefore },
-                    members_recency_compareto_lastyear: { specs: { type: 'members', kinds: ['membership'] }, periods: this.state.membersDayLastYear },
-                    members_recency_compareto_rolling: { specs: { type: 'members', kinds: ['membership'] },
-                        periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
-                            kind: 'average'
-                        }
-                    },
-
-                    members_total: { specs: { type: 'members', kinds: ['ga', 'group'] }, periods: this.state.membersDate },
-                    members_total_compareto_daybefore: { specs: { type: 'members', kinds: ['ga', 'group'] }, periods: this.state.membersDayBefore },
-                    members_total_compareto_lastyear: { specs: { type: 'members', kinds: ['ga', 'group'] }, periods: this.state.membersDayLastYear },
-                    members_total_compareto_rolling: { specs: { type: 'members', kinds: ['ga', 'group'] },
-                        periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
-                            kind: 'average'
-                        }
-                    },
-
-                    members_velocity: { specs: { type: 'members', channel: 'gate' }, periods: this.state.membersDate },
-                    members_velocity_compareto_daybefore: { specs: { type: 'members', channel: 'gate' }, periods: this.state.membersDayBefore },
-                    members_velocity_compareto_lastyear: { specs: { type: 'members', channel: 'gate' }, periods: this.state.membersDayLastYear },
-                    members_velocity_compareto_rolling: { specs: { type: 'members', channel: 'gate' },
-                        periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
-                            kind: 'average'
-                        }
-                    }
+                    // {"members_total_frequency_recency":{"period":"2015-05-06","current_members":17341,"frequency":6.764367816,"recency":45.597701149}}
+                    members_total_frequency_recency: { specs: { type: 'members' }, periods: this.state.membersDate },
+                    members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: this.state.membersDayBefore },
+                    members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: this.state.membersDayLastYear }
 
                 }
             }
         )
         .done(function(result) {
             console.log('Members data loaded...');
+            result.members_total_frequency_recency.current_members = this.abbrNumber(result.members_total_frequency_recency.current_members);
+            result.members_total_frequency_recency_compareto_daybefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_daybefore.current_members);
+            result.members_total_frequency_recency_compareto_lastyear.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_lastyear.current_members);
             wnt.members = result;
             if(this.isMounted()) {
                 this.setState({
-                    membersConversion: result.members_conversion.units,
-                    membersConversionCompareTo: result.members_conversion_compareto_daybefore.units,
+                    /*membersConversion: result.members_conversion.units,
+                    membersConversionCompareTo: result.members_conversion_compareto_daybefore.units,*/
 
-                    membersExpired: result.members_expired.units,
-                    membersExpiredCompareTo: result.members_expired_compareto_daybefore.units,
+                    /*membersExpired: result.members_expired.units,
+                    membersExpiredCompareTo: result.members_expired_compareto_daybefore.units,*/
 
-                    membersFrequency: result.members_frequency.units,
-                    membersFrequencyCompareTo: result.members_frequency_compareto_daybefore.units,
+                    membersFrequency: result.members_total_frequency_recency.frequency,
+                    membersFrequencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.frequency,
 
-                    membersRecency: result.members_recency.units,
-                    membersRecencyCompareTo: result.members_recency_compareto_daybefore.units,
+                    membersRecency: result.members_total_frequency_recency.recency,
+                    membersRecencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.recency,
 
-                    membersTotal: result.members_total.units,
-                    membersTotalCompareTo: result.members_total_compareto_daybefore.units,
+                    membersTotal: result.members_total_frequency_recency.current_members,
+                    membersTotalCompareTo: result.members_total_frequency_recency_compareto_daybefore.current_members/*,
 
                     membersVelocity: result.members_velocity.amount,
-                    membersVelocityCompareTo: result.members_velocity_compareto_daybefore.amount
+                    membersVelocityCompareTo: result.members_velocity_compareto_daybefore.amount*/
                 });
                 // Set null data to '-'
                 var self = this;
@@ -166,32 +110,36 @@ var MembersBlocksSet = React.createClass({
         var filter = event.target.value;
         if(filter === 'lastYear'){
             this.setState({
-                membersConversionCompareTo: wnt.members.members_conversion_compareto_lastyear.units,
-                membersExpiredCompareTo: wnt.members.members_expired_compareto_lastyear.units,
-                membersFrequencyCompareTo: wnt.members.members_frequency_compareto_lastyear.units,
-                membersRecencyCompareTo: wnt.members.members_recency_compareto_lastyear.units,
-                membersTotalCompareTo: wnt.members.members_total_compareto_lastyear.units,
-                membersVelocityCompareTo: wnt.members.members_velocity_compareto_lastyear.amount
+                /*membersConversionCompareTo: wnt.members.members_conversion_compareto_lastyear.units,
+                membersExpiredCompareTo: wnt.members.members_expired_compareto_lastyear.units,*/
+                membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.frequency,
+                membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.recency,
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.current_members/*,
+                membersVelocityCompareTo: wnt.members.members_velocity_compareto_lastyear.amount*/
             });
         } else if(filter === 'lastYearAverage'){
             this.setState({
-                membersConversionCompareTo: wnt.members.members_conversion_compareto_rolling.units,
-                membersExpiredCompareTo: wnt.members.members_expired_compareto_rolling.units,
-                membersFrequencyCompareTo: wnt.members.members_frequency_compareto_rolling.units,
-                membersRecencyCompareTo: wnt.members.members_recency_compareto_rolling.units,
-                membersTotalCompareTo: wnt.members.members_total_compareto_rolling.units,
-                membersVelocityCompareTo: wnt.members.members_velocity_compareto_rolling.amount
+                /*membersConversionCompareTo: wnt.members.members_conversion_compareto_rolling.units,
+                membersExpiredCompareTo: wnt.members.members_expired_compareto_rolling.units,*/
+                membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.frequency,
+                membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.recency,
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.current_members/*,
+                membersVelocityCompareTo: wnt.members.members_velocity_compareto_rolling.amount*/
             });
         } else {
             this.setState({
-                membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore.units,
-                membersExpiredCompareTo: wnt.members.members_expired_compareto_daybefore.units,
-                membersFrequencyCompareTo: wnt.members.members_frequency_compareto_daybefore.units,
-                membersRecencyCompareTo: wnt.members.members_recency_compareto_daybefore.units,
-                membersTotalCompareTo: wnt.members.members_total_compareto_daybefore.units,
-                membersVelocityCompareTo: wnt.members.members_velocity_compareto_daybefore.amount
+                /*membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore.units,
+                membersExpiredCompareTo: wnt.members.members_expired_compareto_daybefore.units,*/
+                membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.frequency,
+                membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.recency,
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.current_members/*,
+                membersVelocityCompareTo: wnt.members.members_velocity_compareto_daybefore.amount*/
             });
         }
+    },
+    abbrNumber: function(number) {
+        number = Math.round((number / 1000) * 10) / 10;
+        return number;
     },
     formatNumbers: function(){
         // Format numbers and set the direction of the change arrows
@@ -200,18 +148,13 @@ var MembersBlocksSet = React.createClass({
             var oldstat = $(statblock).find('.compare-to');
             var change = $(statblock).find('svg');
             if( ($(newstat).html() !== '-') && ($(oldstat).html() !== '-') ){
-                if($(newstat).parseNumber({format:"$#,###", locale:"us"}) > $(oldstat).parseNumber({format:"$#,###", locale:"us"})){
+                if($(newstat).parseNumber({format:"#,###", locale:"us"}) > $(oldstat).parseNumber({format:"#,###", locale:"us"})){
                     $(change).attr('class','up');
                 } else {
                     $(change).attr('class','down');
                 }
-                if(index === 5){
-                    $(newstat).formatNumber({format:"$#,###", locale:"us"});
-                    $(oldstat).formatNumber({format:"$#,###", locale:"us"});
-                } else {
-                    $(newstat).formatNumber({format:"#,###", locale:"us"});
-                    $(oldstat).formatNumber({format:"#,###", locale:"us"});
-                }
+                $(newstat).formatNumber({format:"#,###.#", locale:"us"});
+                $(oldstat).formatNumber({format:"#,###.#", locale:"us"});
             }
         });
     },
