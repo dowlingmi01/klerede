@@ -109,7 +109,6 @@ class CreateMembershipTables extends Migration {
 			$table->string('zip');
 			$table->string('country');
 			$table->string('phone');
-			$table->timestamps();
 			$table->unique(['venue_id', 'code']);
 		});
 	}
