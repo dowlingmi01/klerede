@@ -90,12 +90,39 @@ SELECT u.UsageID AS source_id
  WHERE code = 0 AND u.Status = 0
  GROUP BY u.UsageID, u.ACP, u.VisualID, u.OperationID, u.Qty, u.UseNo, u.UseTime
 GO
+IF object_id('member') IS NOT NULL
+   DROP VIEW member;
+GO
+CREATE VIEW member AS
+SELECT 1588 AS venue_id
+     , c.CustContactID AS code
+     , c.Gender as gender
+     , c.AgeGroup as age_group
+     , c.DOB as dob
+     , c.FirstName as first
+     , c.MiddleName as middle
+     , c.LastName as last
+     , a.Street1 as street_1
+     , a.Street2 as street_2
+     , a.City as city
+     , a.State as state
+     , a.Postal as zip
+     , 'US' as country
+     , c.Phone as phone
+  FROM Galaxy1..CustContacts c
+  JOIN ( SELECT DISTINCT ContactID FROM Galaxy1..Passes
+          UNION
+         SELECT DISTINCT ContactID FROM Galaxy1..LoyaltyAccounts
+       ) x
+    ON x.ContactID = c.CustContactID
+  LEFT JOIN Galaxy1..Addresses a ON c.AddressID = a.AddressID
+GO
 IF object_id('membership') IS NOT NULL
    DROP VIEW membership;
 GO
 CREATE VIEW membership AS
 SELECT 1588 AS venue_id
-     , PassAcct as member_code
+     , ContactID as member_code
      , VisualID as code
      , PassNo as sequence
      , PLU as box_office_product_code
