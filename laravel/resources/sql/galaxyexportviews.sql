@@ -149,3 +149,18 @@ SELECT 1588 AS venue_id
    AND ValidUntil IS NOT NULL
    AND (ValidFrom > '2000-01-01' OR DateOpened IS NOT NULL)
 GO
+IF object_id('transaction_member_info') IS NOT NULL
+   DROP VIEW transaction_member_info;
+GO
+CREATE VIEW transaction_member_info AS
+SELECT d.JnlTranID AS source_id
+     , 1588 AS venue_id
+     , h.CompanyID as company_id
+     , a.ContactID as member_code
+  FROM Galaxy1..JnlDetails d
+  JOIN Galaxy1..JnlHeaders h WITH (INDEX(CIXJnlHeadersTranDate)) ON h.JnlTranID = d.JnlTranID
+  JOIN Galaxy1..JnlLoyaltyAccounts j ON d.AuxTableID = j.JnlLoyaltyAccountID
+  JOIN Galaxy1..LoyaltyAccounts a ON j.AccountNo = a.AccountNo
+ WHERE TranKind = 1
+   AND d.JnlCodeID = 1014
+GO
