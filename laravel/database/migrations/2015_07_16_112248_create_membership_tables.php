@@ -17,7 +17,12 @@ class CreateMembershipTables extends Migration {
 			$table->increments('id');
 			$table->integer('venue_id');
 			$table->string('code');
-			$table->integer('last_membership_id');
+			$table->integer('last_membership_id')->nullable();
+			$table->integer('member_name_id');
+			$table->integer('member_address_id');
+			$table->tinyInteger('gender');
+			$table->tinyInteger('age_group');
+			$table->date('dob')->nullable();
 			$table->timestamps();
 			$table->unique(['venue_id', 'code']);
 		});
@@ -63,6 +68,25 @@ class CreateMembershipTables extends Migration {
 			$table->timestamps();
 			$table->index(['street_1', 'street_2', 'city']);
 		});
+		Schema::create('member_galaxy', function(Blueprint $table)
+		{
+			$table->integer('venue_id');
+			$table->string('code');
+			$table->string('first');
+			$table->string('middle');
+			$table->string('last');
+			$table->tinyInteger('gender');
+			$table->tinyInteger('age_group');
+			$table->date('dob')->nullable();
+			$table->string('street_1');
+			$table->string('street_2');
+			$table->string('city');
+			$table->string('state');
+			$table->string('zip');
+			$table->string('country');
+			$table->string('phone');
+			$table->unique(['venue_id', 'code']);
+		});
 		Schema::create('membership_galaxy', function(Blueprint $table)
 		{
 			$table->integer('venue_id');
@@ -101,6 +125,7 @@ class CreateMembershipTables extends Migration {
 		Schema::dropIfExists('membership');
 		Schema::dropIfExists('member_name');
 		Schema::dropIfExists('member_address');
+		Schema::dropIfExists('member_galaxy');
 		Schema::dropIfExists('membership_galaxy');
 	}
 }
