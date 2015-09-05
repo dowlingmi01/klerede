@@ -217,6 +217,20 @@ var VisitsBlocksSet = React.createClass({
     },
     componentDidUpdate: function(){
         this.formatNumbers();
+        $('#visits-blocks-widget .up').css('top','35px')
+            .animate({
+                top: '0'
+            },
+            700,
+            'easeOutBounce'
+        );
+        $('#visits-blocks-widget .down').css('top','-35px')
+            .animate({
+                top: '0'
+            },
+            700,
+            'easeOutBounce'
+        );
     },
     render: function() {
         return (

@@ -21,7 +21,7 @@ var SalesGoals = React.createClass({
         )
         .done(function(result) {
             console.log('Sales Goals data loaded...');
-            wnt.visits = result;
+            wnt.sales = result;
             if(this.isMounted()) {
                 this.setState({
                     sample: result.myQuery.units
@@ -85,7 +85,7 @@ var SalesGoals = React.createClass({
                             <table className="bar-meter-segments">
                                 <tr>
                                     { this.state.barSegments.map(function(segment) {
-                                        return <Segment label={segment} />;
+                                        return <Segment key={segment} label={segment} />;
                                     }) }
                                 </tr>
                             </table>

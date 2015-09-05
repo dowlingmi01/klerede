@@ -32,6 +32,15 @@ var Revenue = React.createClass({
             console.log('WEATHER DATA ERROR! ... ' + result.statusText);
         });
     },
+    componentDidUpdate: function(){
+        $('.weather-icon img').css('opacity','0')
+            .animate({
+                opacity: '1'
+            },
+            1500,
+            'easeInSine'
+        );
+    },
     render: function() {
         return (
             <div className="row">

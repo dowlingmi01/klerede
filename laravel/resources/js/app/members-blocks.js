@@ -45,17 +45,16 @@ var MembersBlocksSet = React.createClass({
         };
     },
     componentDidMount: function() {
-        /*
         $.post(
             this.props.source,
             {
                 venue_id: this.props.venueID,
                 queries: {
 
-                    members_conversion: { specs: { type: 'visits' }, periods: this.state.membersDate },
-                    members_conversion_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.membersDayBefore },
-                    members_conversion_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.membersDayLastYear },
-                    members_conversion_compareto_rolling: { specs: { type: 'visits'},
+                    members_conversion: { specs: { type: 'members' }, periods: this.state.membersDate },
+                    members_conversion_compareto_daybefore: { specs: { type: 'members' }, periods: this.state.membersDayBefore },
+                    members_conversion_compareto_lastyear: { specs: { type: 'members' }, periods: this.state.membersDayLastYear },
+                    members_conversion_compareto_rolling: { specs: { type: 'members'},
                         periods: {
                             from: this.state.membersDayLastYear,
                             to: this.state.membersDate,
@@ -63,10 +62,10 @@ var MembersBlocksSet = React.createClass({
                         }
                     },
 
-                    members_expired: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.membersDate },
-                    members_expired_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.membersDayBefore },
-                    members_expired_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.membersDayLastYear },
-                    members_expired_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] },
+                    members_expired: { specs: { type: 'members', kinds: ['ga'] }, periods: this.state.membersDate },
+                    members_expired_compareto_daybefore: { specs: { type: 'members', kinds: ['ga'] }, periods: this.state.membersDayBefore },
+                    members_expired_compareto_lastyear: { specs: { type: 'members', kinds: ['ga'] }, periods: this.state.membersDayLastYear },
+                    members_expired_compareto_rolling: { specs: { type: 'members', kinds: ['ga'] },
                         periods: {
                             from: this.state.membersDayLastYear,
                             to: this.state.membersDate,
@@ -74,10 +73,10 @@ var MembersBlocksSet = React.createClass({
                         }
                     },
 
-                    members_frequency: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.membersDate },
-                    members_frequency_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.membersDayBefore },
-                    members_frequency_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.membersDayLastYear },
-                    members_frequency_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] },
+                    members_frequency: { specs: { type: 'members', kinds: ['group'] }, periods: this.state.membersDate },
+                    members_frequency_compareto_daybefore: { specs: { type: 'members', kinds: ['group'] }, periods: this.state.membersDayBefore },
+                    members_frequency_compareto_lastyear: { specs: { type: 'members', kinds: ['group'] }, periods: this.state.membersDayLastYear },
+                    members_frequency_compareto_rolling: { specs: { type: 'members', kinds: ['group'] },
                         periods: {
                             from: this.state.membersDayLastYear,
                             to: this.state.membersDate,
@@ -85,10 +84,10 @@ var MembersBlocksSet = React.createClass({
                         }
                     },
 
-                    members_recency: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.membersDate },
-                    members_recency_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.membersDayBefore },
-                    members_recency_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.membersDayLastYear },
-                    members_recency_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
+                    members_recency: { specs: { type: 'members', kinds: ['membership'] }, periods: this.state.membersDate },
+                    members_recency_compareto_daybefore: { specs: { type: 'members', kinds: ['membership'] }, periods: this.state.membersDayBefore },
+                    members_recency_compareto_lastyear: { specs: { type: 'members', kinds: ['membership'] }, periods: this.state.membersDayLastYear },
+                    members_recency_compareto_rolling: { specs: { type: 'members', kinds: ['membership'] },
                         periods: {
                             from: this.state.membersDayLastYear,
                             to: this.state.membersDate,
@@ -96,10 +95,10 @@ var MembersBlocksSet = React.createClass({
                         }
                     },
 
-                    members_total: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.membersDate },
-                    members_total_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.membersDayBefore },
-                    members_total_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.membersDayLastYear },
-                    members_total_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] },
+                    members_total: { specs: { type: 'members', kinds: ['ga', 'group'] }, periods: this.state.membersDate },
+                    members_total_compareto_daybefore: { specs: { type: 'members', kinds: ['ga', 'group'] }, periods: this.state.membersDayBefore },
+                    members_total_compareto_lastyear: { specs: { type: 'members', kinds: ['ga', 'group'] }, periods: this.state.membersDayLastYear },
+                    members_total_compareto_rolling: { specs: { type: 'members', kinds: ['ga', 'group'] },
                         periods: {
                             from: this.state.membersDayLastYear,
                             to: this.state.membersDate,
@@ -107,10 +106,10 @@ var MembersBlocksSet = React.createClass({
                         }
                     },
 
-                    members_velocity: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.membersDate },
-                    members_velocity_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.membersDayBefore },
-                    members_velocity_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.membersDayLastYear },
-                    members_velocity_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
+                    members_velocity: { specs: { type: 'members', channel: 'gate' }, periods: this.state.membersDate },
+                    members_velocity_compareto_daybefore: { specs: { type: 'members', channel: 'gate' }, periods: this.state.membersDayBefore },
+                    members_velocity_compareto_lastyear: { specs: { type: 'members', channel: 'gate' }, periods: this.state.membersDayLastYear },
+                    members_velocity_compareto_rolling: { specs: { type: 'members', channel: 'gate' },
                         periods: {
                             from: this.state.membersDayLastYear,
                             to: this.state.membersDate,
@@ -162,7 +161,6 @@ var MembersBlocksSet = React.createClass({
         .fail(function(result) {
             console.log('MEMBERS DATA ERROR! ... ' + result.statusText);
         });
-        */
     },
     handleChange: function(event) {
         var filter = event.target.value;
@@ -219,6 +217,20 @@ var MembersBlocksSet = React.createClass({
     },
     componentDidUpdate: function(){
         this.formatNumbers();
+        $('#members-blocks-widget .up').css('top','35px')
+            .animate({
+                top: '0'
+            },
+            700,
+            'easeOutBounce'
+        );
+        $('#members-blocks-widget .down').css('top','-35px')
+            .animate({
+                top: '0'
+            },
+            700,
+            'easeOutBounce'
+        );
     },
     render: function() {
         return (

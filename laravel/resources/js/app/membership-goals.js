@@ -21,7 +21,7 @@ var MembershipGoals = React.createClass({
         )
         .done(function(result) {
             console.log('Membership Goals data loaded...');
-            wnt.visits = result;
+            wnt.members = result;
             if(this.isMounted()) {
                 this.setState({
                     sample: result.myQuery.units
@@ -85,7 +85,7 @@ var MembershipGoals = React.createClass({
                             <table className="bar-meter-segments">
                                 <tr>
                                     { this.state.barSegments.map(function(segment) {
-                                        return <Segment label={segment} />;
+                                        return <Segment key={segment} label={segment} />;
                                     }) }
                                 </tr>
                             </table>
