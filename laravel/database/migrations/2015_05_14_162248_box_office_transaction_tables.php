@@ -83,7 +83,6 @@ class BoxOfficeTransactionTables extends Migration {
 			$table->integer('quantity');
 			$table->integer('use_no');
 			$table->dateTime('time');
-			$table->timestamps();
 			$table->primary('source_id');
 		});
 		Schema::create('visit', function(Blueprint $table)
