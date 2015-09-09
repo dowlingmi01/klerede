@@ -92,10 +92,10 @@ console.log('App utilities loaded...');
 /***********************************************************************************/
 /***********************************************************************************/
 /***********************************************************************************/
-/***************************/
-/******** TEST DIAL ********/
-/***************************/
 $(function(){
+    /***************************/
+    /******** TEST DIAL ********/
+    /***************************/
     var div1=d3.select(document.getElementById('div1'));
     var div2=d3.select(document.getElementById('div2'));
     var div3=d3.select(document.getElementById('div3'));
@@ -207,4 +207,45 @@ $(function(){
                 .value(80)
                 .render();
     }
+
+
+
+    /*************************************/
+    /******** TEST BAR GRAPH WAVE ********/
+    /*************************************/
+    //The data for our line
+    var lineData = [
+      { "x": 0,   "y": 200},
+      { "x": 1,   "y": 5},
+      { "x": 20,  "y": 20},
+      { "x": 40,  "y": 10},
+      { "x": 60,  "y": 40},
+      { "x": 80,  "y": 5},
+      { "x": 150, "y": 60},
+      { "x": 200, "y": 35},
+      { "x": 300, "y": 80},
+      { "x": 350, "y": 15},
+      { "x": 400, "y": 55},
+      {"x": 500, "y": 40},
+      {"x": 500, "y": 200}
+    ];
+
+    //This is the accessor function we talked about above
+    var lineFunction = d3.svg.line()
+          .x(function(d) { return d.x; })
+          .y(function(d) { return d.y; })
+          .interpolate("monotone");
+
+    //The SVG Container
+    var svgContainer = d3.select("#bar-graph").append("svg")
+          .attr("width", "100%")
+          .attr("height", 200);
+
+    //The line SVG Path we draw
+    var lineGraph = svgContainer.append("path")
+          .attr("d", lineFunction(lineData))
+          .attr("fill", "rgba(236,234,231,1)");
 });
+
+
+

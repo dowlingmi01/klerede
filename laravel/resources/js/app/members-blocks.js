@@ -58,6 +58,32 @@ var MembersBlocksSet = React.createClass({
                     members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: this.state.membersDayBefore },
                     members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: this.state.membersDayLastYear }
 
+
+                    /*
+                        // MEMBERSHIP CONVERSION
+                        // Membership sales for one day / total admissions
+                        $.post('/api/v1/stats/query', { venue_id: '1588', queries: {
+                            memberships_day: { 
+                                specs: { 
+                                    type: 'sales',
+                                    kinds: ['membership']
+                                },
+                                periods: '2015-05-06'
+                            }
+                        }}).done(function(result){wnt.memberships_day = result.memberships_day.units;});
+                        $.post('/api/v1/stats/query', { venue_id: '1588', queries: {
+                            visits_day: { 
+                                specs: { 
+                                    type: 'visits'
+                                },
+                                periods: '2015-05-06'
+                            }
+                        }}).done(function(result){wnt.visits_day = result.visits_day.units;});
+                        wnt.membership_conversion = parseInt(wnt.memberships_day) / parseInt(wnt.visits_day);
+                        console.log(wnt.membership_conversion);
+
+                    */
+
                 }
             }
         )

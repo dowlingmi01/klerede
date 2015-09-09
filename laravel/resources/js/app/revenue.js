@@ -56,6 +56,50 @@ var Revenue = React.createClass({
                             </select>
                             <Caret className="filter-caret" />
                         </form>
+                        
+
+
+                        <div id="bar-graph">
+                            <div className="bar-set">
+                                <div className="bar-section bar-section-cafe"></div>
+                                <div className="bar-section bar-section-gift"></div>
+                                <div className="bar-section bar-section-member"></div>
+                                <div className="bar-section bar-section-other"></div>
+                            </div>
+                            <div className="bar-set">
+                                <div className="bar-section bar-section-cafe"></div>
+                                <div className="bar-section bar-section-gift"></div>
+                                <div className="bar-section bar-section-member"></div>
+                                <div className="bar-section bar-section-other"></div>
+                            </div>
+                            <div className="bar-set">
+                                <div className="bar-section bar-section-cafe"></div>
+                                <div className="bar-section bar-section-gift"></div>
+                                <div className="bar-section bar-section-member"></div>
+                                <div className="bar-section bar-section-other"></div>
+                            </div>
+                            <div className="bar-set">
+                                <div className="bar-section bar-section-cafe"></div>
+                                <div className="bar-section bar-section-gift"></div>
+                                <div className="bar-section bar-section-member"></div>
+                                <div className="bar-section bar-section-other"></div>
+                            </div>
+                            <div className="bar-set">
+                                <div className="bar-section bar-section-cafe"></div>
+                                <div className="bar-section bar-section-gift"></div>
+                                <div className="bar-section bar-section-member"></div>
+                                <div className="bar-section bar-section-other"></div>
+                            </div>
+                            <div className="bar-line"></div>
+                            <div className="bar-line"></div>
+                            <div className="bar-line"></div>
+                            <div className="bar-line"></div>
+                            <div className="bar-line"></div>
+                            <div className="bar-line"></div>
+                        </div>
+
+
+
                     </div>
                 </div>
                 <div className="col-xs-4 col-md-4 arrow-connector-left">

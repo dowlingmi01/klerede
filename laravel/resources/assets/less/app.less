@@ -582,6 +582,78 @@ header {
         width: 0;
     }
 }
+
+
+
+
+
+#bar-graph {
+  border-bottom: 2px solid @darkgrey;
+  border-left: 2px solid @darkgrey;
+  clear: both;
+  height: 300px;
+  margin: 0 auto;
+  position: relative;
+  top: 30px;
+  width: 80%;
+}
+#bar-graph svg {
+  bottom: 0;
+  position: absolute;
+}
+.bar-line {
+  border-top: 1px solid #ddd;
+  bottom: 0;
+  height: 50px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+.bar-set {
+  bottom: 0;
+  left: 5%;
+  overflow: hidden;
+  position: absolute;
+  width: 10%;
+  z-index: 2;
+}
+.bar-set:nth-child(2) {
+  left: 25%;
+}
+.bar-set:nth-child(3) {
+  left: 45%;
+}
+.bar-set:nth-child(4) {
+  left: 65%;
+}
+.bar-set:nth-child(5) {
+  left: 85%;
+}
+.bar-set:nth-child(2) .bar-section {
+  height: 20px;
+}
+.bar-section {
+  background-color: #ccebeb;
+  height: 50px;
+  width: 100%;
+}
+.bar-section:nth-child(1) {
+  background-color: @cobalt;
+}
+.bar-section:nth-child(2) {
+  background-color: @teal;
+}
+.bar-section:nth-child(3) {
+  background-color: @aqua;
+}
+.bar-section:nth-child(4) {
+  background-color: @gold;
+}
+
+
+
+
+
 .weather-bar {
     background-color: @lightblue;
     height: 84px;
