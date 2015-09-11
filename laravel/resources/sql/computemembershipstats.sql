@@ -8,8 +8,10 @@ BEGIN
 SET @mydate = d_to;
 WHILE @mydate >= d_from DO
      INSERT stat_members
-     ( venue_id, date, recency, frequency, returning_members, current_members )
+     ( venue_id, date, recency, frequency, returning_members, current_members
+     , created_at, updated_at )
      SELECT venue_id, @mydate, avg(dayslastv), avg(nv), count(*), 0
+          , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
        FROM (
           SELECT p.venue_id
                , p.member_id
@@ -34,15 +36,19 @@ WHILE @mydate >= d_from DO
      UPDATE recency = VALUES(recency)
           , frequency = VALUES(frequency)
           , returning_members = VALUES(returning_members)
+	      , updated_at = CURRENT_TIMESTAMP
      ;
      INSERT stat_members
-     ( venue_id, date, recency, frequency, returning_members, current_members )
+     ( venue_id, date, recency, frequency, returning_members, current_members
+     , created_at, updated_at )
      SELECT venue_id, @mydate, 0, 0, 0, count(distinct member_id)
+          , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
        FROM membership
       WHERE @mydate BETWEEN date_from AND date_to
       GROUP BY venue_id
      ON DUPLICATE KEY
      UPDATE current_members = VALUES(current_members)
+	      , updated_at = CURRENT_TIMESTAMP
      ;
      SET @mydate = date_sub(@mydate, interval 1 day);
 END WHILE;
