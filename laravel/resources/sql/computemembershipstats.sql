@@ -23,7 +23,7 @@ WHILE @mydate >= d_from DO
                SELECT DISTINCT member_id
                  FROM visit u
                  JOIN membership p ON u.membership_id = p.id
-				WHERE date(u.time) = @mydate
+				WHERE u.time between @mydate and date_add(@mydate, interval 1 day)
              ) m
 			JOIN membership p ON m.member_id = p.member_id
             JOIN visit u  ON u.membership_id = p.id

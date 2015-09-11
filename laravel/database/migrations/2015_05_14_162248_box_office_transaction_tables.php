@@ -101,6 +101,7 @@ class BoxOfficeTransactionTables extends Migration {
 			$table->dateTime('time');
 			$table->timestamps();
 			$table->index(['membership_id']);
+			$table->index(['time']);
 		});
 	}
 
