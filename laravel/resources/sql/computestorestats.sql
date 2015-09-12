@@ -9,7 +9,7 @@ SELECT t.venue_id, t.business_day, year(t.business_day)
      , year(t.business_day)*100 + week(t.business_day)
      , 4 as channel_id, 0
      , 0, IF(member_xstore_id IS NULL , 0, 1) as members, 0
-     , sum(quantity), sum(sale_price)
+     , count(distinct t.id), sum(sale_price)
   FROM store_transaction t
   JOIN store_transaction_line l ON l.store_transaction_id = t.id
  GROUP BY t.venue_id, t.business_day, members
