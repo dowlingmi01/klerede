@@ -45,7 +45,7 @@ class Stats {
 			self::validatePeriod($periods->from, $periods->type);
 			self::validatePeriod($periods->to, $periods->type);
 			$dbquery->whereBetween($periods->type, [$periods->from, $periods->to]);
-			if($periods->kind == 'detail' || $periods->kind == 'average')
+			if($periods->kind == 'detail' || ($specs->type != 'members' && $periods->kind == 'average'))
 				$dbquery->groupBy($periods->type);
 			else
 				$includePeriod = false;
@@ -72,22 +72,28 @@ class Stats {
 		if($includePeriod)
 			$dbquery->addSelect("$includePeriod as period");
 
-		if($specs->type == 'members')
-			$dbquery->addSelect(['current_members', 'frequency', 'recency']);
-		else {
+		if($specs->type == 'members') {
+			if($periods->kind == 'average') {
+				$dbquery->addSelect([DB::raw('avg(current_members) as current_members')
+					, DB::raw('avg(frequency) as frequency')
+					, DB::raw('avg(recency) as recency')]);
+			} else {
+				$dbquery->addSelect(['current_members', 'frequency', 'recency']);
+			}
+		} else {
 			$dbquery->addSelect(DB::raw('sum(units) as units'));
 			if($specs->type == 'sales')
 				$dbquery->addSelect(DB::raw('sum(amount) as amount'));
-		}
 
-		if($periods->kind == 'average') {
-			$subquery = $dbquery;
-			$dbquery = DB::table(DB::raw("({$subquery->toSql()}) as sub"))
-				->mergeBindings($subquery);
-			$dbquery->addSelect(DB::raw('avg(units) as units'));
-			if($specs->type == 'sales')
-				$dbquery->addSelect(DB::raw('avg(amount) as amount'));
-			$includePeriod = false;
+			if($periods->kind == 'average') {
+				$subquery = $dbquery;
+				$dbquery = DB::table(DB::raw("({$subquery->toSql()}) as sub"))
+					->mergeBindings($subquery);
+				$dbquery->addSelect(DB::raw('avg(units) as units'));
+				if($specs->type == 'sales')
+					$dbquery->addSelect(DB::raw('avg(amount) as amount'));
+				$includePeriod = false;
+			}
 		}
 
 		$result = $dbquery->get();

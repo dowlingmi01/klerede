@@ -45,6 +45,7 @@ class CreateMembershipTables extends Migration {
 			$table->unique(['venue_id', 'sequence']);
 			$table->unique(['venue_id', 'code']);
 			$table->index(['member_id']);
+			$table->index(['date_from', 'date_to']);
 		});
 		Schema::create('member_name', function(Blueprint $table)
 		{
