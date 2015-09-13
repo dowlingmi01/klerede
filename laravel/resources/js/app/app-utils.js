@@ -213,6 +213,7 @@ $(function(){
     /*************************************/
     /******** TEST BAR GRAPH WAVE ********/
     /*************************************/
+    var barGraphWidth = $('#bar-graph').width();
     //The data for our line
     var lineData = [
       { "x": 0,   "y": 200},
@@ -226,8 +227,8 @@ $(function(){
       { "x": 300, "y": 80},
       { "x": 350, "y": 15},
       { "x": 400, "y": 55},
-      {"x": 500, "y": 40},
-      {"x": 500, "y": 200}
+      {"x": barGraphWidth, "y": 40},
+      {"x": barGraphWidth, "y": 200}
     ];
 
     //This is the accessor function we talked about above

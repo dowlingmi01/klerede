@@ -10,6 +10,7 @@
 @font-main: 'Raleway', sans-serif;
 
 body, p, td, label, .checkbox label {
+    color: @darkgrey;
     font-family: @font-main;
     font-size: 12px;
 	font-weight: 400;
@@ -588,7 +589,12 @@ header {
 
 
 
-
+.bar-graph-legend {
+    float: right;
+    div {
+        float: left;
+    }
+}
 #bar-graph {
   border-bottom: 2px solid @darkgrey;
   border-left: 2px solid @darkgrey;
@@ -606,30 +612,65 @@ header {
 .bar-line {
   border-top: 1px solid #ddd;
   bottom: 0;
-  height: 50px;
+  height: 75px;
   position: relative;
   width: 100%;
   z-index: 1;
 }
+.bar-line-1:before {
+    content: '2 --';
+    left: -17px;
+    position: absolute;
+    top: -9.5px;
+}
+.bar-line-2:before {
+    content: '4 --';
+    left: -17px;
+    position: absolute;
+    top: -9.5px;
+}
+.bar-line-3:before {
+    content: '6 --';
+    left: -18px;
+    position: absolute;
+    top: -9.5px;
+}
+.bar-line-4:before {
+    content: '8 --';
+    left: -18px;
+    position: absolute;
+    top: -9.5px;
+}
 .bar-set {
   bottom: 0;
-  left: 5%;
-  overflow: hidden;
+  left: 7%;
   position: absolute;
-  width: 10%;
+  width: 5%;
   z-index: 2;
 }
+.bar-set-date {
+    bottom: -20px;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+}
 .bar-set:nth-child(2) {
-  left: 25%;
+  left: 21%;
 }
 .bar-set:nth-child(3) {
-  left: 45%;
+  left: 35%;
 }
 .bar-set:nth-child(4) {
-  left: 65%;
+  left: 49%;
 }
 .bar-set:nth-child(5) {
-  left: 85%;
+  left: 63%;
+}
+.bar-set:nth-child(6) {
+  left: 77%;
+}
+.bar-set:nth-child(7) {
+  left: 91%;
 }
 .bar-set:nth-child(2) .bar-section {
   height: 20px;
@@ -650,6 +691,43 @@ header {
 }
 .bar-section:nth-child(4) {
   background-color: @gold;
+}
+.bar-graph-label-y {
+    font-size: 80%;
+    left: -60px;
+    position: absolute;
+    top: 50%;
+    transform: rotate(270deg) translateX(50%);
+    z-index: 2;
+}
+.bar-graph-label-projected {
+    font-size: 90%;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    .legend-projected {
+        background-color: @lightgrey;
+        border-radius: 5px;
+        display: inline-block;
+        height: 10px;
+        width: 10px;
+    }
+}
+.bar-graph-slider {
+    background-color: @lightgrey;
+    height: 9px;
+    position: relative;
+    top: 30px;
+    .bar-graph-slider-control {
+        background-color: @mediumgrey;
+        height: 15px;
+        left: 50%;
+        text-align: center;
+        transform: translateX(-50%);
+        position: relative;
+        top: -3px;
+        width: 46px;
+    }
 }
 
 
