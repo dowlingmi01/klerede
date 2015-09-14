@@ -65,7 +65,7 @@ var Revenue = React.createClass({
                             <select className="form-control">
                                 <option value="totals">This Week (05.24-05.30)</option>
                             </select>
-                            <CalendarIcon className="filter-caret" />
+                            <CalendarIcon className="filter-calendar" />
                         </form>
 
                         <form id="filter-revenue-section">
@@ -87,10 +87,30 @@ var Revenue = React.createClass({
                         </form>
 
                         <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-boxoffice"><CheckMark /> Box Office</div>
-                            <div className="bar-graph-legend-cafe"><CheckMark /> Cafe</div>
-                            <div className="bar-graph-legend-giftstore"><CheckMark /> Gift Store</div>
-                            <div className="bar-graph-legend-membership"><CheckMark /> Membership</div>
+                            <div className="bar-graph-legend-item">
+                                <div className="legend-check-circle">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Box Office
+                            </div>
+                            <div className="bar-graph-legend-item">
+                                <div className="legend-check-circle">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Cafe
+                            </div>
+                            <div className="bar-graph-legend-item">
+                                <div className="legend-check-circle">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Gift Store
+                            </div>
+                            <div className="bar-graph-legend-item">
+                                <div className="legend-check-circle">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Membership
+                            </div>
                         </div>
 
                         <div id="bar-graph">

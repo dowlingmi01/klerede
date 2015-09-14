@@ -588,11 +588,88 @@ header {
 
 
 
-
+#filter-revenue-week {
+    clear: both;
+    display: inline-block;
+    float: left;
+    margin-top: 10px;
+    position: relative;
+    .form-control {
+        padding-right: 30px;
+        width: auto;
+    }
+    .filter-calendar {
+        height: 15px;
+        position: absolute;
+        right: 6px;
+        top: 8px;
+        width: 15px;
+    }
+}
+#filter-revenue-section {
+    display: inline-block;
+    float: right;
+    margin-top: 10px;
+    position: relative;
+    .form-control {
+        padding-right: 30px;
+        width: auto;
+    }
+    .filter-caret {
+        height: 7px;
+        position: absolute;
+        right: 9px;
+        top: 14px;
+        width: 11px;
+    }
+}
+#filter-revenue-units {
+    clear: both;
+    display: inline-block;
+    float: left;
+    margin-top: 10px;
+    position: relative;
+    .form-control {
+        padding-right: 30px;
+        width: auto;
+    }
+    .filter-caret {
+        height: 7px;
+        position: absolute;
+        right: 9px;
+        top: 14px;
+        width: 11px;
+    }
+}
 .bar-graph-legend {
     float: right;
-    div {
+    margin-top: 10px;
+    .bar-graph-legend-item {
         float: left;
+        span {
+            display: inline-block;
+            float: left;
+            padding: 3px 10px 0 3px;
+        }
+    }
+    .bar-graph-legend-item:nth-child(1) .legend-check-circle { background-color: @cobalt; }
+    .bar-graph-legend-item:nth-child(2) .legend-check-circle { background-color: @teal }
+    .bar-graph-legend-item:nth-child(3) .legend-check-circle { background-color: @aqua; }
+    .bar-graph-legend-item:nth-child(4) .legend-check-circle { background-color: @gold; }
+}
+.legend-check-circle {
+    border-radius: 10px;
+    float: left;
+    height: 20px;
+    width: 20px;
+}
+.legend-check {
+    height: 20px;
+    left: 5px;
+    position: relative;
+    width: 10px;
+    path {
+        fill: @white;
     }
 }
 #bar-graph {
