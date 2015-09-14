@@ -526,7 +526,7 @@ header {
 }
 #revenue,
 #earned-revenue {
-    height: 675px;
+    height: 530px;  /* 675px */
 }
 .widget#earned-revenue {
     padding: 0;
@@ -585,9 +585,7 @@ header {
         width: 0;
     }
 }
-
-
-
+/******** REVENUE BAR GRAPH AND FILTERS ********/
 #filter-revenue-week {
     clear: both;
     display: inline-block;
@@ -673,26 +671,26 @@ header {
     }
 }
 #bar-graph {
-  border-bottom: 2px solid @darkgrey;
-  border-left: 2px solid @darkgrey;
-  clear: both;
-  height: 300px;
-  margin: 0 auto;
-  position: relative;
-  top: 30px;
-  width: 80%;
+    border-bottom: 2px solid @darkgrey;
+    border-left: 2px solid @darkgrey;
+    clear: both;
+    height: 300px;
+    margin: 0 auto;
+    position: relative;
+    top: 30px;
+    width: 80%;
 }
 #bar-graph svg {
-  bottom: 0;
-  position: absolute;
+    bottom: 0;
+    position: absolute;
 }
 .bar-line {
-  border-top: 1px solid #ddd;
-  bottom: 0;
-  height: 75px;
-  position: relative;
-  width: 100%;
-  z-index: 1;
+    border-top: 1px solid #ddd;
+    bottom: 0;
+    height: 75px;
+    position: relative;
+    width: 100%;
+    z-index: 1;
 }
 .bar-line-1:before {
     content: '2 --';
@@ -719,11 +717,11 @@ header {
     top: -9.5px;
 }
 .bar-set {
-  bottom: 0;
-  left: 7%;
-  position: absolute;
-  width: 5%;
-  z-index: 2;
+    bottom: 0;
+    left: 7%;
+    position: absolute;
+    width: 5%;
+    z-index: 2;
 }
 .bar-set-date {
     bottom: -20px;
@@ -732,42 +730,57 @@ header {
     transform: translateX(-50%);
 }
 .bar-set:nth-child(2) {
-  left: 21%;
+    left: 21%;
+    .bar-section {
+        height: 20px;
+    }
 }
 .bar-set:nth-child(3) {
-  left: 35%;
+    left: 35%;
+    .bar-section {
+        height: 30px;
+    }
 }
 .bar-set:nth-child(4) {
-  left: 49%;
+    left: 49%;
+    .bar-section {
+        height: 50px;
+    }
 }
 .bar-set:nth-child(5) {
-  left: 63%;
+    left: 63%;
+    .bar-section {
+        height: 25px;
+    }
 }
 .bar-set:nth-child(6) {
-  left: 77%;
+    left: 77%;
+    .bar-section {
+        height: 38px;
+    }
 }
 .bar-set:nth-child(7) {
-  left: 91%;
-}
-.bar-set:nth-child(2) .bar-section {
-  height: 20px;
+    left: 91%;
+    .bar-section {
+        height: 27px;
+    }
 }
 .bar-section {
-  background-color: #ccebeb;
-  height: 50px;
-  width: 100%;
+    background-color: #ccebeb;
+    height: 50px;
+    width: 100%;
 }
 .bar-section:nth-child(1) {
-  background-color: @cobalt;
+    background-color: @cobalt;
 }
 .bar-section:nth-child(2) {
-  background-color: @teal;
+    background-color: @teal;
 }
 .bar-section:nth-child(3) {
-  background-color: @aqua;
+    background-color: @aqua;
 }
 .bar-section:nth-child(4) {
-  background-color: @gold;
+    background-color: @gold;
 }
 .bar-graph-label-y {
     font-size: 80%;
@@ -806,11 +819,7 @@ header {
         width: 46px;
     }
 }
-
-
-
-
-
+/******** WEATHER AND ACCORDION ********/
 .weather-bar {
     background-color: @lightblue;
     height: 84px;
@@ -836,23 +845,102 @@ header {
         text-transform: capitalize;
     }
 }
+#earned-revenue {
+    h2 {
+        float: none;
+    }
+}
+.add-note {
+    float: right;
+    font-size: 60%;
+    text-transform: capitalize;
+    .note {
+        height: 10px;
+        position: relative;
+        top: 1px;
+        width: 10px;
+    }
+}
+#revenue-accordion,
 .accordion {
     list-style: none;
     padding: 0;
+    .accordion-stat {
+        font-size: 150%;
+    }
+    .accordion-compared-to {
+        font-size: 100%;
+    }
+    .note {
+        height: 16px;
+        position: relative;
+        top: 3px;
+        width: 16px;
+    }
+    .accordion-caret {
+        float: right;
+        height: 11px;
+        position: relative;
+        top: 5px;
+        transform: rotate(270deg);
+        width: 11px;
+    }
+    .open {
+        transform: rotate(0deg);
+    }
     li {
         border-top: 1px solid @lightgrey;
-        font-size: 160%;
+        cursor: pointer;
+        font-size: 130%;
         padding: 10px 15px;
-        li {
-            font-size: 100%;
+        .long-arrow {
+            height: 11px;
+            width: 24px;
+        }
+        .change {
+            height: 27px;
+            position: relative;
+            top: 3px;
+            width: 22px;
+        }
+        ul {
+            display: none;
+            li {
+                font-size: 100%;
+            }
         }
     }
     .notes { color: @darkgrey; }
-    .box-office { color: @cobalt; }
-    .groups { color: @darkpurple1; }
-    .cafe { color: @teal; }
-    .gift-store { color: @aqua; }
-    .membership { color: @gold; }
+    .box-office{
+        color: @cobalt;
+        .change path {
+            fill: @cobalt;
+        }
+    }
+    .groups {
+        color: @darkpurple1;
+        .change path {
+            fill: @darkpurple1;
+        }
+    }
+    .cafe {
+        color: @teal;
+        .change path {
+            fill: @teal;
+        }
+    }
+    .gift-store {
+        color: @aqua;
+        .change path {
+            fill: @aqua;
+        }
+    }
+    .membership {
+        color: @gold;
+        .change path {
+            fill: @gold;
+        }
+    }
 }
 .widget {
     background-color: @white;

@@ -145,37 +145,39 @@ var Revenue = React.createClass({
                             <div className="weather-text">{this.state.description}</div>
                             <ActionMenu />
                         </div>
-                        <h2>Earned Revenue</h2>
-                        <ul className="accordion">
-                            <li className="notes">Notes</li>
-                            <li className="box-office">Box Office Total
+                        <h2>Earned Revenue <div className="add-note"><NoteIcon className="note" /> Add Note</div></h2>
+                        <ul id="revenue-accordion">
+                            <li className="notes">
+                                <NoteIcon className="note" /> Notes <Caret className="accordion-caret" />
+                            </li>
+                            <li className="box-office">Box Office Total <Caret className="accordion-caret" />
                                 <ul className="accordion">
-                                    <li>down 4.5% $14,878 --&gt; $15,400
+                                    <li><ChangeArrow className="change down" /> <span className="accordion-stat">4.5% $14,878</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$15,400</span>
                                         <ul className="accordion">
-                                            <li>Offline</li>
-                                            <li>Online</li>
+                                            <li>Offline <Caret className="accordion-caret" /></li>
+                                            <li>Online <Caret className="accordion-caret" /></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>  
-                            <li className="groups">Groups
+                            <li className="groups">Groups <Caret className="accordion-caret" />
                                 <ul className="accordion">
-                                    <li>up 1.2% $9,765 --&gt; $8,765</li>
+                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.2% $9,765</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$8,765</span></li>
                                 </ul>
                             </li>
-                            <li className="cafe">Cafe Total
+                            <li className="cafe">Cafe Total <Caret className="accordion-caret" />
                                 <ul className="accordion">
-                                    <li>up 1.2% $9,765 --&gt; $8,765</li>
+                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.2% $9,765</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$8,765</span></li>
                                 </ul>
                             </li>
-                            <li className="gift-store">Gift Store Total
+                            <li className="gift-store">Gift Store Total <Caret className="accordion-caret" />
                                 <ul className="accordion">
-                                    <li>up 1.9% $6,256 --&gt; $4,234</li>
+                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.9% $6,256</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$4,234</span></li>
                                 </ul>
                             </li>  
-                            <li className="membership">Membership
+                            <li className="membership">Membership <Caret className="accordion-caret" />
                                 <ul className="accordion">
-                                    <li>up 1.9% $6,256 --&gt; $4,234</li>
+                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.9% $6,256</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$4,234</span></li>
                                 </ul>
                             </li>
                         </ul>

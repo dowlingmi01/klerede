@@ -207,9 +207,6 @@ $(function(){
                 .value(80)
                 .render();
     }
-
-
-
     /*************************************/
     /******** TEST BAR GRAPH WAVE ********/
     /*************************************/
@@ -246,6 +243,28 @@ $(function(){
     var lineGraph = svgContainer.append("path")
           .attr("d", lineFunction(lineData))
           .attr("fill", "rgba(236,234,231,1)");
+    /******************************************/
+    /******** TEST BAR GRAPH ANIMATION ********/
+    /******************************************/
+    $('.bar-section').css('height','0')
+        .animate({
+            height: '60px',
+        },
+        2000,
+        'easeOutElastic'
+    );
+    /********************************/
+    /******** TEST ACCORDION ********/
+    /********************************/
+    $('#revenue-accordion').click(function(event){
+        var targetSection = $(event.target).parent();
+        // Reset defaults
+        $('.accordion-caret').attr('style','transform: rotate(270deg)');
+        $('.accordion').hide();
+        // Activate target accordion
+        $(targetSection).find('ul').show();
+        $(targetSection).find('svg').attr('style','transform: rotate(0deg)');
+    });
 });
 
 
