@@ -26,8 +26,8 @@ class CreateStoreTransactionTable extends Migration {
 			$table->double('net_amount')->nullable();
 			$table->enum('payment_type', ['cash', 'card'])->nullable();
 			$table->integer('card_type_id')->nullable();
-			$table->integer('member_id')->nullable();;
-			$table->integer('member_xstore_id')->nullable();;
+			$table->integer('member_id')->nullable();
+			$table->integer('member_xstore_id')->nullable();
 			$table->mediumText('source_xml')->nullable();
 			$table->timestamps();
 		});
