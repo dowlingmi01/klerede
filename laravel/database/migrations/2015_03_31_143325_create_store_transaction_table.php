@@ -74,7 +74,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->increments('id');
 			$table->string('venue_id');
 			$table->string('xstore_id');
-			$table->string('xstore_cust_id');
+			$table->string('xstore_cust_id')->nullable();
 			$table->string('venue_member_number')->nullable();
 			$table->string('name');
 			$table->boolean('active');

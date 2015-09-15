@@ -9,7 +9,9 @@ class MemberXstore extends Model {
 		$name = $custXML->Name;
 		$active = filter_var($custXML->ActiveFlag, FILTER_VALIDATE_BOOLEAN);
 		$xstore_id = $custXML->AlternateKey[0]->AlternateID;
-		$xstore_cust_id = $custXML->AlternateKey[1]->AlternateID;
+		$xstore_cust_id = null;
+		if($custXML->AlternateKey[1])
+			$xstore_cust_id = $custXML->AlternateKey[1]->AlternateID;
 		$venue_member_number = null;
 		foreach( $tranPropXML as $prop ) {
 			$dtvPropAt = $prop->children('dtv', true);
