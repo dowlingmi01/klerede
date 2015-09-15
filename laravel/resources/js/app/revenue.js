@@ -152,12 +152,7 @@ var Revenue = React.createClass({
                             </li>
                             <li className="box-office">Box Office Total <Caret className="accordion-caret" />
                                 <ul className="accordion">
-                                    <li><ChangeArrow className="change down" /> <span className="accordion-stat">4.5% $14,878</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$15,400</span>
-                                        <ul className="accordion">
-                                            <li>Offline <Caret className="accordion-caret" /></li>
-                                            <li>Online <Caret className="accordion-caret" /></li>
-                                        </ul>
-                                    </li>
+                                    <li><ChangeArrow className="change down" /> <span className="accordion-stat">4.5% $14,878</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$15,400</span></li>
                                 </ul>
                             </li>  
                             <li className="groups">Groups <Caret className="accordion-caret" />
