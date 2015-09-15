@@ -23,7 +23,6 @@ class CreateStoreTransactionTable extends Migration {
 			$table->dateTime('time_end');
 			$table->integer('operator_id');
 			$table->string('currency');
-			$table->enum('status', ['delivered', 'suspended', 'failed']);
 			$table->double('net_amount');
 			$table->enum('payment_type', ['cash', 'card']);
 			$table->integer('card_type_id')->nullable();

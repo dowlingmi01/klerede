@@ -13,7 +13,6 @@ class StoreTransaction extends Model {
 		$transaction->time_start = $xmlTran->BeginDateTime;
 		$transaction->time_end = $xmlTran->EndDateTime;
 		$transaction->operator_id = $xmlTran->OperatorID;
-		$transaction->status = strtolower($xmlTran->RetailTransaction['TransactionStatus']);
 		$transaction->currency = $xmlTran->CurrencyCode;
 		$transaction->net_amount = $xmlTran->RetailTransaction->Total;
 		$transaction->register_id = $xmlTran->WorkstationID;
@@ -41,7 +40,7 @@ class StoreTransaction extends Model {
 	static function importXMLTransactions(\SimpleXMLElement $xmlLog) {
 		foreach($xmlLog->Transaction as $xmlTran) {
 			$dtvAt = $xmlTran->attributes('dtv', true);
-			if( $dtvAt->TransactionType == 'RETAIL_SALE')
+			if( $dtvAt->TransactionType == 'RETAIL_SALE' && $xmlTran->RetailTransaction['TransactionStatus'] == 'Delivered')
 				StoreTransaction::getForXML($xmlTran);
 		}
 	}
@@ -50,7 +49,6 @@ class StoreTransaction extends Model {
 			->select('business_day')
 			->where('business_day', '>=', $params->date_from)
 			->where('business_day', '<=', $params->date_to)
-			->where('status', 'delivered')
 			->groupBy('business_day')
 		;
 		if(isset($params->venue_id))
