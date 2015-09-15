@@ -169,3 +169,65 @@ SELECT t.id, l.sequence, p.id, l.sale_price, l.quantity
 STRAIGHT_JOIN cafe_transaction t ON l.venue_id = t.venue_id AND l.source_id = t.source_id
 STRAIGHT_JOIN cafe_product p ON l.cafe_product_code = p.code AND t.venue_id = p.venue_id
 ;
+
+LOAD DATA INFILE 'galaxyimport/storetranheader.txt'
+INTO TABLE store_transaction
+LINES TERMINATED BY '\r\n'
+(venue_id, register_id, sequence, business_day, time_end, operator_id)
+SET currency = 'USD'
+;
+
+LOAD DATA INFILE 'galaxyimport/storetranline.txt'
+INTO TABLE store_transaction_line_galaxy
+LINES TERMINATED BY '\r\n'
+(venue_id, register_id, store_transaction_sequence, sequence, store_product_scanned_code, sale_price, quantity)
+;
+
+LOAD DATA INFILE 'galaxyimport/storetranmemberinfo.txt'
+REPLACE
+INTO TABLE store_transaction_galaxy_member_info
+LINES TERMINATED BY '\r\n'
+(@source_id, venue_id, register_id, sequence, @company_id, member_code)
+;
+
+UPDATE store_transaction_galaxy_member_info i
+STRAIGHT_JOIN store_transaction t
+    ON t.venue_id = i.venue_id AND t.register_id = i.register_id AND t.sequence = i.sequence
+STRAIGHT_JOIN member m on i.venue_id = m.venue_id AND i.member_code = m.code
+   SET t.member_id = m.id
+;
+
+LOAD DATA INFILE 'galaxyimport/storeitem.txt'
+INTO TABLE store_product_galaxy
+LINES TERMINATED BY '\r\n'
+(venue_id, code, description, scanned_code, store_product_category_source_id)
+;
+
+INSERT store_product
+     ( store_product_category_id, code, description, scanned_code )
+SELECT c.id, p.code, p.description, scanned_code
+  FROM store_product_galaxy p
+  JOIN store_product_category_galaxy g
+    ON p.venue_id = g.venue_id AND p.store_product_category_source_id = g.source_id
+  JOIN store_product_category c
+    ON g.code = c.code
+;
+
+INSERT store_product
+     ( store_product_category_id, code
+     , description, scanned_code )
+SELECT DISTINCT 0, store_product_scanned_code
+    , 'Missing PLU in Items table', store_product_scanned_code
+  FROM store_transaction_line_galaxy l
+  LEFT JOIN store_product p ON l.store_product_scanned_code = p.scanned_code
+ WHERE p.id IS NULL
+;
+
+INSERT store_transaction_line
+     ( store_transaction_id, sequence, store_product_id, sale_price, quantity )
+SELECT t.id, l.sequence, p.id, l.sale_price, l.quantity
+  FROM store_transaction_line_galaxy l
+STRAIGHT_JOIN store_transaction t ON l.venue_id = t.venue_id
+      AND l.register_id = t.register_id AND l.store_transaction_sequence = t.sequence
+STRAIGHT_JOIN store_product p ON l.store_product_scanned_code = p.scanned_code
+;
