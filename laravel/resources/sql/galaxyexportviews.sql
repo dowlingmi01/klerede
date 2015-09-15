@@ -155,6 +155,8 @@ GO
 CREATE VIEW transaction_member_info AS
 SELECT d.JnlTranID AS source_id
      , 1588 AS venue_id
+     , h.NodeNo as register_id
+     , h.TranNo as sequence
      , h.CompanyID as company_id
      , a.ContactID as member_code
   FROM Galaxy1..JnlDetails d

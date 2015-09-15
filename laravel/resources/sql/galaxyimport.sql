@@ -146,7 +146,7 @@ LOAD DATA INFILE 'galaxyimport/cafetranmemberinfo.txt'
 REPLACE
 INTO TABLE cafe_transaction_galaxy_member_info
 LINES TERMINATED BY '\r\n'
-(source_id, venue_id, @company_id, member_code)
+(source_id, venue_id, @register_id, @sequence, @company_id, member_code)
 ;
 
 UPDATE cafe_transaction_galaxy_member_info i
