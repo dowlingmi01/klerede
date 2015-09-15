@@ -19,12 +19,12 @@ class CreateStoreTransactionTable extends Migration {
 			$table->integer('register_id');
 			$table->integer('sequence');
 			$table->date('business_day');
-			$table->dateTime('time_start');
+			$table->dateTime('time_start')->nullable();
 			$table->dateTime('time_end');
 			$table->integer('operator_id');
 			$table->string('currency');
-			$table->double('net_amount');
-			$table->enum('payment_type', ['cash', 'card']);
+			$table->double('net_amount')->nullable();
+			$table->enum('payment_type', ['cash', 'card'])->nullable();
 			$table->integer('card_type_id')->nullable();
 			$table->integer('member_id')->nullable();;
 			$table->integer('member_xstore_id')->nullable();;
@@ -37,7 +37,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->integer('store_transaction_id');
 			$table->integer('sequence');
 			$table->integer('store_product_id');
-			$table->double('retail_price');
+			$table->double('retail_price')->nullable();
 			$table->double('sale_price');
 			$table->integer('quantity');
 			$table->text('source_xml')->nullable();
