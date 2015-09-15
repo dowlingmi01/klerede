@@ -219,3 +219,48 @@ SELECT 1588 AS venue_id
      )
  WHERE i.Company = 3
 GO
+IF object_id('store_transaction_header') IS NOT NULL
+   DROP VIEW store_transaction_header;
+GO
+CREATE VIEW store_transaction_header AS
+SELECT 1588 AS venue_id
+     , NodeNo AS register_id
+     , TranNo AS sequence
+     , FiscalDate AS business_day
+     , TranDate AS time
+     , UserId AS operator_id
+  FROM Galaxy1..JnlHeaders h
+ WHERE TranKind = 1
+   AND CompanyID = 2
+GO
+IF object_id('store_transaction_line') IS NOT NULL
+   DROP VIEW store_transaction_line;
+GO
+CREATE VIEW store_transaction_line AS
+SELECT 1588 AS venue_id
+     , h.NodeNo AS register_id
+     , h.TranNo AS store_transaction_sequence
+     , d.JnlDetailID AS sequence
+	 , i.PLU AS store_product_scanned_code
+	 , d.Amount AS sale_price
+	 , d.Qty AS quantity
+  FROM Galaxy1..JnlDetails d
+  JOIN Galaxy1..JnlHeaders h WITH (INDEX(CIXJnlHeadersTranDate)) ON h.JnlTranID = d.JnlTranID
+  JOIN Galaxy1..JnlItems i ON d.AuxTableID = i.JnlItemID
+ WHERE TranKind = 1
+   AND CompanyID = 2
+   AND d.JnlCodeID BETWEEN 101 AND 104
+   AND d.AccountID LIKE '0002%'
+GO
+IF object_id('store_item') IS NOT NULL
+   DROP VIEW store_item;
+GO
+CREATE VIEW store_item AS
+SELECT 1588 AS venue_id
+     , SUBSTRING(Descr, 0, PATINDEX('%:%',Descr)) as code
+     , SUBSTRING(Descr, PATINDEX('%:%',Descr)+1, LEN(Descr)) as description
+     , PLU as scanned_code
+     , i.Category as category_source_id
+  FROM Galaxy1..Items i
+ WHERE i.Company = 2
+GO
