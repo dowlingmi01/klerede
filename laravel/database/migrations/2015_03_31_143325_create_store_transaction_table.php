@@ -59,6 +59,29 @@ class CreateStoreTransactionTable extends Migration {
 			$table->string('description')->nullable();
 			$table->timestamps();
 		});
+		DB::table('store_product_category')->insert([
+			['code'=>'ACA', 'description'=>'Accessories Adult'],
+			['code'=>'ACY', 'description'=>'Accessories Youth'],
+			['code'=>'APA', 'description'=>'Apparel Adult'],
+			['code'=>'APY', 'description'=>'Apparel Youth'],
+			['code'=>'BKA', 'description'=>'Book Adult'],
+			['code'=>'BKY', 'description'=>'Book Youth'],
+			['code'=>'CDY', 'description'=>'Candy/Food'],
+			['code'=>'CON', 'description'=>'Convenience'],
+			['code'=>'GEO', 'description'=>'Geology'],
+			['code'=>'HOM', 'description'=>'Home Accent'],
+			['code'=>'JYA', 'description'=>'Jewelry Adult'],
+			['code'=>'JYY', 'description'=>'Jewelry Youth'],
+			['code'=>'MED', 'description'=>'Media'],
+			['code'=>'NME', 'description'=>'Non Merchandise'],
+			['code'=>'OUT', 'description'=>'Outdoor/Garden'],
+			['code'=>'PLT', 'description'=>'Plant'],
+			['code'=>'PLU', 'description'=>'Plush'],
+			['code'=>'PST', 'description'=>'Poster'],
+			['code'=>'SOV', 'description'=>'Souvenirs'],
+			['code'=>'STA', 'description'=>'Stationery'],
+			['code'=>'TOY', 'description'=>'Toy']
+		]);
 		Schema::create('member_xstore', function(Blueprint $table)
 		{
 			$table->increments('id');
