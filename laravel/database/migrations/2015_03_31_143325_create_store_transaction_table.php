@@ -16,7 +16,7 @@ class CreateStoreTransactionTable extends Migration {
 		{
 			$table->increments('id');
 			$table->integer('venue_id');
-			$table->integer('store_register_id');
+			$table->integer('register_id');
 			$table->integer('sequence');
 			$table->date('business_day');
 			$table->dateTime('time_start');
@@ -85,14 +85,6 @@ class CreateStoreTransactionTable extends Migration {
 		{
 			$table->increments('id');
 			$table->string('name');
-			$table->timestamps();
-		});
-		Schema::create('store_register', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->integer('venue_id');
-			$table->integer('local_code');
-			$table->bigInteger('global_code');
 			$table->timestamps();
 		});
 	}

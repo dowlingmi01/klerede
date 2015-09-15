@@ -16,8 +16,7 @@ class StoreTransaction extends Model {
 		$transaction->status = strtolower($xmlTran->RetailTransaction['TransactionStatus']);
 		$transaction->currency = $xmlTran->CurrencyCode;
 		$transaction->net_amount = $xmlTran->RetailTransaction->Total;
-		$transaction->store_register_id = StoreRegister::getFor($transaction->venue_id, $xmlTran->WorkstationID,
-			$xmlTran->TillID)->id;
+		$transaction->register_id = $xmlTran->WorkstationID;
 		$transaction->source_xml = $xmlTran->asXML();
 		if($xmlTran->RetailTransaction->Customer)
 			$transaction->member_xstore_id = MemberXstore::getForXML($transaction->venue_id,
