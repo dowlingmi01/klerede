@@ -36,8 +36,6 @@ class CreateStoreTransactionTable extends Migration {
 			$table->increments('id');
 			$table->integer('store_transaction_id');
 			$table->integer('sequence');
-			$table->dateTime('time_start');
-			$table->dateTime('time_end');
 			$table->integer('store_product_id');
 			$table->double('retail_price');
 			$table->double('sale_price');

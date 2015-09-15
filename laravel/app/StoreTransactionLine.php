@@ -9,8 +9,6 @@ class StoreTransactionLine extends Model {
 		$line = new StoreTransactionLine();
 		$line->store_transaction_id = $store_transaction_id;
 		$line->sequence = $xmlLine->SequenceNumber;
-		$line->time_start = $xmlLine->BeginDateTime;
-		$line->time_end = $xmlLine->EndDateTime ? $xmlLine->EndDateTime : $line->time_start;
 		$xmlOp = $xmlLine->Sale ? $xmlLine->Sale : $xmlLine->Return;
 		$line->store_product_id = StoreProduct::getForXML($xmlOp)->id;
 		$line->retail_price = $xmlOp->RegularSalesUnitPrice;
