@@ -59,6 +59,7 @@ class Stats {
 				->where('channel.code', $specs->channel);
 		}
 		if(isset($specs->members)) {
+			$specs->members = filter_var($specs->members, FILTER_VALIDATE_BOOLEAN);
 			$dbquery->where('members', $specs->members ? 1 : 0);
 		}
 		if(isset($specs->membership_type)) {
@@ -66,6 +67,7 @@ class Stats {
 				->where('membership_kind.code', $specs->membership_type);
 		}
 		if(isset($specs->online)) {
+			$specs->online = filter_var($specs->online, FILTER_VALIDATE_BOOLEAN);
 			$dbquery->where('online', $specs->online ? 1 : 0);
 		}
 
