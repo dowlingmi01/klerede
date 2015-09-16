@@ -73,13 +73,12 @@ header {
     height: 108px;
     .klerede-logo {
         height: 108px;
-        text-align: right;
         @media (max-width: 767px) {
             text-align: left;
         }
         img {
             position: relative;
-            right: 24px;
+            left: 22px;
             top: 50%;
             transform: translateY(-50%);
             @media (max-width: 991px) {
@@ -207,7 +206,7 @@ header {
             margin-top: 0;
         }
         li {
-            font-size: 150%;
+            font-size: 120%;
             font-weight: 600;
             padding: 22px 37px 22px 0;
             position: relative;
@@ -218,8 +217,23 @@ header {
                 padding: 0 0 15px 20px;
             }
             a {
-                color: @mediumgrey;
+                color: @white;
                 cursor: pointer;
+                span {
+                    font-weight: 300;
+                }
+                .ops {
+                    color: @cobalt;
+                }
+                .membership {
+                    color: @green;
+                }
+                .marketing {
+                    color: @orange;
+                }
+                .retail {
+                    color: @gold;
+                }
             }
             a:hover {
                 color: @gold;

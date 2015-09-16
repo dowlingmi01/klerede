@@ -28,10 +28,16 @@
             <div class="row main-row">
                 <div class="col-xs-12 col-sm-2 menu">
                     <ul>
-                        <li class="active"><a href="/dashboard">Dashboard</a></li>
-                        <li><a href="/toolbox">Tool Box</a></li>
-                        <li><a href="/members">Members</a></li>
-                        <li><a href="/campaigns">Campaigns</a></li>
+                        <li class="active"><a href="/dashboard"><span class="ops">OPS</span>RELAY</a>
+                            <!--<ul>
+                                <li><a href="/toolbox">Tool Box</a></li>
+                                <li><a href="/members">Members</a></li>
+                                <li><a href="/campaigns">Campaigns</a></li>
+                            </ul>-->
+                        </li>
+                        <li><a href="#"><span class="membership">MEMBERSHIP</span>RELAY</a></li>
+                        <li><a href="#"><span class="marketing">MARKETING</span>RELAY</a></li>
+                        <li><a href="#"><span class="retail">RETAIL</span>RELAY</a></li>
                     </ul>
                 </div>
                 <div class="col-xs-12 col-sm-10 main-content">

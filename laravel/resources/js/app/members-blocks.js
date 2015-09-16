@@ -24,7 +24,6 @@ var MembersBlocksSet = React.createClass({
             membersDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
             membersDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Should be wnt.yesterdaylastyear
             
-            // TO DO: REMOVE DUMMY DATA AND WIRE-UP API (COMMENTED-OUT BELOW)... AND SET FORMATS
             membersConversion: '...',
             membersConversionCompareTo: '...',
 
@@ -50,16 +49,6 @@ var MembersBlocksSet = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
-
-                    // TO DO: CAPTURE, PERCAP
-                    /*
-                        Capture Rate =
-                            # of transactions (i.e. trips to till, not total number of units) / Total attendance
-                            (e.g. 3 / 10 = 0.3 --> 0.3 * 100 = 30%)
-                        Per Cap =
-                            total store sales / total attendance
-                            (e.g. $500 / 10 = $50)
-                    */
 
                     // Member Conversion = (Memberships Sold / Total Visitors) * 100
                     membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: this.state.membersDate},
@@ -184,7 +173,7 @@ var MembersBlocksSet = React.createClass({
                 membersConversionCompareTo: wnt.members.members_conversion_compareto_lastyear,
                 membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.frequency,
                 membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.recency,
-                membersTotalCompareTo: Math.round(wnt.members.members_total_frequency_recency_compareto_lastyear.current_members),
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.current_members,
                 membersCapturedCompareTo: wnt.members.capture_rate_compareto_lastyear,
                 membersPercapCompareTo: wnt.members.per_cap_compareto_lastyear
             });
@@ -193,7 +182,7 @@ var MembersBlocksSet = React.createClass({
                 membersConversionCompareTo: wnt.members.members_conversion_compareto_rolling,
                 membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.frequency,
                 membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.recency,
-                membersTotalCompareTo: Math.round(wnt.members.members_total_frequency_recency_compareto_rolling.current_members),
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.current_members,
                 membersCapturedCompareTo: wnt.members.capture_rate_compareto_rolling,
                 membersPercapCompareTo: wnt.members.per_cap_compareto_rolling
             });
@@ -202,7 +191,7 @@ var MembersBlocksSet = React.createClass({
                 membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore,
                 membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.frequency,
                 membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.recency,
-                membersTotalCompareTo: Math.round(wnt.members.members_total_frequency_recency_compareto_daybefore.current_members),
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.current_members,
                 membersCapturedCompareTo: wnt.members.capture_rate_compareto_daybefore,
                 membersPercapCompareTo: wnt.members.per_cap_compareto_daybefore
             });
