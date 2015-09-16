@@ -51,6 +51,7 @@ var MembershipGoals = React.createClass({
                 barSegments: wnt.period(0, 12, true)
             });
         }
+        event.target.blur();
     },
     componentDidUpdate: function(){
         $('#total-membership-goals .bar-meter-marker')
@@ -73,7 +74,7 @@ var MembershipGoals = React.createClass({
                             <select className="form-control" onChange={this.handleChange}>
                                 <option value="year">Current Year ({wnt.thisYear})</option>
                                 <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
-                                <option value="month">Current Month ({wnt.thisMonthText})</option>
+                                <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
                                 <option value="custom">Custom</option>
                             </select>
                             <Caret className="filter-caret" />

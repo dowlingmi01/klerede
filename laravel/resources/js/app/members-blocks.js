@@ -25,23 +25,23 @@ var MembersBlocksSet = React.createClass({
             membersDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Should be wnt.yesterdaylastyear
             
             // TO DO: REMOVE DUMMY DATA AND WIRE-UP API (COMMENTED-OUT BELOW)... AND SET FORMATS
-            membersConversion: '4.0',
-            membersConversionCompareTo: '4.8',
-            
-            membersExpired: '4.1',
-            membersExpiredCompareTo: '3.8',
+            membersConversion: '...',
+            membersConversionCompareTo: '...',
 
-            membersFrequency: '3.6',
-            membersFrequencyCompareTo: '3.1',
+            membersFrequency: '...',
+            membersFrequencyCompareTo: '...',
 
-            membersRecency: '4.1',
-            membersRecencyCompareTo: '4.8',
+            membersRecency: '...',
+            membersRecencyCompareTo: '...',
 
-            membersTotal: '4.2',
-            membersTotalCompareTo: '3.8',
+            membersTotal: '...',
+            membersTotalCompareTo: '...',
 
-            membersVelocity: '5.1',
-            membersVelocityCompareTo: '4.8'
+            membersCaptured: '...',
+            membersCapturedCompareTo: '...',
+
+            membersPercap: '...',
+            membersPercapCompareTo: '...'
         };
     },
     componentDidMount: function() {
@@ -51,55 +51,72 @@ var MembersBlocksSet = React.createClass({
                 venue_id: this.props.venueID,
                 queries: {
 
-                    // TO DO: CONVERSION, CAPTURE, RENEWAL ... AND ... YEAR AVERAGE
-
-                    // {"members_total_frequency_recency":{"period":"2015-05-06","current_members":17341,"frequency":6.764367816,"recency":45.597701149}}
-                    members_total_frequency_recency: { specs: { type: 'members' }, periods: this.state.membersDate },
-                    members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: this.state.membersDayBefore },
-                    members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: this.state.membersDayLastYear }
-
-
+                    // TO DO: CAPTURE, PERCAP
                     /*
-                        // MEMBERSHIP CONVERSION
-                        // Membership sales for one day / total admissions
-                        $.post('/api/v1/stats/query', { venue_id: '1588', queries: {
-                            memberships_day: { 
-                                specs: { 
-                                    type: 'sales',
-                                    kinds: ['membership']
-                                },
-                                periods: '2015-05-06'
-                            }
-                        }}).done(function(result){wnt.memberships_day = result.memberships_day.units;});
-                        $.post('/api/v1/stats/query', { venue_id: '1588', queries: {
-                            visits_day: { 
-                                specs: { 
-                                    type: 'visits'
-                                },
-                                periods: '2015-05-06'
-                            }
-                        }}).done(function(result){wnt.visits_day = result.visits_day.units;});
-                        wnt.membership_conversion = parseInt(wnt.memberships_day) / parseInt(wnt.visits_day);
-                        console.log(wnt.membership_conversion);
-
+                        Capture Rate =
+                            # of transactions (i.e. trips to till, not total number of units) / Total attendance
+                            (e.g. 3 / 10 = 0.3 --> 0.3 * 100 = 30%)
+                        Per Cap =
+                            total store sales / total attendance
+                            (e.g. $500 / 10 = $50)
                     */
 
+                    // Member Conversion = Memberships Sold / Total Visitors
+                    membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: this.state.membersDate},
+                    membership_sales_compareto_daybefore: { specs: { type: 'sales', channel: 'membership' }, periods: this.state.membersDayBefore},
+                    membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: this.state.membersDayLastYear},
+                    membership_sales_compareto_rolling: { specs: { type: 'sales', channel: 'membership' },
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    },
+                    total_admissions: { specs: { type: 'visits' }, periods: this.state.membersDate },
+                    total_admissions_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.membersDayBefore },
+                    total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.membersDayLastYear },
+                    total_admissions_compareto_rolling: { specs: { type: 'visits' },
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    },
+
+
+                    members_total_frequency_recency: { specs: { type: 'members' }, periods: this.state.membersDate },
+                    members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: this.state.membersDayBefore },
+                    members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: this.state.membersDayLastYear },
+                    members_total_frequency_recency_compareto_rolling: { specs: { type: 'members'},
+                        periods: {
+                            from: this.state.membersDayLastYear,
+                            to: this.state.membersDate,
+                            kind: 'average'
+                        }
+                    }
                 }
             }
         )
         .done(function(result) {
             console.log('Members data loaded...');
+            // Abbreviate numbers for total members block
             result.members_total_frequency_recency.current_members = this.abbrNumber(result.members_total_frequency_recency.current_members);
             result.members_total_frequency_recency_compareto_daybefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_daybefore.current_members);
             result.members_total_frequency_recency_compareto_lastyear.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_lastyear.current_members);
+            result.members_total_frequency_recency_compareto_rolling.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_rolling.current_members);
+
             wnt.members = result;
+
+            // Calculate Member Conversion
+            wnt.members.members_conversion_compareto_daybefore = (result.membership_sales_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units) * 100;
+            wnt.members.members_conversion_compareto_lastyear = (result.membership_sales_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
+            wnt.members.members_conversion_compareto_rolling = (result.membership_sales_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
+
             if(this.isMounted()) {
                 this.setState({
-                    /*membersConversion: result.members_conversion.units,
-                    membersConversionCompareTo: result.members_conversion_compareto_daybefore.units,*/
 
-                    /*membersExpired: result.members_expired.units,
-                    membersExpiredCompareTo: result.members_expired_compareto_daybefore.units,*/
+                    membersConversion: (result.membership_sales.units / result.total_admissions.units)*100,
+                    membersConversionCompareTo: (result.membership_sales_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units)*100,
 
                     membersFrequency: result.members_total_frequency_recency.frequency,
                     membersFrequencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.frequency,
@@ -108,10 +125,15 @@ var MembersBlocksSet = React.createClass({
                     membersRecencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.recency,
 
                     membersTotal: result.members_total_frequency_recency.current_members,
-                    membersTotalCompareTo: result.members_total_frequency_recency_compareto_daybefore.current_members/*,
+                    membersTotalCompareTo: result.members_total_frequency_recency_compareto_daybefore.current_members
 
-                    membersVelocity: result.members_velocity.amount,
-                    membersVelocityCompareTo: result.members_velocity_compareto_daybefore.amount*/
+                    /*
+                    membersCaptured: result.members_captured.units,
+                    membersCapturedCompareTo: result.members_captured_compareto_daybefore.units,
+
+                    membersPercap: result.members_percap.amount,
+                    membersPercapCompareTo: result.members_percap_compareto_daybefore.amount
+                    */
                 });
                 // Set null data to '-'
                 var self = this;
@@ -136,32 +158,39 @@ var MembersBlocksSet = React.createClass({
         var filter = event.target.value;
         if(filter === 'lastYear'){
             this.setState({
-                /*membersConversionCompareTo: wnt.members.members_conversion_compareto_lastyear.units,
-                membersExpiredCompareTo: wnt.members.members_expired_compareto_lastyear.units,*/
+                membersConversionCompareTo: wnt.members.members_conversion_compareto_lastyear,
                 membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.frequency,
                 membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.recency,
-                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.current_members/*,
-                membersVelocityCompareTo: wnt.members.members_velocity_compareto_lastyear.amount*/
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_lastyear.current_members
+                /*
+                membersCapturedCompareTo: wnt.members.members_captured_compareto_lastyear.units,
+                membersPercapCompareTo: wnt.members.members_percap_compareto_lastyear.amount
+                */
             });
         } else if(filter === 'lastYearAverage'){
             this.setState({
-                /*membersConversionCompareTo: wnt.members.members_conversion_compareto_rolling.units,
-                membersExpiredCompareTo: wnt.members.members_expired_compareto_rolling.units,*/
+                membersConversionCompareTo: wnt.members.members_conversion_compareto_rolling,
                 membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.frequency,
                 membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.recency,
-                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_rolling.current_members/*,
-                membersVelocityCompareTo: wnt.members.members_velocity_compareto_rolling.amount*/
+                membersTotalCompareTo: Math.round(wnt.members.members_total_frequency_recency_compareto_rolling.current_members)
+                /*
+                membersCapturedCompareTo: wnt.members.members_captured_compareto_rolling.units,
+                membersPercapCompareTo: wnt.members.members_percap_compareto_rolling.amount
+                */
             });
         } else {
             this.setState({
-                /*membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore.units,
-                membersExpiredCompareTo: wnt.members.members_expired_compareto_daybefore.units,*/
+                membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore,
                 membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.frequency,
                 membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.recency,
-                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.current_members/*,
-                membersVelocityCompareTo: wnt.members.members_velocity_compareto_daybefore.amount*/
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.current_members
+                /*
+                membersCapturedCompareTo: wnt.members.members_captured_compareto_daybefore.units,
+                membersPercapCompareTo: wnt.members.members_percap_compareto_daybefore.amount
+                */
             });
         }
+        event.target.blur();
     },
     abbrNumber: function(number) {
         number = Math.round((number / 1000) * 10) / 10;
@@ -225,12 +254,6 @@ var MembersBlocksSet = React.createClass({
                             stat={this.state.membersConversion} 
                             comparedTo={this.state.membersConversionCompareTo} />
                     </div>
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-expired">
-                        <MembersBlock 
-                            label="Capture Rate" 
-                            stat={this.state.membersExpired} 
-                            comparedTo={this.state.membersExpiredCompareTo} />
-                    </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-frequency">
                         <MembersBlock 
                             label="Frequency" 
@@ -249,11 +272,17 @@ var MembersBlocksSet = React.createClass({
                             stat={this.state.membersTotal}
                             comparedTo={this.state.membersTotalCompareTo} />
                     </div>
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-velocity">
+                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-captured">
+                        <MembersBlock 
+                            label="Capture Rate" 
+                            stat={this.state.membersCaptured} 
+                            comparedTo={this.state.membersCapturedCompareTo} />
+                    </div>
+                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-percap">
                         <MembersBlock
-                            label="Renewal Velocity"
-                            stat={this.state.membersVelocity}
-                            comparedTo={this.state.membersVelocityCompareTo} />
+                            label="Per Cap"
+                            stat={this.state.membersPercap}
+                            comparedTo={this.state.membersPercapCompareTo} />
                     </div>
                 </div>
             </div>

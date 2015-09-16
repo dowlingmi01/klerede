@@ -192,6 +192,7 @@ var VisitsBlocksSet = React.createClass({
                 salesGateCompareTo: wnt.visits.sales_gate_compareto_daybefore.amount
             });
         }
+        event.target.blur();
     },
     formatNumbers: function(){
         // Format numbers and set the direction of the change arrows
