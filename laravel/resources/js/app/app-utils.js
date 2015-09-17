@@ -256,14 +256,10 @@ $(function(){
     /********************************/
     /******** TEST ACCORDION ********/
     /********************************/
-    $('#revenue-accordion').click(function(event){
-        var targetSection = $(event.target).parent();
-        // Reset defaults
-        $('.accordion-caret').attr('style','transform: rotate(270deg)');
-        $('.accordion').hide();
+    $('#revenue-accordion li').click(function(){
         // Activate target accordion
-        $(targetSection).find('ul').show();
-        $(targetSection).find('svg').attr('style','transform: rotate(0deg)');
+        $(this).toggleClass('open');
+        $(this).find('ul').toggle();
     });
 });
 

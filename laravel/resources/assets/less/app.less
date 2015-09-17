@@ -547,7 +547,7 @@ header {
 .widget#earned-revenue {
     padding: 0;
     h2 {
-        padding: 0 15px;
+        padding: 0 15px 10px 15px;
     }
 }
 .bar-meter {
@@ -867,6 +867,7 @@ header {
     }
 }
 .add-note {
+    cursor: pointer;
     float: right;
     font-size: 60%;
     text-transform: capitalize;
@@ -881,11 +882,19 @@ header {
 .accordion {
     list-style: none;
     padding: 0;
-    .accordion-stat {
-        font-size: 150%;
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+    .accordion-stat,
+    .accordion-stat-change {
+        font-size: 130%;
+        font-weight: 600;
+        margin-right: 10px;
     }
     .accordion-compared-to {
-        font-size: 100%;
+        color: @darkgrey;
+        font-size: 90%;
     }
     .note {
         height: 16px;
@@ -901,28 +910,40 @@ header {
         transform: rotate(270deg);
         width: 11px;
     }
-    .open {
+    .open svg {
         transform: rotate(0deg);
     }
     li {
         border-top: 1px solid @lightgrey;
         cursor: pointer;
         font-size: 130%;
+        margin: 0 10px;
+        li {
+            margin: 10px 0 0 0;
+        }
         padding: 10px 15px;
         .long-arrow {
-            height: 11px;
-            width: 24px;
+            height: 9px;
+            margin-right: 5px;
+            width: 20px;
         }
         .change {
-            height: 27px;
+            height: 24px;
+            margin-right: 5px;
             position: relative;
-            top: 3px;
-            width: 22px;
+            top: 6px;
+            width: 20px;
+        }
+        .down {
+            transform: rotate(180deg);
         }
         ul {
             display: none;
             li {
                 font-size: 100%;
+            }
+            .breakdown {
+                padding-bottom: 0;
             }
         }
     }

@@ -16,16 +16,257 @@ var BarSet = React.createClass({
     }
 });
 
+var AccordionItem = React.createClass({
+    render: function() {
+        return (
+            <li className={this.props.className}>{this.props.label} <Caret className="accordion-caret" />
+                <ul className="accordion">
+                    <li>
+                        <ChangeArrow className={"change " + this.props.arrow} />
+                        <span className="accordion-stat-change">{this.props.statChange}%</span>
+                        <span className="accordion-stat">{this.props.stat}</span>
+                        <LongArrow className="long-arrow" />
+                        <span className="accordion-compared-to">{this.props.comparedTo}</span>
+                    </li>
+                </ul>
+            </li>
+        );
+    }
+});
+
+var AccordionItemPlus = React.createClass({
+    render: function() {
+        return (
+            <li className={this.props.className}>{this.props.label} <Caret className="accordion-caret" />
+                <ul className="accordion">
+                    <li>
+                        <ChangeArrow className={"change " + this.props.arrow} />
+                        <span className="accordion-stat-change">{this.props.statChange}%</span>
+                        <span className="accordion-stat">{this.props.stat}</span>
+                        <LongArrow className="long-arrow" />
+                        <span className="accordion-compared-to">{this.props.comparedTo}</span>
+                        <ul>
+                            <li className="breakdown">
+                                Online
+                                <ul>
+                                    <li>
+                                        <ChangeArrow className={"change " + this.props.arrowON} />
+                                        <span className="accordion-stat-change">{this.props.statChangeON}%</span>
+                                        <span className="accordion-stat">{this.props.statON}</span>
+                                        <LongArrow className="long-arrow" />
+                                        <span className="accordion-compared-to">{this.props.comparedToON}</span>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li className="breakdown">
+                                Offline
+                                <ul>
+                                    <li>
+                                        <ChangeArrow className={"change " + this.props.arrowOFF} />
+                                        <span className="accordion-stat-change">{this.props.statChangeOFF}%</span>
+                                        <span className="accordion-stat">{this.props.statOFF}</span>
+                                        <LongArrow className="long-arrow" />
+                                        <span className="accordion-compared-to">{this.props.comparedToOFF}</span>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        );
+    }
+});
+
+var AccordionSet = React.createClass({
+    getInitialState: function() {
+        return {
+            day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
+            dayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
+
+            boxofficeStatChange: [0, 'up'],
+            boxofficeStatChangeON: [0, 'up'],
+            boxofficeStatChangeOFF: [0, 'up'],
+            groupsStatChange: [0, 'up'],
+            cafeStatChange: [0, 'up'],
+            giftstoreStatChange: [0, 'up'],
+            membershipStatChange: [0, 'up']
+        };
+    },
+    componentDidMount: function() {
+        // up/down, % change, $$$ (now), $$$ (old)
+        // TOTAL = 2,741 units and $17,723.01   ===   2276(bo), 287(c), 149(gs), 29(m)
+        // box office total, groups, cafe total, gift store total, membership
+        $.post(
+            this.props.source,
+            {
+                venue_id: this.props.venueID,
+                queries: {
+                    boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                    boxoffice_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                    boxoffice_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                    groups: { specs: { type: 'sales', kinds: ['group'] }, 
+                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                    cafe: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                    giftstore: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                    membership: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: this.state.dayBefore, to: this.state.day } }
+                }
+            }
+        )
+        .done(function(result) {
+            console.log('Earned Revenue data loaded...');
+            wnt.earnedRevenue = result;
+            if(this.isMounted()) {
+                this.setState({
+                    boxofficeStatDay: result.boxoffice[1].amount,
+                    boxofficeStatDayBefore: result.boxoffice[0].amount,
+                    boxofficeStatChange: this.calcChange(result.boxoffice[1].amount, result.boxoffice[0].amount),
+                    boxofficeStatDayON: result.boxoffice_online[1].amount,
+                    boxofficeStatDayBeforeON: result.boxoffice_online[0].amount,
+                    boxofficeStatChangeON: this.calcChange(result.boxoffice_online[1].amount, result.boxoffice_online[0].amount),
+                    boxofficeStatDayOFF: result.boxoffice_offline[1].amount,
+                    boxofficeStatDayBeforeOFF: result.boxoffice_offline[0].amount,
+                    boxofficeStatChangeOFF: this.calcChange(result.boxoffice_offline[1].amount, result.boxoffice_offline[0].amount),
+
+                    groupsStatDay: result.groups[1].amount,
+                    groupsStatDayBefore: result.groups[0].amount,
+                    groupsStatChange: this.calcChange(result.groups[1].amount, result.groups[0].amount),
+
+                    cafeStatDay: result.cafe[1].amount,
+                    cafeStatDayBefore: result.cafe[0].amount,
+                    cafeStatChange: this.calcChange(result.cafe[1].amount, result.cafe[0].amount),
+
+                    giftstoreStatDay: result.giftstore[1].amount,
+                    giftstoreStatDayBefore: result.giftstore[0].amount,
+                    giftstoreStatChange: this.calcChange(result.giftstore[1].amount, result.giftstore[0].amount),
+
+                    membershipStatDay: result.membership[1].amount,
+                    membershipStatDayBefore: result.membership[0].amount,
+                    membershipStatChange: this.calcChange(result.membership[1].amount, result.membership[0].amount)
+                });
+                // Set null data to '-'
+                var self = this;
+                $.each(this.state, function(stat, value){
+                    if(value === null){
+                        var stateObject = function() {
+                            returnObj = {};
+                            returnObj[stat] = '-';
+                            return returnObj;
+                        };
+                        self.setState(stateObject);
+                    }
+                });
+                this.formatNumbers;
+            }
+        }.bind(this))   // .bind() gives context to 'this'
+        .fail(function(result) {
+            console.log('EARNED REVENUE DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+        });
+    },
+    calcChange: function(newstat, oldstat) {
+        var change = parseFloat(newstat) - parseFloat(oldstat);   // Calculate difference
+        change = (change / newstat) * 100;   // Calculate percentage
+        var direction = change < 0 ? "down" : "up";   // Test for negative or positive and set arrow direction
+        change = Math.abs(change);   // Convert to positive number
+        change = Math.round(100*change)/100;   // Round to hundredths
+        change = [change, direction]
+        return change;
+    },
+    formatNumbers: function(){
+        // Format numbers and set the direction of the change arrows
+        $.each($('#revenue-accordion .accordion-stat'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:"$#,###", locale:"us"});
+                $(this).formatNumber({format:"$#,###", locale:"us"});
+            }
+        });
+        $.each($('#revenue-accordion .accordion-compared-to'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:"$#,###", locale:"us"});
+                $(this).formatNumber({format:"$#,###", locale:"us"});
+            }
+        });
+    },
+    componentDidUpdate: function(){
+        this.formatNumbers();
+    },
+    render: function() {
+        return (
+            <ul id="revenue-accordion">
+                <li className="notes">
+                    <NoteIcon className="note" /> Notes <Caret className="accordion-caret" />
+                </li>
+                <AccordionItemPlus 
+                    className="box-office"
+                    label="Box Office Total"
+
+                    stat={this.state.boxofficeStatDay}
+                    statChange={this.state.boxofficeStatChange[0]}
+                    arrow={this.state.boxofficeStatChange[1]}
+                    comparedTo={this.state.boxofficeStatDayBefore}
+
+                    statON={this.state.boxofficeStatDayON}
+                    statChangeON={this.state.boxofficeStatChangeON[0]}
+                    arrowON={this.state.boxofficeStatChangeON[1]}
+                    comparedToON={this.state.boxofficeStatDayBeforeON}
+
+                    statOFF={this.state.boxofficeStatDayOFF}
+                    statChangeOFF={this.state.boxofficeStatChangeOFF[0]}
+                    arrowOFF={this.state.boxofficeStatChangeOFF[1]}
+                    comparedToOFF={this.state.boxofficeStatDayBeforeOFF} />
+
+                <AccordionItem
+                    className="groups"
+                    label="Groups"
+                    stat={this.state.groupsStatDay}
+                    statChange={this.state.groupsStatChange[0]}
+                    arrow={this.state.groupsStatChange[1]}
+                    comparedTo={this.state.groupsStatDayBefore} />
+                <AccordionItem
+                    className="cafe"
+                    label="Cafe Total"
+                    stat={this.state.cafeStatDay}
+                    statChange={this.state.cafeStatChange[0]}
+                    arrow={this.state.cafeStatChange[1]}
+                    comparedTo={this.state.cafeStatDayBefore} />
+                <AccordionItem
+                    className="gift-store"
+                    label="Gift Store Total"
+                    stat={this.state.giftstoreStatDay}
+                    statChange={this.state.giftstoreStatChange[0]}
+                    arrow={this.state.giftstoreStatChange[1]}
+                    comparedTo={this.state.giftstoreStatDayBefore} />
+                <AccordionItem
+                    className="membership"
+                    label="Membership"
+                    stat={this.state.membershipStatDay}
+                    statChange={this.state.membershipStatChange[0]}
+                    arrow={this.state.membershipStatChange[1]}
+                    comparedTo={this.state.membershipStatDayBefore} />
+            </ul>
+        );
+    }
+});
+
 var Revenue = React.createClass({
     getInitialState: function() {
         return {
             icon: '',
             temp: '',
-            description: ''
+            description: '',
+            test: '0',
+            test2: '0',
+            test3: '0'
         };
     },
     componentDidMount: function() {
-        // TO DO: ADD POST TO API OR CREATE DIFFERENT COMPONENT???
         $.get('http://api.openweathermap.org/data/2.5/weather', {
             APPID: '86376bb7c673c089067f51ae70a6e79e',
             units: 'imperial',
@@ -133,8 +374,6 @@ var Revenue = React.createClass({
                             </div>
                         </div>
 
-
-
                     </div>
                 </div>
                 <div className="col-xs-4 col-md-4 arrow-connector-left">
@@ -146,36 +385,7 @@ var Revenue = React.createClass({
                             <ActionMenu />
                         </div>
                         <h2>Earned Revenue <div className="add-note"><NoteIcon className="note" /> Add Note</div></h2>
-                        <ul id="revenue-accordion">
-                            <li className="notes">
-                                <NoteIcon className="note" /> Notes <Caret className="accordion-caret" />
-                            </li>
-                            <li className="box-office">Box Office Total <Caret className="accordion-caret" />
-                                <ul className="accordion">
-                                    <li><ChangeArrow className="change down" /> <span className="accordion-stat">4.5% $14,878</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$15,400</span></li>
-                                </ul>
-                            </li>  
-                            <li className="groups">Groups <Caret className="accordion-caret" />
-                                <ul className="accordion">
-                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.2% $9,765</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$8,765</span></li>
-                                </ul>
-                            </li>
-                            <li className="cafe">Cafe Total <Caret className="accordion-caret" />
-                                <ul className="accordion">
-                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.2% $9,765</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$8,765</span></li>
-                                </ul>
-                            </li>
-                            <li className="gift-store">Gift Store Total <Caret className="accordion-caret" />
-                                <ul className="accordion">
-                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.9% $6,256</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$4,234</span></li>
-                                </ul>
-                            </li>  
-                            <li className="membership">Membership <Caret className="accordion-caret" />
-                                <ul className="accordion">
-                                    <li><ChangeArrow className="change up" /> <span className="accordion-stat">1.9% $6,256</span> <LongArrow className="long-arrow" /> <span className="accordion-compared-to">$4,234</span></li>
-                                </ul>
-                            </li>
-                        </ul>
+                        <AccordionSet source={this.props.source} venueID={this.props.venueID} />
                     </div>
                 </div>
             </div>
