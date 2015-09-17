@@ -13,7 +13,7 @@
                     <div class="user-wrapper">
                         <div class="user-image"></div>
                         <div class="utilities-wrapper">
-                            <div class="user-name">Joe Bagadonuts</div>
+                            <div class="user-name">Michael Dowling</div>
                             <ul class="utilities">
                                 <li><a href="/settings"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a></li>
                                 <li><a href="/help">Help</a></li>
