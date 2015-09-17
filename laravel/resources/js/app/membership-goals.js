@@ -116,28 +116,30 @@ var MembershipGoals = React.createClass({
                             </select>
                             <Caret className="filter-caret" />
                         </form>
-                        <div id="div5" className="clear dial">
-                            <div className="channel-info">
-                                <div className="channel-name">Individual</div>
-                                <div className="channel-amount">$75,566</div>
-                                <div className="channel-goal">Goal: $125,000</div>
-                                <div className="channel-status ahead">Ahead</div>
+                        <div className="dial-wrapper">
+                            <div id="div5" className="clear dial">
+                                <div className="channel-info">
+                                    <div className="channel-name">Individual</div>
+                                    <div className="channel-amount">$75,566</div>
+                                    <div className="channel-goal">Goal: $125,000</div>
+                                    <div className="channel-status ahead">Ahead</div>
+                                </div>
                             </div>
-                        </div>
-                        <div id="div6" className="dial">
-                            <div className="channel-info">
-                                <div className="channel-name">Family</div>
-                                <div className="channel-amount">$18,123</div>
-                                <div className="channel-goal">Goal: $90,000</div>
-                                <div className="channel-status on-track">On Track</div>
+                            <div id="div6" className="dial">
+                                <div className="channel-info">
+                                    <div className="channel-name">Family</div>
+                                    <div className="channel-amount">$18,123</div>
+                                    <div className="channel-goal">Goal: $90,000</div>
+                                    <div className="channel-status on-track">On Track</div>
+                                </div>
                             </div>
-                        </div>
-                        <div id="div7" className="dial">
-                            <div className="channel-info">
-                                <div className="channel-name">Donor</div>
-                                <div className="channel-amount">$25,123</div>
-                                <div className="channel-goal">Goal: $180,000</div>
-                                <div className="channel-status on-track">On Track</div>
+                            <div id="div7" className="dial">
+                                <div className="channel-info">
+                                    <div className="channel-name">Donor</div>
+                                    <div className="channel-amount">$25,123</div>
+                                    <div className="channel-goal">Goal: $180,000</div>
+                                    <div className="channel-status on-track">On Track</div>
+                                </div>
                             </div>
                         </div>
                     </div>

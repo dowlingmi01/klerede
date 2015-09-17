@@ -6,6 +6,15 @@ var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
             /*
+                HOW TO CALCULATE...
+                    MARKER POSITION = % of time window
+                    GRADIENT =     ......    goal vs current = % complete vs what % should be complete at the current marker position (this.state.markerPosition is a % number)
+                    (CURRENT / GOAL) * 100 = %COMPLETE
+                        if goal = 100 and current = 25 ... 25% complete .... e.g. this.state.markerPosition = 50%, then the goal should be 50% complete, but since it's 25% it's off by -25%
+                            if that 25% complete matches what SHOULD be complete
+
+                        so we have 2 numbers ... 25 and 50 (%done vs %expected)
+
                 Status () ... (calculated as percentage of goal)
                     <50 = Red
                     >50 <75 = Orange
@@ -15,24 +24,23 @@ var SalesGoals = React.createClass({
             */
             day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
 
-            yearStart: '2015-01-01',
-            quarterStart: '2015-04-01',
-            monthStart: '2015-05-01',
+            yearStart: '2015-01-01',   // TO DO: CALCULATE THESE
+            quarterStart: '2015-04-01',   // TO DO: CALCULATE THESE
+            monthStart: '2015-05-01',   // TO DO: CALCULATE THESE
 
-            yearGoal: '$6,000,000',
-            quarterGoal: '',
-            monthGoal: '',
+            goal: '$6,000,000',   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
 
             status: 'On Track',
             statusClass: 'on-track',
-            markerPosition: this.markerPosition('2015-01-01', '2015-05-06'),
+            markerPosition: this.markerPosition('2015-01-01', '2015-05-06', 365),
+            barGradient: 'Red, Orange, Yellow, YellowGreen, Green, Blue',
             barSegments: wnt.period(0,12,true)
         };
     },
-    markerPosition: function(startDate, endDate) {
+    markerPosition: function(startDate, endDate, periodLength) {
         var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
-        var percentage = (days / 365) * 100;
-        return percentage+'%';
+        var percentage = (days / periodLength) * 100;
+        return percentage;
     },
     componentDidMount: function() {
         $.post(
@@ -51,9 +59,7 @@ var SalesGoals = React.createClass({
             wnt.sales = result;
             if(this.isMounted()) {
                 this.setState({
-                    salesYear: result.sales_year.amount,
-                    salesQuarter: result.sales_quarter.amount,
-                    salesMonth: result.sales_month.amount
+                    sales: result.sales_year.amount
                 });
                 this.formatNumbers();
             }
@@ -66,19 +72,31 @@ var SalesGoals = React.createClass({
         var filter = event.target.value;
         if(filter === 'year'){
             this.setState({
-                barSegments: wnt.period(0, 12, true)
+                barSegments: wnt.period(0, 12, true),
+                goal: '$6,000,000',
+                sales: wnt.sales.sales_year.amount,
+                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365)
             });
         } else if(filter === 'quarter'){
             this.setState({
-                barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true)
+                barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
+                goal: '$1,500,000',
+                sales: wnt.sales.sales_quarter.amount,
+                markerPosition: this.markerPosition(this.state.quarterStart, this.state.day, 91)
             });
         }  else if(filter === 'month'){
             this.setState({
-                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum+1, true)
+                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum+1, true),
+                goal: '$500,000',
+                sales: wnt.sales.sales_month.amount,
+                markerPosition: this.markerPosition(this.state.monthStart, this.state.day, 30)
             });
         } else {
             this.setState({
-                barSegments: wnt.period(0, 12, true)
+                barSegments: wnt.period(0, 12, true),
+                goal: '$6,000,000',
+                sales: wnt.sales.sales_year.amount,
+                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365)
             });
         }
         event.target.blur();
@@ -91,7 +109,7 @@ var SalesGoals = React.createClass({
         this.formatNumbers();
         $('#total-sales-goals .bar-meter-marker')
             .animate({
-                left: this.state.markerPosition
+                left: this.state.markerPosition+'%'
             },
             2000,
             'easeOutElastic'
@@ -99,7 +117,7 @@ var SalesGoals = React.createClass({
     },
     render: function() {
         var gradient = {
-            background: 'linear-gradient(to right, Red, Orange, Yellow, YellowGreen, Green)'
+            background: 'linear-gradient(to right, '+this.state.barGradient+')'
         };
         return (
             <div className="row">
@@ -116,10 +134,10 @@ var SalesGoals = React.createClass({
                             </select>
                             <Caret className="filter-caret" />
                         </form>
-                        <div className="clear goal">Goal: <span className="goalAmount">{this.state.yearGoal}</span></div>
+                        <div className="clear goal">Goal: <span className="goalAmount">{this.state.goal}</span></div>
                         <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
                         <div className="bar-meter clear" style={gradient}>
-                            <div className="bar-meter-marker">{this.state.salesYear}</div>
+                            <div className="bar-meter-marker">{this.state.sales}</div>
                             <table className="bar-meter-segments">
                                 <tr>
                                     { this.state.barSegments.map(function(segment) {

@@ -70,6 +70,12 @@ wnt.yesterday = wnt.formatDate(wnt.yesterday);
 wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
 
+// TEMPORARY OVERRIDE OF QUARTER AND MONTH
+wnt.thisQuarterNum = [3,6];
+wnt.thisQuarterText = 'Q2';
+wnt.thisMonthNum = 4;
+wnt.thisMonthText = 'May';
+
 /*********************************************/
 /******** GLOBAL DOM-READY PROCESSING ********/
 /*********************************************/
