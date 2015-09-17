@@ -5,7 +5,13 @@
 var MembershipGoals = React.createClass({
     getInitialState: function() {
         return {
-            visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
+            day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
+            yearStart: '2015-01-01',
+            quarterStart: '2015-04-01',
+            monthStart: '2015-05-01',
+            yearGoal: '52,000',
+            status: 'On Track',
+            statusClass: 'on-track',
             barSegments: wnt.period(0,12,true)
         };
     },
@@ -15,7 +21,7 @@ var MembershipGoals = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
-                    myQuery: { specs: { type: 'visits' }, periods: this.state.visitsDate }
+                    memberships: { specs: { type: 'members' }, periods: this.state.day }
                 }
             }
         )
@@ -24,8 +30,9 @@ var MembershipGoals = React.createClass({
             wnt.membersGoals = result;
             if(this.isMounted()) {
                 this.setState({
-                    sample: result.myQuery.units
+                    membershipsYear: result.memberships.current_members
                 });
+                this.formatNumbers();
             }
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
@@ -53,7 +60,12 @@ var MembershipGoals = React.createClass({
         }
         event.target.blur();
     },
+    formatNumbers: function(){
+        $('#total-membership-goals .bar-meter-marker').parseNumber({format:"#,###", locale:"us"});
+        $('#total-membership-goals .bar-meter-marker').formatNumber({format:"#,###", locale:"us"});
+    },
     componentDidUpdate: function(){
+        this.formatNumbers();
         $('#total-membership-goals .bar-meter-marker')
             .animate({
                 left: '50%',
@@ -79,10 +91,10 @@ var MembershipGoals = React.createClass({
                             </select>
                             <Caret className="filter-caret" />
                         </form>
-                        <div className="clear goal">Membership Goal: <span className="goalAmount">#4,500</span></div>
-                        <div className="goalStatus">Status: <span className="goalStatusText behind">Behind</span></div>
+                        <div className="clear goal">Membership Goal: <span className="goalAmount">{this.state.yearGoal}</span></div>
+                        <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
                         <div className="bar-meter clear">
-                            <div className="bar-meter-marker">#2,300</div>
+                            <div className="bar-meter-marker">{this.state.membershipsYear}</div>
                             <table className="bar-meter-segments">
                                 <tr>
                                     { this.state.barSegments.map(function(segment) {

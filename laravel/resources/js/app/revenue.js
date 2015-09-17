@@ -180,7 +180,6 @@ var AccordionSet = React.createClass({
         return change;
     },
     formatNumbers: function(){
-        // Format numbers and set the direction of the change arrows
         $.each($('#revenue-accordion .accordion-stat'), function(index, item){
             if($(this).html() !== '-'){
                 $(this).parseNumber({format:"$#,###", locale:"us"});

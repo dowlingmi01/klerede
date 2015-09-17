@@ -5,9 +5,34 @@
 var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
-            visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
+            /*
+                Status () ... (calculated as percentage of goal)
+                    <50 = Red
+                    >50 <75 = Orange
+                    >75 <90 = Yellow
+                    >90 <110 = Yellowish-green
+                    >110 = Green
+            */
+            day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
+
+            yearStart: '2015-01-01',
+            quarterStart: '2015-04-01',
+            monthStart: '2015-05-01',
+
+            yearGoal: '$6,000,000',
+            quarterGoal: '',
+            monthGoal: '',
+
+            status: 'On Track',
+            statusClass: 'on-track',
+            markerPosition: this.markerPosition('2015-01-01', '2015-05-06'),
             barSegments: wnt.period(0,12,true)
         };
+    },
+    markerPosition: function(startDate, endDate) {
+        var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
+        var percentage = (days / 365) * 100;
+        return percentage+'%';
     },
     componentDidMount: function() {
         $.post(
@@ -15,7 +40,9 @@ var SalesGoals = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
-                    myQuery: { specs: { type: 'visits' }, periods: this.state.visitsDate }
+                    sales_year: { specs: { type: 'sales' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    sales_quarter: { specs: { type: 'sales' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
+                    sales_month: { specs: { type: 'sales' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } }
                 }
             }
         )
@@ -24,8 +51,11 @@ var SalesGoals = React.createClass({
             wnt.sales = result;
             if(this.isMounted()) {
                 this.setState({
-                    sample: result.myQuery.units
+                    salesYear: result.sales_year.amount,
+                    salesQuarter: result.sales_quarter.amount,
+                    salesMonth: result.sales_month.amount
                 });
+                this.formatNumbers();
             }
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
@@ -53,17 +83,24 @@ var SalesGoals = React.createClass({
         }
         event.target.blur();
     },
+    formatNumbers: function(){
+        $('#total-sales-goals .bar-meter-marker').parseNumber({format:"$#,###", locale:"us"});
+        $('#total-sales-goals .bar-meter-marker').formatNumber({format:"$#,###", locale:"us"});
+    },
     componentDidUpdate: function(){
+        this.formatNumbers();
         $('#total-sales-goals .bar-meter-marker')
             .animate({
-                left: '25%',
-                transform: 'translateX(-25%)'
+                left: this.state.markerPosition
             },
             2000,
             'easeOutElastic'
         );
     },
     render: function() {
+        var gradient = {
+            background: 'linear-gradient(to right, Red, Orange, Yellow, YellowGreen, Green)'
+        };
         return (
             <div className="row">
                 <div className="col-xs-6 col-md-6 arrow-connector-right">
@@ -79,10 +116,10 @@ var SalesGoals = React.createClass({
                             </select>
                             <Caret className="filter-caret" />
                         </form>
-                        <div className="clear goal">Goal: <span className="goalAmount">$2,000,000</span></div>
-                        <div className="goalStatus">Status: <span className="goalStatusText ahead">Ahead</span></div>
-                        <div className="bar-meter clear">
-                            <div className="bar-meter-marker">$950,000</div>
+                        <div className="clear goal">Goal: <span className="goalAmount">{this.state.yearGoal}</span></div>
+                        <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
+                        <div className="bar-meter clear" style={gradient}>
+                            <div className="bar-meter-marker">{this.state.salesYear}</div>
                             <table className="bar-meter-segments">
                                 <tr>
                                     { this.state.barSegments.map(function(segment) {
