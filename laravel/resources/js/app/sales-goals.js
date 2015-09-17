@@ -5,42 +5,65 @@
 var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
-            /*
-                HOW TO CALCULATE...
-                    MARKER POSITION = % of time window
-                    GRADIENT =     ......    goal vs current = % complete vs what % should be complete at the current marker position (this.state.markerPosition is a % number)
-                    (CURRENT / GOAL) * 100 = %COMPLETE
-                        if goal = 100 and current = 25 ... 25% complete .... e.g. this.state.markerPosition = 50%, then the goal should be 50% complete, but since it's 25% it's off by -25%
-                            if that 25% complete matches what SHOULD be complete
-
-                        so we have 2 numbers ... 25 and 50 (%done vs %expected)
-
-                Status () ... (calculated as percentage of goal)
-                    <50 = Red
-                    >50 <75 = Orange
-                    >75 <90 = Yellow
-                    >90 <110 = Yellowish-green
-                    >110 = Green
-            */
             day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
 
             yearStart: '2015-01-01',   // TO DO: CALCULATE THESE
             quarterStart: '2015-04-01',   // TO DO: CALCULATE THESE
             monthStart: '2015-05-01',   // TO DO: CALCULATE THESE
 
-            goal: '$6,000,000',   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
+            goal: 13000000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
 
             status: 'On Track',
             statusClass: 'on-track',
             markerPosition: this.markerPosition('2015-01-01', '2015-05-06', 365),
-            barGradient: 'Red, Orange, Yellow, YellowGreen, Green, Blue',
-            barSegments: wnt.period(0,12,true)
+            barGradient: 'Red, Orange, Yellow, YellowGreen, Green',
+            barSegments: wnt.period(0,12,true)   // 1st, 8th, 15th, 22nd, 30th(31st, 28th)
         };
     },
     markerPosition: function(startDate, endDate, periodLength) {
         var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
         var percentage = (days / periodLength) * 100;
         return percentage;
+    },
+    barGradient: function(expected, current) {
+        /*
+            <50 = Red = Behind
+            >50 <75 = Orange = Behind
+            >75 <90 = Yellow = Slightly Behind
+            >90 <110 = Yellowish-green = On Track
+            >110 = Green = Ahead
+
+            halfBlocksToMiddleOfCurrent = [1, 3, 5, 7, 9]
+            Each block counts as 2 so the marker is centered in the color
+            (current / halfBlocksToMiddleOfCurrent) * 2HalvesEach 
+        */
+        var gradient = ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green'];
+        var diff = (current / expected) * 100;
+        var band;
+
+        console.log(diff);
+
+        if(diff < 50) {
+            this.setState({ status: 'Behind', statusClass: 'behind' });
+            band = Math.round((current / 1) * 2);
+            return 'Red '+(band)+'%, Orange, Yellow, YellowGreen, Green';   // ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green']
+        } else if(diff < 75) {
+            this.setState({ status: 'Behind', statusClass: 'behind' });
+            band = Math.round((current / 3) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow, YellowGreen, Green';   // ['Orange', 'Yellow', 'YellowGreen', 'Green']
+        } else if(diff < 90) {
+            this.setState({ status: 'Slightly Behind', statusClass: 'slightly-behind' });
+            band = Math.round((current / 5) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen, Green';   // gradient.slice(2).toString()
+        } else if(diff < 110) {
+            this.setState({ status: 'On Track', statusClass: 'on-track' });
+            band = Math.round((current / 7) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green';   // ['YellowGreen', 'Green']
+        } else {
+            this.setState({ status: 'Ahead', statusClass: 'ahead' });
+            band = Math.round((current / 9) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green'+(band*5)+'%';
+        }
     },
     componentDidMount: function() {
         $.post(
@@ -59,7 +82,11 @@ var SalesGoals = React.createClass({
             wnt.sales = result;
             if(this.isMounted()) {
                 this.setState({
-                    sales: result.sales_year.amount
+                    sales: result.sales_year.amount,
+                    barGradient: this.barGradient(
+                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            (result.sales_year.amount / this.state.goal) * 100
+                        )
                 });
                 this.formatNumbers();
             }
@@ -73,35 +100,53 @@ var SalesGoals = React.createClass({
         if(filter === 'year'){
             this.setState({
                 barSegments: wnt.period(0, 12, true),
-                goal: '$6,000,000',
+                goal: 13000000,
                 sales: wnt.sales.sales_year.amount,
-                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365)
+                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            (wnt.sales.sales_year.amount / 13000000) * 100
+                        )
             });
         } else if(filter === 'quarter'){
             this.setState({
                 barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
-                goal: '$1,500,000',
+                goal: 5000000,
                 sales: wnt.sales.sales_quarter.amount,
-                markerPosition: this.markerPosition(this.state.quarterStart, this.state.day, 91)
+                markerPosition: this.markerPosition(this.state.quarterStart, this.state.day, 91),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.quarterStart, this.state.day, 91),
+                            (wnt.sales.sales_quarter.amount / 5000000) * 100
+                        )
             });
         }  else if(filter === 'month'){
             this.setState({
-                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum+1, true),
-                goal: '$500,000',
+                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
+                goal: 1000000,
                 sales: wnt.sales.sales_month.amount,
-                markerPosition: this.markerPosition(this.state.monthStart, this.state.day, 30)
+                markerPosition: this.markerPosition(this.state.monthStart, this.state.day, 30),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.monthStart, this.state.day, 30),
+                            (wnt.sales.sales_month.amount / 1000000) * 100
+                        )
             });
         } else {
             this.setState({
                 barSegments: wnt.period(0, 12, true),
-                goal: '$6,000,000',
+                goal: 20000000,
                 sales: wnt.sales.sales_year.amount,
-                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365)
+                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            (wnt.sales.sales_year.amount / 20000000) * 100
+                        )
             });
         }
         event.target.blur();
     },
     formatNumbers: function(){
+        $('#total-sales-goals .goalAmount').parseNumber({format:"$#,###", locale:"us"});
+        $('#total-sales-goals .goalAmount').formatNumber({format:"$#,###", locale:"us"});
         $('#total-sales-goals .bar-meter-marker').parseNumber({format:"$#,###", locale:"us"});
         $('#total-sales-goals .bar-meter-marker').formatNumber({format:"$#,###", locale:"us"});
     },

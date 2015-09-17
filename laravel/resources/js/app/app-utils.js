@@ -27,12 +27,23 @@ var wnt = {
         'November',
         'December'
     ],
+    daysInMonth: function(month, year){
+        return new Date(year, month, 0).getDate();
+    },
     period: function(monthStart, monthStop, abbr){   // EXAMPLE: wnt.period(0,3,true) returns ['Jan','Feb','Mar']
-        var selectedMonths = wnt.months.slice(monthStart, monthStop);
-        if(abbr === true){
-            $.each(selectedMonths, function(index,value){
-                selectedMonths[index] = value.substring(0,3);
-            });
+        var selectedMonths;
+        if(monthStart === monthStop){
+            selectedMonths = ['1st', '8th', '15th', '22nd'];
+            var lastDay = wnt.daysInMonth(wnt.thisMonthNum, wnt.thisYear);
+            lastDay = lastDay < 31 ? lastDay+'th' : lastDay+'st';   // 28th, 29th, 30th, 31ST
+            // selectedMonths.push(lastDay);   // TEMP REMOVAL: Need to figure out spacing
+        } else {
+            selectedMonths = wnt.months.slice(monthStart, monthStop);
+            if(abbr === true){
+                $.each(selectedMonths, function(index,value){
+                    selectedMonths[index] = value.substring(0,3);
+                });
+            }
         }
         return selectedMonths;
     }

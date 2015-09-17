@@ -39,8 +39,9 @@ body, p, td, label, .checkbox label {
 @verylightblue: rgba(239,247,252,1);
 
 @green: rgba(100,168,17,1);
-@red: rgba(173,29,14,1);
+@yellowgreen: yellowgreen;
 @orange: rgba(241,135,13,1);
+@red: rgba(173,29,14,1);
 
 @grid-gutter-width: 15px;
 
@@ -503,11 +504,14 @@ header {
 .ahead {
     color: @green;
 }
+.on-track {
+    color: @yellowgreen;
+}
+.slightly-behind {
+    color: @orange;
+}
 .behind {
     color: @red;
-}
-.on-track {
-    color: @orange;
 }
 .dial-wrapper {
     margin: 0 auto;
@@ -570,6 +574,7 @@ header {
     }*/
     .bar-meter-segments {
         position: relative;
+        table-layout: fixed;
         top: 26px;
         width: 100%;
         .bar-meter-segment {
