@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-xs-2 col-sm-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.png" /></a></div>
                 <div class="col-xs-10 col-sm-10 user-info">
-                    <div class="client-name">The National Demo Museum</div>
+                    <div class="client-name">Your Institution Here</div>
                     <div class="user-wrapper">
                         <div class="user-image"></div>
                         <div class="utilities-wrapper">
