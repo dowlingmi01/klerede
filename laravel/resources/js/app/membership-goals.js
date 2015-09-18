@@ -16,9 +16,9 @@ var MembershipGoals = React.createClass({
             goalFamily: 3250000,
             goalDonor: 3250000,
 
-            individual: 100,
-            family: 100,
-            donor: 100,
+            individual: '...',
+            family: '...',
+            donor: '...',
 
             status: 'On Track',
             statusIndividual: 'On Track',

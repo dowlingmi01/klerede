@@ -191,9 +191,9 @@ function radialProgress(parent) {
         _height=_width;
         _fontSize=_width*.2;
         _arc.outerRadius(_width/2);
-        _arc.innerRadius(_width/2 * .85);
-        _arc2.outerRadius(_width/2 * .85);
-        _arc2.innerRadius(_width/2 * .85 - (_width/2 * .15));
+        _arc.innerRadius(_width/2 * .89);  // '.nn' Adjusts the width of the dial ... original was .85
+        _arc2.outerRadius(_width/2 * .89);
+        _arc2.innerRadius(_width/2 * .89 - (_width/2 * .15));
     }
 
 

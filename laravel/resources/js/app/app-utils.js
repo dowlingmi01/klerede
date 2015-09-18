@@ -163,6 +163,63 @@ $(function(){
                 .diameter(145)
                 .value(110)
                 .render();
+
+        // GOAL MARKER DOTS
+
+        var goalDot1 = d3.select('#div1').selectAll('svg').append("circle")
+                .attr("r", 8)
+                .attr("cx", 20)
+                .attr("cy", 20)
+                .attr("fill", "rgba(66,66,66,1)");
+
+        var goalDot2 = d3.select('#div2').selectAll('svg').append("circle")
+                .attr("r", 8)
+                .attr("cx", 20)
+                .attr("cy", 20)
+                .attr("fill", "rgba(66,66,66,1)");
+
+        var goalDot3 = d3.select('#div3').selectAll('svg').append("circle")
+                .attr("r", 8)
+                .attr("cx", 20)
+                .attr("cy", 20)
+                .attr("fill", "rgba(66,66,66,1)");
+
+        var goalDot4 = d3.select('#div4').selectAll('svg').append("circle")
+                .attr("r", 8)
+                .attr("cx", 20)
+                .attr("cy", 20)
+                .attr("fill", "rgba(66,66,66,1)");
+
+        var goalDot5 = d3.select('#div5').selectAll('svg').append("circle")
+                .attr("r", 8)
+                .attr("cx", 20)
+                .attr("cy", 20)
+                .attr("fill", "rgba(66,66,66,1)");
+
+        var goalDot6 = d3.select('#div6').selectAll('svg').append("circle")
+                .attr("r", 8)
+                .attr("cx", 20)
+                .attr("cy", 20)
+                .attr("fill", "rgba(66,66,66,1)");
+
+        var goalDot7 = d3.select('#div7').selectAll('svg').append("circle")
+                .attr("r", 8)
+                .attr("cx", 20)
+                .attr("cy", 20)
+                .attr("fill", "rgba(66,66,66,1)");
+        /*
+            What we know for positioning the dot...
+                - We know the dial's diameter
+                - We know the animation starts at 12:00
+                - Dial width = 8px
+                - Bead = 14px
+
+            var circleK = svgContainer.append("circle")
+                .attr("r", 10)
+                .attr("cx", 100)
+                .attr("cy", 50)
+                .attr("fill", "#ccebeb");
+        */
     }
 
 

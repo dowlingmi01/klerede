@@ -17,10 +17,10 @@ var SalesGoals = React.createClass({
             goalGiftstore: 3250000,
             goalMembership: 3250000,
 
-            boxoffice: 100,
-            cafe: 100,
-            giftstore: 100,
-            membership: 100,
+            boxoffice: '...',
+            cafe: '...',
+            giftstore: '...',
+            membership: '...',
 
             status: 'On Track',
             statusBoxoffice: 'On Track',
@@ -209,6 +209,13 @@ var SalesGoals = React.createClass({
             2000,
             'easeOutElastic'
         );
+        /*
+            var circleK = svgContainer.append("circle")
+                .attr("r", 10)
+                .attr("cx", 100)
+                .attr("cy", 50)
+                .attr("fill", "#ccebeb");
+        */
     },
     render: function() {
         var gradient = {
