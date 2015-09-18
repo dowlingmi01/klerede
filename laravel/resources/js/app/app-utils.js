@@ -53,7 +53,7 @@ var wnt = {
 /******** GLOBAL API-FORMATTED DATES ********/
 /********************************************/
 
-wnt.today = new Date('2015-5-6');   // TEMPORARY OVERRIDE ... REMOVE STRING TO GET CURRENT DAY FOR ALL CALCULATIONS
+wnt.today = new Date('2015-5-7');   // TEMPORARY OVERRIDE ... REMOVE STRING TO GET CURRENT DAY FOR ALL CALCULATIONS
 wnt.thisYear = wnt.today.getFullYear();
 wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
 wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
@@ -87,7 +87,7 @@ wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
 // TO DO ... CALCULATE THESES
 wnt.yearStart = wnt.thisYear+'-01-01';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-01';
-wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum)+'-01';
+wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-01';
 
 /*********************************************/
 /******** GLOBAL DOM-READY PROCESSING ********/
