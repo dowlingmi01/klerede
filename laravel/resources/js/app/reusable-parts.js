@@ -22,4 +22,19 @@ var Segment = React.createClass({
     }
 });
 
+var Dial = React.createClass({
+    render: function() {
+        return (
+            <div id={this.props.divID} className="dial">
+                <div className="channel-info">
+                    <div className="channel-name">{this.props.label}</div>
+                    <div className="channel-amount">{this.props.amount}</div>
+                    <div className="channel-goal">Goal: <span className="amount">{this.props.goal}</span></div>
+                    <div className={"channel-status " + this.props.statusClass}>{this.props.status}</div>
+                </div>
+            </div>
+        );
+    }
+});
+
 console.log('Reusable parts loaded...');

@@ -12,9 +12,28 @@ var SalesGoals = React.createClass({
             monthStart: '2015-05-01',   // TO DO: CALCULATE THESE
 
             goal: 13000000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
+            goalBoxoffice: 3250000,
+            goalCafe: 3250000,
+            goalGiftstore: 3250000,
+            goalMembership: 3250000,
+
+            boxoffice: 100,
+            cafe: 100,
+            giftstore: 100,
+            membership: 100,
 
             status: 'On Track',
+            statusBoxoffice: 'On Track',
+            statusCafe: 'On Track',
+            statusGiftstore: 'On Track',
+            statusMembership: 'On Track',
+
             statusClass: 'on-track',
+            statusClassBoxoffice: 'on-track',
+            statusClassCafe: 'on-track',
+            statusClassGiftstore: 'on-track',
+            statusClassMembership: 'on-track',
+
             markerPosition: this.markerPosition('2015-01-01', '2015-05-06', 365),
             barGradient: 'Red, Orange, Yellow, YellowGreen, Green',
             barSegments: wnt.period(0,12,true)
@@ -72,7 +91,23 @@ var SalesGoals = React.createClass({
                 queries: {
                     sales_year: { specs: { type: 'sales' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
                     sales_quarter: { specs: { type: 'sales' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
-                    sales_month: { specs: { type: 'sales' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } }
+                    sales_month: { specs: { type: 'sales' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } },
+
+                    boxoffice_year: { specs: { type: 'sales', channel: 'gate' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    boxoffice_quarter: { specs: { type: 'sales', channel: 'gate' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
+                    boxoffice_month: { specs: { type: 'sales', channel: 'gate' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } },
+                    
+                    cafe_year: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    cafe_quarter: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
+                    cafe_month: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } },
+                    
+                    giftstore_year: { specs: { type: 'sales', channel: 'store' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    giftstore_quarter: { specs: { type: 'sales', channel: 'store' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
+                    giftstore_month: { specs: { type: 'sales', channel: 'store' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } },
+                    
+                    membership_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    membership_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
+                    membership_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } }
                 }
             }
         )
@@ -85,7 +120,11 @@ var SalesGoals = React.createClass({
                     barGradient: this.barGradient(
                             this.markerPosition(this.state.yearStart, this.state.day, 365),
                             (result.sales_year.amount / this.state.goal) * 100
-                        )
+                        ),
+                    boxoffice: result.boxoffice_year.amount,
+                    cafe: result.cafe_year.amount,
+                    giftstore: result.giftstore_year.amount,
+                    membership: result.membership_year.amount
                 });
                 this.formatNumbers();
             }
@@ -148,6 +187,18 @@ var SalesGoals = React.createClass({
         $('#total-sales-goals .goalAmount').formatNumber({format:"$#,###", locale:"us"});
         $('#total-sales-goals .bar-meter-marker').parseNumber({format:"$#,###", locale:"us"});
         $('#total-sales-goals .bar-meter-marker').formatNumber({format:"$#,###", locale:"us"});
+        $.each($('#earned-revenue-channels .channel-amount'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:"$#,###", locale:"us"});
+                $(this).formatNumber({format:"$#,###", locale:"us"});
+            }
+        });
+        $.each($('#earned-revenue-channels .amount'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:"$#,###", locale:"us"});
+                $(this).formatNumber({format:"$#,###", locale:"us"});
+            }
+        });
     },
     componentDidUpdate: function(){
         this.formatNumbers();
@@ -203,37 +254,27 @@ var SalesGoals = React.createClass({
                             </select>
                             <Caret className="filter-caret" />
                         </form>
-                        <div id="div1" className="clear dial">
-                            <div className="channel-info">
-                                <div className="channel-name">Box Office</div>
-                                <div className="channel-amount">$18,456</div>
-                                <div className="channel-goal">Goal: $25,000</div>
-                                <div className="channel-status behind">Behind</div>
-                            </div>
-                        </div>
-                        <div id="div2" className="dial">
-                            <div className="channel-info">
-                                <div className="channel-name">Cafe</div>
-                                <div className="channel-amount">$8,123</div>
-                                <div className="channel-goal">Goal: $14,000</div>
-                                <div className="channel-status ahead">Ahead</div>
-                            </div>
-                        </div>
-                        <div id="div3" className="dial">
-                            <div className="channel-info">
-                                <div className="channel-name">Gift Store</div>
-                                <div className="channel-amount">$10,123</div>
-                                <div className="channel-goal">Goal: $18,000</div>
-                                <div className="channel-status on-track">On Track</div>
-                            </div>
-                        </div>
-                        <div id="div4" className="dial">
-                            <div className="channel-info">
-                                <div className="channel-name">Membership</div>
-                                <div className="channel-amount">$4,123</div>
-                                <div className="channel-goal">Goal: $6,000</div>
-                                <div className="channel-status ahead">Ahead</div>
-                            </div>
+                        <div className="dial-wrapper">
+                            <Dial divID="div1" label="Box Office"
+                                amount={this.state.boxoffice}
+                                goal={this.state.goalBoxoffice}
+                                status={this.state.statusBoxoffice}
+                                statusClass={this.state.statusClassBoxoffice} />
+                            <Dial divID="div2" label="Cafe"
+                                amount={this.state.cafe}
+                                goal={this.state.goalCafe}
+                                status={this.state.statusCafe}
+                                statusClass={this.state.statusClassCafe} />
+                            <Dial divID="div3" label="Gift Store"
+                                amount={this.state.giftstore}
+                                goal={this.state.goalGiftstore}
+                                status={this.state.statusGiftstore}
+                                statusClass={this.state.statusClassGiftstore} />
+                            <Dial divID="div4" label="Membership"
+                                amount={this.state.membership}
+                                goal={this.state.goalMembership}
+                                status={this.state.statusMembership}
+                                statusClass={this.state.statusClassMembership} />
                         </div>
                     </div>
                 </div>

@@ -12,9 +12,24 @@ var MembershipGoals = React.createClass({
             monthStart: '2015-05-01',   // TO DO: CALCULATE THESE
 
             goal: 20000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
+            goalIndividual: 3250000,
+            goalFamily: 3250000,
+            goalDonor: 3250000,
+
+            individual: 100,
+            family: 100,
+            donor: 100,
 
             status: 'On Track',
+            statusIndividual: 'On Track',
+            statusFamily: 'On Track',
+            statusDonor: 'On Track',
+
             statusClass: 'on-track',
+            statusClassIndividual: 'on-track',
+            statusClassFamily: 'on-track',
+            statusClassDonor: 'on-track',
+
             markerPosition: this.markerPosition('2015-01-01', '2015-05-06', 365),
             barGradient: 'Red, Orange, Yellow, YellowGreen, Green',
             barSegments: wnt.period(0,12,true)
@@ -72,7 +87,11 @@ var MembershipGoals = React.createClass({
                 queries: {
                     memberships_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
                     memberships_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
-                    memberships_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } }
+                    memberships_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } },
+
+                    individual_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    family_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    donor_year: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } }
                 }
             }
         )
@@ -85,7 +104,10 @@ var MembershipGoals = React.createClass({
                     barGradient: this.barGradient(
                             this.markerPosition(this.state.yearStart, this.state.day, 365),
                             (result.memberships_year.units / this.state.goal) * 100
-                        )
+                        ),
+                    individual: result.individual_year.units,
+                    family: result.family_year.units,
+                    donor: result.donor_year.units,
                 });
                 this.formatNumbers();
             }
@@ -148,6 +170,18 @@ var MembershipGoals = React.createClass({
         $('#total-membership-goals .goalAmount').formatNumber({format:"#,###", locale:"us"});
         $('#total-membership-goals .bar-meter-marker').parseNumber({format:"#,###", locale:"us"});
         $('#total-membership-goals .bar-meter-marker').formatNumber({format:"#,###", locale:"us"});
+        $.each($('#membership .channel-amount'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:"#,###", locale:"us"});
+                $(this).formatNumber({format:"#,###", locale:"us"});
+            }
+        });
+        $.each($('#membership .amount'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:"#,###", locale:"us"});
+                $(this).formatNumber({format:"#,###", locale:"us"});
+            }
+        });
     },
     componentDidUpdate: function(){
         this.formatNumbers();
@@ -204,30 +238,21 @@ var MembershipGoals = React.createClass({
                             <Caret className="filter-caret" />
                         </form>
                         <div className="dial-wrapper">
-                            <div id="div5" className="clear dial">
-                                <div className="channel-info">
-                                    <div className="channel-name">Individual</div>
-                                    <div className="channel-amount">$75,566</div>
-                                    <div className="channel-goal">Goal: $125,000</div>
-                                    <div className="channel-status ahead">Ahead</div>
-                                </div>
-                            </div>
-                            <div id="div6" className="dial">
-                                <div className="channel-info">
-                                    <div className="channel-name">Family</div>
-                                    <div className="channel-amount">$18,123</div>
-                                    <div className="channel-goal">Goal: $90,000</div>
-                                    <div className="channel-status on-track">On Track</div>
-                                </div>
-                            </div>
-                            <div id="div7" className="dial">
-                                <div className="channel-info">
-                                    <div className="channel-name">Donor</div>
-                                    <div className="channel-amount">$25,123</div>
-                                    <div className="channel-goal">Goal: $180,000</div>
-                                    <div className="channel-status on-track">On Track</div>
-                                </div>
-                            </div>
+                            <Dial divID="div5" label="Individual"
+                                amount={this.state.individual}
+                                goal={this.state.goalIndividual}
+                                status={this.state.statusIndividual}
+                                statusClass={this.state.statusClassIndividual} />
+                            <Dial divID="div6" label="Family"
+                                amount={this.state.family}
+                                goal={this.state.goalFamily}
+                                status={this.state.statusFamily}
+                                statusClass={this.state.statusClassFamily} />
+                            <Dial divID="div7" label="Donor"
+                                amount={this.state.donor}
+                                goal={this.state.goalDonor}
+                                status={this.state.statusDonor}
+                                statusClass={this.state.statusClassDonor} />
                         </div>
                     </div>
                 </div>
