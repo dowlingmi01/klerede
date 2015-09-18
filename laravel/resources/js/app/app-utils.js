@@ -166,6 +166,57 @@ $(function(){
                 .value(110)
                 .render();
 
+        // STARTING MARKERS
+
+        var startMark1 = d3.select('#div1').selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+
+        var startMark2 = d3.select('#div2').selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+
+        var startMark3 = d3.select('#div3').selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+
+        var startMark4 = d3.select('#div4').selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+
+        var startMark5 = d3.select('#div5').selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+
+        var startMark6 = d3.select('#div6').selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+
+        var startMark7 = d3.select('#div7').selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+
         // GOAL MARKER DOTS
 
         var goalDot1 = d3.select('#div1').selectAll('svg').append("circle")
