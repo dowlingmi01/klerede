@@ -6,9 +6,9 @@ var MembershipGoals = React.createClass({
     getInitialState: function() {
         return {
             goal: 20000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
-            goalIndividual: 3250000,
-            goalFamily: 3250000,
-            goalDonor: 3250000,
+            goalIndividual: 10000,
+            goalFamily: 10000,
+            goalDonor: 10000,
 
             individual: '...',
             family: '...',
@@ -84,8 +84,21 @@ var MembershipGoals = React.createClass({
                     memberships_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
 
                     individual_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
+                    individual_quarter: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
+                    individual_month: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
+
+
                     family_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
-                    donor_year: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } }
+                    family_quarter: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
+                    family_month: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
+
+                    donor_year: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
+                    donor_quarter: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
+                    donor_month: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
+
+                    visits_year: { specs: { type: 'visits' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
+                    visits_quarter: { specs: { type: 'visits' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
+                    visits_month: { specs: { type: 'visits' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } }
                 }
             }
         )
@@ -121,7 +134,13 @@ var MembershipGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                             (wnt.membersGoals.memberships_year.units / 20000) * 100
-                        )
+                        ),
+                individual: wnt.membersGoals.individual_year.units,
+                family: wnt.membersGoals.family_year.units,
+                donor: wnt.membersGoals.donor_year.units,
+                goalIndividual: 10000,
+                goalFamily: 10000,
+                goalDonor: 10000
             });
         } else if(filter === 'quarter'){
             this.setState({
@@ -132,7 +151,13 @@ var MembershipGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                             (wnt.membersGoals.memberships_quarter.units / 5000) * 100
-                        )
+                        ),
+                individual: wnt.membersGoals.individual_quarter.units,
+                family: wnt.membersGoals.family_quarter.units,
+                donor: wnt.membersGoals.donor_quarter.units,
+                goalIndividual: 2500,
+                goalFamily: 2500,
+                goalDonor: 2500
             });
         }  else if(filter === 'month'){
             this.setState({
@@ -143,7 +168,13 @@ var MembershipGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                             (wnt.membersGoals.memberships_month.units / 1750) * 100
-                        )
+                        ),
+                individual: wnt.membersGoals.individual_month.units,
+                family: wnt.membersGoals.family_month.units,
+                donor: wnt.membersGoals.donor_month.units,
+                goalIndividual: 875,
+                goalFamily: 875,
+                goalDonor: 875
             });
         } else {
             this.setState({
@@ -154,7 +185,13 @@ var MembershipGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                             (wnt.membersGoals.memberships_year.units / 20000) * 100
-                        )
+                        ),
+                individual: wnt.membersGoals.individual_year.units,
+                family: wnt.membersGoals.family_year.units,
+                donor: wnt.membersGoals.donor_year.units,
+                goalIndividual: 10000,
+                goalFamily: 10000,
+                goalDonor: 10000
             });
         }
         event.target.blur();
@@ -177,6 +214,26 @@ var MembershipGoals = React.createClass({
             }
         });
     },
+    setDots: function(){
+        diameter = $('#div1').width() -2;   // Tweaked via console
+        console.log(diameter);
+        radius = diameter / 2;
+        centerX = radius;
+        centerY = radius;
+        // Angle is calculated as % of 360 based on spot in timeframe
+        angle = Math.round((Math.round(this.state.markerPosition) / 100) * 360) - 90;   // -90 to match dial start/stop   
+        console.log(angle);
+        dotOffset = 0;   // Tweaked via console
+        radian = (angle) * (Math.PI/180);
+        dotX = (centerX + (radius * Math.cos(radian))) - dotOffset;
+        dotY = (centerY + (radius * Math.sin(radian))) - dotOffset;
+        d3.select('#membership').selectAll('circle').remove()
+        d3.select('#membership').selectAll('svg').append("circle")
+            .attr("r", 8)
+            .attr("cx", dotX)
+            .attr("cy", dotY)
+            .attr("fill", "rgba(66,66,66,1)");
+    },
     componentDidUpdate: function(){
         this.formatNumbers();
         $('#total-membership-goals .bar-meter-marker')
@@ -186,6 +243,7 @@ var MembershipGoals = React.createClass({
             2000,
             'easeOutElastic'
         );
+        this.setDots();
     },
     render: function() {
         var gradient = {

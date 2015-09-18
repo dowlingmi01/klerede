@@ -101,7 +101,11 @@ var SalesGoals = React.createClass({
                     
                     membership_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     membership_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
-                    membership_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } }
+                    membership_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
+
+                    visits_year: { specs: { type: 'visits' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
+                    visits_quarter: { specs: { type: 'visits' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
+                    visits_month: { specs: { type: 'visits' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } }
                 }
             }
         )
@@ -138,7 +142,15 @@ var SalesGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                             (wnt.salesGoals.sales_year.amount / 13000000) * 100
-                        )
+                        ),
+                boxoffice: wnt.salesGoals.boxoffice_year.amount,
+                cafe: wnt.salesGoals.cafe_year.amount,
+                giftstore: wnt.salesGoals.giftstore_year.amount,
+                membership: wnt.salesGoals.membership_year.amount,
+                goalBoxoffice: 3250000,
+                goalCafe: 3250000,
+                goalGiftstore: 3250000,
+                goalMembership: 3250000
             });
         } else if(filter === 'quarter'){
             this.setState({
@@ -149,7 +161,15 @@ var SalesGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                             (wnt.salesGoals.sales_quarter.amount / 5000000) * 100
-                        )
+                        ),
+                boxoffice: wnt.salesGoals.boxoffice_quarter.amount,
+                cafe: wnt.salesGoals.cafe_quarter.amount,
+                giftstore: wnt.salesGoals.giftstore_quarter.amount,
+                membership: wnt.salesGoals.membership_quarter.amount,
+                goalBoxoffice: 812500,
+                goalCafe: 812500,
+                goalGiftstore: 812500,
+                goalMembership: 812500
             });
         }  else if(filter === 'month'){
             this.setState({
@@ -160,7 +180,15 @@ var SalesGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                             (wnt.salesGoals.sales_month.amount / 1000000) * 100
-                        )
+                        ),
+                boxoffice: wnt.salesGoals.boxoffice_month.amount,
+                cafe: wnt.salesGoals.cafe_month.amount,
+                giftstore: wnt.salesGoals.giftstore_month.amount,
+                membership: wnt.salesGoals.membership_month.amount,
+                goalBoxoffice: 270833,
+                goalCafe: 270833,
+                goalGiftstore: 270833,
+                goalMembership: 270833
             });
         } else {
             this.setState({
@@ -171,10 +199,19 @@ var SalesGoals = React.createClass({
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                             (wnt.salesGoals.sales_year.amount / 20000000) * 100
-                        )
+                        ),
+                boxoffice: wnt.salesGoals.boxoffice_year.amount,
+                cafe: wnt.salesGoals.cafe_year.amount,
+                giftstore: wnt.salesGoals.giftstore_year.amount,
+                membership: wnt.salesGoals.membership_year.amount,
+                goalBoxoffice: 3250000,
+                goalCafe: 3250000,
+                goalGiftstore: 3250000,
+                goalMembership: 3250000
             });
         }
         event.target.blur();
+        //this.setDots();
     },
     formatNumbers: function(){
         $('#total-sales-goals .goalAmount').parseNumber({format:"$#,###", locale:"us"});
@@ -194,6 +231,26 @@ var SalesGoals = React.createClass({
             }
         });
     },
+    setDots: function(){
+        diameter = $('#div1').width() -2;   // Tweaked via console
+        console.log(diameter);
+        radius = diameter / 2;
+        centerX = radius;
+        centerY = radius;
+        // Angle is calculated as % of 360 based on spot in timeframe
+        angle = Math.round((Math.round(this.state.markerPosition) / 100) * 360) - 90;   // -90 to match dial start/stop   
+        console.log(angle);
+        dotOffset = 0;   // Tweaked via console
+        radian = (angle) * (Math.PI/180);
+        dotX = (centerX + (radius * Math.cos(radian))) - dotOffset;
+        dotY = (centerY + (radius * Math.sin(radian))) - dotOffset;
+        d3.select('#earned-revenue-channels').selectAll('circle').remove()
+        d3.select('#earned-revenue-channels').selectAll('svg').append("circle")
+            .attr("r", 8)
+            .attr("cx", dotX)
+            .attr("cy", dotY)
+            .attr("fill", "rgba(66,66,66,1)");
+    },
     componentDidUpdate: function(){
         this.formatNumbers();
         $('#total-sales-goals .bar-meter-marker')
@@ -203,13 +260,7 @@ var SalesGoals = React.createClass({
             2000,
             'easeOutElastic'
         );
-        /*
-            var circleK = svgContainer.append("circle")
-                .attr("r", 10)
-                .attr("cx", 100)
-                .attr("cy", 50)
-                .attr("fill", "#ccebeb");
-        */
+        this.setDots();
     },
     render: function() {
         var gradient = {
