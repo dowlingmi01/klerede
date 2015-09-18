@@ -19,11 +19,7 @@ var MembersBlock = React.createClass({
 
 var MembersBlocksSet = React.createClass({
     getInitialState: function() {
-        return {
-            membersDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
-            membersDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
-            membersDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Should be wnt.yesterdaylastyear
-            
+        return {            
             membersConversion: '...',
             membersConversionCompareTo: '...',
 
@@ -51,48 +47,48 @@ var MembersBlocksSet = React.createClass({
                 queries: {
 
                     // Member Conversion = (Memberships Sold / Total Visitors) * 100
-                    membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: this.state.membersDate},
-                    membership_sales_compareto_daybefore: { specs: { type: 'sales', channel: 'membership' }, periods: this.state.membersDayBefore},
-                    membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: this.state.membersDayLastYear},
+                    membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterday},
+                    membership_sales_compareto_daybefore: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.daybeforeyesterday},
+                    membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterdaylastyear},
                     membership_sales_compareto_rolling: { specs: { type: 'sales', channel: 'membership' },
                         periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
                     // Capture Rate = (Transactions / Total Visitors) * 100
                     // Per Cap = Store Sales / Total Visitors
-                    transactions: { specs: { type: 'sales', channel: 'store' }, periods: this.state.membersDate},
-                    transactions_compareto_daybefore: { specs: { type: 'sales', channel: 'store' }, periods: this.state.membersDayBefore},
-                    transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: this.state.membersDayLastYear},
+                    transactions: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterday},
+                    transactions_compareto_daybefore: { specs: { type: 'sales', channel: 'store' }, periods: wnt.daybeforeyesterday},
+                    transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterdaylastyear},
                     transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store' },
                         periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
-                    total_admissions: { specs: { type: 'visits' }, periods: this.state.membersDate },
-                    total_admissions_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.membersDayBefore },
-                    total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.membersDayLastYear },
+                    total_admissions: { specs: { type: 'visits' }, periods: wnt.yesterday },
+                    total_admissions_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
+                    total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },
                     total_admissions_compareto_rolling: { specs: { type: 'visits' },
                         periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
-                    members_total_frequency_recency: { specs: { type: 'members' }, periods: this.state.membersDate },
-                    members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: this.state.membersDayBefore },
-                    members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: this.state.membersDayLastYear },
+                    members_total_frequency_recency: { specs: { type: 'members' }, periods: wnt.yesterday },
+                    members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: wnt.daybeforeyesterday },
+                    members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: wnt.yesterdaylastyear },
                     members_total_frequency_recency_compareto_rolling: { specs: { type: 'members'},
                         periods: {
-                            from: this.state.membersDayLastYear,
-                            to: this.state.membersDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     }

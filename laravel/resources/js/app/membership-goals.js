@@ -5,12 +5,6 @@
 var MembershipGoals = React.createClass({
     getInitialState: function() {
         return {
-            day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
-
-            yearStart: '2015-01-01',   // TO DO: CALCULATE THESE
-            quarterStart: '2015-04-01',   // TO DO: CALCULATE THESE
-            monthStart: '2015-05-01',   // TO DO: CALCULATE THESE
-
             goal: 20000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
             goalIndividual: 3250000,
             goalFamily: 3250000,
@@ -30,7 +24,7 @@ var MembershipGoals = React.createClass({
             statusClassFamily: 'on-track',
             statusClassDonor: 'on-track',
 
-            markerPosition: this.markerPosition('2015-01-01', '2015-05-06', 365),
+            markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
             barGradient: 'Red, Orange, Yellow, YellowGreen, Green',
             barSegments: wnt.period(0,12,true)
         };
@@ -85,13 +79,13 @@ var MembershipGoals = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
-                    memberships_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
-                    memberships_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
-                    memberships_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } },
+                    memberships_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
+                    memberships_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
+                    memberships_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
 
-                    individual_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
-                    family_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
-                    donor_year: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } }
+                    individual_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
+                    family_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
+                    donor_year: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } }
                 }
             }
         )
@@ -102,7 +96,7 @@ var MembershipGoals = React.createClass({
                 this.setState({
                     memberships: result.memberships_year.units,
                     barGradient: this.barGradient(
-                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                             (result.memberships_year.units / this.state.goal) * 100
                         ),
                     individual: result.individual_year.units,
@@ -123,9 +117,9 @@ var MembershipGoals = React.createClass({
                 barSegments: wnt.period(0, 12, true),
                 goal: 20000,
                 memberships: wnt.membersGoals.memberships_year.units,
-                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
+                markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                 barGradient: this.barGradient(
-                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                             (wnt.membersGoals.memberships_year.units / 20000) * 100
                         )
             });
@@ -134,9 +128,9 @@ var MembershipGoals = React.createClass({
                 barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
                 goal: 5000,
                 memberships: wnt.membersGoals.memberships_quarter.units,
-                markerPosition: this.markerPosition(this.state.quarterStart, this.state.day, 91),
+                markerPosition: this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                 barGradient: this.barGradient(
-                            this.markerPosition(this.state.quarterStart, this.state.day, 91),
+                            this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                             (wnt.membersGoals.memberships_quarter.units / 5000) * 100
                         )
             });
@@ -145,9 +139,9 @@ var MembershipGoals = React.createClass({
                 barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
                 goal: 1750,
                 memberships: wnt.membersGoals.memberships_month.units,
-                markerPosition: this.markerPosition(this.state.monthStart, this.state.day, 30),
+                markerPosition: this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                 barGradient: this.barGradient(
-                            this.markerPosition(this.state.monthStart, this.state.day, 30),
+                            this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                             (wnt.membersGoals.memberships_month.units / 1750) * 100
                         )
             });
@@ -156,9 +150,9 @@ var MembershipGoals = React.createClass({
                 barSegments: wnt.period(0, 12, true),
                 goal: 20000,
                 memberships: wnt.membersGoals.memberships_year.units,
-                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
+                markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                 barGradient: this.barGradient(
-                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                             (wnt.membersGoals.memberships_year.units / 20000) * 100
                         )
             });

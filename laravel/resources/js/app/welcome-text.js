@@ -5,7 +5,7 @@
 var WelcomeText = React.createClass({
     getInitialState: function() {
         return {
-            firstName: 'Joe',
+            firstName: 'Michael',
             clock: ''
         };
     },

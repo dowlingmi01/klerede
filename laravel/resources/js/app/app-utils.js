@@ -53,22 +53,26 @@ var wnt = {
 /******** GLOBAL API-FORMATTED DATES ********/
 /********************************************/
 
-wnt.today = new Date();
+wnt.today = new Date('2015-5-6');   // TEMPORARY OVERRIDE ... REMOVE STRING TO GET CURRENT DAY FOR ALL CALCULATIONS
 wnt.thisYear = wnt.today.getFullYear();
 wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
 wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
 if(wnt.thisMonthNum < 3){
     wnt.thisQuarterNum = [0,3];
     wnt.thisQuarterText = 'Q1';
+    wnt.thisQuarterStart = '01';
 } else if(wnt.thisMonthNum < 6){
     wnt.thisQuarterNum = [3,6];
     wnt.thisQuarterText = 'Q2';
+    wnt.thisQuarterStart = '04';
 } else if(wnt.thisMonthNum < 9){
     wnt.thisQuarterNum = [6,9];
     wnt.thisQuarterText = 'Q3';
+    wnt.thisQuarterStart = '07';
 } else {
     wnt.thisQuarterNum = [9,12];
     wnt.thisQuarterText = 'Q4';
+    wnt.thisQuarterStart = '10';
 }
 wnt.yesterday = new Date(wnt.today);
 wnt.yesterday.setDate(wnt.today.getDate() - 1);
@@ -80,12 +84,10 @@ wnt.today = wnt.formatDate(wnt.today);
 wnt.yesterday = wnt.formatDate(wnt.yesterday);
 wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
-
-// TEMPORARY OVERRIDE OF QUARTER AND MONTH
-wnt.thisQuarterNum = [3,6];
-wnt.thisQuarterText = 'Q2';
-wnt.thisMonthNum = 4;
-wnt.thisMonthText = 'May';
+// TO DO ... CALCULATE THESES
+wnt.yearStart = wnt.thisYear+'-01-01';
+wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-01';
+wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum)+'-01';
 
 /*********************************************/
 /******** GLOBAL DOM-READY PROCESSING ********/

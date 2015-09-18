@@ -20,10 +20,6 @@ var VisitsBlock = React.createClass({
 var VisitsBlocksSet = React.createClass({
     getInitialState: function() {
         return {
-            visitsDate: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
-            visitsDayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
-            visitsDayLastYear: '2014-05-06',   // TEMP STATIC DATE: Should be wnt.yesterdaylastyear
-            
             visitsTotal: '...',
             visitsTotalCompareTo: '...',
             
@@ -50,68 +46,68 @@ var VisitsBlocksSet = React.createClass({
                 venue_id: this.props.venueID,
                 queries: {
 
-                    visits_total: { specs: { type: 'visits' }, periods: this.state.visitsDate },
-                    visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: this.state.visitsDayBefore },
-                    visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: this.state.visitsDayLastYear },            
+                    visits_total: { specs: { type: 'visits' }, periods: wnt.yesterday },
+                    visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
+                    visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },            
                     visits_total_compareto_rolling: { specs: { type: 'visits'},
                         periods: {
-                            from: this.state.visitsDayLastYear,
-                            to: this.state.visitsDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
-                    visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDate },
-                    visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDayBefore },
-                    visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: this.state.visitsDayLastYear },
+                    visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterday },
+                    visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.daybeforeyesterday },
+                    visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterdaylastyear },
                     visits_ga_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] }, 
                         periods: {
-                            from: this.state.visitsDayLastYear,
-                            to: this.state.visitsDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
-                    visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDate },
-                    visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayBefore },
-                    visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: this.state.visitsDayLastYear },
+                    visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterday },
+                    visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.daybeforeyesterday },
+                    visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterdaylastyear },
                     visits_groups_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] }, 
                         periods: {
-                            from: this.state.visitsDayLastYear,
-                            to: this.state.visitsDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
-                    visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDate },
-                    visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDayBefore },
-                    visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: this.state.visitsDayLastYear },
+                    visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterday },
+                    visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.daybeforeyesterday },
+                    visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterdaylastyear },
                     visits_members_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
                         periods: {
-                            from: this.state.visitsDayLastYear,
-                            to: this.state.visitsDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
-                    visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDate },
-                    visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayBefore },
-                    visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: this.state.visitsDayLastYear },
+                    visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterday },
+                    visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.daybeforeyesterday },
+                    visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterdaylastyear },
                     visits_nonmembers_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] }, 
                         periods: {
-                            from: this.state.visitsDayLastYear,
-                            to: this.state.visitsDate,
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     },
 
-                    sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDate },
-                    sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayBefore },
-                    sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: this.state.visitsDayLastYear },
+                    sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterday },
+                    sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.daybeforeyesterday },
+                    sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterdaylastyear },
                     sales_gate_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
                         periods: {
-                            from: '2014-05-06',
-                            to: '2015-05-06',
+                            from: wnt.yesterdaylastyear,
+                            to: wnt.yesterday,
                             kind: 'average'
                         }
                     }

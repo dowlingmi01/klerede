@@ -81,9 +81,6 @@ var AccordionItemPlus = React.createClass({
 var AccordionSet = React.createClass({
     getInitialState: function() {
         return {
-            day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
-            dayBefore: '2015-05-05',   // TEMP STATIC DATE: Should be wnt.daybeforeyesterday
-
             boxofficeStatChange: [0, 'up'],
             boxofficeStatChangeON: [0, 'up'],
             boxofficeStatChangeOFF: [0, 'up'],
@@ -103,19 +100,19 @@ var AccordionSet = React.createClass({
                 venue_id: this.props.venueID,
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
                     boxoffice_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
                     boxoffice_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
                     groups: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
                     cafe: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
                     giftstore: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: this.state.dayBefore, to: this.state.day } },
+                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
                     membership: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: this.state.dayBefore, to: this.state.day } }
+                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } }
                 }
             }
         )
