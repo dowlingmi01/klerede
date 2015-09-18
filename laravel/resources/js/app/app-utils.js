@@ -84,10 +84,12 @@ wnt.today = wnt.formatDate(wnt.today);
 wnt.yesterday = wnt.formatDate(wnt.yesterday);
 wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
-// TO DO ... CALCULATE THESES
 wnt.yearStart = wnt.thisYear+'-01-01';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-01';
 wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-01';
+wnt.weekago = new Date(wnt.yesterday);
+wnt.weekago.setDate(wnt.weekago.getDate() - 6);
+wnt.weekago = wnt.formatDate(wnt.weekago);
 
 /*********************************************/
 /******** GLOBAL DOM-READY PROCESSING ********/
@@ -317,16 +319,7 @@ $(function(){
     var lineGraph = svgContainer.append("path")
           .attr("d", lineFunction(lineData))
           .attr("fill", "rgba(236,234,231,1)");
-    /******************************************/
-    /******** TEST BAR GRAPH ANIMATION ********/
-    /******************************************/
-    $('.bar-section').css('height','0')
-        .animate({
-            height: '60px',
-        },
-        2000,
-        'easeOutElastic'
-    );
+    
     /********************************/
     /******** TEST ACCORDION ********/
     /********************************/

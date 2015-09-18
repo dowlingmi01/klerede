@@ -216,13 +216,11 @@ var MembershipGoals = React.createClass({
     },
     setDots: function(){
         diameter = $('#div1').width() -2;   // Tweaked via console
-        console.log(diameter);
         radius = diameter / 2;
         centerX = radius;
         centerY = radius;
         // Angle is calculated as % of 360 based on spot in timeframe
         angle = Math.round((Math.round(this.state.markerPosition) / 100) * 360) - 90;   // -90 to match dial start/stop   
-        console.log(angle);
         dotOffset = 0;   // Tweaked via console
         radian = (angle) * (Math.PI/180);
         dotX = (centerX + (radius * Math.cos(radian))) - dotOffset;

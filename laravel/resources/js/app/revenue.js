@@ -6,11 +6,210 @@ var BarSet = React.createClass({
     render: function() {
         return (
             <div className="bar-set">
+                <div className="bar-section bar-section-boxoffice">{this.props.boxoffice}</div>
                 <div className="bar-section bar-section-cafe"></div>
-                <div className="bar-section bar-section-gift"></div>
-                <div className="bar-section bar-section-member"></div>
-                <div className="bar-section bar-section-other"></div>
+                <div className="bar-section bar-section-giftstore"></div>
+                <div className="bar-section bar-section-membership"></div>
                 <div className="bar-set-date">{this.props.date}</div>
+            </div>
+        );
+    }
+});
+
+var BarGraph = React.createClass({
+    getInitialState: function() {
+        return {
+            graphCap: 80000,
+            graphHeight: 300,
+
+            bar1BoxofficeHeight: 0,
+            bar2BoxofficeHeight: 0,
+            bar3BoxofficeHeight: 0,
+            bar4BoxofficeHeight: 0,
+            bar5BoxofficeHeight: 0,
+            bar6BoxofficeHeight: 0,
+            bar7BoxofficeHeight: 0
+        };
+    },
+    componentDidMount: function() {
+        $.post(
+            this.props.source,
+            {
+                venue_id: this.props.venueID,
+                queries: {
+                    boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    cafe: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    giftstore: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    membership: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } }
+                }
+            }
+        )
+        .done(function(result) {
+            console.log('Revenue data loaded...');
+            wnt.revenue = result;
+            if(this.isMounted()) {
+                this.setState({
+                    bar1BoxofficeHeight: this.calcBarHeight(result.boxoffice[0].amount),
+                    bar1CafeHeight: this.calcBarHeight(result.cafe[0].amount),
+                    bar1GiftstoreHeight: this.calcBarHeight(result.giftstore[0].amount),
+                    bar1MembershipHeight: this.calcBarHeight(result.membership[0].amount),
+
+                    bar2BoxofficeHeight: this.calcBarHeight(result.boxoffice[1].amount),
+                    bar2CafeHeight: this.calcBarHeight(result.cafe[1].amount),
+                    bar2GiftstoreHeight: this.calcBarHeight(result.giftstore[1].amount),
+                    bar2MembershipHeight: this.calcBarHeight(result.membership[1].amount),
+
+                    bar3BoxofficeHeight: this.calcBarHeight(result.boxoffice[2].amount),
+                    bar3CafeHeight: this.calcBarHeight(result.cafe[2].amount),
+                    bar3GiftstoreHeight: this.calcBarHeight(result.giftstore[2].amount),
+                    bar3MembershipHeight: this.calcBarHeight(result.membership[2].amount),
+
+                    bar4BoxofficeHeight: this.calcBarHeight(result.boxoffice[3].amount),
+                    bar4CafeHeight: this.calcBarHeight(result.cafe[3].amount),
+                    bar4GiftstoreHeight: this.calcBarHeight(result.giftstore[3].amount),
+                    bar4MembershipHeight: this.calcBarHeight(result.membership[3].amount),
+
+                    bar5BoxofficeHeight: this.calcBarHeight(result.boxoffice[4].amount),
+                    bar5CafeHeight: this.calcBarHeight(result.cafe[4].amount),
+                    bar5GiftstoreHeight: this.calcBarHeight(result.giftstore[4].amount),
+                    bar5MembershipHeight: this.calcBarHeight(result.membership[4].amount),
+
+                    bar6BoxofficeHeight: this.calcBarHeight(result.boxoffice[5].amount),
+                    bar6CafeHeight: this.calcBarHeight(result.cafe[5].amount),
+                    bar6GiftstoreHeight: this.calcBarHeight(result.giftstore[5].amount),
+                    bar6MembershipHeight: this.calcBarHeight(result.membership[5].amount),
+
+                    bar7BoxofficeHeight: this.calcBarHeight(result.boxoffice[6].amount),
+                    bar7CafeHeight: this.calcBarHeight(result.cafe[6].amount),
+                    bar7GiftstoreHeight: this.calcBarHeight(result.giftstore[6].amount),
+                    bar7MembershipHeight: this.calcBarHeight(result.membership[6].amount)
+                });
+                // Set null data to '-'
+                var self = this;
+                $.each(this.state, function(stat, value){
+                    if(value === null){
+                        var stateObject = function() {
+                            returnObj = {};
+                            returnObj[stat] = '-';
+                            return returnObj;
+                        };
+                        self.setState(stateObject);
+                    }
+                });
+                this.formatNumbers;
+            }
+        }.bind(this))   // .bind() gives context to 'this'
+        .fail(function(result) {
+            console.log('REVENUE DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+        });
+    },
+    calcBarHeight: function(amount) {
+        var barSectionHeight = (amount / this.state.graphCap) * this.state.graphHeight;
+        return barSectionHeight+'px';
+    },
+    calcChange: function(newstat, oldstat) {
+        var change = parseFloat(newstat) - parseFloat(oldstat);   // Calculate difference
+        change = (change / newstat) * 100;   // Calculate percentage
+        var direction = change < 0 ? "down" : "up";   // Test for negative or positive and set arrow direction
+        change = Math.abs(change);   // Convert to positive number
+        change = Math.round(100*change)/100;   // Round to hundredths
+        change = [change, direction]
+        return change;
+    },
+    formatNumbers: function(){
+        // ...
+    },
+    componentDidUpdate: function(){
+        this.formatNumbers();
+        $('.bar-section-boxoffice').css('height','0')
+            .animate({
+                height: this.state.bar1BoxofficeHeight
+            },
+            2000,
+            'easeOutElastic'
+        );
+    },
+    render: function(){
+        return (
+            <div className="widget" id="revenue">
+                <h2>Revenue</h2>
+                <form id="filter-revenue-week">
+                    <select className="form-control">
+                        <option value="totals">This Week (05.24-05.30)</option>
+                    </select>
+                    <CalendarIcon className="filter-calendar" />
+                </form>
+
+                <form id="filter-revenue-section">
+                    <select className="form-control">
+                        <option value="totals">Totals</option>
+                        <option value="members">Members</option>
+                        <option value="nonmembers">Non-members</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <Caret className="filter-caret" />
+                </form>
+
+                <form id="filter-revenue-units">
+                    <select className="form-control">
+                        <option value="totals">Dollars</option>
+                        <option value="members">Per Cap</option>
+                    </select>
+                    <Caret className="filter-caret" />
+                </form>
+
+                <div className="bar-graph-legend">
+                    <div className="bar-graph-legend-item">
+                        <div className="legend-check-circle">
+                            <CheckMark className="legend-check" />
+                        </div>
+                        Box Office
+                    </div>
+                    <div className="bar-graph-legend-item">
+                        <div className="legend-check-circle">
+                            <CheckMark className="legend-check" />
+                        </div>
+                        Cafe
+                    </div>
+                    <div className="bar-graph-legend-item">
+                        <div className="legend-check-circle">
+                            <CheckMark className="legend-check" />
+                        </div>
+                        Gift Store
+                    </div>
+                    <div className="bar-graph-legend-item">
+                        <div className="legend-check-circle">
+                            <CheckMark className="legend-check" />
+                        </div>
+                        Membership
+                    </div>
+                </div>
+
+                <div id="bar-graph">
+                    <BarSet date="05.24" boxoffice={this.state.bar1Boxoffice} />
+                    <BarSet date="05.25" boxoffice={this.state.bar2Boxoffice} />
+                    <BarSet date="05.26" boxoffice={this.state.bar3Boxoffice} />
+                    <BarSet date="05.27" boxoffice={this.state.bar4Boxoffice} />
+                    <BarSet date="05.28" boxoffice={this.state.bar5Boxoffice} />
+                    <BarSet date="05.29" boxoffice={this.state.bar6Boxoffice} />
+                    <BarSet date="05.30" boxoffice={this.state.bar7Boxoffice} />
+                    <div className="bar-line bar-line-4"></div>
+                    <div className="bar-line bar-line-3"></div>
+                    <div className="bar-line bar-line-2"></div>
+                    <div className="bar-line bar-line-1"></div>
+                    <div className="bar-graph-Note"><NoteIcon /></div>
+                    <div className="bar-graph-label-y">Thousands</div>
+                    <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
+                    <div className="bar-graph-slider">
+                        <div className="bar-graph-slider-control">|||</div>
+                    </div>
+                </div>
+
             </div>
         );
     }
@@ -296,81 +495,7 @@ var Revenue = React.createClass({
         return (
             <div className="row">
                 <div className="col-xs-8 col-md-8">
-                    <div className="widget" id="revenue">
-                        <h2>Revenue</h2>
-                        <form id="filter-revenue-week">
-                            <select className="form-control">
-                                <option value="totals">This Week (05.24-05.30)</option>
-                            </select>
-                            <CalendarIcon className="filter-calendar" />
-                        </form>
-
-                        <form id="filter-revenue-section">
-                            <select className="form-control">
-                                <option value="totals">Totals</option>
-                                <option value="members">Members</option>
-                                <option value="nonmembers">Non-members</option>
-                                <option value="custom">Custom</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
-
-                        <form id="filter-revenue-units">
-                            <select className="form-control">
-                                <option value="totals">Dollars</option>
-                                <option value="members">Per Cap</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
-
-                        <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
-                                    <CheckMark className="legend-check" />
-                                </div>
-                                Box Office
-                            </div>
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
-                                    <CheckMark className="legend-check" />
-                                </div>
-                                Cafe
-                            </div>
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
-                                    <CheckMark className="legend-check" />
-                                </div>
-                                Gift Store
-                            </div>
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
-                                    <CheckMark className="legend-check" />
-                                </div>
-                                Membership
-                            </div>
-                        </div>
-
-                        <div id="bar-graph">
-                            <BarSet date="05.24" />
-                            <BarSet date="05.25" />
-                            <BarSet date="05.26" />
-                            <BarSet date="05.27" />
-                            <BarSet date="05.28" />
-                            <BarSet date="05.29" />
-                            <BarSet date="05.30" />
-                            <div className="bar-line bar-line-4"></div>
-                            <div className="bar-line bar-line-3"></div>
-                            <div className="bar-line bar-line-2"></div>
-                            <div className="bar-line bar-line-1"></div>
-                            <div className="bar-graph-Note"><NoteIcon /></div>
-                            <div className="bar-graph-label-y">Thousands</div>
-                            <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
-                            <div className="bar-graph-slider">
-                                <div className="bar-graph-slider-control">|||</div>
-                            </div>
-                        </div>
-
-                    </div>
+                    <BarGraph source={this.props.source} venueID={this.props.venueID} />
                 </div>
                 <div className="col-xs-4 col-md-4 arrow-connector-left">
                     <div className="widget" id="earned-revenue">
