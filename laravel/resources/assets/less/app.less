@@ -578,8 +578,15 @@ header {
         top: 26px;
         width: 100%;
         .bar-meter-segment {
-            border-left: 1px solid @mediumgrey;
-            padding: 5px 0 0 3px;
+            padding: 10px 0 0 0;
+        }
+        .bar-meter-segment:before {
+            color: @mediumgrey;
+            content: '|';
+            font-size: 80%;
+            left: 3px;
+            position: relative;
+            top: -12px;
         }
     }
     .bar-meter-marker {

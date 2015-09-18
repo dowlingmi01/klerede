@@ -36,6 +36,7 @@ var SalesGoals = React.createClass({
             halfBlocksToMiddleOfCurrent = [1, 3, 5, 7, 9]
             Each block counts as 2 so the marker is centered in the color
             (current / halfBlocksToMiddleOfCurrent) * 2HalvesEach 
+            The % stops in the gradient are where to start the next color, not the color's width
         */
         var gradient = ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green'];
         var diff = (current / expected) * 100;
