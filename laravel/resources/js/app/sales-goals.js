@@ -17,7 +17,7 @@ var SalesGoals = React.createClass({
             statusClass: 'on-track',
             markerPosition: this.markerPosition('2015-01-01', '2015-05-06', 365),
             barGradient: 'Red, Orange, Yellow, YellowGreen, Green',
-            barSegments: wnt.period(0,12,true)   // 1st, 8th, 15th, 22nd, 30th(31st, 28th)
+            barSegments: wnt.period(0,12,true)
         };
     },
     markerPosition: function(startDate, endDate, periodLength) {
@@ -27,11 +27,11 @@ var SalesGoals = React.createClass({
     },
     barGradient: function(expected, current) {
         /*
-            <50 = Red = Behind
-            >50 <75 = Orange = Behind
-            >75 <90 = Yellow = Slightly Behind
-            >90 <110 = Yellowish-green = On Track
-            >110 = Green = Ahead
+            <50         = Red               = Behind            = rgba(221,35,2,1)
+            >50 <75     = Orange            = behind            = rgba(235,164,9,1)
+            >75 <90     = Yellow            = Slightly behind   = rgba(255,254,19,1)
+            >90 <110    = Yellowish-green   = On Track          = rgba(170,202,55,1)
+            >110        = Green             = Ahead             = rgba(72,126,3,1)
 
             halfBlocksToMiddleOfCurrent = [1, 3, 5, 7, 9]
             Each block counts as 2 so the marker is centered in the color
@@ -41,8 +41,6 @@ var SalesGoals = React.createClass({
         var gradient = ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green'];
         var diff = (current / expected) * 100;
         var band;
-
-        console.log(diff);
 
         if(diff < 50) {
             this.setState({ status: 'Behind', statusClass: 'behind' });
@@ -80,7 +78,7 @@ var SalesGoals = React.createClass({
         )
         .done(function(result) {
             console.log('Sales Goals data loaded...');
-            wnt.sales = result;
+            wnt.salesGoals = result;
             if(this.isMounted()) {
                 this.setState({
                     sales: result.sales_year.amount,
@@ -102,44 +100,44 @@ var SalesGoals = React.createClass({
             this.setState({
                 barSegments: wnt.period(0, 12, true),
                 goal: 13000000,
-                sales: wnt.sales.sales_year.amount,
+                sales: wnt.salesGoals.sales_year.amount,
                 markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
                 barGradient: this.barGradient(
                             this.markerPosition(this.state.yearStart, this.state.day, 365),
-                            (wnt.sales.sales_year.amount / 13000000) * 100
+                            (wnt.salesGoals.sales_year.amount / 13000000) * 100
                         )
             });
         } else if(filter === 'quarter'){
             this.setState({
                 barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
                 goal: 5000000,
-                sales: wnt.sales.sales_quarter.amount,
+                sales: wnt.salesGoals.sales_quarter.amount,
                 markerPosition: this.markerPosition(this.state.quarterStart, this.state.day, 91),
                 barGradient: this.barGradient(
                             this.markerPosition(this.state.quarterStart, this.state.day, 91),
-                            (wnt.sales.sales_quarter.amount / 5000000) * 100
+                            (wnt.salesGoals.sales_quarter.amount / 5000000) * 100
                         )
             });
         }  else if(filter === 'month'){
             this.setState({
                 barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
                 goal: 1000000,
-                sales: wnt.sales.sales_month.amount,
+                sales: wnt.salesGoals.sales_month.amount,
                 markerPosition: this.markerPosition(this.state.monthStart, this.state.day, 30),
                 barGradient: this.barGradient(
                             this.markerPosition(this.state.monthStart, this.state.day, 30),
-                            (wnt.sales.sales_month.amount / 1000000) * 100
+                            (wnt.salesGoals.sales_month.amount / 1000000) * 100
                         )
             });
         } else {
             this.setState({
                 barSegments: wnt.period(0, 12, true),
                 goal: 20000000,
-                sales: wnt.sales.sales_year.amount,
+                sales: wnt.salesGoals.sales_year.amount,
                 markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
                 barGradient: this.barGradient(
                             this.markerPosition(this.state.yearStart, this.state.day, 365),
-                            (wnt.sales.sales_year.amount / 20000000) * 100
+                            (wnt.salesGoals.sales_year.amount / 20000000) * 100
                         )
             });
         }

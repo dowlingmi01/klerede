@@ -6,14 +6,63 @@ var MembershipGoals = React.createClass({
     getInitialState: function() {
         return {
             day: '2015-05-06',   // TEMP STATIC DATE: Should be wnt.yesterday
-            yearStart: '2015-01-01',
-            quarterStart: '2015-04-01',
-            monthStart: '2015-05-01',
-            yearGoal: '52,000',
+
+            yearStart: '2015-01-01',   // TO DO: CALCULATE THESE
+            quarterStart: '2015-04-01',   // TO DO: CALCULATE THESE
+            monthStart: '2015-05-01',   // TO DO: CALCULATE THESE
+
+            goal: 20000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
+
             status: 'On Track',
             statusClass: 'on-track',
+            markerPosition: this.markerPosition('2015-01-01', '2015-05-06', 365),
+            barGradient: 'Red, Orange, Yellow, YellowGreen, Green',
             barSegments: wnt.period(0,12,true)
         };
+    },
+    markerPosition: function(startDate, endDate, periodLength) {
+        var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
+        var percentage = (days / periodLength) * 100;
+        return percentage;
+    },
+    barGradient: function(expected, current) {
+        /*
+            <50         = Red               = Behind            = rgba(221,35,2,1)
+            >50 <75     = Orange            = behind            = rgba(235,164,9,1)
+            >75 <90     = Yellow            = Slightly behind   = rgba(255,254,19,1)
+            >90 <110    = Yellowish-green   = On Track          = rgba(170,202,55,1)
+            >110        = Green             = Ahead             = rgba(72,126,3,1)
+
+            halfBlocksToMiddleOfCurrent = [1, 3, 5, 7, 9]
+            Each block counts as 2 so the marker is centered in the color
+            (current / halfBlocksToMiddleOfCurrent) * 2HalvesEach 
+            The % stops in the gradient are where to start the next color, not the color's width
+        */
+        var gradient = ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green'];
+        var diff = (current / expected) * 100;
+        var band;
+
+        if(diff < 50) {
+            this.setState({ status: 'Behind', statusClass: 'behind' });
+            band = Math.round((current / 1) * 2);
+            return 'Red '+(band)+'%, Orange, Yellow, YellowGreen, Green';   // ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green']
+        } else if(diff < 75) {
+            this.setState({ status: 'Behind', statusClass: 'behind' });
+            band = Math.round((current / 3) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow, YellowGreen, Green';   // ['Orange', 'Yellow', 'YellowGreen', 'Green']
+        } else if(diff < 90) {
+            this.setState({ status: 'Slightly Behind', statusClass: 'slightly-behind' });
+            band = Math.round((current / 5) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen, Green';   // gradient.slice(2).toString()
+        } else if(diff < 110) {
+            this.setState({ status: 'On Track', statusClass: 'on-track' });
+            band = Math.round((current / 7) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green';   // ['YellowGreen', 'Green']
+        } else {
+            this.setState({ status: 'Ahead', statusClass: 'ahead' });
+            band = Math.round((current / 9) * 2);
+            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green'+(band*5)+'%';
+        }
     },
     componentDidMount: function() {
         $.post(
@@ -21,7 +70,9 @@ var MembershipGoals = React.createClass({
             {
                 venue_id: this.props.venueID,
                 queries: {
-                    memberships: { specs: { type: 'members' }, periods: this.state.day }
+                    memberships_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.yearStart, to: this.state.day, kind: 'sum' } },
+                    memberships_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.quarterStart, to: this.state.day, kind: 'sum' } },
+                    memberships_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: this.state.monthStart, to: this.state.day, kind: 'sum' } }
                 }
             }
         )
@@ -30,7 +81,11 @@ var MembershipGoals = React.createClass({
             wnt.membersGoals = result;
             if(this.isMounted()) {
                 this.setState({
-                    membershipsYear: result.memberships.current_members
+                    memberships: result.memberships_year.units,
+                    barGradient: this.barGradient(
+                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            (result.memberships_year.units / this.state.goal) * 100
+                        )
                 });
                 this.formatNumbers();
             }
@@ -43,24 +98,54 @@ var MembershipGoals = React.createClass({
         var filter = event.target.value;
         if(filter === 'year'){
             this.setState({
-                barSegments: wnt.period(0, 12, true)
+                barSegments: wnt.period(0, 12, true),
+                goal: 20000,
+                memberships: wnt.membersGoals.memberships_year.units,
+                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            (wnt.membersGoals.memberships_year.units / 20000) * 100
+                        )
             });
         } else if(filter === 'quarter'){
             this.setState({
-                barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true)
+                barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
+                goal: 5000,
+                memberships: wnt.membersGoals.memberships_quarter.units,
+                markerPosition: this.markerPosition(this.state.quarterStart, this.state.day, 91),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.quarterStart, this.state.day, 91),
+                            (wnt.membersGoals.memberships_quarter.units / 5000) * 100
+                        )
             });
         }  else if(filter === 'month'){
             this.setState({
-                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum+1, true)
+                barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
+                goal: 1750,
+                memberships: wnt.membersGoals.memberships_month.units,
+                markerPosition: this.markerPosition(this.state.monthStart, this.state.day, 30),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.monthStart, this.state.day, 30),
+                            (wnt.membersGoals.memberships_month.units / 1750) * 100
+                        )
             });
         } else {
             this.setState({
-                barSegments: wnt.period(0, 12, true)
+                barSegments: wnt.period(0, 12, true),
+                goal: 20000,
+                memberships: wnt.membersGoals.memberships_year.units,
+                markerPosition: this.markerPosition(this.state.yearStart, this.state.day, 365),
+                barGradient: this.barGradient(
+                            this.markerPosition(this.state.yearStart, this.state.day, 365),
+                            (wnt.membersGoals.memberships_year.units / 20000) * 100
+                        )
             });
         }
         event.target.blur();
     },
     formatNumbers: function(){
+        $('#total-membership-goals .goalAmount').parseNumber({format:"#,###", locale:"us"});
+        $('#total-membership-goals .goalAmount').formatNumber({format:"#,###", locale:"us"});
         $('#total-membership-goals .bar-meter-marker').parseNumber({format:"#,###", locale:"us"});
         $('#total-membership-goals .bar-meter-marker').formatNumber({format:"#,###", locale:"us"});
     },
@@ -68,14 +153,16 @@ var MembershipGoals = React.createClass({
         this.formatNumbers();
         $('#total-membership-goals .bar-meter-marker')
             .animate({
-                left: '50%',
-                transform: 'translateX(-50%)'
+                left: this.state.markerPosition+'%'
             },
             2000,
             'easeOutElastic'
         );
     },
     render: function() {
+        var gradient = {
+            background: 'linear-gradient(to right, '+this.state.barGradient+')'
+        };
         return (
             <div className="row">
                 <div className="col-xs-6 col-md-6 arrow-connector-right">
@@ -91,10 +178,10 @@ var MembershipGoals = React.createClass({
                             </select>
                             <Caret className="filter-caret" />
                         </form>
-                        <div className="clear goal">Membership Goal: <span className="goalAmount">{this.state.yearGoal}</span></div>
+                        <div className="clear goal">Membership Goal: <span className="goalAmount">{this.state.goal}</span></div>
                         <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
-                        <div className="bar-meter clear">
-                            <div className="bar-meter-marker">{this.state.membershipsYear}</div>
+                        <div className="bar-meter clear" style={gradient}>
+                            <div className="bar-meter-marker">{this.state.memberships}</div>
                             <table className="bar-meter-segments">
                                 <tr>
                                     { this.state.barSegments.map(function(segment) {
