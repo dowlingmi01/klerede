@@ -272,19 +272,7 @@ $(function(){
                 .attr("cx", 20)
                 .attr("cy", 20)
                 .attr("fill", "rgba(66,66,66,1)");
-        /*
-            What we know for positioning the dot...
-                - We know the dial's diameter
-                - We know the animation starts at 12:00
-                - Dial width = 8px
-                - Bead = 14px
-
-            var circleK = svgContainer.append("circle")
-                .attr("r", 10)
-                .attr("cx", 100)
-                .attr("cy", 50)
-                .attr("fill", "#ccebeb");
-        */
+                
     }
 
 

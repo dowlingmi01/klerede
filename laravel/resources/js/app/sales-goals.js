@@ -77,6 +77,20 @@ var SalesGoals = React.createClass({
             return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green'+(band*5)+'%';
         }
     },
+    dialStatus: function(expected, current, type) {   // type = return CLASS or LABEL
+        var diff = (current / expected) * 100;
+        if(diff < 50) {
+            return type === 'label' ? 'Behind' : 'behind';
+        } else if(diff < 75) {
+            return type === 'label' ? 'Behind' : 'behind';
+        } else if(diff < 90) {
+            return type === 'label' ? 'Slightly Behind' : 'slightly-behind';
+        } else if(diff < 110) {
+            return type === 'label' ? 'On Track' : 'on-track';
+        } else {
+            return type === 'label' ? 'Ahead' : 'ahead';
+        }
+    },
     componentDidMount: function() {
         $.post(
             this.props.source,
@@ -122,7 +136,47 @@ var SalesGoals = React.createClass({
                     boxoffice: result.boxoffice_year.amount,
                     cafe: result.cafe_year.amount,
                     giftstore: result.giftstore_year.amount,
-                    membership: result.membership_year.amount
+                    membership: result.membership_year.amount,
+                    statusBoxoffice: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                            'label'
+                        ),
+                    statusClassBoxoffice: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                            'class'
+                        ),
+                    statusCafe: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                            'label'
+                        ),
+                    statusClassCafe: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                            'class'
+                        ),
+                    statusGiftstore: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                            'label'
+                        ),
+                    statusClassGiftstore: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                            'class'
+                        ),
+                    statusMembership: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                            'label'
+                        ),
+                    statusClassMembership: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                            'class'
+                        )
                 });
                 this.formatNumbers();
             }
@@ -150,7 +204,47 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: 3250000,
                 goalCafe: 3250000,
                 goalGiftstore: 3250000,
-                goalMembership: 3250000
+                goalMembership: 3250000,
+                statusBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        'class'
+                    ),
+                statusCafe: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassCafe: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                        'class'
+                    ),
+                statusGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                        'class'
+                    ),
+                statusMembership: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassMembership: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        'class'
+                    )
             });
         } else if(filter === 'quarter'){
             this.setState({
@@ -169,7 +263,47 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: 812500,
                 goalCafe: 812500,
                 goalGiftstore: 812500,
-                goalMembership: 812500
+                goalMembership: 812500,
+                statusBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.boxoffice_quarter.amount / 812500) * 100,
+                        'label'
+                    ),
+                statusClassBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.boxoffice_quarter.amount / 812500) * 100,
+                        'class'
+                    ),
+                statusCafe: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.cafe_quarter.amount / 812500) * 100,
+                        'label'
+                    ),
+                statusClassCafe: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.cafe_quarter.amount / 812500) * 100,
+                        'class'
+                    ),
+                statusGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.giftstore_quarter.amount / 812500) * 100,
+                        'label'
+                    ),
+                statusClassGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.giftstore_quarter.amount / 812500) * 100,
+                        'class'
+                    ),
+                statusMembership: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.membership_quarter.amount / 812500) * 100,
+                        'label'
+                    ),
+                statusClassMembership: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.salesGoals.membership_quarter.amount / 812500) * 100,
+                        'class'
+                    )
             });
         }  else if(filter === 'month'){
             this.setState({
@@ -188,7 +322,47 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: 270833,
                 goalCafe: 270833,
                 goalGiftstore: 270833,
-                goalMembership: 270833
+                goalMembership: 270833,
+                statusBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.boxoffice_month.amount / 270833) * 100,
+                        'label'
+                    ),
+                statusClassBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.boxoffice_month.amount / 270833) * 100,
+                        'class'
+                    ),
+                statusCafe: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.cafe_month.amount / 270833) * 100,
+                        'label'
+                    ),
+                statusClassCafe: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.cafe_month.amount / 270833) * 100,
+                        'class'
+                    ),
+                statusGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.giftstore_month.amount / 270833) * 100,
+                        'label'
+                    ),
+                statusClassGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.giftstore_month.amount / 270833) * 100,
+                        'class'
+                    ),
+                statusMembership: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.membership_month.amount / 270833) * 100,
+                        'label'
+                    ),
+                statusClassMembership: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.salesGoals.membership_month.amount / 270833) * 100,
+                        'class'
+                    )
             });
         } else {
             this.setState({
@@ -207,7 +381,47 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: 3250000,
                 goalCafe: 3250000,
                 goalGiftstore: 3250000,
-                goalMembership: 3250000
+                goalMembership: 3250000,
+                statusBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassBoxoffice: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        'class'
+                    ),
+                statusCafe: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassCafe: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                        'class'
+                    ),
+                statusGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassGiftstore: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                        'class'
+                    ),
+                statusMembership: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        'label'
+                    ),
+                statusClassMembership: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        'class'
+                    )
             });
         }
         event.target.blur();
@@ -230,6 +444,15 @@ var SalesGoals = React.createClass({
                 $(this).formatNumber({format:"$#,###", locale:"us"});
             }
         });
+    },
+    drawDials: function() {
+        /*
+        var rp1 = radialProgress(document.getElementById('div1'))
+            .label('')
+            .diameter(145)
+            .value(78)
+            .render();
+        */
     },
     setDots: function(){
         diameter = $('#div1').width() -2;   // Tweaked via console
@@ -258,6 +481,7 @@ var SalesGoals = React.createClass({
             2000,
             'easeOutElastic'
         );
+        this.drawDials();
         this.setDots();
     },
     render: function() {

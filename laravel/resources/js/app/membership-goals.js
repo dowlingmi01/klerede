@@ -73,6 +73,20 @@ var MembershipGoals = React.createClass({
             return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green'+(band*5)+'%';
         }
     },
+    dialStatus: function(expected, current, type) {   // type = return CLASS or LABEL
+        var diff = (current / expected) * 100;
+        if(diff < 50) {
+            return type === 'label' ? 'Behind' : 'behind';
+        } else if(diff < 75) {
+            return type === 'label' ? 'Behind' : 'behind';
+        } else if(diff < 90) {
+            return type === 'label' ? 'Slightly Behind' : 'slightly-behind';
+        } else if(diff < 110) {
+            return type === 'label' ? 'On Track' : 'on-track';
+        } else {
+            return type === 'label' ? 'Ahead' : 'ahead';
+        }
+    },
     componentDidMount: function() {
         $.post(
             this.props.source,
@@ -115,6 +129,36 @@ var MembershipGoals = React.createClass({
                     individual: result.individual_year.units,
                     family: result.family_year.units,
                     donor: result.donor_year.units,
+                    statusIndividual: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.membersGoals.individual_year.units / 10000) * 100,
+                            'label'
+                        ),
+                    statusClassIndividual: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.membersGoals.individual_year.units / 10000) * 100,
+                            'class'
+                        ),
+                    statusFamily: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.membersGoals.family_year.units / 10000) * 100,
+                            'label'
+                        ),
+                    statusClassFamily: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.membersGoals.family_year.units / 10000) * 100,
+                            'class'
+                        ),
+                    statusDonor: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.membersGoals.donor_year.units / 10000) * 100,
+                            'label'
+                        ),
+                    statusClassDonor: this.dialStatus(
+                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                            (wnt.membersGoals.donor_year.units / 10000) * 100,
+                            'class'
+                        )
                 });
                 this.formatNumbers();
             }
@@ -140,7 +184,37 @@ var MembershipGoals = React.createClass({
                 donor: wnt.membersGoals.donor_year.units,
                 goalIndividual: 10000,
                 goalFamily: 10000,
-                goalDonor: 10000
+                goalDonor: 10000,
+                statusIndividual: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        'label'
+                    ),
+                statusClassIndividual: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        'class'
+                    ),
+                statusFamily: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        'label'
+                    ),
+                statusClassFamily: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        'class'
+                    ),
+                statusDonor: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        'label'
+                    ),
+                statusClassDonor: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        'class'
+                    )
             });
         } else if(filter === 'quarter'){
             this.setState({
@@ -157,7 +231,37 @@ var MembershipGoals = React.createClass({
                 donor: wnt.membersGoals.donor_quarter.units,
                 goalIndividual: 2500,
                 goalFamily: 2500,
-                goalDonor: 2500
+                goalDonor: 2500,
+                statusIndividual: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.membersGoals.individual_quarter.units / 2500) * 100,
+                        'label'
+                    ),
+                statusClassIndividual: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.membersGoals.individual_quarter.units / 2500) * 100,
+                        'class'
+                    ),
+                statusFamily: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.membersGoals.family_quarter.units / 2500) * 100,
+                        'label'
+                    ),
+                statusClassFamily: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.membersGoals.family_quarter.units / 2500) * 100,
+                        'class'
+                    ),
+                statusDonor: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.membersGoals.donor_quarter.units / 2500) * 100,
+                        'label'
+                    ),
+                statusClassDonor: this.dialStatus(
+                        this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
+                        (wnt.membersGoals.donor_quarter.units / 2500) * 100,
+                        'class'
+                    )
             });
         }  else if(filter === 'month'){
             this.setState({
@@ -174,7 +278,37 @@ var MembershipGoals = React.createClass({
                 donor: wnt.membersGoals.donor_month.units,
                 goalIndividual: 875,
                 goalFamily: 875,
-                goalDonor: 875
+                goalDonor: 875,
+                statusIndividual: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.membersGoals.individual_month.units / 875) * 100,
+                        'label'
+                    ),
+                statusClassIndividual: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.membersGoals.individual_month.units / 875) * 100,
+                        'class'
+                    ),
+                statusFamily: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.membersGoals.family_month.units / 875) * 100,
+                        'label'
+                    ),
+                statusClassFamily: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.membersGoals.family_month.units / 875) * 100,
+                        'class'
+                    ),
+                statusDonor: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.membersGoals.donor_month.units / 875) * 100,
+                        'label'
+                    ),
+                statusClassDonor: this.dialStatus(
+                        this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
+                        (wnt.membersGoals.donor_month.units / 875) * 100,
+                        'class'
+                    )
             });
         } else {
             this.setState({
@@ -191,7 +325,37 @@ var MembershipGoals = React.createClass({
                 donor: wnt.membersGoals.donor_year.units,
                 goalIndividual: 10000,
                 goalFamily: 10000,
-                goalDonor: 10000
+                goalDonor: 10000,
+                statusIndividual: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        'label'
+                    ),
+                statusClassIndividual: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        'class'
+                    ),
+                statusFamily: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        'label'
+                    ),
+                statusClassFamily: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        'class'
+                    ),
+                statusDonor: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        'label'
+                    ),
+                statusClassDonor: this.dialStatus(
+                        this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        'class'
+                    )
             });
         }
         event.target.blur();
@@ -213,6 +377,15 @@ var MembershipGoals = React.createClass({
                 $(this).formatNumber({format:"#,###", locale:"us"});
             }
         });
+    },
+    drawDials: function() {
+        /*
+        var rp1 = radialProgress(document.getElementById('div1'))
+            .label('')
+            .diameter(145)
+            .value(78)
+            .render();
+        */
     },
     setDots: function(){
         diameter = $('#div1').width() -2;   // Tweaked via console
@@ -241,6 +414,7 @@ var MembershipGoals = React.createClass({
             2000,
             'easeOutElastic'
         );
+        this.drawDials();
         this.setDots();
     },
     render: function() {
