@@ -6,15 +6,15 @@ var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
             goal: 13000000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
-            goalBoxoffice: 3250000,
+            goalBoxoffice: 8000000,
             goalCafe: 3250000,
             goalGiftstore: 3250000,
             goalMembership: 3250000,
 
-            boxoffice: '...',
-            cafe: '...',
-            giftstore: '...',
-            membership: '...',
+            boxoffice: 0,
+            cafe: 0,
+            giftstore: 0,
+            membership: 0,
 
             status: 'On Track',
             statusBoxoffice: 'On Track',
@@ -139,12 +139,12 @@ var SalesGoals = React.createClass({
                     membership: result.membership_year.amount,
                     statusBoxoffice: this.dialStatus(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                            (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
                             'label'
                         ),
                     statusClassBoxoffice: this.dialStatus(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                            (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
                             'class'
                         ),
                     statusCafe: this.dialStatus(
@@ -201,18 +201,18 @@ var SalesGoals = React.createClass({
                 cafe: wnt.salesGoals.cafe_year.amount,
                 giftstore: wnt.salesGoals.giftstore_year.amount,
                 membership: wnt.salesGoals.membership_year.amount,
-                goalBoxoffice: 3250000,
+                goalBoxoffice: 8000000,
                 goalCafe: 3250000,
                 goalGiftstore: 3250000,
                 goalMembership: 3250000,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
                         'label'
                     ),
                 statusClassBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
                         'class'
                     ),
                 statusCafe: this.dialStatus(
@@ -260,18 +260,18 @@ var SalesGoals = React.createClass({
                 cafe: wnt.salesGoals.cafe_quarter.amount,
                 giftstore: wnt.salesGoals.giftstore_quarter.amount,
                 membership: wnt.salesGoals.membership_quarter.amount,
-                goalBoxoffice: 812500,
+                goalBoxoffice: 2000000,
                 goalCafe: 812500,
                 goalGiftstore: 812500,
                 goalMembership: 812500,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.boxoffice_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.boxoffice_quarter.amount / 2000000) * 100,
                         'label'
                     ),
                 statusClassBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.boxoffice_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.boxoffice_quarter.amount / 2000000) * 100,
                         'class'
                     ),
                 statusCafe: this.dialStatus(
@@ -319,18 +319,18 @@ var SalesGoals = React.createClass({
                 cafe: wnt.salesGoals.cafe_month.amount,
                 giftstore: wnt.salesGoals.giftstore_month.amount,
                 membership: wnt.salesGoals.membership_month.amount,
-                goalBoxoffice: 270833,
+                goalBoxoffice: 1000000,
                 goalCafe: 270833,
                 goalGiftstore: 270833,
                 goalMembership: 270833,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.boxoffice_month.amount / 270833) * 100,
+                        (wnt.salesGoals.boxoffice_month.amount / 1000000) * 100,
                         'label'
                     ),
                 statusClassBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.boxoffice_month.amount / 270833) * 100,
+                        (wnt.salesGoals.boxoffice_month.amount / 1000000) * 100,
                         'class'
                     ),
                 statusCafe: this.dialStatus(
@@ -378,18 +378,18 @@ var SalesGoals = React.createClass({
                 cafe: wnt.salesGoals.cafe_year.amount,
                 giftstore: wnt.salesGoals.giftstore_year.amount,
                 membership: wnt.salesGoals.membership_year.amount,
-                goalBoxoffice: 3250000,
+                goalBoxoffice: 8000000,
                 goalCafe: 3250000,
                 goalGiftstore: 3250000,
                 goalMembership: 3250000,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
                         'label'
                     ),
                 statusClassBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.boxoffice_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
                         'class'
                     ),
                 statusCafe: this.dialStatus(
@@ -446,13 +446,30 @@ var SalesGoals = React.createClass({
         });
     },
     drawDials: function() {
-        /*
+        d3.select('#earned-revenue-channels').selectAll('svg').remove();
         var rp1 = radialProgress(document.getElementById('div1'))
             .label('')
             .diameter(145)
-            .value(78)
+            .value((this.state.boxoffice / this.state.goalBoxoffice) * 100)
             .render();
-        */
+
+        var rp2 = radialProgress(document.getElementById('div2'))
+            .label('')
+            .diameter(145)
+            .value((this.state.cafe / this.state.goalCafe) * 100)
+            .render();
+
+        var rp3 = radialProgress(document.getElementById('div3'))
+            .label('')
+            .diameter(145)
+            .value((this.state.giftstore / this.state.goalGiftstore) * 100)
+            .render();
+
+        var rp4 = radialProgress(document.getElementById('div4'))
+            .label('')
+            .diameter(145)
+            .value((this.state.membership / this.state.goalMembership) * 100)
+            .render();
     },
     setDots: function(){
         diameter = $('#div1').width() -2;   // Tweaked via console
@@ -465,7 +482,7 @@ var SalesGoals = React.createClass({
         radian = (angle) * (Math.PI/180);
         dotX = (centerX + (radius * Math.cos(radian))) - dotOffset;
         dotY = (centerY + (radius * Math.sin(radian))) - dotOffset;
-        d3.select('#earned-revenue-channels').selectAll('circle').remove()
+        d3.select('#earned-revenue-channels').selectAll('circle').remove();
         d3.select('#earned-revenue-channels').selectAll('svg').append("circle")
             .attr("r", 8)
             .attr("cx", dotX)

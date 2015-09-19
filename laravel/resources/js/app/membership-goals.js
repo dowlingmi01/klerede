@@ -10,9 +10,9 @@ var MembershipGoals = React.createClass({
             goalFamily: 10000,
             goalDonor: 10000,
 
-            individual: '...',
-            family: '...',
-            donor: '...',
+            individual: 0,
+            family: 0,
+            donor: 0,
 
             status: 'On Track',
             statusIndividual: 'On Track',
@@ -379,13 +379,24 @@ var MembershipGoals = React.createClass({
         });
     },
     drawDials: function() {
-        /*
-        var rp1 = radialProgress(document.getElementById('div1'))
+        d3.select('#membership').selectAll('svg').remove();
+        var rp5 = radialProgress(document.getElementById('div5'))
             .label('')
             .diameter(145)
-            .value(78)
+            .value((this.state.individual / this.state.goalIndividual) * 100)
             .render();
-        */
+
+        var rp6 = radialProgress(document.getElementById('div6'))
+            .label('')
+            .diameter(145)
+            .value((this.state.family / this.state.goalFamily) * 100)
+            .render();
+
+        var rp7 = radialProgress(document.getElementById('div7'))
+            .label('')
+            .diameter(145)
+            .value((this.state.donor / this.state.goalDonor) * 100)
+            .render();
     },
     setDots: function(){
         diameter = $('#div1').width() -2;   // Tweaked via console
@@ -398,7 +409,7 @@ var MembershipGoals = React.createClass({
         radian = (angle) * (Math.PI/180);
         dotX = (centerX + (radius * Math.cos(radian))) - dotOffset;
         dotY = (centerY + (radius * Math.sin(radian))) - dotOffset;
-        d3.select('#membership').selectAll('circle').remove()
+        d3.select('#membership').selectAll('circle').remove();
         d3.select('#membership').selectAll('svg').append("circle")
             .attr("r", 8)
             .attr("cx", dotX)
