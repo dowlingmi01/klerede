@@ -205,13 +205,13 @@ var MembersBlocksSet = React.createClass({
             var oldstat = $(statblock).find('.compare-to');
             var change = $(statblock).find('svg');
             if( ($(newstat).html() !== '-') && ($(oldstat).html() !== '-') ){
-                if($(newstat).parseNumber({format:"#,###", locale:"us"}) > $(oldstat).parseNumber({format:"#,###", locale:"us"})){
+                if($(newstat).parseNumber({format:"#,##0", locale:"us"}) > $(oldstat).parseNumber({format:"#,##0", locale:"us"})){
                     $(change).attr('class','up');
                 } else {
                     $(change).attr('class','down');
                 }
-                $(newstat).formatNumber({format:"#,###.#", locale:"us"});
-                $(oldstat).formatNumber({format:"#,###.#", locale:"us"});
+                $(newstat).formatNumber({format:"#,##0.0", locale:"us"});
+                $(oldstat).formatNumber({format:"#,##0.0", locale:"us"});
             }
         });
     },

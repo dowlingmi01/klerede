@@ -6,7 +6,7 @@ var BarSet = React.createClass({
     render: function() {
         return (
             <div className="bar-set">
-                <div className="bar-section bar-section-boxoffice">{this.props.boxoffice}</div>
+                <div className="bar-section bar-section-boxoffice"></div>
                 <div className="bar-section bar-section-cafe"></div>
                 <div className="bar-section bar-section-giftstore"></div>
                 <div className="bar-section bar-section-membership"></div>
@@ -22,13 +22,12 @@ var BarGraph = React.createClass({
             graphCap: 80000,
             graphHeight: 300,
 
-            bar1BoxofficeHeight: 0,
-            bar2BoxofficeHeight: 0,
-            bar3BoxofficeHeight: 0,
-            bar4BoxofficeHeight: 0,
-            bar5BoxofficeHeight: 0,
-            bar6BoxofficeHeight: 0,
-            bar7BoxofficeHeight: 0
+            barDates: wnt.getWeek(wnt.yesterday),
+
+            boxofficeHeight: [0, 0, 0, 0, 0, 0, 0],
+            cafeHeight: [0, 0, 0, 0, 0, 0, 0],
+            giftstoreHeight: [0, 0, 0, 0, 0, 0, 0],
+            membershipHeight: [0, 0, 0, 0, 0, 0, 0]
         };
     },
     componentDidMount: function() {
@@ -53,40 +52,42 @@ var BarGraph = React.createClass({
             wnt.revenue = result;
             if(this.isMounted()) {
                 this.setState({
-                    bar1BoxofficeHeight: this.calcBarHeight(result.boxoffice[0].amount),
-                    bar1CafeHeight: this.calcBarHeight(result.cafe[0].amount),
-                    bar1GiftstoreHeight: this.calcBarHeight(result.giftstore[0].amount),
-                    bar1MembershipHeight: this.calcBarHeight(result.membership[0].amount),
-
-                    bar2BoxofficeHeight: this.calcBarHeight(result.boxoffice[1].amount),
-                    bar2CafeHeight: this.calcBarHeight(result.cafe[1].amount),
-                    bar2GiftstoreHeight: this.calcBarHeight(result.giftstore[1].amount),
-                    bar2MembershipHeight: this.calcBarHeight(result.membership[1].amount),
-
-                    bar3BoxofficeHeight: this.calcBarHeight(result.boxoffice[2].amount),
-                    bar3CafeHeight: this.calcBarHeight(result.cafe[2].amount),
-                    bar3GiftstoreHeight: this.calcBarHeight(result.giftstore[2].amount),
-                    bar3MembershipHeight: this.calcBarHeight(result.membership[2].amount),
-
-                    bar4BoxofficeHeight: this.calcBarHeight(result.boxoffice[3].amount),
-                    bar4CafeHeight: this.calcBarHeight(result.cafe[3].amount),
-                    bar4GiftstoreHeight: this.calcBarHeight(result.giftstore[3].amount),
-                    bar4MembershipHeight: this.calcBarHeight(result.membership[3].amount),
-
-                    bar5BoxofficeHeight: this.calcBarHeight(result.boxoffice[4].amount),
-                    bar5CafeHeight: this.calcBarHeight(result.cafe[4].amount),
-                    bar5GiftstoreHeight: this.calcBarHeight(result.giftstore[4].amount),
-                    bar5MembershipHeight: this.calcBarHeight(result.membership[4].amount),
-
-                    bar6BoxofficeHeight: this.calcBarHeight(result.boxoffice[5].amount),
-                    bar6CafeHeight: this.calcBarHeight(result.cafe[5].amount),
-                    bar6GiftstoreHeight: this.calcBarHeight(result.giftstore[5].amount),
-                    bar6MembershipHeight: this.calcBarHeight(result.membership[5].amount),
-
-                    bar7BoxofficeHeight: this.calcBarHeight(result.boxoffice[6].amount),
-                    bar7CafeHeight: this.calcBarHeight(result.cafe[6].amount),
-                    bar7GiftstoreHeight: this.calcBarHeight(result.giftstore[6].amount),
-                    bar7MembershipHeight: this.calcBarHeight(result.membership[6].amount)
+                    boxofficeHeight: [
+                        this.calcBarHeight(result.boxoffice[0].amount),
+                        this.calcBarHeight(result.boxoffice[1].amount),
+                        this.calcBarHeight(result.boxoffice[2].amount),
+                        this.calcBarHeight(result.boxoffice[3].amount),
+                        this.calcBarHeight(result.boxoffice[4].amount),
+                        this.calcBarHeight(result.boxoffice[5].amount),
+                        this.calcBarHeight(result.boxoffice[6].amount)
+                    ],
+                    cafeHeight: [
+                        this.calcBarHeight(result.cafe[0].amount),
+                        this.calcBarHeight(result.cafe[1].amount),
+                        this.calcBarHeight(result.cafe[2].amount),
+                        this.calcBarHeight(result.cafe[3].amount),
+                        this.calcBarHeight(result.cafe[4].amount),
+                        this.calcBarHeight(result.cafe[5].amount),
+                        this.calcBarHeight(result.cafe[6].amount)
+                    ],
+                    giftstoreHeight: [
+                        this.calcBarHeight(result.giftstore[0].amount),
+                        this.calcBarHeight(result.giftstore[1].amount),
+                        this.calcBarHeight(result.giftstore[2].amount),
+                        this.calcBarHeight(result.giftstore[3].amount),
+                        this.calcBarHeight(result.giftstore[4].amount),
+                        this.calcBarHeight(result.giftstore[5].amount),
+                        this.calcBarHeight(result.giftstore[6].amount)
+                    ],
+                    membershipHeight: [
+                        this.calcBarHeight(result.membership[0].amount),
+                        this.calcBarHeight(result.membership[1].amount),
+                        this.calcBarHeight(result.membership[2].amount),
+                        this.calcBarHeight(result.membership[3].amount),
+                        this.calcBarHeight(result.membership[4].amount),
+                        this.calcBarHeight(result.membership[5].amount),
+                        this.calcBarHeight(result.membership[6].amount)
+                    ]
                 });
                 // Set null data to '-'
                 var self = this;
@@ -100,7 +101,6 @@ var BarGraph = React.createClass({
                         self.setState(stateObject);
                     }
                 });
-                this.formatNumbers;
             }
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
@@ -121,18 +121,44 @@ var BarGraph = React.createClass({
         change = [change, direction]
         return change;
     },
-    formatNumbers: function(){
-        // ...
-    },
     componentDidUpdate: function(){
-        this.formatNumbers();
-        $('.bar-section-boxoffice').css('height','0')
-            .animate({
-                height: this.state.bar1BoxofficeHeight
-            },
-            2000,
-            'easeOutElastic'
-        );
+        var self = this;
+        $.each($('.bar-section-boxoffice'), function(index, item){
+            $(this).css('height','0')
+                .animate({
+                    height: self.state.boxofficeHeight[index]
+                },
+                2000,
+                'easeOutElastic'
+            );
+        });
+        $.each($('.bar-section-cafe'), function(index, item){
+            $(this).css('height','0')
+                .animate({
+                    height: self.state.cafeHeight[index]
+                },
+                2000,
+                'easeOutElastic'
+            );
+        });
+        $.each($('.bar-section-giftstore'), function(index, item){
+            $(this).css('height','0')
+                .animate({
+                    height: self.state.giftstoreHeight[index]
+                },
+                2000,
+                'easeOutElastic'
+            );
+        });
+        $.each($('.bar-section-membership'), function(index, item){
+            $(this).css('height','0')
+                .animate({
+                    height: self.state.membershipHeight[index]
+                },
+                2000,
+                'easeOutElastic'
+            );
+        });
     },
     render: function(){
         return (
@@ -191,13 +217,13 @@ var BarGraph = React.createClass({
                 </div>
 
                 <div id="bar-graph">
-                    <BarSet date="05.24" boxoffice={this.state.bar1Boxoffice} />
-                    <BarSet date="05.25" boxoffice={this.state.bar2Boxoffice} />
-                    <BarSet date="05.26" boxoffice={this.state.bar3Boxoffice} />
-                    <BarSet date="05.27" boxoffice={this.state.bar4Boxoffice} />
-                    <BarSet date="05.28" boxoffice={this.state.bar5Boxoffice} />
-                    <BarSet date="05.29" boxoffice={this.state.bar6Boxoffice} />
-                    <BarSet date="05.30" boxoffice={this.state.bar7Boxoffice} />
+                    <BarSet date={this.state.barDates[0]} />
+                    <BarSet date={this.state.barDates[1]} />
+                    <BarSet date={this.state.barDates[2]} />
+                    <BarSet date={this.state.barDates[3]} />
+                    <BarSet date={this.state.barDates[4]} />
+                    <BarSet date={this.state.barDates[5]} />
+                    <BarSet date={this.state.barDates[6]} />
                     <div className="bar-line bar-line-4"></div>
                     <div className="bar-line bar-line-3"></div>
                     <div className="bar-line bar-line-2"></div>

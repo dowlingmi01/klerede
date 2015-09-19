@@ -9,6 +9,16 @@ var wnt = {
             formattedDate = dateObj.getFullYear()+'-'+wnt.doubleDigits(mm)+'-'+wnt.doubleDigits(dd);
         return formattedDate;
     },
+    getWeek: function(dateStr) {
+        var dateObj = new Date(dateStr);   // Need to pass one day before (e.g. 8/14 becomes 8/13)
+        var week = [];
+        for(i=0; i<7; i++){
+            dateObj = new Date(dateStr);
+            dateObj.setDate(dateObj.getDate() - i);
+            week.push(wnt.doubleDigits(dateObj.getMonth()+1) + '.' + wnt.doubleDigits(dateObj.getDate()));
+        }
+        return week.reverse();
+    },
     doubleDigits: function(num) {
         num = num < 10 ? '0'+num : num;
         return num;
@@ -287,21 +297,19 @@ $(function(){
     /******** TEST BAR GRAPH WAVE ********/
     /*************************************/
     var barGraphWidth = $('#bar-graph').width();
+    var barSegmentArea = barGraphWidth / 7;
     //The data for our line
     var lineData = [
-      { "x": 0,   "y": 200},
-      { "x": 1,   "y": 5},
-      { "x": 20,  "y": 20},
-      { "x": 40,  "y": 10},
-      { "x": 60,  "y": 40},
-      { "x": 80,  "y": 5},
-      { "x": 150, "y": 60},
-      { "x": 200, "y": 35},
-      { "x": 300, "y": 80},
-      { "x": 350, "y": 15},
-      { "x": 400, "y": 55},
-      {"x": barGraphWidth, "y": 40},
-      {"x": barGraphWidth, "y": 200}
+      { "x": 0,   "y": 250},
+      { "x": 0,   "y": 0},
+      { "x": barSegmentArea/2,   "y": 5},
+      { "x": barSegmentArea*1.5, "y": 100},
+      { "x": barSegmentArea*2.5, "y": 80},
+      { "x": barSegmentArea*3.5, "y": 120},
+      { "x": barSegmentArea*4.5, "y": 100},
+      { "x": barSegmentArea*5.5, "y": 5},
+      { "x": barGraphWidth,    "y": 60},
+      { "x": barGraphWidth,    "y": 250}
     ];
 
     //This is the accessor function we talked about above
@@ -313,7 +321,7 @@ $(function(){
     //The SVG Container
     var svgContainer = d3.select("#bar-graph").append("svg")
           .attr("width", "100%")
-          .attr("height", 200);
+          .attr("height", 250);
 
     //The line SVG Path we draw
     var lineGraph = svgContainer.append("path")
