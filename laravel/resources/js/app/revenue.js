@@ -170,6 +170,11 @@ var BarGraph = React.createClass({
         console.log(filter);
         if(filter === 'dollars'){
             wnt.graphCap = 80000;
+            $('.bar-graph-label-y').show();
+            $('.bar-line-1').attr('data-content','20 --');
+            $('.bar-line-2').attr('data-content','40 --');
+            $('.bar-line-3').attr('data-content','60 --');
+            $('.bar-line-4').attr('data-content','80 --');
             this.setState({
                 boxofficeHeight: [
                     this.calcBarHeight(wnt.revenue.boxoffice[0].amount),
@@ -209,7 +214,12 @@ var BarGraph = React.createClass({
                 ]
             });
         } else {
-            wnt.graphCap = 100;
+            wnt.graphCap = 20;
+            $('.bar-graph-label-y').hide();
+            $('.bar-line-1').attr('data-content','5 --');
+            $('.bar-line-2').attr('data-content','10 --');
+            $('.bar-line-3').attr('data-content','15 --');
+            $('.bar-line-4').attr('data-content','20 --');
             this.setState({
                 boxofficeHeight: [
                     this.calcBarHeight(wnt.revenue.boxoffice[0].amount / wnt.revenue.visitors[0].units),
@@ -315,10 +325,10 @@ var BarGraph = React.createClass({
                     <BarSet date={this.state.barDates[4]} />
                     <BarSet date={this.state.barDates[5]} />
                     <BarSet date={this.state.barDates[6]} />
-                    <div className="bar-line bar-line-4"></div>
-                    <div className="bar-line bar-line-3"></div>
-                    <div className="bar-line bar-line-2"></div>
-                    <div className="bar-line bar-line-1"></div>
+                    <div className="bar-line bar-line-4" data-content="80 --"></div>
+                    <div className="bar-line bar-line-3" data-content="60 --"></div>
+                    <div className="bar-line bar-line-2" data-content="40 --"></div>
+                    <div className="bar-line bar-line-1" data-content="20 --"></div>
                     <div className="bar-graph-Note"><NoteIcon /></div>
                     <div className="bar-graph-label-y">Thousands</div>
                     <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
