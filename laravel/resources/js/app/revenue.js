@@ -18,6 +18,7 @@ var BarSet = React.createClass({
 
 var BarGraph = React.createClass({
     getInitialState: function() {
+        wnt.graphCap = 80000;   // TEMPORARY
         return {
             graphCap: 80000,
             graphHeight: 300,
@@ -43,6 +44,9 @@ var BarGraph = React.createClass({
                     giftstore: { specs: { type: 'sales', channel: 'store' }, 
                         periods: { from: wnt.weekago, to: wnt.yesterday } },
                     membership: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+
+                    visitors: { specs: { type: 'visits' },
                         periods: { from: wnt.weekago, to: wnt.yesterday } }
                 }
             }
@@ -109,7 +113,7 @@ var BarGraph = React.createClass({
         });
     },
     calcBarHeight: function(amount) {
-        var barSectionHeight = (amount / this.state.graphCap) * this.state.graphHeight;
+        var barSectionHeight = (amount / wnt.graphCap) * this.state.graphHeight;
         return barSectionHeight+'px';
     },
     calcChange: function(newstat, oldstat) {
@@ -160,6 +164,93 @@ var BarGraph = React.createClass({
             );
         });
     },
+    graphUnits: function(event) {
+        // Per Cap = XYZ Sales / Total Visitors
+        var filter = event.target.value;
+        console.log(filter);
+        if(filter === 'dollars'){
+            wnt.graphCap = 80000;
+            this.setState({
+                boxofficeHeight: [
+                    this.calcBarHeight(wnt.revenue.boxoffice[0].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[1].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[2].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[3].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[4].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[5].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[6].amount)
+                ],
+                cafeHeight: [
+                    this.calcBarHeight(wnt.revenue.cafe[0].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[1].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[2].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[3].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[4].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[5].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[6].amount)
+                ],
+                giftstoreHeight: [
+                    this.calcBarHeight(wnt.revenue.giftstore[0].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[1].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[2].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[3].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[4].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[5].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[6].amount)
+                ],
+                membershipHeight: [
+                    this.calcBarHeight(wnt.revenue.membership[0].amount),
+                    this.calcBarHeight(wnt.revenue.membership[1].amount),
+                    this.calcBarHeight(wnt.revenue.membership[2].amount),
+                    this.calcBarHeight(wnt.revenue.membership[3].amount),
+                    this.calcBarHeight(wnt.revenue.membership[4].amount),
+                    this.calcBarHeight(wnt.revenue.membership[5].amount),
+                    this.calcBarHeight(wnt.revenue.membership[6].amount)
+                ]
+            });
+        } else {
+            wnt.graphCap = 100;
+            this.setState({
+                boxofficeHeight: [
+                    this.calcBarHeight(wnt.revenue.boxoffice[0].amount / wnt.revenue.visitors[0].units),
+                    this.calcBarHeight(wnt.revenue.boxoffice[1].amount / wnt.revenue.visitors[1].units),
+                    this.calcBarHeight(wnt.revenue.boxoffice[2].amount / wnt.revenue.visitors[2].units),
+                    this.calcBarHeight(wnt.revenue.boxoffice[3].amount / wnt.revenue.visitors[3].units),
+                    this.calcBarHeight(wnt.revenue.boxoffice[4].amount / wnt.revenue.visitors[4].units),
+                    this.calcBarHeight(wnt.revenue.boxoffice[5].amount / wnt.revenue.visitors[5].units),
+                    this.calcBarHeight(wnt.revenue.boxoffice[6].amount / wnt.revenue.visitors[6].units)
+                ],
+                cafeHeight: [
+                    this.calcBarHeight(wnt.revenue.cafe[0].amount / wnt.revenue.visitors[0].units),
+                    this.calcBarHeight(wnt.revenue.cafe[1].amount / wnt.revenue.visitors[1].units),
+                    this.calcBarHeight(wnt.revenue.cafe[2].amount / wnt.revenue.visitors[2].units),
+                    this.calcBarHeight(wnt.revenue.cafe[3].amount / wnt.revenue.visitors[3].units),
+                    this.calcBarHeight(wnt.revenue.cafe[4].amount / wnt.revenue.visitors[4].units),
+                    this.calcBarHeight(wnt.revenue.cafe[5].amount / wnt.revenue.visitors[5].units),
+                    this.calcBarHeight(wnt.revenue.cafe[6].amount / wnt.revenue.visitors[6].units)
+                ],
+                giftstoreHeight: [
+                    this.calcBarHeight(wnt.revenue.giftstore[0].amount / wnt.revenue.visitors[0].units),
+                    this.calcBarHeight(wnt.revenue.giftstore[1].amount / wnt.revenue.visitors[1].units),
+                    this.calcBarHeight(wnt.revenue.giftstore[2].amount / wnt.revenue.visitors[2].units),
+                    this.calcBarHeight(wnt.revenue.giftstore[3].amount / wnt.revenue.visitors[3].units),
+                    this.calcBarHeight(wnt.revenue.giftstore[4].amount / wnt.revenue.visitors[4].units),
+                    this.calcBarHeight(wnt.revenue.giftstore[5].amount / wnt.revenue.visitors[5].units),
+                    this.calcBarHeight(wnt.revenue.giftstore[6].amount / wnt.revenue.visitors[6].units)
+                ],
+                membershipHeight: [
+                    this.calcBarHeight(wnt.revenue.membership[0].amount / wnt.revenue.visitors[0].units),
+                    this.calcBarHeight(wnt.revenue.membership[1].amount / wnt.revenue.visitors[1].units),
+                    this.calcBarHeight(wnt.revenue.membership[2].amount / wnt.revenue.visitors[2].units),
+                    this.calcBarHeight(wnt.revenue.membership[3].amount / wnt.revenue.visitors[3].units),
+                    this.calcBarHeight(wnt.revenue.membership[4].amount / wnt.revenue.visitors[4].units),
+                    this.calcBarHeight(wnt.revenue.membership[5].amount / wnt.revenue.visitors[5].units),
+                    this.calcBarHeight(wnt.revenue.membership[6].amount / wnt.revenue.visitors[6].units)
+                ]
+            });
+        }
+        event.target.blur();
+    },
     render: function(){
         return (
             <div className="widget" id="revenue">
@@ -182,9 +273,9 @@ var BarGraph = React.createClass({
                 </form>
 
                 <form id="filter-revenue-units">
-                    <select className="form-control">
-                        <option value="totals">Dollars</option>
-                        <option value="members">Per Cap</option>
+                    <select className="form-control" onChange={this.graphUnits}>
+                        <option value="dollars">Dollars</option>
+                        <option value="percap">Per Cap</option>
                     </select>
                     <Caret className="filter-caret" />
                 </form>
