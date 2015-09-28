@@ -487,7 +487,11 @@ var SalesGoals = React.createClass({
             .attr("r", 8)
             .attr("cx", dotX)
             .attr("cy", dotY)
-            .attr("fill", "rgba(66,66,66,1)");
+            .attr("fill", "rgba(66,66,66,1)")
+            .attr("data-toggle", "popover")
+            .attr("data-html", "true")
+            .attr("data-content", this.state.boxoffice)
+            .attr("data-placement", "top");
     },
     componentDidUpdate: function(){
         this.formatNumbers();

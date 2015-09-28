@@ -107,6 +107,7 @@ wnt.weekago = wnt.formatDate(wnt.weekago);
 
 $(function(){
     $('.plus-sign-menu').popover();
+    $('circle').popover();
 });
 
 console.log('App utilities loaded...');
@@ -272,7 +273,7 @@ $(function(){
                 .attr("cx", 20)
                 .attr("cy", 20)
                 .attr("fill", "rgba(66,66,66,1)");
-                
+
     }
 
 
