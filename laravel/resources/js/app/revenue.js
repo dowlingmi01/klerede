@@ -32,6 +32,7 @@ var BarGraph = React.createClass({
         };
     },
     componentDidMount: function() {
+        // Members / Non-members ... Members buy memberships, but not admission
         $.post(
             this.props.source,
             {
@@ -39,10 +40,21 @@ var BarGraph = React.createClass({
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
                         periods: { from: wnt.weekago, to: wnt.yesterday } },
+
                     cafe: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    cafe_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    cafe_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+
                     giftstore: { specs: { type: 'sales', channel: 'store' }, 
                         periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    giftstore_members: { specs: { type: 'sales', channel: 'store', members: true }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    giftstore_nonmembers: { specs: { type: 'sales', channel: 'store', members: false }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+
                     membership: { specs: { type: 'sales', channel: 'membership' }, 
                         periods: { from: wnt.weekago, to: wnt.yesterday } },
 
@@ -164,6 +176,195 @@ var BarGraph = React.createClass({
             );
         });
     },
+    graphFilter: function(event) {
+        var filter = event.target.value;
+        // Math.max(wnt.revenue.cafe[0].amount,wnt.revenue.cafe[1].amount,wnt.revenue.cafe[2].amount,wnt.revenue.cafe[3].amount,wnt.revenue.cafe[4].amount,wnt.revenue.cafe[5].amount,wnt.revenue.cafe[6].amount)
+        /*
+            $.each([ 52, 97 ], function( index, value ) {
+                alert( index + ": " + value );
+            });
+        */
+        var greatest = [];
+        $.each(wnt.revenue.boxoffice, function(index, value){
+            greatest.push(value.amount);
+        });
+        greatest = Math.max.apply(null, greatest);
+        console.log(greatest);
+
+        console.log(filter);
+        if(filter === 'totals'){
+            wnt.graphCap = 80000;
+            $('.bar-graph-label-y').show();
+            $('.bar-line-1').attr('data-content','20 --');
+            $('.bar-line-2').attr('data-content','40 --');
+            $('.bar-line-3').attr('data-content','60 --');
+            $('.bar-line-4').attr('data-content','80 --');
+            this.setState({
+                boxofficeHeight: [
+                    this.calcBarHeight(wnt.revenue.boxoffice[0].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[1].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[2].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[3].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[4].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[5].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[6].amount)
+                ],
+                cafeHeight: [
+                    this.calcBarHeight(wnt.revenue.cafe[0].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[1].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[2].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[3].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[4].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[5].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[6].amount)
+                ],
+                giftstoreHeight: [
+                    this.calcBarHeight(wnt.revenue.giftstore[0].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[1].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[2].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[3].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[4].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[5].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[6].amount)
+                ],
+                membershipHeight: [
+                    this.calcBarHeight(wnt.revenue.membership[0].amount),
+                    this.calcBarHeight(wnt.revenue.membership[1].amount),
+                    this.calcBarHeight(wnt.revenue.membership[2].amount),
+                    this.calcBarHeight(wnt.revenue.membership[3].amount),
+                    this.calcBarHeight(wnt.revenue.membership[4].amount),
+                    this.calcBarHeight(wnt.revenue.membership[5].amount),
+                    this.calcBarHeight(wnt.revenue.membership[6].amount)
+                ]
+            });
+        } else if(filter === 'members'){
+            // TEMPORARILY LOCALIZED since this is the largest area of $$$ for the graph cap
+            var greatest = [];
+            $.each(wnt.revenue.membership, function(index, value){
+                greatest.push(value.amount);
+            });
+            greatest = Math.max.apply(null, greatest);
+            console.log(greatest);
+            wnt.graphCap = Math.ceil(greatest / 1000) * 1000;
+            $('.bar-line-1').attr('data-content','5 --');
+            $('.bar-line-2').attr('data-content','10 --');
+            $('.bar-line-3').attr('data-content','15 --');
+            $('.bar-line-4').attr('data-content','20 --');
+            this.setState({
+                boxofficeHeight: [0, 0, 0, 0, 0, 0, 0],
+                cafeHeight: [
+                    this.calcBarHeight(wnt.revenue.cafe_members[0].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_members[1].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_members[2].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_members[3].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_members[4].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_members[5].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_members[6].amount)
+                ],
+                giftstoreHeight: [
+                    this.calcBarHeight(wnt.revenue.giftstore_members[0].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_members[1].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_members[2].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_members[3].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_members[4].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_members[5].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_members[6].amount)
+                ],
+                membershipHeight: [
+                    this.calcBarHeight(wnt.revenue.membership[0].amount),
+                    this.calcBarHeight(wnt.revenue.membership[1].amount),
+                    this.calcBarHeight(wnt.revenue.membership[2].amount),
+                    this.calcBarHeight(wnt.revenue.membership[3].amount),
+                    this.calcBarHeight(wnt.revenue.membership[4].amount),
+                    this.calcBarHeight(wnt.revenue.membership[5].amount),
+                    this.calcBarHeight(wnt.revenue.membership[6].amount)
+                ]
+            });
+        } else if(filter === 'nonmembers'){
+            wnt.graphCap = 80000;
+            $('.bar-graph-label-y').show();
+            $('.bar-line-1').attr('data-content','20 --');
+            $('.bar-line-2').attr('data-content','40 --');
+            $('.bar-line-3').attr('data-content','60 --');
+            $('.bar-line-4').attr('data-content','80 --');
+            this.setState({
+                boxofficeHeight: [
+                    this.calcBarHeight(wnt.revenue.boxoffice[0].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[1].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[2].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[3].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[4].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[5].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[6].amount)
+                ],
+                cafeHeight: [
+                    this.calcBarHeight(wnt.revenue.cafe_nonmembers[0].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_nonmembers[1].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_nonmembers[2].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_nonmembers[3].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_nonmembers[4].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_nonmembers[5].amount),
+                    this.calcBarHeight(wnt.revenue.cafe_nonmembers[6].amount)
+                ],
+                giftstoreHeight: [
+                    this.calcBarHeight(wnt.revenue.giftstore_nonmembers[0].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_nonmembers[1].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_nonmembers[2].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_nonmembers[3].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_nonmembers[4].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_nonmembers[5].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore_nonmembers[6].amount)
+                ],
+                membershipHeight: [0, 0, 0, 0, 0, 0, 0]
+            });
+        } else {
+            wnt.graphCap = 80000;
+            $('.bar-graph-label-y').show();
+            $('.bar-line-1').attr('data-content','20 --');
+            $('.bar-line-2').attr('data-content','40 --');
+            $('.bar-line-3').attr('data-content','60 --');
+            $('.bar-line-4').attr('data-content','80 --');
+            this.setState({
+                boxofficeHeight: [
+                    this.calcBarHeight(wnt.revenue.boxoffice[0].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[1].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[2].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[3].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[4].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[5].amount),
+                    this.calcBarHeight(wnt.revenue.boxoffice[6].amount)
+                ],
+                cafeHeight: [
+                    this.calcBarHeight(wnt.revenue.cafe[0].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[1].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[2].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[3].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[4].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[5].amount),
+                    this.calcBarHeight(wnt.revenue.cafe[6].amount)
+                ],
+                giftstoreHeight: [
+                    this.calcBarHeight(wnt.revenue.giftstore[0].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[1].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[2].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[3].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[4].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[5].amount),
+                    this.calcBarHeight(wnt.revenue.giftstore[6].amount)
+                ],
+                membershipHeight: [
+                    this.calcBarHeight(wnt.revenue.membership[0].amount),
+                    this.calcBarHeight(wnt.revenue.membership[1].amount),
+                    this.calcBarHeight(wnt.revenue.membership[2].amount),
+                    this.calcBarHeight(wnt.revenue.membership[3].amount),
+                    this.calcBarHeight(wnt.revenue.membership[4].amount),
+                    this.calcBarHeight(wnt.revenue.membership[5].amount),
+                    this.calcBarHeight(wnt.revenue.membership[6].amount)
+                ]
+            });
+        }
+        event.target.blur();
+    },
     graphUnits: function(event) {
         // Per Cap = XYZ Sales / Total Visitors
         var filter = event.target.value;
@@ -273,7 +474,7 @@ var BarGraph = React.createClass({
                 </form>
 
                 <form id="filter-revenue-section">
-                    <select className="form-control">
+                    <select className="form-control" onChange={this.graphFilter}>
                         <option value="totals">Totals</option>
                         <option value="members">Members</option>
                         <option value="nonmembers">Non-members</option>
