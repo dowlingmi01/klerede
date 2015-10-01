@@ -246,10 +246,10 @@ var BarGraph = React.createClass({
             greatest = Math.max.apply(null, greatest);
             console.log(greatest);
             wnt.graphCap = Math.ceil(greatest / 1000) * 1000;
-            $('.bar-line-1').attr('data-content','5 --');
-            $('.bar-line-2').attr('data-content','10 --');
-            $('.bar-line-3').attr('data-content','15 --');
-            $('.bar-line-4').attr('data-content','20 --');
+            $('.bar-line-1').attr('data-content','2 --');
+            $('.bar-line-2').attr('data-content','4 --');
+            $('.bar-line-3').attr('data-content','6 --');
+            $('.bar-line-4').attr('data-content','8 --');
             this.setState({
                 boxofficeHeight: [0, 0, 0, 0, 0, 0, 0],
                 cafeHeight: [
