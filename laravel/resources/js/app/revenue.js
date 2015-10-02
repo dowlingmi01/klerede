@@ -176,6 +176,103 @@ var BarGraph = React.createClass({
             );
         });
     },
+    weekChange: function(event) {
+        console.log('WEEK CHANGE');
+        console.log(this.val());
+        console.log(dateSelected(date));
+        /*
+        $.post(
+            this.props.source,
+            {
+                venue_id: this.props.venueID,
+                queries: {
+                    boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+
+                    cafe: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    cafe_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    cafe_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+
+                    giftstore: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    giftstore_members: { specs: { type: 'sales', channel: 'store', members: true }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                    giftstore_nonmembers: { specs: { type: 'sales', channel: 'store', members: false }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+
+                    membership: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+
+                    visitors: { specs: { type: 'visits' },
+                        periods: { from: wnt.weekago, to: wnt.yesterday } }
+                }
+            }
+        )
+        .done(function(result) {
+            console.log('Revenue data loaded...');
+            wnt.revenue = result;
+            if(this.isMounted()) {
+                this.setState({
+                    boxofficeHeight: [
+                        this.calcBarHeight(result.boxoffice[0].amount),
+                        this.calcBarHeight(result.boxoffice[1].amount),
+                        this.calcBarHeight(result.boxoffice[2].amount),
+                        this.calcBarHeight(result.boxoffice[3].amount),
+                        this.calcBarHeight(result.boxoffice[4].amount),
+                        this.calcBarHeight(result.boxoffice[5].amount),
+                        this.calcBarHeight(result.boxoffice[6].amount)
+                    ],
+                    cafeHeight: [
+                        this.calcBarHeight(result.cafe[0].amount),
+                        this.calcBarHeight(result.cafe[1].amount),
+                        this.calcBarHeight(result.cafe[2].amount),
+                        this.calcBarHeight(result.cafe[3].amount),
+                        this.calcBarHeight(result.cafe[4].amount),
+                        this.calcBarHeight(result.cafe[5].amount),
+                        this.calcBarHeight(result.cafe[6].amount)
+                    ],
+                    giftstoreHeight: [
+                        this.calcBarHeight(result.giftstore[0].amount),
+                        this.calcBarHeight(result.giftstore[1].amount),
+                        this.calcBarHeight(result.giftstore[2].amount),
+                        this.calcBarHeight(result.giftstore[3].amount),
+                        this.calcBarHeight(result.giftstore[4].amount),
+                        this.calcBarHeight(result.giftstore[5].amount),
+                        this.calcBarHeight(result.giftstore[6].amount)
+                    ],
+                    membershipHeight: [
+                        this.calcBarHeight(result.membership[0].amount),
+                        this.calcBarHeight(result.membership[1].amount),
+                        this.calcBarHeight(result.membership[2].amount),
+                        this.calcBarHeight(result.membership[3].amount),
+                        this.calcBarHeight(result.membership[4].amount),
+                        this.calcBarHeight(result.membership[5].amount),
+                        this.calcBarHeight(result.membership[6].amount)
+                    ]
+                });
+                // Set null data to '-'
+                var self = this;
+                $.each(this.state, function(stat, value){
+                    if(value === null){
+                        var stateObject = function() {
+                            returnObj = {};
+                            returnObj[stat] = '-';
+                            return returnObj;
+                        };
+                        self.setState(stateObject);
+                    }
+                });
+            }
+        }.bind(this))   // .bind() gives context to 'this'
+        .fail(function(result) {
+            console.log('REVENUE DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+        });
+        */
+    },
     graphFilter: function(event) {
         var filter = event.target.value;
         // Math.max(wnt.revenue.cafe[0].amount,wnt.revenue.cafe[1].amount,wnt.revenue.cafe[2].amount,wnt.revenue.cafe[3].amount,wnt.revenue.cafe[4].amount,wnt.revenue.cafe[5].amount,wnt.revenue.cafe[6].amount)
@@ -463,14 +560,16 @@ var BarGraph = React.createClass({
         event.target.blur();
     },
     render: function(){
+        /*
+            <select className="form-control">
+                <option value="totals">This Week (05.24-05.30)</option>
+            </select>
+        */
         return (
             <div className="widget" id="revenue">
                 <h2>Revenue</h2>
                 <form id="filter-revenue-week">
-                    <select className="form-control">
-                        <option value="totals">This Week (05.24-05.30)</option>
-                    </select>
-                    <CalendarIcon className="filter-calendar" />
+                    <span className="week-picker-text">Week beginning</span> <input type="text" id="datepicker" onChange={this.weekChange} />
                 </form>
 
                 <form id="filter-revenue-section">

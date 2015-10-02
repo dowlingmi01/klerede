@@ -67,6 +67,7 @@ wnt.today = new Date('2015-8-15');   // TEMPORARY OVERRIDE ... REMOVE STRING TO 
 wnt.thisYear = wnt.today.getFullYear();
 wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
 wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
+wnt.thisDate = wnt.today.getDate();
 if(wnt.thisMonthNum < 3){
     wnt.thisQuarterNum = [0,3];
     wnt.thisQuarterText = 'Q1';
@@ -325,6 +326,19 @@ $(function(){
         $(this).toggleClass('open');
         $(this).find('ul').toggle();
     });
+
+    /*********************************/
+    /******** TEST DATEPICKER ********/
+    /*********************************/
+    Date.firstDayOfWeek = 0;
+    Date.format = 'mm/dd/yyyy';
+    $('#datepicker').datePicker({
+        selectWeek: true,
+        closeOnSelect: false,
+        startDate: '01/01/1996',
+        endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear
+    });
+    //$('.date-pick').datePicker({selectWeek:true,closeOnSelect:false});
 });
 
 
