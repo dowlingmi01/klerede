@@ -52,6 +52,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->integer('quantity');
 			$table->text('source_xml')->nullable();
 			$table->timestamps();
+			$table->unique(['store_transaction_id', 'sequence']);
 		});
 		Schema::create('store_transaction_line_galaxy', function(Blueprint $table)
 		{
