@@ -257,8 +257,8 @@
 								function(e, selectedDate, $td)
 								{
 									this.value = selectedDate.asString();
-									console.log('TAYLOR TEST');
-									$(this).trigger('change');
+									// TAYLOR TESTING
+									// $this.trigger('change');
 								}
 							).bind(
 								'change',

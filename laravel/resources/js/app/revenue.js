@@ -23,6 +23,8 @@ var BarGraph = React.createClass({
             graphCap: 80000,
             graphHeight: 300,
 
+            value: 'TEST',
+
             barDates: wnt.getWeek(wnt.yesterday),
 
             boxofficeHeight: [0, 0, 0, 0, 0, 0, 0],
@@ -178,41 +180,44 @@ var BarGraph = React.createClass({
     },
     weekChange: function(event) {
         console.log('WEEK CHANGE');
-        console.log(this.val());
-        console.log(dateSelected(date));
-        /*
+        var weekStart = new Date(event.target.value);
+        weekStart = wnt.formatDate(weekStart);
+        var weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 7);
+        weekEnd = wnt.formatDate(weekEnd);
+        console.log(weekStart + ' ... ' + weekEnd);
         $.post(
             this.props.source,
             {
                 venue_id: this.props.venueID,
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
 
                     cafe: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
                     cafe_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
                     cafe_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
 
                     giftstore: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
                     giftstore_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
                     giftstore_nonmembers: { specs: { type: 'sales', channel: 'store', members: false }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
 
                     membership: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: weekStart, to: weekEnd } },
 
                     visitors: { specs: { type: 'visits' },
-                        periods: { from: wnt.weekago, to: wnt.yesterday } }
+                        periods: { from: weekStart, to: weekEnd } }
                 }
             }
         )
         .done(function(result) {
-            console.log('Revenue data loaded...');
+            console.log('Revenue data loaded (again)...');
             wnt.revenue = result;
             if(this.isMounted()) {
                 this.setState({
@@ -271,7 +276,6 @@ var BarGraph = React.createClass({
             console.log('REVENUE DATA ERROR! ... ' + result.statusText);
             console.log(result);
         });
-        */
     },
     graphFilter: function(event) {
         var filter = event.target.value;
@@ -565,11 +569,13 @@ var BarGraph = React.createClass({
                 <option value="totals">This Week (05.24-05.30)</option>
             </select>
         */
+        // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
         return (
             <div className="widget" id="revenue">
                 <h2>Revenue</h2>
                 <form id="filter-revenue-week">
-                    <span className="week-picker-text">Week beginning</span> <input type="text" id="datepicker" onChange={this.weekChange} />
+                    <span className="week-picker-text">Week beginning</span>
+                    <input type="text" id="datepicker" onFocus={this.weekChange} />
                 </form>
 
                 <form id="filter-revenue-section">

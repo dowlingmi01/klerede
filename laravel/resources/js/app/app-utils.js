@@ -334,7 +334,7 @@ $(function(){
     Date.format = 'mm/dd/yyyy';
     $('#datepicker').datePicker({
         selectWeek: true,
-        closeOnSelect: false,
+        closeOnSelect: true,
         startDate: '01/01/1996',
         endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear
     });
