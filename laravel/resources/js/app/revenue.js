@@ -179,13 +179,16 @@ var BarGraph = React.createClass({
         });
     },
     weekChange: function(event) {
-        console.log('WEEK CHANGE');
         var weekStart = new Date(event.target.value);
         weekStart = wnt.formatDate(weekStart);
         var weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 7);
         weekEnd = wnt.formatDate(weekEnd);
-        console.log(weekStart + ' ... ' + weekEnd);
+        // SET DATES FOR BAR TAGS
+        var barDatesWeekEnd = new Date(weekStart);
+        barDatesWeekEnd.setDate(barDatesWeekEnd.getDate() + 8);
+        barDatesWeekEnd = wnt.formatDate(barDatesWeekEnd);
+        var barDates = wnt.getWeek(barDatesWeekEnd);
         $.post(
             this.props.source,
             {
@@ -221,6 +224,7 @@ var BarGraph = React.createClass({
             wnt.revenue = result;
             if(this.isMounted()) {
                 this.setState({
+                    barDates: barDates,
                     boxofficeHeight: [
                         this.calcBarHeight(result.boxoffice[0].amount),
                         this.calcBarHeight(result.boxoffice[1].amount),
