@@ -467,8 +467,7 @@ var MembershipGoals = React.createClass({
                         <ActionMenu />
                         <form>
                             <select className="form-control">
-                                <option value="dollars">Dollars</option>
-                                <option value="percap">Per Cap</option>
+                                <option value="units">Units</option>
                             </select>
                             <Caret className="filter-caret" />
                         </form>

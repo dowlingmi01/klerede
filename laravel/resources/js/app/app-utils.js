@@ -63,7 +63,9 @@ var wnt = {
 /******** GLOBAL API-FORMATTED DATES ********/
 /********************************************/
 
+/************************************************************************************************************/
 wnt.today = new Date('2015-8-15');   // TEMPORARY OVERRIDE ... REMOVE STRING TO GET CURRENT DAY FOR ALL CALCULATIONS
+/************************************************************************************************************/
 wnt.thisYear = wnt.today.getFullYear();
 wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
 wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
@@ -286,6 +288,7 @@ $(function(){
     /*************************************/
     /******** TEST BAR GRAPH WAVE ********/
     /*************************************/
+    /* HOLD: PROJECTED AREA GRAPH
     var barGraphWidth = $('#bar-graph').width();
     var barSegmentArea = barGraphWidth / 7;
     //The data for our line
@@ -317,6 +320,7 @@ $(function(){
     var lineGraph = svgContainer.append("path")
           .attr("d", lineFunction(lineData))
           .attr("fill", "rgba(236,234,231,1)");
+    */
     
     /********************************/
     /******** TEST ACCORDION ********/
@@ -339,6 +343,97 @@ $(function(){
         endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear
     });
     //$('.date-pick').datePicker({selectWeek:true,closeOnSelect:false});
+
+    /*****************************/
+    /******** TEST SLIDER ********/
+    /*****************************/
+    /*$( "#slider" ).slider({
+        value: 100,
+        min: 0,
+        max: 500,
+        step: 50,
+        slide: function( event, ui ) {
+            console.log( ui.value );
+        }
+    });*/
+
+    //scrollpane parts
+    var scrollPane = $('#bar-graph-scroll-pane'),
+        scrollContent = $('#bar-graph');
+
+    //build slider
+    var scrollbar = $('#bar-graph-slider').slider({
+        /*value: 0,
+        min: 0,
+        max: 31,
+        step: 1,*/
+        slide: function( event, ui ) {
+            if ( scrollContent.width() > scrollPane.width() ) {
+                scrollContent.css( "margin-left", Math.round(
+                    ui.value / 100 * ( scrollPane.width() - scrollContent.width() )
+                ) + "px" );
+            } else {
+                scrollContent.css( "margin-left", 0 );
+            }
+        }
+    });
+
+    //append icon to handle
+    var handleHelper = scrollbar.find( ".ui-slider-handle" )
+        .mousedown(function() {
+            scrollbar.width( handleHelper.width() );
+        })
+        .mouseup(function() {
+            scrollbar.width( "100%" );
+        })
+        .append( "<span class='ui-icon ui-icon-grip-dotted-vertical'></span>" )
+        .wrap( "<div class='ui-handle-helper-parent'></div>" ).parent();
+
+    //change overflow to hidden now that slider handles the scrolling
+    scrollPane.css( "overflow", "hidden" );
+
+    //size scrollbar and handle proportionally to scroll distance
+    function sizeScrollbar() {
+        var remainder = scrollContent.width() - scrollPane.width();
+        var proportion = remainder / scrollContent.width();
+        var handleSize = scrollPane.width() - ( proportion * scrollPane.width() );
+        scrollbar.find( ".ui-slider-handle" ).css({
+            width: handleSize,
+            "margin-left": -handleSize / 2
+        });
+        handleHelper.width( "" ).width( scrollbar.width() - handleSize );
+    }
+
+    //reset slider value based on scroll content position
+    function resetValue() {
+        var remainder = scrollPane.width() - scrollContent.width();
+        var leftVal = scrollContent.css( "margin-left" ) === "auto" ? 0 :
+            parseInt( scrollContent.css( "margin-left" ) );
+        var percentage = Math.round( leftVal / remainder * 100 );
+        scrollbar.slider( "value", percentage );
+    }
+
+    //if the slider is 100% and window gets larger, reveal content
+    function reflowContent() {
+        var showing = scrollContent.width() + parseInt( scrollContent.css( "margin-left" ), 10 );
+        var gap = scrollPane.width() - showing;
+        if ( gap > 0 ) {
+            scrollContent.css( "margin-left", parseInt( scrollContent.css( "margin-left" ), 10 ) + gap );
+        }
+    }
+
+    //change handle position on window resize
+    $( window ).resize(function() {
+        resetValue();
+        sizeScrollbar();
+        reflowContent();
+    });
+    //init scrollbar size
+    setTimeout( sizeScrollbar, 10 );//safari wants a timeout
+
+
+
+
 });
 
 

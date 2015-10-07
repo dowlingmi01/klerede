@@ -545,7 +545,6 @@ var SalesGoals = React.createClass({
                         <form>
                             <select className="form-control">
                                 <option value="dollars">Dollars</option>
-                                <option value="percap">Per Cap</option>
                             </select>
                             <Caret className="filter-caret" />
                         </form>

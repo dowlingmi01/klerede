@@ -45,7 +45,7 @@ gulp.task('lint', function() {
 gulp.task('libs', function(){
     gulp.src([
             'resources/js/libs/jquery-2.1.4.js',
-            //'resources/js/libs/jquery-ui.min.js',
+            'resources/js/libs/jquery-ui.min.js',
             'resources/js/libs/date.js',
             'resources/js/libs/jquery.datePicker.js',
             'resources/js/libs/react-0.13.3.js',

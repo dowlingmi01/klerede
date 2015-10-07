@@ -2,7 +2,7 @@
 /******** IMPORTS AND VARIABLES ********/
 /***************************************/
 @import "bootstrap/bootstrap";
-/*@import "jquery-ui.min.css";*/
+@import "jquery-ui.min.css";
 
 @btn-font-weight: 300;
 @font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
@@ -704,19 +704,34 @@ header {
         fill: @white;
     }
 }
-#bar-graph {
-    border-bottom: 2px solid @darkgrey;
-    border-left: 2px solid @darkgrey;
+#bar-graph-scroll-pane {
     clear: both;
-    height: 300px;
     margin: 0 auto;
-    position: relative;
-    top: 30px;
+    overflow: auto;
     width: 80%;
-}
-#bar-graph svg {
-    bottom: 0;
-    position: absolute;
+    #bar-graph-y {
+        border-left: 2px solid @darkgrey;
+        float: left;
+        height: 300px;
+        margin: 20px auto;
+        position: absolute;
+        z-index: 2000;
+    }
+    #bar-graph {
+        border-bottom: 2px solid @darkgrey;
+        clear: both;
+        float: left;
+        height: 300px;
+        margin: 20px auto 20px;
+        position: relative;
+        width: 2200px; 
+        /*top: 30px;
+        width: 80%;*/
+        svg {
+            bottom: 0;
+            position: absolute;
+        }
+    }
 }
 .bar-line {
     border-top: 1px solid #ddd;
@@ -726,60 +741,35 @@ header {
     width: 100%;
     z-index: 1;
 }
-.bar-line-1:before {
-    content: attr(data-content);
-    left: -25px;
+.y-marker {
+    border-top: 1px solid @darkgrey;
+    left: -9px;
     position: absolute;
-    top: -9.5px;
+    top: 0%;
+    white-space: nowrap;
 }
-.bar-line-2:before {
+.y-marker:before {
     content: attr(data-content);
-    left: -25px;
-    position: absolute;
-    top: -9.5px;
+    left: -18px;
+    position: relative;
+    top: -10px;
 }
-.bar-line-3:before {
-    content: attr(data-content);
-    left: -26px;
-    position: absolute;
-    top: -9.5px;
-}
-.bar-line-4:before {
-    content: attr(data-content);
-    left: -26px;
-    position: absolute;
-    top: -9.5px;
-}
+.y-marker:nth-child(2) { top: 25%; }
+.y-marker:nth-child(3) { top: 50%; }
+.y-marker:nth-child(4) { top: 75%; }
 .bar-set {
     bottom: 0;
-    left: 7%;
+    display: inline-block;
+    margin: 0 10px 0 0;
     position: absolute;
-    width: 5%;
+    width: 25px;
     z-index: 2;
-}
-.bar-set-date {
-    bottom: -20px;
-    left: 50%;
-    position: absolute;
-    transform: translateX(-50%);
-}
-.bar-set:nth-child(2) {
-    left: 21%;
-}
-.bar-set:nth-child(3) {
-    left: 35%;
-}
-.bar-set:nth-child(4) {
-    left: 49%;
-}
-.bar-set:nth-child(5) {
-    left: 63%;
-}
-.bar-set:nth-child(6) {
-    left: 77%;
-}
-.bar-set:nth-child(7) {
-    left: 91%;
+    .bar-set-date {
+        bottom: -20px;
+        left: 50%;
+        position: absolute;
+        transform: translateX(-50%);
+    }
 }
 .bar-section {
     background-color: #ccebeb;
@@ -819,22 +809,64 @@ header {
         width: 10px;
     }
 }
-.bar-graph-slider {
+.scroll-bar-wrap {
     background-color: @lightgrey;
-    height: 9px;
-    position: relative;
-    top: 30px;
-    .bar-graph-slider-control {
-        background-color: @mediumgrey;
-        cursor: pointer;
-        height: 15px;
-        left: 50%;
-        text-align: center;
-        transform: translateX(-50%);
-        position: relative;
-        top: -3px;
-        width: 46px;
+    border-radius: 4px;
+    clear: left;
+    .bar-graph-slider {
+        background-color: @lightgrey;
+        .ui-state-default {
+            background: @mediumgrey;
+            .ui-icon {
+                background-image: url(/img/ui-icons_454545_256x240.png);
+            }
+        }
+        .ui-state-hover {
+            background: @mediumgrey;
+        }
+        .bar-graph-slider-control {
+            background-color: @mediumgrey;
+            cursor: pointer;
+            height: 15px;
+            left: 50%;
+            text-align: center;
+            transform: translateX(-50%);
+            position: relative;
+            top: -3px;
+            width: 46px;
+        }
     }
+    .ui-slider {
+        background: none;
+        background-color: @lightgrey;
+        border: 0;
+        height: 2em;
+        margin: 0 auto;
+    }
+    .ui-slider-handle {
+        height: 1.5em;
+        top:.2em;
+        .ui-icon {
+            margin: -8px auto 0;
+            position: relative;
+            top: 50%;
+        }
+    }
+    .ui-handle-helper-parent {
+        height: 100%;
+        margin: 0 auto;
+        position: relative;
+        width: 100%;
+    }
+}
+.ui-widget-content {
+    background-image: none;
+}
+.ui-slider .ui-slider-handle {
+    width: 60px;
+}
+.bar-graph-note {
+    display: none;   /* TEMPORARY HIDING */
 }
 /******** WEATHER AND ACCORDION ********/
 .weather-bar {

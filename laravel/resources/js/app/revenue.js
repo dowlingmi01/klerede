@@ -26,11 +26,12 @@ var BarGraph = React.createClass({
             value: 'TEST',
 
             barDates: wnt.getWeek(wnt.yesterday),
+            days: wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear),
 
-            boxofficeHeight: [0, 0, 0, 0, 0, 0, 0],
-            cafeHeight: [0, 0, 0, 0, 0, 0, 0],
-            giftstoreHeight: [0, 0, 0, 0, 0, 0, 0],
-            membershipHeight: [0, 0, 0, 0, 0, 0, 0]
+            boxofficeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            cafeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            giftstoreHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            membershipHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         };
     },
     componentDidMount: function() {
@@ -69,6 +70,10 @@ var BarGraph = React.createClass({
             console.log('Revenue data loaded...');
             wnt.revenue = result;
             if(this.isMounted()) {
+                // TEST ARRAY FOR LOOPING WHOLE MONTH
+                var TESTING = this.dataArray(result.boxoffice, 'amount', 31);
+                console.log(TESTING);
+
                 this.setState({
                     boxofficeHeight: [
                         this.calcBarHeight(result.boxoffice[0].amount),
@@ -126,6 +131,17 @@ var BarGraph = React.createClass({
             console.log(result);
         });
     },
+    dataArray: function(stat, statUnits, days) {
+        var data = [];
+        for(i=0; i<days; i++) {
+            if(stat[i] !== undefined){
+                data.push(stat[i][statUnits]);
+            } else {
+                data.push(0);
+            }
+        }
+        return data;
+    },
     calcBarHeight: function(amount) {
         var barSectionHeight = (amount / wnt.graphCap) * this.state.graphHeight;
         return barSectionHeight+'px';
@@ -141,6 +157,22 @@ var BarGraph = React.createClass({
     },
     componentDidUpdate: function(){
         var self = this;
+
+
+        var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
+        var barSpacing = $('#bar-graph-scroll-pane').width() / 7;
+        var barWidth = $('.bar-set').width();
+        var barPlacement = (barSpacing - barWidth) / 2;
+        var weekWidth = $('#bar-graph-scroll-pane').width();
+        var monthWidth = (weekWidth / 7) * days;
+        $('#bar-graph').css('width',monthWidth+'px');
+        $.each($('.bar-set'), function(index, item){
+            $(item).css('left',barPlacement+'px')
+            barPlacement = barPlacement + barSpacing;
+        });
+
+
+
         $.each($('.bar-section-boxoffice'), function(index, item){
             $(this).css('height','0')
                 .animate({
@@ -477,10 +509,10 @@ var BarGraph = React.createClass({
         if(filter === 'dollars'){
             wnt.graphCap = 80000;
             $('.bar-graph-label-y').show();
-            $('.bar-line-1').attr('data-content','20 --');
-            $('.bar-line-2').attr('data-content','40 --');
-            $('.bar-line-3').attr('data-content','60 --');
-            $('.bar-line-4').attr('data-content','80 --');
+            $('.y-marker').eq(0).attr('data-content','80');
+            $('.y-marker').eq(1).attr('data-content','60');
+            $('.y-marker').eq(2).attr('data-content','40');
+            $('.y-marker').eq(3).attr('data-content','20');
             this.setState({
                 boxofficeHeight: [
                     this.calcBarHeight(wnt.revenue.boxoffice[0].amount),
@@ -522,10 +554,10 @@ var BarGraph = React.createClass({
         } else {
             wnt.graphCap = 20;
             $('.bar-graph-label-y').hide();
-            $('.bar-line-1').attr('data-content','5 --');
-            $('.bar-line-2').attr('data-content','10 --');
-            $('.bar-line-3').attr('data-content','15 --');
-            $('.bar-line-4').attr('data-content','20 --');
+            $('.y-marker').eq(0).attr('data-content','20');
+            $('.y-marker').eq(1).attr('data-content','15');
+            $('.y-marker').eq(2).attr('data-content','10');
+            $('.y-marker').eq(3).attr('data-content','5');
             this.setState({
                 boxofficeHeight: [
                     this.calcBarHeight(wnt.revenue.boxoffice[0].amount / wnt.revenue.visitors[0].units),
@@ -627,23 +659,31 @@ var BarGraph = React.createClass({
                     </div>
                 </div>
 
-                <div id="bar-graph">
-                    <BarSet date={this.state.barDates[0]} />
-                    <BarSet date={this.state.barDates[1]} />
-                    <BarSet date={this.state.barDates[2]} />
-                    <BarSet date={this.state.barDates[3]} />
-                    <BarSet date={this.state.barDates[4]} />
-                    <BarSet date={this.state.barDates[5]} />
-                    <BarSet date={this.state.barDates[6]} />
-                    <div className="bar-line bar-line-4" data-content="80 --"></div>
-                    <div className="bar-line bar-line-3" data-content="60 --"></div>
-                    <div className="bar-line bar-line-2" data-content="40 --"></div>
-                    <div className="bar-line bar-line-1" data-content="20 --"></div>
-                    <div className="bar-graph-Note"><NoteIcon /></div>
-                    <div className="bar-graph-label-y">Thousands</div>
-                    <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
-                    <div className="bar-graph-slider">
-                        <div className="bar-graph-slider-control">|||</div>
+                <div id="bar-graph-scroll-pane">
+                    <div id="bar-graph-y">
+                        <div className="y-marker" data-content="80"></div>
+                        <div className="y-marker" data-content="60"></div>
+                        <div className="y-marker" data-content="40"></div>
+                        <div className="y-marker" data-content="20"></div>
+                    </div>
+                    <div id="bar-graph">
+                        <BarSet date={this.state.barDates[0]} />
+                        <BarSet date={this.state.barDates[1]} />
+                        <BarSet date={this.state.barDates[2]} />
+                        <BarSet date={this.state.barDates[3]} />
+                        <BarSet date={this.state.barDates[4]} />
+                        <BarSet date={this.state.barDates[5]} />
+                        <BarSet date={this.state.barDates[6]} />
+                        <div className="bar-line"></div>
+                        <div className="bar-line"></div>
+                        <div className="bar-line"></div>
+                        <div className="bar-line"></div>
+                        <div className="bar-graph-Note"><NoteIcon /></div>
+                        <div className="bar-graph-label-y">Thousands</div>
+                        <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
+                    </div>
+                    <div className="scroll-bar-wrap ui-widget-content ui-corner-bottom">
+                        <div className="bar-graph-slider scroll-bar" id="bar-graph-slider"></div>
                     </div>
                 </div>
 
