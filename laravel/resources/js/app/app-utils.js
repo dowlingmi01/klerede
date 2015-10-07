@@ -19,6 +19,17 @@ var wnt = {
         }
         return week.reverse();
     },
+    getMonth: function(dateStr) {
+        var dateObj = new Date(dateStr);
+        var thisMonth = dateObj.getMonth()+1;
+        var days = wnt.daysInMonth(thisMonth, dateObj.getFullYear());
+        thisMonth = wnt.doubleDigits(thisMonth);
+        var month = [];
+        for(i=0; i<days; i++){
+            month.push(thisMonth + '.' + wnt.doubleDigits(i+1));
+        }
+        return month;
+    },
     doubleDigits: function(num) {
         num = num < 10 ? '0'+num : num;
         return num;

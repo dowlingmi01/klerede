@@ -24,9 +24,12 @@ var BarGraph = React.createClass({
             graphHeight: 300,
 
             value: 'TEST',
+            month: wnt.thisMonthNum+1,
+            monthStart: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1',
+            monthEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
 
-            barDates: wnt.getWeek(wnt.yesterday),
-            days: wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear),
+            barDates: wnt.getMonth(wnt.yesterday),
+            days: wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
 
             boxofficeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             cafeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -42,27 +45,27 @@ var BarGraph = React.createClass({
                 venue_id: this.props.venueID,
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
 
                     cafe: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
                     cafe_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
                     cafe_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
 
                     giftstore: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
                     giftstore_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
                     giftstore_nonmembers: { specs: { type: 'sales', channel: 'store', members: false }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
 
                     membership: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: wnt.weekago, to: wnt.yesterday } },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
 
                     visitors: { specs: { type: 'visits' },
-                        periods: { from: wnt.weekago, to: wnt.yesterday } }
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } }
                 }
             }
         )
@@ -70,47 +73,30 @@ var BarGraph = React.createClass({
             console.log('Revenue data loaded...');
             wnt.revenue = result;
             if(this.isMounted()) {
-                // TEST ARRAY FOR LOOPING WHOLE MONTH
-                var TESTING = this.dataArray(result.boxoffice, 'amount', 31);
-                console.log(TESTING);
-
+                // LOOP THROUGH DATA TO CREATE ARRAYS
+                var self = this;
+                var boxoffice = this.dataArray(result.boxoffice, 'amount', this.state.days);
+                $.each(boxoffice, function(index, item){
+                        boxoffice[index] = self.calcBarHeight(item);
+                });
+                var cafe = this.dataArray(result.cafe, 'amount', this.state.days);
+                $.each(cafe, function(index, item){
+                        cafe[index] = self.calcBarHeight(item);
+                });
+                var giftstore = this.dataArray(result.giftstore, 'amount', this.state.days);
+                $.each(giftstore, function(index, item){
+                        giftstore[index] = self.calcBarHeight(item);
+                });
+                var membership = this.dataArray(result.membership, 'amount', this.state.days);
+                $.each(membership, function(index, item){
+                        membership[index] = self.calcBarHeight(item);
+                });
+                // SET STATE TO ARRAYS FOR RENDERING
                 this.setState({
-                    boxofficeHeight: [
-                        this.calcBarHeight(result.boxoffice[0].amount),
-                        this.calcBarHeight(result.boxoffice[1].amount),
-                        this.calcBarHeight(result.boxoffice[2].amount),
-                        this.calcBarHeight(result.boxoffice[3].amount),
-                        this.calcBarHeight(result.boxoffice[4].amount),
-                        this.calcBarHeight(result.boxoffice[5].amount),
-                        this.calcBarHeight(result.boxoffice[6].amount)
-                    ],
-                    cafeHeight: [
-                        this.calcBarHeight(result.cafe[0].amount),
-                        this.calcBarHeight(result.cafe[1].amount),
-                        this.calcBarHeight(result.cafe[2].amount),
-                        this.calcBarHeight(result.cafe[3].amount),
-                        this.calcBarHeight(result.cafe[4].amount),
-                        this.calcBarHeight(result.cafe[5].amount),
-                        this.calcBarHeight(result.cafe[6].amount)
-                    ],
-                    giftstoreHeight: [
-                        this.calcBarHeight(result.giftstore[0].amount),
-                        this.calcBarHeight(result.giftstore[1].amount),
-                        this.calcBarHeight(result.giftstore[2].amount),
-                        this.calcBarHeight(result.giftstore[3].amount),
-                        this.calcBarHeight(result.giftstore[4].amount),
-                        this.calcBarHeight(result.giftstore[5].amount),
-                        this.calcBarHeight(result.giftstore[6].amount)
-                    ],
-                    membershipHeight: [
-                        this.calcBarHeight(result.membership[0].amount),
-                        this.calcBarHeight(result.membership[1].amount),
-                        this.calcBarHeight(result.membership[2].amount),
-                        this.calcBarHeight(result.membership[3].amount),
-                        this.calcBarHeight(result.membership[4].amount),
-                        this.calcBarHeight(result.membership[5].amount),
-                        this.calcBarHeight(result.membership[6].amount)
-                    ]
+                    boxofficeHeight: boxoffice,
+                    cafeHeight: cafe,
+                    giftstoreHeight: giftstore,
+                    membershipHeight: membership
                 });
                 // Set null data to '-'
                 var self = this;
@@ -157,8 +143,7 @@ var BarGraph = React.createClass({
     },
     componentDidUpdate: function(){
         var self = this;
-
-
+        // BAR SET PLACEMENT
         var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
         var barSpacing = $('#bar-graph-scroll-pane').width() / 7;
         var barWidth = $('.bar-set').width();
@@ -170,9 +155,7 @@ var BarGraph = React.createClass({
             $(item).css('left',barPlacement+'px')
             barPlacement = barPlacement + barSpacing;
         });
-
-
-
+        // ANIMATIONS
         $.each($('.bar-section-boxoffice'), function(index, item){
             $(this).css('height','0')
                 .animate({
@@ -600,11 +583,11 @@ var BarGraph = React.createClass({
         event.target.blur();
     },
     render: function(){
-        /*
-            <select className="form-control">
-                <option value="totals">This Week (05.24-05.30)</option>
-            </select>
-        */
+        // LOOP FOR BAR SETS
+        var bars = [];
+        for (var i = 0; i < this.state.days; i++) {
+            bars.push(<BarSet date={this.state.barDates[i]} key={i} />);
+        }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
         return (
             <div className="widget" id="revenue">
@@ -667,13 +650,7 @@ var BarGraph = React.createClass({
                         <div className="y-marker" data-content="20"></div>
                     </div>
                     <div id="bar-graph">
-                        <BarSet date={this.state.barDates[0]} />
-                        <BarSet date={this.state.barDates[1]} />
-                        <BarSet date={this.state.barDates[2]} />
-                        <BarSet date={this.state.barDates[3]} />
-                        <BarSet date={this.state.barDates[4]} />
-                        <BarSet date={this.state.barDates[5]} />
-                        <BarSet date={this.state.barDates[6]} />
+                        {bars}
                         <div className="bar-line"></div>
                         <div className="bar-line"></div>
                         <div className="bar-line"></div>
