@@ -195,6 +195,16 @@ var BarGraph = React.createClass({
     },
     weekChange: function(event) {
         var weekStart = new Date(event.target.value);
+        
+
+        var selectedMonth = weekStart.getMonth()+1;
+        var selectedYear = weekStart.getFullYear();
+        var selectedMonthDays = wnt.daysInMonth(selectedMonth, selectedYear);
+        var selectedMonthStart = selectedYear+'-'+selectedMonth+'-1';   // yyyy-m-d
+        var selectedMonthEnd = selectedYear+'-'+selectedMonth+'-'+selectedMonthDays;   // yyyy-m-d
+        console.log(selectedMonthStart + ' ... ' + selectedMonthEnd);
+
+
         weekStart = wnt.formatDate(weekStart);
         var weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 7);
@@ -203,34 +213,39 @@ var BarGraph = React.createClass({
         var barDatesWeekEnd = new Date(weekStart);
         barDatesWeekEnd.setDate(barDatesWeekEnd.getDate() + 8);
         barDatesWeekEnd = wnt.formatDate(barDatesWeekEnd);
-        var barDates = wnt.getWeek(barDatesWeekEnd);
+        // NEW: Set dates to all in selected month
+        // $("#bar-graph-slider").slider('value',50);      //  SET POSITION OF SLIDER BASED ON DATE
+        // $("#bar-graph-slider").slider('refresh');
+        // $("#bar-graph-slider").slider("option", "value", newValue);
+        var barDates = wnt.getMonth(weekStart);
+        console.log(barDates);
         $.post(
             this.props.source,
             {
                 venue_id: this.props.venueID,
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
 
                     cafe: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     cafe_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     cafe_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
 
                     giftstore: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     giftstore_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     giftstore_nonmembers: { specs: { type: 'sales', channel: 'store', members: false }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
 
                     membership: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: weekStart, to: weekEnd } },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
 
                     visitors: { specs: { type: 'visits' },
-                        periods: { from: weekStart, to: weekEnd } }
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } }
                 }
             }
         )
@@ -238,45 +253,33 @@ var BarGraph = React.createClass({
             console.log('Revenue data loaded (again)...');
             wnt.revenue = result;
             if(this.isMounted()) {
+                // LOOP THROUGH DATA TO CREATE ARRAYS
+                var self = this;
+                var boxoffice = this.dataArray(result.boxoffice, 'amount', selectedMonthDays);
+                $.each(boxoffice, function(index, item){
+                        boxoffice[index] = self.calcBarHeight(item);
+                });
+                var cafe = this.dataArray(result.cafe, 'amount', selectedMonthDays);
+                $.each(cafe, function(index, item){
+                        cafe[index] = self.calcBarHeight(item);
+                });
+                var giftstore = this.dataArray(result.giftstore, 'amount', selectedMonthDays);
+                $.each(giftstore, function(index, item){
+                        giftstore[index] = self.calcBarHeight(item);
+                });
+                var membership = this.dataArray(result.membership, 'amount', selectedMonthDays);
+                $.each(membership, function(index, item){
+                        membership[index] = self.calcBarHeight(item);
+                });
+                // SET STATE TO ARRAYS FOR RENDERING
                 this.setState({
                     barDates: barDates,
-                    boxofficeHeight: [
-                        this.calcBarHeight(result.boxoffice[0].amount),
-                        this.calcBarHeight(result.boxoffice[1].amount),
-                        this.calcBarHeight(result.boxoffice[2].amount),
-                        this.calcBarHeight(result.boxoffice[3].amount),
-                        this.calcBarHeight(result.boxoffice[4].amount),
-                        this.calcBarHeight(result.boxoffice[5].amount),
-                        this.calcBarHeight(result.boxoffice[6].amount)
-                    ],
-                    cafeHeight: [
-                        this.calcBarHeight(result.cafe[0].amount),
-                        this.calcBarHeight(result.cafe[1].amount),
-                        this.calcBarHeight(result.cafe[2].amount),
-                        this.calcBarHeight(result.cafe[3].amount),
-                        this.calcBarHeight(result.cafe[4].amount),
-                        this.calcBarHeight(result.cafe[5].amount),
-                        this.calcBarHeight(result.cafe[6].amount)
-                    ],
-                    giftstoreHeight: [
-                        this.calcBarHeight(result.giftstore[0].amount),
-                        this.calcBarHeight(result.giftstore[1].amount),
-                        this.calcBarHeight(result.giftstore[2].amount),
-                        this.calcBarHeight(result.giftstore[3].amount),
-                        this.calcBarHeight(result.giftstore[4].amount),
-                        this.calcBarHeight(result.giftstore[5].amount),
-                        this.calcBarHeight(result.giftstore[6].amount)
-                    ],
-                    membershipHeight: [
-                        this.calcBarHeight(result.membership[0].amount),
-                        this.calcBarHeight(result.membership[1].amount),
-                        this.calcBarHeight(result.membership[2].amount),
-                        this.calcBarHeight(result.membership[3].amount),
-                        this.calcBarHeight(result.membership[4].amount),
-                        this.calcBarHeight(result.membership[5].amount),
-                        this.calcBarHeight(result.membership[6].amount)
-                    ]
+                    boxofficeHeight: boxoffice,
+                    cafeHeight: cafe,
+                    giftstoreHeight: giftstore,
+                    membershipHeight: membership
                 });
+
                 // Set null data to '-'
                 var self = this;
                 $.each(this.state, function(stat, value){
