@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 class WeatherDaily extends Model {
 	protected $table = 'weather_daily';
 	protected $guarded = [];
+	protected $hidden = ['id', 'source'];
 
 	static function getForJSON($venue_id, $date, $json) {
 		$weather_daily = WeatherDaily::firstOrNew(['venue_id'=>$venue_id, 'date'=>$date]);
@@ -19,5 +20,15 @@ class WeatherDaily extends Model {
 		$weather_daily->source = $json;
 		$weather_daily->save();
 		return $weather_daily;
+	}
+	static function queryD($query) {
+		$dbquery = WeatherDaily::where('venue_id', $query->venue_id);
+		if(isset($query->from)) {
+			$dbquery->whereBetween('date', [$query->from, $query->to]);
+			return $dbquery->get();
+		} else {
+			$dbquery->where('date', $query->date);
+			return $dbquery->get()[0];
+		}
 	}
 }
