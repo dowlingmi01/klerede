@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\Inspire',
 		'App\Console\Commands\PosLogConvert',
 		'App\Console\Commands\PosLogImport',
+		'App\Console\Commands\WeatherImport',
 	];
 
 	/**
