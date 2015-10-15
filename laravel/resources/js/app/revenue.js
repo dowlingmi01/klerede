@@ -16,7 +16,7 @@ var BarSet = React.createClass({
     }
 });
 
-var BarGraph = React.createClass({
+var BarGraph = React.createClass({   // Klerede API for bar graph
     getInitialState: function() {
         wnt.graphCap = 80000;   // TEMPORARY
         return {
@@ -202,7 +202,9 @@ var BarGraph = React.createClass({
         var selectedMonthDays = wnt.daysInMonth(selectedMonth, selectedYear);
         var selectedMonthStart = selectedYear+'-'+selectedMonth+'-1';   // yyyy-m-d
         var selectedMonthEnd = selectedYear+'-'+selectedMonth+'-'+selectedMonthDays;   // yyyy-m-d
-        console.log(selectedMonthStart + ' ... ' + selectedMonthEnd);
+        var sliderDay = weekStart.getDate();
+        sliderDay = (sliderDay / selectedMonthDays) * 100;
+        $("#bar-graph-slider").slider('value',sliderDay);
 
 
         weekStart = wnt.formatDate(weekStart);
@@ -214,11 +216,9 @@ var BarGraph = React.createClass({
         barDatesWeekEnd.setDate(barDatesWeekEnd.getDate() + 8);
         barDatesWeekEnd = wnt.formatDate(barDatesWeekEnd);
         // NEW: Set dates to all in selected month
-        // $("#bar-graph-slider").slider('value',50);      //  SET POSITION OF SLIDER BASED ON DATE
-        // $("#bar-graph-slider").slider('refresh');
-        // $("#bar-graph-slider").slider("option", "value", newValue);
+        // $("#bar-graph-slider").slider('value',50);      //  This works ... 0-100 ... SET POSITION OF SLIDER BASED ON DATE
+        // july 5 = 5/31 = 16.13% for slider value
         var barDates = wnt.getMonth(weekStart);
-        console.log(barDates);
         $.post(
             this.props.source,
             {
@@ -656,7 +656,7 @@ var AccordionItemPlus = React.createClass({
     }
 });
 
-var AccordionSet = React.createClass({
+var AccordionSet = React.createClass({   // Klerede API for accordion details
     getInitialState: function() {
         return {
             boxofficeStatChange: [0, 'up'],
@@ -829,7 +829,7 @@ var AccordionSet = React.createClass({
     }
 });
 
-var Revenue = React.createClass({
+var Revenue = React.createClass({   // Weather API
     getInitialState: function() {
         return {
             icon: '',

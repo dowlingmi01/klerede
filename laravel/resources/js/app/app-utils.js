@@ -386,6 +386,16 @@ $(function(){
             } else {
                 scrollContent.css( "margin-left", 0 );
             }
+        },
+        // Setting change method to handle programmatic changes to slider value
+        change: function( event, ui ) {
+            if ( scrollContent.width() > scrollPane.width() ) {
+                scrollContent.css( "margin-left", Math.round(
+                    ui.value / 100 * ( scrollPane.width() - scrollContent.width() )
+                ) + "px" );
+            } else {
+                scrollContent.css( "margin-left", 0 );
+            }
         }
     });
 
