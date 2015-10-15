@@ -37,6 +37,11 @@ Route::group(['prefix'=>'api/v1'], function() {
 		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
 		return Response::json($result);
 	});
+	Route::get('weather/query', function() {
+		$input = (object) Request::all();
+		$result = \App\WeatherDaily::queryD($input);
+		return Response::json($result);
+	});
 });
 
 Route::get('dashboard', function()
