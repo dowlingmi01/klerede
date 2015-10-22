@@ -48,3 +48,8 @@ Route::get('dashboard', function()
 {
     return View::make('dashboard');
 });
+
+Route::get('goals', function()
+{
+    return View::make('goals');
+});
