@@ -149,27 +149,31 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             membershipHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
             // NEW!!! ... 4
-            boxofficeStatChange: [0, 'up'],
-            boxofficeStatChangeON: [0, 'up'],
-            boxofficeStatChangeOFF: [0, 'up'],
-            groupsStatChange: [0, 'up'],
-            cafeStatChange: [0, 'up'],
-            giftstoreStatChange: [0, 'up'],
-            membershipStatChange: [0, 'up']
+            boxofficeChange: [0, 'up'],
+            boxofficeChangeON: [0, 'up'],
+            boxofficeChangeOFF: [0, 'up'],
+            groupsChange: [0, 'up'],
+            cafeChange: [0, 'up'],
+            giftstoreChange: [0, 'up'],
+            membershipChange: [0, 'up']
         };
     },
     componentDidMount: function() {
         // Members / Non-members ... Members buy memberships, but not admission
-        // ACCORDION NOTES...
-        // up/down, % change, $$$ (now), $$$ (old)
-        // TOTAL = 2,741 units and $17,723.01   ===   2276(bo), 287(c), 149(gs), 29(m)
-        // box office total, groups, cafe total, gift store total, membership
+        // up/down, % change, $$$ (total current period), $$$ (total last period)
         $.post(
             this.props.source,
             {
                 venue_id: this.props.venueID,
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    boxoffice_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    boxoffice_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+
+                    groups: { specs: { type: 'sales', kinds: ['group'] }, 
                         periods: { from: this.state.monthStart, to: this.state.monthEnd } },
 
                     cafe: { specs: { type: 'sales', channel: 'cafe' }, 
@@ -190,23 +194,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         periods: { from: this.state.monthStart, to: this.state.monthEnd } },
 
                     visitors: { specs: { type: 'visits' },
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-
-                    // NEW ACCORDION QUERIES...
-                    acc_boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
-                    acc_boxoffice_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
-                    acc_boxoffice_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
-                    acc_groups: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
-                    acc_cafe: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
-                    acc_giftstore: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } },
-                    acc_membership: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: wnt.daybeforeyesterday, to: wnt.yesterday } }
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } }
                 }
             }
         )
@@ -239,31 +227,31 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     giftstoreHeight: giftstore,
                     membershipHeight: membership,
                     // NEW FOR ACCORDION ...
-                    boxofficeStatDay: result.acc_boxoffice[1].amount,
-                    boxofficeStatDayBefore: result.acc_boxoffice[0].amount,
-                    boxofficeStatChange: this.calcChange(result.acc_boxoffice[1].amount, result.acc_boxoffice[0].amount),
-                    boxofficeStatDayON: result.acc_boxoffice_online[1].amount,
-                    boxofficeStatDayBeforeON: result.acc_boxoffice_online[0].amount,
-                    boxofficeStatChangeON: this.calcChange(result.acc_boxoffice_online[1].amount, result.acc_boxoffice_online[0].amount),
-                    boxofficeStatDayOFF: result.acc_boxoffice_offline[1].amount,
-                    boxofficeStatDayBeforeOFF: result.acc_boxoffice_offline[0].amount,
-                    boxofficeStatChangeOFF: this.calcChange(result.acc_boxoffice_offline[1].amount, result.acc_boxoffice_offline[0].amount),
+                    boxofficeNow: result.boxoffice[1].amount,
+                    boxofficeThen: result.boxoffice[0].amount,
+                    boxofficeChange: this.calcChange(result.boxoffice[1].amount, result.boxoffice[0].amount),
+                    boxofficeNowON: result.boxoffice_online[1].amount,
+                    boxofficeThenON: result.boxoffice_online[0].amount,
+                    boxofficeChangeON: this.calcChange(result.boxoffice_online[1].amount, result.boxoffice_online[0].amount),
+                    boxofficeNowOFF: result.boxoffice_offline[1].amount,
+                    boxofficeThenOFF: result.boxoffice_offline[0].amount,
+                    boxofficeChangeOFF: this.calcChange(result.boxoffice_offline[1].amount, result.boxoffice_offline[0].amount),
 
-                    groupsStatDay: result.acc_groups[1].amount,
-                    groupsStatDayBefore: result.acc_groups[0].amount,
-                    groupsStatChange: this.calcChange(result.acc_groups[1].amount, result.acc_groups[0].amount),
+                    groupsNow: result.groups[1].amount,
+                    groupsThen: result.groups[0].amount,
+                    groupsChange: this.calcChange(result.groups[1].amount, result.groups[0].amount),
 
-                    cafeStatDay: result.acc_cafe[1].amount,
-                    cafeStatDayBefore: result.acc_cafe[0].amount,
-                    cafeStatChange: this.calcChange(result.acc_cafe[1].amount, result.acc_cafe[0].amount),
+                    cafeNow: result.cafe[1].amount,   //this.periodTotal(PASS DATA???)
+                    cafeThen: result.cafe[0].amount,
+                    cafeChange: this.calcChange(result.cafe[1].amount, result.cafe[0].amount),
 
-                    giftstoreStatDay: result.acc_giftstore[1].amount,
-                    giftstoreStatDayBefore: result.acc_giftstore[0].amount,
-                    giftstoreStatChange: this.calcChange(result.acc_giftstore[1].amount, result.acc_giftstore[0].amount),
+                    giftstoreNow: result.giftstore[1].amount,
+                    giftstoreThen: result.giftstore[0].amount,
+                    giftstoreChange: this.calcChange(result.giftstore[1].amount, result.giftstore[0].amount),
 
-                    membershipStatDay: result.acc_membership[1].amount,
-                    membershipStatDayBefore: result.acc_membership[0].amount,
-                    membershipStatChange: this.calcChange(result.acc_membership[1].amount, result.acc_membership[0].amount)
+                    membershipNow: result.membership[1].amount,
+                    membershipThen: result.membership[0].amount,
+                    membershipChange: this.calcChange(result.membership[1].amount, result.membership[0].amount)
                 });
                 // Set null data to '-'
                 var self = this;
@@ -309,6 +297,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         change = Math.round(100*change)/100;   // Round to hundredths
         change = [change, direction]
         return change;
+    },
+    periodTotal: function(start){
+        console.log(start);
     },
     componentDidUpdate: function(){
         var self = this;
@@ -469,35 +460,35 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     giftstoreHeight: giftstore,
                     membershipHeight: membership,
                     // CURRENT DEV FOCUS 10/21/2015
-                    // NEW TEST FOR ACCORDION CHANGE...
+                    // NEW TEST FOR SLIDER CHANGE...
                     // Position in array is zero-based, so use date-1
                     // "Day Before" is now 7 days prior, but -8 doesn't work when it's < 8 into month, so selecting "0" for now ...
                     // NEED TO RUN A CHECK AGAINST PERIOD (yyyy-mm-dd)!!!  sometimes days are skipped
-                    boxofficeStatDay: result.boxoffice[selectedDay-1].amount,
-                    boxofficeStatDayBefore: result.boxoffice[0].amount,
-                    boxofficeStatChange: this.calcChange(result.boxoffice[selectedDay-1].amount, result.boxoffice[0].amount),
-                    boxofficeStatDayON: result.boxoffice_online[selectedDay-1].amount,
-                    boxofficeStatDayBeforeON: result.boxoffice_online[0].amount,
-                    boxofficeStatChangeON: this.calcChange(result.boxoffice_online[selectedDay-1].amount, result.boxoffice_online[0].amount),
-                    boxofficeStatDayOFF: result.boxoffice_offline[selectedDay-1].amount,
-                    boxofficeStatDayBeforeOFF: result.boxoffice_offline[0].amount,
-                    boxofficeStatChangeOFF: this.calcChange(result.boxoffice_offline[selectedDay-1].amount, result.boxoffice_offline[0].amount),
+                    boxofficeNow: result.boxoffice[selectedDay-1].amount,
+                    boxofficeThen: result.boxoffice[0].amount,
+                    boxofficeChange: this.calcChange(result.boxoffice[selectedDay-1].amount, result.boxoffice[0].amount),
+                    boxofficeNowON: result.boxoffice_online[selectedDay-1].amount,
+                    boxofficeThenON: result.boxoffice_online[0].amount,
+                    boxofficeChangeON: this.calcChange(result.boxoffice_online[selectedDay-1].amount, result.boxoffice_online[0].amount),
+                    boxofficeNowOFF: result.boxoffice_offline[selectedDay-1].amount,
+                    boxofficeThenOFF: result.boxoffice_offline[0].amount,
+                    boxofficeChangeOFF: this.calcChange(result.boxoffice_offline[selectedDay-1].amount, result.boxoffice_offline[0].amount),
 
-                    groupsStatDay: result.groups[selectedDay-1].amount,
-                    groupsStatDayBefore: result.groups[0].amount,
-                    groupsStatChange: this.calcChange(result.groups[selectedDay-1].amount, result.groups[0].amount),
+                    groupsNow: result.groups[selectedDay-1].amount,
+                    groupsThen: result.groups[0].amount,
+                    groupsChange: this.calcChange(result.groups[selectedDay-1].amount, result.groups[0].amount),
 
-                    cafeStatDay: result.cafe[selectedDay-1].amount,
-                    cafeStatDayBefore: result.cafe[0].amount,
-                    cafeStatChange: this.calcChange(result.cafe[selectedDay-1].amount, result.cafe[0].amount),
+                    cafeNow: result.cafe[selectedDay-1].amount,
+                    cafeThen: result.cafe[0].amount,
+                    cafeChange: this.calcChange(result.cafe[selectedDay-1].amount, result.cafe[0].amount),
 
-                    giftstoreStatDay: result.giftstore[selectedDay-1].amount,
-                    giftstoreStatDayBefore: result.giftstore[0].amount,
-                    giftstoreStatChange: this.calcChange(result.giftstore[selectedDay-1].amount, result.giftstore[0].amount),
+                    giftstoreNow: result.giftstore[selectedDay-1].amount,
+                    giftstoreThen: result.giftstore[0].amount,
+                    giftstoreChange: this.calcChange(result.giftstore[selectedDay-1].amount, result.giftstore[0].amount),
 
-                    membershipStatDay: result.membership[selectedDay-1].amount,
-                    membershipStatDayBefore: result.membership[0].amount,
-                    membershipStatChange: this.calcChange(result.membership[selectedDay-1].amount, result.membership[0].amount)
+                    membershipNow: result.membership[selectedDay-1].amount,
+                    membershipThen: result.membership[0].amount,
+                    membershipChange: this.calcChange(result.membership[selectedDay-1].amount, result.membership[0].amount)
                 });
 
                 // Set null data to '-'
@@ -825,49 +816,49 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                 className="box-office"
                                 label="Box Office Total"
 
-                                stat={this.state.boxofficeStatDay}
-                                statChange={this.state.boxofficeStatChange[0]}
-                                arrow={this.state.boxofficeStatChange[1]}
-                                comparedTo={this.state.boxofficeStatDayBefore}
+                                stat={this.state.boxofficeNow}
+                                statChange={this.state.boxofficeChange[0]}
+                                arrow={this.state.boxofficeChange[1]}
+                                comparedTo={this.state.boxofficeThen}
 
-                                statON={this.state.boxofficeStatDayON}
-                                statChangeON={this.state.boxofficeStatChangeON[0]}
-                                arrowON={this.state.boxofficeStatChangeON[1]}
-                                comparedToON={this.state.boxofficeStatDayBeforeON}
+                                statON={this.state.boxofficeNowON}
+                                statChangeON={this.state.boxofficeChangeON[0]}
+                                arrowON={this.state.boxofficeChangeON[1]}
+                                comparedToON={this.state.boxofficeThenON}
 
-                                statOFF={this.state.boxofficeStatDayOFF}
-                                statChangeOFF={this.state.boxofficeStatChangeOFF[0]}
-                                arrowOFF={this.state.boxofficeStatChangeOFF[1]}
-                                comparedToOFF={this.state.boxofficeStatDayBeforeOFF} />
+                                statOFF={this.state.boxofficeNowOFF}
+                                statChangeOFF={this.state.boxofficeChangeOFF[0]}
+                                arrowOFF={this.state.boxofficeChangeOFF[1]}
+                                comparedToOFF={this.state.boxofficeThenOFF} />
 
                             <AccordionItem
                                 className="groups"
                                 label="Groups"
-                                stat={this.state.groupsStatDay}
-                                statChange={this.state.groupsStatChange[0]}
-                                arrow={this.state.groupsStatChange[1]}
-                                comparedTo={this.state.groupsStatDayBefore} />
+                                stat={this.state.groupsNow}
+                                statChange={this.state.groupsChange[0]}
+                                arrow={this.state.groupsChange[1]}
+                                comparedTo={this.state.groupsThen} />
                             <AccordionItem
                                 className="cafe"
                                 label="Cafe Total"
-                                stat={this.state.cafeStatDay}
-                                statChange={this.state.cafeStatChange[0]}
-                                arrow={this.state.cafeStatChange[1]}
-                                comparedTo={this.state.cafeStatDayBefore} />
+                                stat={this.state.cafeNow}
+                                statChange={this.state.cafeChange[0]}
+                                arrow={this.state.cafeChange[1]}
+                                comparedTo={this.state.cafeThen} />
                             <AccordionItem
                                 className="gift-store"
                                 label="Gift Store Total"
-                                stat={this.state.giftstoreStatDay}
-                                statChange={this.state.giftstoreStatChange[0]}
-                                arrow={this.state.giftstoreStatChange[1]}
-                                comparedTo={this.state.giftstoreStatDayBefore} />
+                                stat={this.state.giftstoreNow}
+                                statChange={this.state.giftstoreChange[0]}
+                                arrow={this.state.giftstoreChange[1]}
+                                comparedTo={this.state.giftstoreThen} />
                             <AccordionItem
                                 className="membership"
                                 label="Membership"
-                                stat={this.state.membershipStatDay}
-                                statChange={this.state.membershipStatChange[0]}
-                                arrow={this.state.membershipStatChange[1]}
-                                comparedTo={this.state.membershipStatDayBefore} />
+                                stat={this.state.membershipNow}
+                                statChange={this.state.membershipChange[0]}
+                                arrow={this.state.membershipChange[1]}
+                                comparedTo={this.state.membershipThen} />
                         </ul>
                     </div>
                 </div>
