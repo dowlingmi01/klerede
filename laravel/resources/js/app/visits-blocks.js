@@ -41,9 +41,9 @@ var VisitsBlocksSet = React.createClass({
     },
     componentDidMount: function() {
         $.post(
-            this.props.source,
+            wnt.apiPath,
             {
-                venue_id: this.props.venueID,
+                venue_id: wnt.venueID,
                 queries: {
 
                     visits_total: { specs: { type: 'visits' }, periods: wnt.yesterday },
@@ -290,7 +290,7 @@ var VisitsBlocksSet = React.createClass({
 });
 
 React.render(
-    <VisitsBlocksSet source="/api/v1/stats/query" venueID="1588" />,   // TEMP STATIC VENUE ID
+    <VisitsBlocksSet />,   // TEMP STATIC VENUE ID
     document.getElementById('visits-blocks-widget')
 );
 

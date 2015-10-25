@@ -41,9 +41,9 @@ var MembersBlocksSet = React.createClass({
     },
     componentDidMount: function() {
         $.post(
-            this.props.source,
+            wnt.apiPath,
             {
-                venue_id: this.props.venueID,
+                venue_id: wnt.venueID,
                 queries: {
 
                     // Member Conversion = (Memberships Sold / Total Visitors) * 100
@@ -293,7 +293,7 @@ var MembersBlocksSet = React.createClass({
 });
 
 React.render(
-    <MembersBlocksSet source="/api/v1/stats/query" venueID="1588" />,   // TEMP STATIC VENUE ID
+    <MembersBlocksSet />,   // TEMP STATIC VENUE ID
     document.getElementById('members-blocks-widget')
 );
 

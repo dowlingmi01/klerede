@@ -90,7 +90,7 @@ var WeatherBar = React.createClass({   // Weather API
         $.get('http://api.openweathermap.org/data/2.5/weather', {
             APPID: '86376bb7c673c089067f51ae70a6e79e',
             units: 'imperial',
-            zip: '84020,us'   // TO DO: PULL ZIP FROM VENDOR ADDRESS (hard-coded Living Planet zip)
+            zip: wnt.venueZip
         })
         .done(function(result) {
             wnt.weather = result;
@@ -162,9 +162,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // Members / Non-members ... Members buy memberships, but not admission
         // up/down, % change, $$$ (total current period), $$$ (total last period)
         $.post(
-            this.props.source,
+            wnt.apiPath,
             {
-                venue_id: this.props.venueID,
+                venue_id: wnt.venueID,
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
                         periods: { from: this.state.monthStart, to: this.state.monthEnd } },
@@ -241,7 +241,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     groupsThen: result.groups[0].amount,
                     groupsChange: this.calcChange(result.groups[1].amount, result.groups[0].amount),
 
-                    cafeNow: result.cafe[1].amount,   //this.periodTotal(PASS DATA???)
+                    cafeNow: result.cafe[1].amount,
                     cafeThen: result.cafe[0].amount,
                     cafeChange: this.calcChange(result.cafe[1].amount, result.cafe[0].amount),
 
@@ -266,6 +266,34 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     }
                 });
                 this.formatNumbers;
+
+
+
+                wnt.gettingData = $.Deferred();
+                wnt.getData('boxofficeNerd', 'sales', 'gate', '2015-08-01', '2015-8-3');
+                $.when(wnt.gettingData).done(function(data) {
+                    console.log(data);
+                    console.log(data[0].amount);
+                    self.setState({
+                        graphCap: 100000,
+                    });
+                });
+
+                /*
+                var d1 = $.Deferred();
+                var d2 = $.Deferred();
+                 
+                $.when( d1, d2 ).done(function ( v1, v2 ) {
+                    console.log( v1 ); // "Fish"
+                    console.log( v2 ); // "Pizza"
+                });
+                 
+                d1.resolve( "Fish" );
+                d2.resolve( "Pizza" );
+                */
+
+
+
             }
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
@@ -297,9 +325,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         change = Math.round(100*change)/100;   // Round to hundredths
         change = [change, direction]
         return change;
-    },
-    periodTotal: function(start){
-        console.log(start);
     },
     componentDidUpdate: function(){
         var self = this;
@@ -394,9 +419,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // july 5 = 5/31 = 16.13% for slider value
         var barDates = wnt.getMonth(weekStart);
         $.post(
-            this.props.source,
+            wnt.apiPath,
             {
-                venue_id: this.props.venueID,
+                venue_id: wnt.venueID,
                 queries: {
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } },
@@ -868,7 +893,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 });
 
 React.render(
-    <Revenue source="/api/v1/stats/query" venueID="1588" />,   // TEMP STATIC VENUE ID
+    <Revenue />,
     document.getElementById('revenue-row-widget')
 );
 

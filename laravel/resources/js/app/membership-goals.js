@@ -89,9 +89,9 @@ var MembershipGoals = React.createClass({
     },
     componentDidMount: function() {
         $.post(
-            this.props.source,
+            wnt.apiPath,
             {
-                venue_id: this.props.venueID,
+                venue_id: wnt.venueID,
                 queries: {
                     memberships_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     memberships_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
@@ -496,7 +496,7 @@ var MembershipGoals = React.createClass({
 });
 
 React.render(
-    <MembershipGoals source="/api/v1/stats/query" venueID="1588" />,   // TEMP STATIC VENUE ID
+    <MembershipGoals />,   // TEMP STATIC VENUE ID
     document.getElementById('membership-goals-widget')
 );
 

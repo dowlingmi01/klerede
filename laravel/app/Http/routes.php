@@ -49,6 +49,11 @@ Route::get('dashboard', function()
     return View::make('dashboard');
 });
 
+Route::get('settings', function()
+{
+    return View::make('settings');
+});
+
 Route::get('goals', function()
 {
     return View::make('goals');

@@ -93,9 +93,9 @@ var SalesGoals = React.createClass({
     },
     componentDidMount: function() {
         $.post(
-            this.props.source,
+            wnt.apiPath,
             {
-                venue_id: this.props.venueID,
+                venue_id: wnt.venueID,
                 queries: {
                     sales_year: { specs: { type: 'sales' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     sales_quarter: { specs: { type: 'sales' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
@@ -578,7 +578,7 @@ var SalesGoals = React.createClass({
 });
 
 React.render(
-    <SalesGoals source="/api/v1/stats/query" venueID="1588" />,   // TEMP STATIC VENUE ID
+    <SalesGoals />,   // TEMP STATIC VENUE ID
     document.getElementById('sales-goals-widget')
 );
 

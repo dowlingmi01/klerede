@@ -21,6 +21,7 @@ var wnt = {
     },
     getMonth: function(dateStr) {
         var dateObj = new Date(dateStr);
+        console.log(dateObj);   //  Returns 8/31 for wnt.today which is 2015-9-1 ... seems to choke on zeros
         var thisMonth = dateObj.getMonth()+1;
         var days = wnt.daysInMonth(thisMonth, dateObj.getFullYear());
         thisMonth = wnt.doubleDigits(thisMonth);
@@ -67,6 +68,35 @@ var wnt = {
             }
         }
         return selectedMonths;
+    },
+    getData: function(query, type, channel, from, to){
+        $.post(
+            wnt.apiPath,
+            {
+                venue_id: wnt.venueID,
+                queries: {
+                    query: { 
+                        specs: { 
+                            type: type, 
+                            channel: channel 
+                        }, 
+                        periods: { 
+                            from: from, 
+                            to: to
+                        } 
+                    }
+                }
+            }
+        )
+        .done(function(result) {
+            console.log(query + ' data loaded...');
+            wnt[query] = result.query;
+            wnt.gettingData.resolve(result.query);
+        }.bind(this))   // .bind() gives context to 'this'
+        .fail(function(result) {
+            console.log(query + ' DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+        });
     }
 };
 
@@ -110,10 +140,20 @@ wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
 wnt.yearStart = wnt.thisYear+'-01-01';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-01';
-wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-01';
+wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-01';   // DON'T NEED DOUBLE DIGITS?!
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
 wnt.weekago = wnt.formatDate(wnt.weekago);
+
+/**********************************/
+/******** GLOBAL VARIABLES ********/
+/**********************************/
+wnt.apiPath = '/api/v1/stats/query';
+/************************************************************************************************************/
+wnt.venueID = '1588';   // TEMPORARY OVERRIDE
+wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
+/************************************************************************************************************/
+wnt.gettingData;
 
 /*********************************************/
 /******** GLOBAL DOM-READY PROCESSING ********/
