@@ -140,7 +140,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             monthStart: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1',
             monthEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
 
-            barDates: wnt.getMonth(wnt.yesterday),
+            barDates: wnt.getMonth(wnt.yesterday),   // This is why 9/1 is returning 8/31
             days: wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
 
             boxofficeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -270,13 +270,13 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
 
                 wnt.gettingData = $.Deferred();
-                wnt.getData('boxofficeNerd', 'sales', 'gate', '2015-08-01', '2015-8-3');
+                wnt.getData('boxofficeTEST', 'sales', 'gate', '2015-08-01', '2015-8-3');
                 $.when(wnt.gettingData).done(function(data) {
                     console.log(data);
                     console.log(data[0].amount);
-                    self.setState({
+                    /*self.setState({
                         graphCap: 100000,
-                    });
+                    });*/
                 });
 
                 /*

@@ -196,20 +196,37 @@ var VisitsBlocksSet = React.createClass({
             var newstat = $(statblock).find('.stat');
             var oldstat = $(statblock).find('.compare-to');
             var change = $(statblock).find('svg');
-            if( ($(newstat).html() !== '-') && ($(oldstat).html() !== '-') ){
-                if($(newstat).parseNumber({format:"$#,###", locale:"us"}) > $(oldstat).parseNumber({format:"$#,###", locale:"us"})){
-                    $(change).attr('class','up');
-                } else {
-                    $(change).attr('class','down');
-                }
-                if(index === 5){
+
+            // Prevent number formatting from turning '-' into 'NaN' and thus '0' upon parsing
+            var newstatNum, oldstatNum;
+            if($(newstat).text() !== '-'){ newstatNum = $(newstat).parseNumber({format:"$#,###", locale:"us"}); };
+            if($(oldstat).text() !== '-'){ oldstatNum = $(oldstat).parseNumber({format:"$#,###", locale:"us"}); };
+
+            if(newstatNum > oldstatNum){
+                $(change).attr('class','up');
+            } else {
+                $(change).attr('class','down');
+            }
+
+            if(index === 5){
+                if($(newstat).text() !== '-'){
                     $(newstat).formatNumber({format:"$#,###", locale:"us"});
+                }
+                if($(oldstat).text() !== '-'){
                     $(oldstat).formatNumber({format:"$#,###", locale:"us"});
-                } else {
+                }
+            } else {
+                if($(newstat).text() !== '-'){
                     $(newstat).formatNumber({format:"#,###", locale:"us"});
+                }
+                if($(oldstat).text() !== '-'){
                     $(oldstat).formatNumber({format:"#,###", locale:"us"});
                 }
             }
+
+            // New methos for handling '-' values so rounding isn't skipped and value doesn't disappear
+            if($(newstat).text() === ''){ $(newstat).text('-'); };
+            if($(oldstat).text() === ''){ $(oldstat).text('-'); };
         });
     },
     componentDidUpdate: function(){

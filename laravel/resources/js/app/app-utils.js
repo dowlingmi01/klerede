@@ -3,10 +3,12 @@
 /********************************/
 
 var wnt = {
-    formatDate: function(dateObj) {
+    formatDate: function(dateObj, digits) {   // Pass in 'double' as second paramter for yyyy-mm-dd, default is yyyy-m-d
         var mm = dateObj.getMonth()+1,
             dd = dateObj.getDate(),
-            formattedDate = dateObj.getFullYear()+'-'+wnt.doubleDigits(mm)+'-'+wnt.doubleDigits(dd);
+            formattedDate = digits === 'double' ? 
+                dateObj.getFullYear()+'-'+wnt.doubleDigits(mm)+'-'+wnt.doubleDigits(dd) : 
+                dateObj.getFullYear()+'-'+mm+'-'+dd;
         return formattedDate;
     },
     getWeek: function(dateStr) {
@@ -21,7 +23,6 @@ var wnt = {
     },
     getMonth: function(dateStr) {
         var dateObj = new Date(dateStr);
-        console.log(dateObj);   //  Returns 8/31 for wnt.today which is 2015-9-1 ... seems to choke on zeros
         var thisMonth = dateObj.getMonth()+1;
         var days = wnt.daysInMonth(thisMonth, dateObj.getFullYear());
         thisMonth = wnt.doubleDigits(thisMonth);
@@ -138,9 +139,9 @@ wnt.today = wnt.formatDate(wnt.today);
 wnt.yesterday = wnt.formatDate(wnt.yesterday);
 wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
-wnt.yearStart = wnt.thisYear+'-01-01';
-wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-01';
-wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-01';   // DON'T NEED DOUBLE DIGITS?!
+wnt.yearStart = wnt.thisYear+'-1-1';
+wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
+wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';   // DON'T NEED DOUBLE DIGITS?!
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
 wnt.weekago = wnt.formatDate(wnt.weekago);
