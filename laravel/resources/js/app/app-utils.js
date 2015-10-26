@@ -32,6 +32,19 @@ var wnt = {
         }
         return month;
     },
+    getDateRange: function(dateStr, period) {
+        // period = last week
+        var dateRange = [];
+        var startDate = new Date(dateStr);
+        var endDate = new Date(dateStr);
+        if(period === 'last week'){
+            startDate.setDate(startDate.getDate() - 7);
+            dateRange.push(wnt.formatDate(startDate));
+            endDate.setDate(endDate.getDate() - 1);
+            dateRange.push(wnt.formatDate(endDate));
+            return dateRange;
+        };
+    },
     doubleDigits: function(num) {
         num = num < 10 ? '0'+num : num;
         return num;
@@ -141,10 +154,12 @@ wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
 wnt.yearStart = wnt.thisYear+'-1-1';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
-wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';   // DON'T NEED DOUBLE DIGITS?!
+wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';
+wnt.datePickerStart = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
 wnt.weekago = wnt.formatDate(wnt.weekago);
+wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
 
 /**********************************/
 /******** GLOBAL VARIABLES ********/

@@ -137,11 +137,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
             value: 'TEST',
             month: wnt.thisMonthNum+1,
-            monthStart: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1',
+            monthStart: wnt.monthStart,
             monthEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
+            periodStart: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1',
+            periodEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-7',
+            priorPeriodStart: wnt.getDateRange(wnt.monthStart, 'last week')[0],   // default is last month's last week
+            priorPeriodEnd: wnt.getDateRange(wnt.monthStart, 'last week')[1],   // default is last day of previous month
 
-            barDates: wnt.getMonth(wnt.yesterday),   // This is why 9/1 is returning 8/31
-            days: wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
+            barDates: wnt.getMonth(wnt.today),   // wnt.yesterday was returning 8/31 and therefore 8/1 - 8/31
+            days: wnt.selectedMonthDays,
 
             boxofficeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             cafeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -166,32 +170,54 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             {
                 venue_id: wnt.venueID,
                 queries: {
-                    boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
+                    box_bars: { specs: { type: 'sales', channel: 'gate' },
                         periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-                    boxoffice_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-                    boxoffice_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    box_sum: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: this.state.periodStart, to: this.state.periodEnd, kind: 'sum' } },
+                    box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: this.state.priorPeriodStart, to: this.state.priorPeriodEnd, kind: 'sum' } },
+                    box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                        periods: { from: this.state.periodStart, to: this.state.periodEnd, kind: 'sum' } },
+                    box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                        periods: { from: this.state.priorPeriodStart, to: this.state.priorPeriodEnd, kind: 'sum' } },
+                    box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                        periods: { from: this.state.periodStart, to: this.state.periodEnd, kind: 'sum' } },
+                    box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                        periods: { from: this.state.priorPeriodStart, to: this.state.priorPeriodEnd, kind: 'sum' } },
 
-                    groups: { specs: { type: 'sales', kinds: ['group'] }, 
+                    cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: this.state.periodStart, to: this.state.periodEnd, kind: 'sum' } },
+                    cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: this.state.priorPeriodStart, to: this.state.priorPeriodEnd, kind: 'sum' } },
+                    cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    
+                    gift_bars: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    gift_sum: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: this.state.periodStart, to: this.state.periodEnd, kind: 'sum' } },
+                    gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: this.state.priorPeriodStart, to: this.state.priorPeriodEnd, kind: 'sum' } },
+                    gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    
+                    mem_bars: { specs: { type: 'sales', channel: 'membership' },
+                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: this.state.periodStart, to: this.state.periodEnd, kind: 'sum' } },
+                    mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: this.state.priorPeriodStart, to: this.state.priorPeriodEnd, kind: 'sum' } },
 
-                    cafe: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-                    cafe_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-                    cafe_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-
-                    giftstore: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-                    giftstore_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-                    giftstore_nonmembers: { specs: { type: 'sales', channel: 'store', members: false }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
-
-                    membership: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: this.state.monthStart, to: this.state.monthEnd } },
+                    groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
+                        periods: { from: this.state.periodStart, to: this.state.periodEnd, kind: 'sum' } },
+                    groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
+                        periods: { from: this.state.priorPeriodStart, to: this.state.priorPeriodEnd, kind: 'sum' } },
 
                     visitors: { specs: { type: 'visits' },
                         periods: { from: this.state.monthStart, to: this.state.monthEnd } }
@@ -204,19 +230,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             if(this.isMounted()) {
                 // LOOP THROUGH DATA TO CREATE ARRAYS
                 var self = this;
-                var boxoffice = this.dataArray(result.boxoffice, 'amount', this.state.days);
+                var boxoffice = this.dataArray(result.box_bars, 'amount', this.state.days);
                 $.each(boxoffice, function(index, item){
                         boxoffice[index] = self.calcBarHeight(item);
                 });
-                var cafe = this.dataArray(result.cafe, 'amount', this.state.days);
+                var cafe = this.dataArray(result.cafe_bars, 'amount', this.state.days);
                 $.each(cafe, function(index, item){
                         cafe[index] = self.calcBarHeight(item);
                 });
-                var giftstore = this.dataArray(result.giftstore, 'amount', this.state.days);
+                var giftstore = this.dataArray(result.gift_bars, 'amount', this.state.days);
                 $.each(giftstore, function(index, item){
                         giftstore[index] = self.calcBarHeight(item);
                 });
-                var membership = this.dataArray(result.membership, 'amount', this.state.days);
+                var membership = this.dataArray(result.mem_bars, 'amount', this.state.days);
                 $.each(membership, function(index, item){
                         membership[index] = self.calcBarHeight(item);
                 });
@@ -227,31 +253,31 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     giftstoreHeight: giftstore,
                     membershipHeight: membership,
                     // NEW FOR ACCORDION ...
-                    boxofficeNow: result.boxoffice[1].amount,
-                    boxofficeThen: result.boxoffice[0].amount,
-                    boxofficeChange: this.calcChange(result.boxoffice[1].amount, result.boxoffice[0].amount),
-                    boxofficeNowON: result.boxoffice_online[1].amount,
-                    boxofficeThenON: result.boxoffice_online[0].amount,
-                    boxofficeChangeON: this.calcChange(result.boxoffice_online[1].amount, result.boxoffice_online[0].amount),
-                    boxofficeNowOFF: result.boxoffice_offline[1].amount,
-                    boxofficeThenOFF: result.boxoffice_offline[0].amount,
-                    boxofficeChangeOFF: this.calcChange(result.boxoffice_offline[1].amount, result.boxoffice_offline[0].amount),
+                    boxofficeNow: result.box_sum.amount,
+                    boxofficeThen: result.box_sum_prior.amount,
+                    boxofficeChange: this.calcChange(result.box_sum.amount, result.box_sum_prior.amount),
+                    boxofficeNowON: result.box_sum_online.amount,
+                    boxofficeThenON: result.box_sum_online_prior.amount,
+                    boxofficeChangeON: this.calcChange(result.box_sum_online.amount, result.box_sum_online_prior.amount),
+                    boxofficeNowOFF: result.box_sum_offline.amount,
+                    boxofficeThenOFF: result.box_sum_offline_prior.amount,
+                    boxofficeChangeOFF: this.calcChange(result.box_sum_offline.amount, result.box_sum_offline_prior.amount),
 
-                    groupsNow: result.groups[1].amount,
-                    groupsThen: result.groups[0].amount,
-                    groupsChange: this.calcChange(result.groups[1].amount, result.groups[0].amount),
+                    groupsNow: result.groups_sum.amount,
+                    groupsThen: result.groups_sum_prior.amount,
+                    groupsChange: this.calcChange(result.groups_sum.amount, result.groups_sum_prior.amount),
 
-                    cafeNow: result.cafe[1].amount,
-                    cafeThen: result.cafe[0].amount,
-                    cafeChange: this.calcChange(result.cafe[1].amount, result.cafe[0].amount),
+                    cafeNow: result.cafe_sum.amount,
+                    cafeThen: result.cafe_sum_prior.amount,
+                    cafeChange: this.calcChange(result.cafe_sum.amount, result.cafe_sum_prior.amount),
 
-                    giftstoreNow: result.giftstore[1].amount,
-                    giftstoreThen: result.giftstore[0].amount,
-                    giftstoreChange: this.calcChange(result.giftstore[1].amount, result.giftstore[0].amount),
+                    giftstoreNow: result.gift_sum.amount,
+                    giftstoreThen: result.gift_sum_prior.amount,
+                    giftstoreChange: this.calcChange(result.gift_sum.amount, result.gift_sum_prior.amount),
 
-                    membershipNow: result.membership[1].amount,
-                    membershipThen: result.membership[0].amount,
-                    membershipChange: this.calcChange(result.membership[1].amount, result.membership[0].amount)
+                    membershipNow: result.mem_sum.amount,
+                    membershipThen: result.mem_sum_prior.amount,
+                    membershipChange: this.calcChange(result.mem_sum.amount, result.mem_sum_prior.amount)
                 });
                 // Set null data to '-'
                 var self = this;
@@ -268,6 +294,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 this.formatNumbers;
 
 
+                // Set default for datepicker
+                $('#revenue #datepicker').val(wnt.datePickerStart);
 
                 wnt.gettingData = $.Deferred();
                 wnt.getData('boxofficeTEST', 'sales', 'gate', '2015-08-01', '2015-8-3');
@@ -399,17 +427,20 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         var weekStart = new Date(event.target.value);
         var selectedMonth = weekStart.getMonth()+1;
         var selectedYear = weekStart.getFullYear();
-        var selectedMonthDays = wnt.daysInMonth(selectedMonth, selectedYear);
+        wnt.selectedMonthDays = wnt.daysInMonth(selectedMonth, selectedYear);
         var selectedMonthStart = selectedYear+'-'+selectedMonth+'-1';   // yyyy-m-d
-        var selectedMonthEnd = selectedYear+'-'+selectedMonth+'-'+selectedMonthDays;   // yyyy-m-d
+        var selectedMonthEnd = selectedYear+'-'+selectedMonth+'-'+wnt.selectedMonthDays;   // yyyy-m-d
         var selectedDay = weekStart.getDate();
 
-        $("#bar-graph-slider").slider('value', (selectedDay / selectedMonthDays) * 100);
+        $("#bar-graph-slider").slider('value', (selectedDay / wnt.selectedMonthDays) * 100);
 
         weekStart = wnt.formatDate(weekStart);
         var weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 7);
+        weekEnd.setDate(weekEnd.getDate() + 6);
         weekEnd = wnt.formatDate(weekEnd);
+        var priorWeekRange = wnt.getDateRange(weekStart, 'last week');
+        var priorWeekStart = priorWeekRange[0];
+        var priorWeekEnd = priorWeekRange[1];
         // SET DATES FOR BAR TAGS
         var barDatesWeekEnd = new Date(weekStart);
         barDatesWeekEnd.setDate(barDatesWeekEnd.getDate() + 8);
@@ -423,32 +454,54 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             {
                 venue_id: wnt.venueID,
                 queries: {
-                    boxoffice: { specs: { type: 'sales', channel: 'gate' }, 
+                    box_bars: { specs: { type: 'sales', channel: 'gate' },
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    boxoffice_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    boxoffice_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    box_sum: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                    box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
+                    box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                    box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
+                    box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                    box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
 
-                    groups: { specs: { type: 'sales', kinds: ['group'] }, 
+                    cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                    cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
+                    cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    
+                    gift_bars: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    gift_sum: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                    gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
+                    gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    
+                    mem_bars: { specs: { type: 'sales', channel: 'membership' },
+                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                    mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
 
-                    cafe: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    cafe_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    cafe_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-
-                    giftstore: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    giftstore_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    giftstore_nonmembers: { specs: { type: 'sales', channel: 'store', members: false }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-
-                    membership: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
+                    groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
+                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                    groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
+                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
 
                     visitors: { specs: { type: 'visits' },
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } }
@@ -461,59 +514,56 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             if(this.isMounted()) {
                 // LOOP THROUGH DATA TO CREATE ARRAYS
                 var self = this;
-                var boxoffice = this.dataArray(result.boxoffice, 'amount', selectedMonthDays);
+                var boxoffice = this.dataArray(result.box_bars, 'amount', wnt.selectedMonthDays);
                 $.each(boxoffice, function(index, item){
                         boxoffice[index] = self.calcBarHeight(item);
                 });
-                var cafe = this.dataArray(result.cafe, 'amount', selectedMonthDays);
+                var cafe = this.dataArray(result.cafe_bars, 'amount', wnt.selectedMonthDays);
                 $.each(cafe, function(index, item){
                         cafe[index] = self.calcBarHeight(item);
                 });
-                var giftstore = this.dataArray(result.giftstore, 'amount', selectedMonthDays);
+                var giftstore = this.dataArray(result.gift_bars, 'amount', wnt.selectedMonthDays);
                 $.each(giftstore, function(index, item){
                         giftstore[index] = self.calcBarHeight(item);
                 });
-                var membership = this.dataArray(result.membership, 'amount', selectedMonthDays);
+                var membership = this.dataArray(result.mem_bars, 'amount', wnt.selectedMonthDays);
                 $.each(membership, function(index, item){
                         membership[index] = self.calcBarHeight(item);
                 });
                 // SET STATE TO ARRAYS FOR RENDERING
                 this.setState({
+                    days: wnt.selectedMonthDays,
                     barDates: barDates,
                     boxofficeHeight: boxoffice,
                     cafeHeight: cafe,
                     giftstoreHeight: giftstore,
                     membershipHeight: membership,
-                    // CURRENT DEV FOCUS 10/21/2015
-                    // NEW TEST FOR SLIDER CHANGE...
-                    // Position in array is zero-based, so use date-1
-                    // "Day Before" is now 7 days prior, but -8 doesn't work when it's < 8 into month, so selecting "0" for now ...
-                    // NEED TO RUN A CHECK AGAINST PERIOD (yyyy-mm-dd)!!!  sometimes days are skipped
-                    boxofficeNow: result.boxoffice[selectedDay-1].amount,
-                    boxofficeThen: result.boxoffice[0].amount,
-                    boxofficeChange: this.calcChange(result.boxoffice[selectedDay-1].amount, result.boxoffice[0].amount),
-                    boxofficeNowON: result.boxoffice_online[selectedDay-1].amount,
-                    boxofficeThenON: result.boxoffice_online[0].amount,
-                    boxofficeChangeON: this.calcChange(result.boxoffice_online[selectedDay-1].amount, result.boxoffice_online[0].amount),
-                    boxofficeNowOFF: result.boxoffice_offline[selectedDay-1].amount,
-                    boxofficeThenOFF: result.boxoffice_offline[0].amount,
-                    boxofficeChangeOFF: this.calcChange(result.boxoffice_offline[selectedDay-1].amount, result.boxoffice_offline[0].amount),
+                    // NEW FOR ACCORDION ...
+                    boxofficeNow: result.box_sum.amount,
+                    boxofficeThen: result.box_sum_prior.amount,
+                    boxofficeChange: this.calcChange(result.box_sum.amount, result.box_sum_prior.amount),
+                    boxofficeNowON: result.box_sum_online.amount,
+                    boxofficeThenON: result.box_sum_online_prior.amount,
+                    boxofficeChangeON: this.calcChange(result.box_sum_online.amount, result.box_sum_online_prior.amount),
+                    boxofficeNowOFF: result.box_sum_offline.amount,
+                    boxofficeThenOFF: result.box_sum_offline_prior.amount,
+                    boxofficeChangeOFF: this.calcChange(result.box_sum_offline.amount, result.box_sum_offline_prior.amount),
 
-                    groupsNow: result.groups[selectedDay-1].amount,
-                    groupsThen: result.groups[0].amount,
-                    groupsChange: this.calcChange(result.groups[selectedDay-1].amount, result.groups[0].amount),
+                    groupsNow: result.groups_sum.amount,
+                    groupsThen: result.groups_sum_prior.amount,
+                    groupsChange: this.calcChange(result.groups_sum.amount, result.groups_sum_prior.amount),
 
-                    cafeNow: result.cafe[selectedDay-1].amount,
-                    cafeThen: result.cafe[0].amount,
-                    cafeChange: this.calcChange(result.cafe[selectedDay-1].amount, result.cafe[0].amount),
+                    cafeNow: result.cafe_sum.amount,
+                    cafeThen: result.cafe_sum_prior.amount,
+                    cafeChange: this.calcChange(result.cafe_sum.amount, result.cafe_sum_prior.amount),
 
-                    giftstoreNow: result.giftstore[selectedDay-1].amount,
-                    giftstoreThen: result.giftstore[0].amount,
-                    giftstoreChange: this.calcChange(result.giftstore[selectedDay-1].amount, result.giftstore[0].amount),
+                    giftstoreNow: result.gift_sum.amount,
+                    giftstoreThen: result.gift_sum_prior.amount,
+                    giftstoreChange: this.calcChange(result.gift_sum.amount, result.gift_sum_prior.amount),
 
-                    membershipNow: result.membership[selectedDay-1].amount,
-                    membershipThen: result.membership[0].amount,
-                    membershipChange: this.calcChange(result.membership[selectedDay-1].amount, result.membership[0].amount)
+                    membershipNow: result.mem_sum.amount,
+                    membershipThen: result.mem_sum_prior.amount,
+                    membershipChange: this.calcChange(result.mem_sum.amount, result.mem_sum_prior.amount)
                 });
 
                 // Set null data to '-'
@@ -545,7 +595,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             });
         */
         var greatest = [];
-        $.each(wnt.revenue.boxoffice, function(index, value){
+        $.each(wnt.revenue.box_bars, function(index, value){
             greatest.push(value.amount);
         });
         greatest = Math.max.apply(null, greatest);
@@ -559,19 +609,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $('.y-marker').eq(1).attr('data-content','60');
             $('.y-marker').eq(2).attr('data-content','40');
             $('.y-marker').eq(3).attr('data-content','20');
-            var boxoffice = this.dataArray(wnt.revenue.boxoffice, 'amount', this.state.days);
+            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
             $.each(boxoffice, function(index, item){
                     boxoffice[index] = self.calcBarHeight(item);
             });
-            var cafe = this.dataArray(wnt.revenue.cafe, 'amount', this.state.days);
+            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
             $.each(cafe, function(index, item){
                     cafe[index] = self.calcBarHeight(item);
             });
-            var giftstore = this.dataArray(wnt.revenue.giftstore, 'amount', this.state.days);
+            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
             $.each(giftstore, function(index, item){
                     giftstore[index] = self.calcBarHeight(item);
             });
-            var membership = this.dataArray(wnt.revenue.membership, 'amount', this.state.days);
+            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
             $.each(membership, function(index, item){
                     membership[index] = self.calcBarHeight(item);
             });
@@ -585,7 +635,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         } else if(filter === 'members'){
             // TEMPORARILY LOCALIZED since this is the largest area of $$$ for the graph cap
             var greatest = [];
-            $.each(wnt.revenue.membership, function(index, value){
+            $.each(wnt.revenue.mem_bars, function(index, value){
                 greatest.push(value.amount);
             });
             greatest = Math.max.apply(null, greatest);
@@ -595,15 +645,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $('.y-marker').eq(1).attr('data-content','6');
             $('.y-marker').eq(2).attr('data-content','4');
             $('.y-marker').eq(3).attr('data-content','2');
-            var cafe = this.dataArray(wnt.revenue.cafe_members, 'amount', this.state.days);
+            var cafe = this.dataArray(wnt.revenue.cafe_bars_members, 'amount', this.state.days);
             $.each(cafe, function(index, item){
                     cafe[index] = self.calcBarHeight(item);
             });
-            var giftstore = this.dataArray(wnt.revenue.giftstore_members, 'amount', this.state.days);
+            var giftstore = this.dataArray(wnt.revenue.gift_bars_members, 'amount', this.state.days);
             $.each(giftstore, function(index, item){
                     giftstore[index] = self.calcBarHeight(item);
             });
-            var membership = this.dataArray(wnt.revenue.membership, 'amount', this.state.days);
+            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
             $.each(membership, function(index, item){
                     membership[index] = self.calcBarHeight(item);
             });
@@ -622,15 +672,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $('.y-marker').eq(2).attr('data-content','40');
             $('.y-marker').eq(3).attr('data-content','20');
 
-            var boxoffice = this.dataArray(wnt.revenue.boxoffice, 'amount', this.state.days);
+            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
             $.each(boxoffice, function(index, item){
                     boxoffice[index] = self.calcBarHeight(item);
             });
-            var cafe = this.dataArray(wnt.revenue.cafe_nonmembers, 'amount', this.state.days);
+            var cafe = this.dataArray(wnt.revenue.cafe_bars_nonmembers, 'amount', this.state.days);
             $.each(cafe, function(index, item){
                     cafe[index] = self.calcBarHeight(item);
             });
-            var giftstore = this.dataArray(wnt.revenue.giftstore_nonmembers, 'amount', this.state.days);
+            var giftstore = this.dataArray(wnt.revenue.gift_bars_nonmembers, 'amount', this.state.days);
             $.each(giftstore, function(index, item){
                     giftstore[index] = self.calcBarHeight(item);
             });
@@ -648,19 +698,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $('.y-marker').eq(1).attr('data-content','60');
             $('.y-marker').eq(2).attr('data-content','40');
             $('.y-marker').eq(3).attr('data-content','20');
-            var boxoffice = this.dataArray(wnt.revenue.boxoffice, 'amount', this.state.days);
+            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
             $.each(boxoffice, function(index, item){
                     boxoffice[index] = self.calcBarHeight(item);
             });
-            var cafe = this.dataArray(wnt.revenue.cafe, 'amount', this.state.days);
+            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
             $.each(cafe, function(index, item){
                     cafe[index] = self.calcBarHeight(item);
             });
-            var giftstore = this.dataArray(wnt.revenue.giftstore, 'amount', this.state.days);
+            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
             $.each(giftstore, function(index, item){
                     giftstore[index] = self.calcBarHeight(item);
             });
-            var membership = this.dataArray(wnt.revenue.membership, 'amount', this.state.days);
+            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
             $.each(membership, function(index, item){
                     membership[index] = self.calcBarHeight(item);
             });
@@ -686,19 +736,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $('.y-marker').eq(1).attr('data-content','60');
             $('.y-marker').eq(2).attr('data-content','40');
             $('.y-marker').eq(3).attr('data-content','20');
-            var boxoffice = this.dataArray(wnt.revenue.boxoffice, 'amount', this.state.days);
+            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
             $.each(boxoffice, function(index, item){
                     boxoffice[index] = self.calcBarHeight(item);
             });
-            var cafe = this.dataArray(wnt.revenue.cafe, 'amount', this.state.days);
+            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
             $.each(cafe, function(index, item){
                     cafe[index] = self.calcBarHeight(item);
             });
-            var giftstore = this.dataArray(wnt.revenue.giftstore, 'amount', this.state.days);
+            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
             $.each(giftstore, function(index, item){
                     giftstore[index] = self.calcBarHeight(item);
             });
-            var membership = this.dataArray(wnt.revenue.membership, 'amount', this.state.days);
+            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
             $.each(membership, function(index, item){
                     membership[index] = self.calcBarHeight(item);
             });
@@ -717,19 +767,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $('.y-marker').eq(2).attr('data-content','10');
             $('.y-marker').eq(3).attr('data-content','5');
             var visitors = this.dataArray(wnt.revenue.visitors, 'units', this.state.days);
-            var boxoffice = this.dataArray(wnt.revenue.boxoffice, 'amount', this.state.days);
+            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
             $.each(boxoffice, function(index, item){
                     boxoffice[index] = self.calcBarHeight(item / visitors[index]);
             });
-            var cafe = this.dataArray(wnt.revenue.cafe, 'amount', this.state.days);
+            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
             $.each(cafe, function(index, item){
                     cafe[index] = self.calcBarHeight(item / visitors[index]);
             });
-            var giftstore = this.dataArray(wnt.revenue.giftstore, 'amount', this.state.days);
+            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
             $.each(giftstore, function(index, item){
                     giftstore[index] = self.calcBarHeight(item / visitors[index]);
             });
-            var membership = this.dataArray(wnt.revenue.membership, 'amount', this.state.days);
+            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
             $.each(membership, function(index, item){
                     membership[index] = self.calcBarHeight(item / visitors[index]);
             });
