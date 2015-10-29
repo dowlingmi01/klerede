@@ -83,6 +83,7 @@ header {
             left: 22px;
             top: 50%;
             transform: translateY(-50%);
+            width: 111px;
             @media (max-width: 991px) {
                 width: 11vw;
             }
@@ -446,7 +447,8 @@ header {
     }
 }
 #earned-revenue {
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 .arrow-connector-right:after {
     border: solid transparent;
