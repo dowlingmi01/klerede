@@ -884,9 +884,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         <WeatherBar />
                         <h2>Earned Revenue</h2>
                         <ul id="revenue-accordion">
-                            <li className="notes">
-                                <NoteIcon className="note" /> Notes <Caret className="accordion-caret" />
-                            </li>
                             <AccordionItemPlus 
                                 className="box-office"
                                 label="Box Office Total"
