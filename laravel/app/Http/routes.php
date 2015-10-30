@@ -42,6 +42,14 @@ Route::group(['prefix'=>'api/v1'], function() {
 		$result = \App\WeatherDaily::queryD($input);
 		return Response::json($result);
 	});
+	Route::get('goals/sales/{venue_id}/{year}', function($venue_id, $year) {
+		return Response::json(\App\GoalsSales::get($venue_id, $year));
+	});
+	Route::put('goals/sales/{venue_id}/{year}/{channel}/{type}/{sub_channel?}',
+		function($venue_id, $year, $channel, $type, $sub_channel = null) {
+		$months = Request::input('months');
+		return Response::json(\App\GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
+	});
 });
 
 Route::get('dashboard', function()
