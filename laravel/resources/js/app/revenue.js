@@ -5,7 +5,17 @@
 var BarSet = React.createClass({
     render: function() {
         return (
-            <div className="bar-set">
+            <div className="bar-set" 
+                data-toggle="popover" 
+                data-html="true" 
+                data-content="
+                    [Weather]
+                    <div className='legend-check-circle'></div> Box Office <br>
+                    Cafe <br> 
+                    Gift Store <br> 
+                    Members" 
+                data-placement="top"
+                data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
                 <div className="bar-section bar-section-cafe"></div>
                 <div className="bar-section bar-section-giftstore"></div>
@@ -407,6 +417,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
         // NEW!!! ... 1
         this.formatNumbers();
+        $('.bar-set').popover();
     },
     formatNumbers: function(){
         // NEW!!! ... 2
