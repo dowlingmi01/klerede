@@ -4,16 +4,11 @@
 
 var BarSet = React.createClass({
     render: function() {
-        return (
+        return (  // TO DO: MAKE POPOVER DATA INTO TABLES ... {"goalStatusText " + this.state.statusClass}
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content="
-                    [Weather]
-                    <div className='legend-check-circle'></div> Box Office <br>
-                    Cafe <br> 
-                    Gift Store <br> 
-                    Members" 
+                data-content={this.props.date+"<br>[Weather]<div class='legend-circle-bo'></div> Box Office <br><div class='legend-circle-c'></div> Cafe <br> <div class='legend-circle-gs'></div> Gift Store <br> <div class='legend-circle-m'></div> Members"} 
                 data-placement="top"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
