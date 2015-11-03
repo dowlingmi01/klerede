@@ -8,8 +8,8 @@ var BarSet = React.createClass({
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={this.props.date+"<br>[Weather]<div class='legend-circle-bo'></div> Box Office <br><div class='legend-circle-c'></div> Cafe <br> <div class='legend-circle-gs'></div> Gift Store <br> <div class='legend-circle-m'></div> Members"} 
-                data-placement="top"
+                data-content={"<img src='/img/04n.svg' class='popover-weather-icon'><div class='popover-temp'>"+this.props.temp+"&deg; F</div><div class='popover-weather-text'>Scattered Showers</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>$12,000</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>$13,000</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>$14,000</td></tr><tr><td><div class='legend-circle-bo'></div></td><td>Members</td><td>$15,000</td></tr></table>"} 
+                data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
                 <div className="bar-section bar-section-cafe"></div>
@@ -799,11 +799,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
         event.target.blur();
     },
+    getTemp: function(){
+        return '35'
+    },
     render: function(){
         // LOOP FOR BAR SETS
         var bars = [];
         for (var i = 0; i < this.state.days; i++) {
-            bars.push(<BarSet date={this.state.barDates[i]} key={i} />);
+            bars.push(<BarSet date={this.state.barDates[i]} key={i} temp={this.getTemp()} />);
         }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
         return (
