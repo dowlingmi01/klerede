@@ -8,7 +8,7 @@ var BarSet = React.createClass({
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<img src='/img/04n.svg' class='popover-weather-icon'><div class='popover-temp'>"+this.props.temp+"&deg; F</div><div class='popover-weather-text'>Scattered Showers</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-bo'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
+                data-content={"<img src='/img/04n.svg' class='popover-weather-icon'><div class='popover-temp'>"+this.props.temp+"&deg; F</div><div class='popover-weather-text'>Scattered Showers</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
                 data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
@@ -415,7 +415,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $('.bar-set').popover();
     },
     formatNumbers: function(){
-        // NEW!!! ... 2
         $.each($('#revenue-accordion .accordion-stat'), function(index, item){
             if($(this).html() !== '-'){
                 $(this).parseNumber({format:"$#,###", locale:"us"});
@@ -428,6 +427,12 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 $(this).formatNumber({format:"$#,###", locale:"us"});
             }
         });
+    },
+    formatSingleNumber: function(number){
+        number = number.toString();
+        number = $.parseNumber(number, {format:"$#,###", locale:"us"});
+        number = $.formatNumber(number, {format:"$#,###", locale:"us"});
+        return number;
     },
     weekChange: function(event) {
         var weekStart = new Date(event.target.value);
@@ -808,16 +813,16 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 mem = 0;
             if(wnt.revenue !== undefined){
                 if(wnt.revenue.box_bars[i] !== undefined){
-                    box = wnt.revenue.box_bars[i].amount;
+                    box = this.formatSingleNumber(wnt.revenue.box_bars[i].amount);
                 };
                 if(wnt.revenue.cafe_bars[i] !== undefined){
-                    cafe = wnt.revenue.cafe_bars[i].amount;
+                    cafe = this.formatSingleNumber(wnt.revenue.cafe_bars[i].amount);
                 };
                 if(wnt.revenue.gift_bars[i] !== undefined){
-                    gift = wnt.revenue.gift_bars[i].amount;
+                    gift = this.formatSingleNumber(wnt.revenue.gift_bars[i].amount);
                 };
                 if(wnt.revenue.mem_bars[i] !== undefined){
-                    mem = wnt.revenue.mem_bars[i].amount;
+                    mem = this.formatSingleNumber(wnt.revenue.mem_bars[i].amount);
                 };
             };
             bars.push(<BarSet date={this.state.barDates[i]} key={i} temp={this.getTemp()} box={box} cafe={cafe} gift={gift} mem={mem} />);
