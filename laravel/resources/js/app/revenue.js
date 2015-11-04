@@ -8,7 +8,7 @@ var BarSet = React.createClass({
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<img src='/img/04n.svg' class='popover-weather-icon'><div class='popover-temp'>"+this.props.temp+"&deg; F</div><div class='popover-weather-text'>Scattered Showers</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>$12,000</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>$13,000</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>$14,000</td></tr><tr><td><div class='legend-circle-bo'></div></td><td>Members</td><td>$15,000</td></tr></table>"} 
+                data-content={"<img src='/img/04n.svg' class='popover-weather-icon'><div class='popover-temp'>"+this.props.temp+"&deg; F</div><div class='popover-weather-text'>Scattered Showers</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-bo'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
                 data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
@@ -605,9 +605,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             greatest.push(value.amount);
         });
         greatest = Math.max.apply(null, greatest);
-        console.log(greatest);
 
-        console.log(filter);
         if(filter === 'totals'){
             wnt.graphCap = 80000;
             $('.bar-graph-label-y').show();
@@ -645,7 +643,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 greatest.push(value.amount);
             });
             greatest = Math.max.apply(null, greatest);
-            console.log(greatest);
             wnt.graphCap = Math.ceil(greatest / 1000) * 1000;
             $('.y-marker').eq(0).attr('data-content','8');
             $('.y-marker').eq(1).attr('data-content','6');
@@ -734,7 +731,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // Per Cap = XYZ Sales / Total Visitors
         var filter = event.target.value;
         var self = this;
-        console.log(filter);
         if(filter === 'dollars'){
             wnt.graphCap = 80000;
             $('.bar-graph-label-y').show();
@@ -806,7 +802,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // LOOP FOR BAR SETS
         var bars = [];
         for (var i = 0; i < this.state.days; i++) {
-            bars.push(<BarSet date={this.state.barDates[i]} key={i} temp={this.getTemp()} />);
+            var box = 0,
+                cafe = 0,
+                gift = 0,
+                mem = 0;
+            if(wnt.revenue !== undefined){
+                if(wnt.revenue.box_bars[i] !== undefined){
+                    box = wnt.revenue.box_bars[i].amount;
+                };
+                if(wnt.revenue.cafe_bars[i] !== undefined){
+                    cafe = wnt.revenue.cafe_bars[i].amount;
+                };
+                if(wnt.revenue.gift_bars[i] !== undefined){
+                    gift = wnt.revenue.gift_bars[i].amount;
+                };
+                if(wnt.revenue.mem_bars[i] !== undefined){
+                    mem = wnt.revenue.mem_bars[i].amount;
+                };
+            };
+            bars.push(<BarSet date={this.state.barDates[i]} key={i} temp={this.getTemp()} box={box} cafe={cafe} gift={gift} mem={mem} />);
         }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
         return (
