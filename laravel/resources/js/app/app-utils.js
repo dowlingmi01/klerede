@@ -85,7 +85,7 @@ var wnt = {
     },
     getData: function(query, type, channel, from, to){
         $.post(
-            wnt.apiPath,
+            wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {
@@ -164,7 +164,8 @@ wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
 /**********************************/
 /******** GLOBAL VARIABLES ********/
 /**********************************/
-wnt.apiPath = '/api/v1/stats/query';
+wnt.apiMain = '/api/v1/stats/query';
+wnt.apiWeather = '/api/v1/weather/query';
 /************************************************************************************************************/
 wnt.venueID = '1588';   // TEMPORARY OVERRIDE
 wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE

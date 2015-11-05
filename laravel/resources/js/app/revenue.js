@@ -171,7 +171,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // Members / Non-members ... Members buy memberships, but not admission
         // up/down, % change, $$$ (total current period), $$$ (total last period)
         $.post(
-            wnt.apiPath,
+            wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {
@@ -412,6 +412,33 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
         // NEW!!! ... 1
         this.formatNumbers();
+
+
+/*
+        $.get('http://api.openweathermap.org/data/2.5/weather', {
+            APPID: '86376bb7c673c089067f51ae70a6e79e',
+            units: 'imperial',
+            zip: wnt.venueZip
+        })
+        .done(function(result) {
+            wnt.weather = result;
+            if(this.isMounted()) {
+                this.setState({
+                    icon: '/img/'+result.weather[0].icon+'.svg',
+                    temp: Math.round(result.main.temp),
+                    description: result.weather[0].description
+                });
+            }
+            console.log('Weather data loaded...');
+        }.bind(this))   // .bind() gives context to 'this'
+        .fail(function(result) {
+            console.log('WEATHER DATA ERROR! ... ' + result.statusText);
+        });
+*/
+
+
+
+
         $('.bar-set').popover();
     },
     formatNumbers: function(){
@@ -461,7 +488,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // july 5 = 5/31 = 16.13% for slider value
         var barDates = wnt.getMonth(weekStart);
         $.post(
-            wnt.apiPath,
+            wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {

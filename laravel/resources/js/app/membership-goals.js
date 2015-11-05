@@ -89,7 +89,7 @@ var MembershipGoals = React.createClass({
     },
     componentDidMount: function() {
         $.post(
-            wnt.apiPath,
+            wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {
