@@ -3,6 +3,11 @@
 /*****************************/
 
 var BarSet = React.createClass({
+    convertDate: function(date) {
+        date = date.split('/');
+        date = date[1]+'.'+date[2];
+        return date;
+    },
     render: function() {
         return (  // TO DO: MAKE POPOVER DATA INTO TABLES ... {"goalStatusText " + this.state.statusClass}
             <div className="bar-set" 
@@ -15,7 +20,7 @@ var BarSet = React.createClass({
                 <div className="bar-section bar-section-cafe"></div>
                 <div className="bar-section bar-section-giftstore"></div>
                 <div className="bar-section bar-section-membership"></div>
-                <div className="bar-set-date">{this.props.date}</div>
+                <div className="bar-set-date">{this.convertDate(this.props.date)}</div>
             </div>
         );
     }
@@ -427,7 +432,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             }
         });
     },
-    formatSingleNumber: function(number){
+    formatSingleNumber: function(number){   // Used in bar set rollovers
         number = number.toString();
         number = $.parseNumber(number, {format:"$#,###", locale:"us"});
         number = $.formatNumber(number, {format:"$#,###", locale:"us"});

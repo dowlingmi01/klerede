@@ -23,12 +23,13 @@ var wnt = {
     },
     getMonth: function(dateStr) {
         var dateObj = new Date(dateStr);
+        var thisYear = dateObj.getFullYear();
         var thisMonth = dateObj.getMonth()+1;
         var days = wnt.daysInMonth(thisMonth, dateObj.getFullYear());
         thisMonth = wnt.doubleDigits(thisMonth);
         var month = [];
         for(i=0; i<days; i++){
-            month.push(thisMonth + '.' + wnt.doubleDigits(i+1));
+            month.push(thisYear + '/' + thisMonth + '/' + wnt.doubleDigits(i+1));
         }
         return month;
     },
@@ -181,8 +182,10 @@ var wnt = {
     },
     setGoals: function(year, channel, type){
         // PUT api/v1/goals/sales     /{venue_id}/{year}/{channel}/{type}[/{sub_channel}]
-        // 2015/cafe/amount
+        // e.g. 2015/cafe/amount
         // request body = { "months": { 1: XXX, 2: XXX, 3: XXX, ... } }
+        // NOTE: All 12 months must be present in the request
+        // NOTE: sub_channel must be specified only for the membership channel
         $.ajax({
             url: wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type,  // OPTIONAL +'/'+sub_channel, ... for membership
             type: 'PUT',
