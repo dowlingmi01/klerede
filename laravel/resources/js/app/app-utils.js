@@ -124,7 +124,7 @@ var wnt = {
             RETURNS...
             created_at: "2015-10-09 19:40:25"
             date: "2015-09-01"
-            icon_1: "clear-day"
+            icon_1: "clear-day"    // Possible values: clear-day, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day
             icon_2: "clear-day"
             summary_1: "Clear"
             summary_2: "Clear"
@@ -136,6 +136,7 @@ var wnt = {
         )
         .done(function(result){
             wnt.weatherBars = result;
+            wnt.gettingWeatherData.resolve(result);
             console.log('Weather data loaded...');
         })
         .fail(function(result){

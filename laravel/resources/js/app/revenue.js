@@ -13,14 +13,14 @@ var BarSet = React.createClass({
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<img src='/img/04n.svg' class='popover-weather-icon'><div class='popover-temp'>"+this.props.temp+"&deg; F</div><div class='popover-weather-text'>Scattered Showers</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
+                data-content={"<img src='/img/blank.svg' class='popover-weather-icon'><div class='popover-temp'>...</div><div class='popover-weather-text'>Loading...</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
                 data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
                 <div className="bar-section bar-section-cafe"></div>
                 <div className="bar-section bar-section-giftstore"></div>
                 <div className="bar-section bar-section-membership"></div>
-                <div className="bar-set-date">{this.convertDate(this.props.date)}</div>
+                <div className="bar-set-date" data-date={this.props.date}>{this.convertDate(this.props.date)}</div>
             </div>
         );
     }
@@ -417,6 +417,22 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
         this.formatNumbers();
         $('.bar-set').popover();
+        $('.bar-set').on('show.bs.popover', function () {
+            var date = $(this).find('.bar-set-date').data('date');
+            wnt.gettingWeatherData = $.Deferred();
+            wnt.getWeather(date);
+            $.when(wnt.gettingWeatherData).done(function(weather) {
+                // TO DO: NEED NEW ICON MAPPING (e.g. clear-day)
+                $('.popover-weather-icon').attr('src','/img/01d.svg');
+                $('.popover-temp').html(Math.round(weather.temp_1)+'&deg; F');
+                $('.popover-weather-text').html(weather.summary_1);
+            });
+        });
+        $('.bar-set').on('hide.bs.popover', function () {
+            $('.popover-weather-icon').attr('src','/img/blank.svg');
+            $('.popover-temp').html('...');
+            $('.popover-weather-text').html('Loading...');
+        });
     },
     formatNumbers: function(){
         $.each($('#revenue-accordion .accordion-stat'), function(index, item){
@@ -804,9 +820,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
         event.target.blur();
     },
-    getTemp: function(){
-        return '35'
-    },
     render: function(){
         // LOOP FOR BAR SETS
         var bars = [];
@@ -829,7 +842,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     mem = this.formatSingleNumber(wnt.revenue.mem_bars[i].amount);
                 };
             };
-            bars.push(<BarSet date={this.state.barDates[i]} key={i} temp={this.getTemp()} box={box} cafe={cafe} gift={gift} mem={mem} />);
+            bars.push(<BarSet date={this.state.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} />);
         }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
         return (
