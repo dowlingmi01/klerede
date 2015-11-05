@@ -111,6 +111,105 @@ var wnt = {
             console.log(query + ' DATA ERROR! ... ' + result.statusText);
             console.log(result);
         });
+    },
+    getWeather: function(date){
+        $.get(
+            wnt.apiWeather, 
+            {
+                venue_id: wnt.venueID,
+                date: date
+            }
+            /*
+            RETURNS...
+            created_at: "2015-10-09 19:40:25"
+            date: "2015-09-01"
+            icon_1: "clear-day"
+            icon_2: "clear-day"
+            summary_1: "Clear"
+            summary_2: "Clear"
+            temp_1: 77.85
+            temp_2: 88.37
+            updated_at: "2015-10-09 19:40:25"
+            venue_id: 1588
+            */
+        )
+        .done(function(result){
+            wnt.weatherBars = result;
+            console.log('Weather data loaded...');
+        })
+        .fail(function(result){
+            console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+        });
+    },
+    getGoals: function(year){
+        $.get(wnt.apiGoals+'/'+wnt.venueID+'/'+year)
+        /*
+        RETURNS...
+        cafe/amount: Object
+            channel: "cafe"
+            months: Object
+                1: 0
+                2: 0
+                3: 0
+                4: 0
+                5: 0
+                6: 0
+                7: 0
+                8: 0
+                9: 0
+                10: 0
+                11: 0
+                12: 0
+                __proto__: Object
+            name: "Cafe"
+            type: "amount"
+            __proto__: Object
+        gate/amount: Object
+        membership/amount: Object
+        membership/units: Object
+        store/amount: Object
+        */
+        .done(function(result){
+            wnt.goals = result;
+            console.log('Goals data loaded...');
+        })
+        .fail(function(result){
+            console.log('GOALS DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+        });
+    },
+    setGoals: function(year, channel, type){
+        // PUT api/v1/goals/sales     /{venue_id}/{year}/{channel}/{type}[/{sub_channel}]
+        // 2015/cafe/amount
+        // request body = { "months": { 1: XXX, 2: XXX, 3: XXX, ... } }
+        $.ajax({
+            url: wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type,  // OPTIONAL +'/'+sub_channel, ... for membership
+            type: 'PUT',
+            dataType: 'json',
+            data: {
+                'months': {
+                    1: 300,
+                    2: 300,
+                    3: 300,
+                    4: 300,
+                    5: 300,
+                    6: 300,
+                    7: 300,
+                    8: 300,
+                    9: 300,
+                    10: 300,
+                    11: 300,
+                    12: 300                    
+                }
+            },
+            success: function(result) {
+                console.log(result);
+            },
+            error: function(result) {
+                console.log('ERROR');
+            }
+        });
     }
 };
 
@@ -166,6 +265,7 @@ wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
 /**********************************/
 wnt.apiMain = '/api/v1/stats/query';
 wnt.apiWeather = '/api/v1/weather/query';
+wnt.apiGoals = '/api/v1/goals/sales';
 /************************************************************************************************************/
 wnt.venueID = '1588';   // TEMPORARY OVERRIDE
 wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
