@@ -424,7 +424,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $.when(wnt.gettingWeatherData).done(function(weather) {
                 // TO DO: NEED NEW ICON MAPPING (e.g. clear-day)
                 $('.popover-weather-icon').attr('src','/img/'+weather.icon_1+'.svg');
-                $('.popover-temp').html(Math.round(weather.temp_1)+'&deg; F');
+                weather.temp_1 !== '...' ? $('.popover-temp').html(Math.round(weather.temp_1)+'&deg; F') : $('.popover-temp').html(weather.temp_1);
                 $('.popover-weather-text').html(weather.summary_1);
             });
         });

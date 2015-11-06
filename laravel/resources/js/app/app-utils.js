@@ -140,8 +140,14 @@ var wnt = {
             console.log('Weather data loaded...');
         })
         .fail(function(result){
+            var noData = {
+                icon_1: 'blank',
+                temp_1: '...',
+                summary_1: '...'
+            };
+            wnt.weatherBars = noData;
+            wnt.gettingWeatherData.resolve(noData);
             console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
-            console.log(result);
         });
     },
     getGoals: function(year){
