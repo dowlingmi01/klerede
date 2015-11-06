@@ -577,9 +577,11 @@ var SalesGoals = React.createClass({
     }
 });
 
-React.render(
-    <SalesGoals />,   // TEMP STATIC VENUE ID
-    document.getElementById('sales-goals-widget')
-);
+if(document.getElementById('sales-goals-widget')){
+    React.render(
+        <SalesGoals />,
+        document.getElementById('sales-goals-widget')
+    );
+    console.log('Sales Goals row loaded...');
+}
 
-console.log('Sales Goals row loaded...');

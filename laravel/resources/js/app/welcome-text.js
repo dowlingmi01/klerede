@@ -74,8 +74,10 @@ var WelcomeText = React.createClass({
     }
 });
 
-React.render(
-  <WelcomeText />,
-  document.getElementById('welcome-text')
-);
-console.log('Welcome text loaded...');
+if(document.getElementById('welcome-text')){
+    React.render(
+        <WelcomeText />,
+        document.getElementById('welcome-text')
+    );
+    console.log('Welcome text loaded...');
+}

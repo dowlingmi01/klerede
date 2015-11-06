@@ -495,9 +495,10 @@ var MembershipGoals = React.createClass({
     }
 });
 
-React.render(
-    <MembershipGoals />,   // TEMP STATIC VENUE ID
-    document.getElementById('membership-goals-widget')
-);
-
-console.log('Membership Goals row loaded...');
+if(document.getElementById('membership-goals-widget')){
+    React.render(
+        <MembershipGoals />,
+        document.getElementById('membership-goals-widget')
+    );
+    console.log('Membership Goals row loaded...');
+}

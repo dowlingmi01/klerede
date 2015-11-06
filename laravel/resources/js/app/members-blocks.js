@@ -292,9 +292,10 @@ var MembersBlocksSet = React.createClass({
     }
 });
 
-React.render(
-    <MembersBlocksSet />,   // TEMP STATIC VENUE ID
-    document.getElementById('members-blocks-widget')
-);
-
-console.log('Members blocks loaded...');
+if(document.getElementById('members-blocks-widget')){
+    React.render(
+        <MembersBlocksSet />,
+        document.getElementById('members-blocks-widget')
+    );
+    console.log('Members blocks loaded...');
+}

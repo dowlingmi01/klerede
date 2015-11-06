@@ -7,8 +7,10 @@
     <h2>Goal Setting</h2>
     <p>Enter monthly goals by channel to populate the dashboard</p>
     <p>Goal in Dollars</p>
-    <form id="filter-revenue-week">
-        Box Office: <input type="text" value="$000,000" />
+    <form id="goal-setting">
+        Box Office: <input type="text" value="$000,000" /> <div class="collapse"></div>
+
+        <br><br><br>
         By Month:
         Jan: <input type="text" value="$0" />
         Feb: <input type="text" value="$0" />

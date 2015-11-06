@@ -306,9 +306,10 @@ var VisitsBlocksSet = React.createClass({
     }
 });
 
-React.render(
-    <VisitsBlocksSet />,   // TEMP STATIC VENUE ID
-    document.getElementById('visits-blocks-widget')
-);
-
-console.log('Visits blocks loaded...');
+if(document.getElementById('visits-blocks-widget')){
+    React.render(
+        <VisitsBlocksSet />,
+        document.getElementById('visits-blocks-widget')
+    );
+    console.log('Visits blocks loaded...');
+}

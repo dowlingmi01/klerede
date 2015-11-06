@@ -984,9 +984,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     }
 });
 
-React.render(
-    <Revenue />,
-    document.getElementById('revenue-row-widget')
-);
-
-console.log('Revenue row loaded...');
+if(document.getElementById('revenue-row-widget')){
+    React.render(
+        <Revenue />,
+        document.getElementById('revenue-row-widget')
+    );
+    console.log('Revenue row loaded...');
+}
