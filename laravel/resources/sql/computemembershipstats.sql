@@ -8,9 +8,9 @@ BEGIN
 SET @mydate = d_to;
 WHILE @mydate >= d_from DO
      INSERT stat_members
-     ( venue_id, date, recency, frequency, returning_members, current_members
+     ( venue_id, date, recency, frequency, returning_members, current_memberships, current_members
      , created_at, updated_at )
-     SELECT venue_id, @mydate, avg(dayslastv), avg(nv), count(*), 0
+     SELECT venue_id, @mydate, avg(dayslastv), avg(nv), count(*), 0, 0
           , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
        FROM (
           SELECT p.venue_id
@@ -36,19 +36,27 @@ WHILE @mydate >= d_from DO
      UPDATE recency = VALUES(recency)
           , frequency = VALUES(frequency)
           , returning_members = VALUES(returning_members)
-	      , updated_at = CURRENT_TIMESTAMP
+          , updated_at = CURRENT_TIMESTAMP
      ;
      INSERT stat_members
-     ( venue_id, date, recency, frequency, returning_members, current_members
+     ( venue_id, date, recency, frequency, returning_members, current_memberships
+     , current_members
      , created_at, updated_at )
-     SELECT venue_id, @mydate, 0, 0, 0, count(distinct member_id)
+     SELECT x.venue_id, @mydate, 0, 0, 0, count(x.member_id)
+          , sum(case when adult_qty + child_qty > 0 then adult_qty + child_qty else 1 end)
           , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-       FROM membership
-      WHERE @mydate BETWEEN date_from AND date_to
-      GROUP BY venue_id
+       FROM (
+            SELECT venue_id, member_id, max(adult_qty) as adult_qty
+                 , max(child_qty) as child_qty
+              FROM membership s
+             WHERE @mydate BETWEEN date_from AND date_to
+             GROUP BY venue_id, member_id
+            ) x
+      GROUP BY x.venue_id
      ON DUPLICATE KEY
      UPDATE current_members = VALUES(current_members)
-	      , updated_at = CURRENT_TIMESTAMP
+          , current_memberships = VALUES(current_memberships)
+          , updated_at = CURRENT_TIMESTAMP
      ;
      SET @mydate = date_sub(@mydate, interval 1 day);
 END WHILE;

@@ -17,6 +17,7 @@ class StatMembersTable extends Migration {
 			$table->increments('id');
 			$table->integer('venue_id');
 			$table->date('date');
+			$table->integer('current_memberships');
 			$table->integer('current_members');
 			$table->integer('returning_members');
 			$table->double('frequency');

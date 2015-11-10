@@ -77,10 +77,11 @@ class Stats {
 		if($specs->type == 'members') {
 			if($periods->kind == 'average') {
 				$dbquery->addSelect([DB::raw('avg(current_members) as current_members')
+					, DB::raw('avg(current_memberships) as current_memberships')
 					, DB::raw('avg(frequency) as frequency')
 					, DB::raw('avg(recency) as recency')]);
 			} else {
-				$dbquery->addSelect(['current_members', 'frequency', 'recency']);
+				$dbquery->addSelect(['current_members', 'current_memberships', 'frequency', 'recency']);
 			}
 		} else {
 			$dbquery->addSelect(DB::raw('sum(units) as units'));
