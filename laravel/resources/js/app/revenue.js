@@ -13,7 +13,7 @@ var BarSet = React.createClass({
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<img src='/img/blank.svg' class='popover-weather-icon'><div class='popover-temp'>...</div><div class='popover-weather-text'>Loading...</div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
+                data-content={"<div class='popover-weather-bar'><div class='popover-weather-10am'><img src='/img/blank.svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>Loading...</div><div class='popover-temp'>...</div></div><div class='popover-weather-4pm'><img src='/img/blank.svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>Loading...</div><div class='popover-temp'>...</div></div></div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
                 data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
@@ -422,10 +422,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.gettingWeatherData = $.Deferred();
             wnt.getWeather(date);
             $.when(wnt.gettingWeatherData).done(function(weather) {
-                // TO DO: NEED NEW ICON MAPPING (e.g. clear-day)
-                $('.popover-weather-icon').attr('src','/img/'+weather.icon_1+'.svg');
-                weather.temp_1 !== '...' ? $('.popover-temp').html(Math.round(weather.temp_1)+'&deg; F') : $('.popover-temp').html(weather.temp_1);
-                $('.popover-weather-text').html(weather.summary_1);
+                // 10am weather
+                $('.popover-weather-icon').eq(0).attr('src','/img/'+weather.icon_1+'.svg');
+                weather.temp_1 !== '...' ? $('.popover-temp').eq(0).html(Math.round(weather.temp_1)+'&deg; F') : $('.popover-temp').eq(0).html(weather.temp_1);
+                $('.popover-weather-text').eq(0).html(weather.summary_1);
+                // 4pm weather
+                $('.popover-weather-icon').eq(1).attr('src','/img/'+weather.icon_2+'.svg');
+                weather.temp_1 !== '...' ? $('.popover-temp').eq(1).html(Math.round(weather.temp_2)+'&deg; F') : $('.popover-temp').eq(1).html(weather.temp_2);
+                $('.popover-weather-text').eq(1).html(weather.summary_2);
             });
         });
         $('.bar-set').on('hide.bs.popover', function () {
