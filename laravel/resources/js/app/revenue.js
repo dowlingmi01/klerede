@@ -129,9 +129,37 @@ var WeatherBar = React.createClass({   // Weather API
     render: function() {
         return (
             <div className="weather-bar">
-                <div className="weather-icon"><img src={this.state.icon} alt="Weather icon" /></div>
-                <div className="temperature">{this.state.temp}&deg; F</div>
-                <div className="weather-text">{this.state.description}</div>
+                <div className="weather-period-title">Week: 05.24.15 - 05.30.15</div>
+                <div className="weather-period-set">
+                    <div className="weather-period active">
+                        <div className="weather-period-label">05.24</div>
+                        <img src={this.state.icon} alt="Weather icon" />
+                    </div>
+                    <div className="weather-period">
+                        <div className="weather-period-label">05.25</div>
+                        <img src={this.state.icon} alt="Weather icon" />
+                    </div>
+                    <div className="weather-period">
+                        <div className="weather-period-label">05.26</div>
+                        <img src={this.state.icon} alt="Weather icon" />
+                    </div>
+                    <div className="weather-period">
+                        <div className="weather-period-label">05.27</div>
+                        <img src={this.state.icon} alt="Weather icon" />
+                    </div>
+                    <div className="weather-period">
+                        <div className="weather-period-label">05.28</div>
+                        <img src={this.state.icon} alt="Weather icon" />
+                    </div>
+                    <div className="weather-period">
+                        <div className="weather-period-label">05.29</div>
+                        <img src={this.state.icon} alt="Weather icon" />
+                    </div>
+                    <div className="weather-period">
+                        <div className="weather-period-label">05.30</div>
+                        <img src={this.state.icon} alt="Weather icon" />
+                    </div>
+                </div>
                 <ActionMenu />
             </div>
         );

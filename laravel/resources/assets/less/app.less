@@ -38,6 +38,7 @@ body, p, td, label, .checkbox label {
 @rust: rgba(141,55,8,1);
 @slateblue: rgba(156,186,204,1);
 @lightblue: rgba(212,233,246,1);
+@mediumblue: rgba(185,203,218,1);
 @verylightblue: rgba(239,247,252,1);
 
 @green: rgba(100,168,17,1);
@@ -983,31 +984,36 @@ header {
 /******** WEATHER AND ACCORDION ********/
 .weather-bar {
     background-color: @lightblue;
-    height: 84px;
-    padding: 7px;
-    .weather-icon {
-        background-color: @verylightblue;
-        float: left;
-        height: 100%;
-        margin-right: 7px;
-        width: 93px;
+    .weather-period-title {
+        background-color: @mediumblue;
+        font-size: 150%;
+        font-weight: 600;
+        padding: 7px;
+    }
+    .weather-period-set {
+        display: flex;
+        justify-content: space-between;
+        padding: 7px;
         img {
-            left: 50%;
-            position: relative;
-            top: 50%;
-            transform: translateX(-50%) translateY(-50%); 
-            width: 60%;
+            background-color: @verylightblue;
+            cursor: pointer;
+            height: 43px;
+            padding: 5px;
+            width: 43px;
         }
     }
-    .temperature {
-        font-size: 255%;
-    }
-    .weather-text {
-        text-transform: capitalize;
+    .weather-period {
+        display: inline-block;
+        text-align: center;
+        .weather-period-label {
+            font-size: 90%;
+            padding-bottom: 3px;
+        }
     }
 }
 #earned-revenue {
     h2 {
+        clear: both;
         float: none;
     }
 }
