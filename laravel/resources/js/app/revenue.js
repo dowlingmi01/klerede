@@ -125,6 +125,32 @@ var WeatherBar = React.createClass({   // Weather API
             1500,
             'easeInSine'
         );
+
+
+        // Load initial weather data for revenue accordion
+        wnt.gettingWeatherData = $.Deferred();
+        wnt.weatherRange = wnt.getDateRange(wnt.datePickerStart, 'this week');
+        wnt.getWeather(wnt.weatherRange[0], wnt.weatherRange[1]);
+        $.when(wnt.gettingWeatherData).done(function(weather) {
+            $.each($('.weather-period'), function(index, item){
+                $(item).find('.weather-period-label').html(wnt.shortDate(weather[index].date));
+                $(item).find('img').attr('src', '/img/'+weather[index].icon_1+'.svg').css('opacity','0').animate({
+                        opacity: '1'
+                    },
+                    1500,
+                    'easeInSine'
+                );
+                $(item).find('.temp-10am').html(Math.round(weather[index].temp_1)+'&deg;');
+                $(item).find('.temp-4pm').html(Math.round(weather[index].temp_2)+'&deg;');
+                // LEFT OFF HERE POPULATING ACCORDION WITH WEATHER DATA ... SHOULD MOVE WEATHER INTO REVENUE COMPONENT
+            });
+        });
+
+
+
+
+
+
     },
     render: function() {
         return (
@@ -134,6 +160,10 @@ var WeatherBar = React.createClass({   // Weather API
                     <div className="weather-period active">
                         <div className="weather-period-label">05.24</div>
                         <img src={this.state.icon} alt="Weather icon" />
+                        <div className="weather-details">
+                            <div className="details-1">10AM <span className="temp-10am">53&deg;</span></div>
+                            <div className="details-2">4PM <span className="temp-4pm">30&deg;</span></div>
+                        </div>
                     </div>
                     <div className="weather-period">
                         <div className="weather-period-label">05.25</div>
@@ -334,6 +364,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
                 // Set default for datepicker
                 $('#revenue #datepicker').val(wnt.datePickerStart);
+                // Switch format for datePickerStart to be used in weather API
+                wnt.datePickerStart = wnt.formatDate(new Date(wnt.datePickerStart));
 
                 wnt.gettingData = $.Deferred();
                 wnt.getData('boxofficeTEST', 'sales', 'gate', '2015-08-01', '2015-8-3');
@@ -487,31 +519,31 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return number;
     },
     weekChange: function(event) {
-        var weekStart = new Date(event.target.value);
-        var selectedMonth = weekStart.getMonth()+1;
-        var selectedYear = weekStart.getFullYear();
+        wnt.datePickerStart = new Date(event.target.value);
+        var selectedMonth = wnt.datePickerStart.getMonth()+1;
+        var selectedYear = wnt.datePickerStart.getFullYear();
         wnt.selectedMonthDays = wnt.daysInMonth(selectedMonth, selectedYear);
         var selectedMonthStart = selectedYear+'-'+selectedMonth+'-1';   // yyyy-m-d
         var selectedMonthEnd = selectedYear+'-'+selectedMonth+'-'+wnt.selectedMonthDays;   // yyyy-m-d
-        var selectedDay = weekStart.getDate();
+        var selectedDay = wnt.datePickerStart.getDate();
 
         $("#bar-graph-slider").slider('value', (selectedDay / wnt.selectedMonthDays) * 100);
 
-        weekStart = wnt.formatDate(weekStart);
-        var weekEnd = new Date(weekStart);
+        wnt.datePickerStart = wnt.formatDate(wnt.datePickerStart);
+        var weekEnd = new Date(wnt.datePickerStart);
         weekEnd.setDate(weekEnd.getDate() + 6);
         weekEnd = wnt.formatDate(weekEnd);
-        var priorWeekRange = wnt.getDateRange(weekStart, 'last week');
+        var priorWeekRange = wnt.getDateRange(wnt.datePickerStart, 'last week');
         var priorWeekStart = priorWeekRange[0];
         var priorWeekEnd = priorWeekRange[1];
         // SET DATES FOR BAR TAGS
-        var barDatesWeekEnd = new Date(weekStart);
+        var barDatesWeekEnd = new Date(wnt.datePickerStart);
         barDatesWeekEnd.setDate(barDatesWeekEnd.getDate() + 8);
         barDatesWeekEnd = wnt.formatDate(barDatesWeekEnd);
         // NEW: Set dates to all in selected month
         // $("#bar-graph-slider").slider('value',50);      //  This works ... 0-100 ... SET POSITION OF SLIDER BASED ON DATE
         // july 5 = 5/31 = 16.13% for slider value
-        var barDates = wnt.getMonth(weekStart);
+        var barDates = wnt.getMonth(wnt.datePickerStart);
         $.post(
             wnt.apiMain,
             {
@@ -520,22 +552,22 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     box_bars: { specs: { type: 'sales', channel: 'gate' },
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     box_sum: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
                     box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
                         periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
                     box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
                     box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
                         periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
                     box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
                     box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
                         periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
 
                     cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
                     cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
                     cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
@@ -546,7 +578,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     gift_bars: { specs: { type: 'sales', channel: 'store' }, 
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     gift_sum: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
                     gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
                         periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
                     gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
@@ -557,12 +589,12 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     mem_bars: { specs: { type: 'sales', channel: 'membership' },
                         periods: { from: selectedMonthStart, to: selectedMonthEnd } },
                     mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
                     mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
                         periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
 
                     groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: weekStart, to: weekEnd, kind: 'sum' } },
+                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
                     groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
                         periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
 

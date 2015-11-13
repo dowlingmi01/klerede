@@ -11,6 +11,10 @@ var wnt = {
                 dateObj.getFullYear()+'-'+mm+'-'+dd;
         return formattedDate;
     },
+    shortDate: function(dateStr){   // Pass in yyyy-mm-dd
+        dateStr = dateStr.split('-');
+        return dateStr[1]+'.'+dateStr[2];
+    },
     getWeek: function(dateStr) {
         var dateObj = new Date(dateStr);   // Need to pass one day before (e.g. 8/14 becomes 8/13)
         var week = [];
@@ -34,7 +38,7 @@ var wnt = {
         return month;
     },
     getDateRange: function(dateStr, period) {
-        // period = last week
+        // period = last week, this week
         var dateRange = [];
         var startDate = new Date(dateStr);
         var endDate = new Date(dateStr);
@@ -42,6 +46,11 @@ var wnt = {
             startDate.setDate(startDate.getDate() - 7);
             dateRange.push(wnt.formatDate(startDate));
             endDate.setDate(endDate.getDate() - 1);
+            dateRange.push(wnt.formatDate(endDate));
+            return dateRange;
+        } else if(period === 'this week'){
+            dateRange.push(wnt.formatDate(startDate));
+            endDate.setDate(endDate.getDate() + 6);
             dateRange.push(wnt.formatDate(endDate));
             return dateRange;
         };
@@ -113,29 +122,23 @@ var wnt = {
             console.log(result);
         });
     },
-    getWeather: function(date){
-        $.get(
-            wnt.apiWeather, 
-            {
+    getWeather: function(dateFrom, dateTo){
+        var query = {};
+        if(!dateTo){
+            query = $.extend({}, {
                 venue_id: wnt.venueID,
-                date: date
-            }
-            /*
-                RETURNS...
-                created_at: "2015-10-09 19:40:25"
-                date: "2015-09-01"
-                icon_1: "clear-day"    // Values: clear-day, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day
-                icon_2: "clear-day"
-                summary_1: "Clear"
-                summary_2: "Clear"
-                temp_1: 77.85
-                temp_2: 88.37
-                updated_at: "2015-10-09 19:40:25"
-                venue_id: 1588
-            */
-        )
+                date: dateFrom
+            });
+        } else {
+            query = $.extend({}, {
+                venue_id: wnt.venueID,
+                from: dateFrom,
+                to: dateTo
+            });
+        }
+        $.get(wnt.apiWeather, query)
         .done(function(result){
-            wnt.weatherBars = result;
+            wnt.weatherPeriod = result;
             wnt.gettingWeatherData.resolve(result);
             console.log('Weather data loaded...');
         })
@@ -145,7 +148,7 @@ var wnt = {
                 temp_1: '...',
                 summary_1: '...'
             };
-            wnt.weatherBars = noData;
+            wnt.weatherPeriod = noData;
             wnt.gettingWeatherData.resolve(noData);
             console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
         });
