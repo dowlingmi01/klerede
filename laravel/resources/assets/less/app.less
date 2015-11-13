@@ -1004,6 +1004,7 @@ header {
     }
     .weather-period {
         display: inline-block;
+        position: relative;
         text-align: center;
         .weather-period-label {
             font-size: 90%;
@@ -1011,13 +1012,19 @@ header {
         }
         .weather-details {
             background-color: rgba(0,0,0,.7);
+            bottom: 0;
             color: @white;
+            cursor: pointer;
+            display: none;
+            font-size: 55%;
             height: 43px;
             overflow: hidden;
-            padding: 5px;
-            position: relative;
-            top: -43px;
+            padding: 10px 5px 0 5px;
+            position: absolute;
             width: 43px;
+            .details-1 {
+                padding-bottom: 2px;
+            }
         }
     }
 }

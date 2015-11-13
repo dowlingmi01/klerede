@@ -15,6 +15,10 @@ var wnt = {
         dateStr = dateStr.split('-');
         return dateStr[1]+'.'+dateStr[2];
     },
+    longDate: function(dateStr){   // Pass in yyyy-mm-dd
+        dateStr = dateStr.split('-');
+        return dateStr[1]+'.'+dateStr[2]+'.'+dateStr[0].substring(2);
+    },
     getWeek: function(dateStr) {
         var dateObj = new Date(dateStr);   // Need to pass one day before (e.g. 8/14 becomes 8/13)
         var week = [];

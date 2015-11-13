@@ -125,13 +125,12 @@ var WeatherBar = React.createClass({   // Weather API
             1500,
             'easeInSine'
         );
-
-
-        // Load initial weather data for revenue accordion
+        // Load weather data in revenue accordion
         wnt.gettingWeatherData = $.Deferred();
         wnt.weatherRange = wnt.getDateRange(wnt.datePickerStart, 'this week');
         wnt.getWeather(wnt.weatherRange[0], wnt.weatherRange[1]);
         $.when(wnt.gettingWeatherData).done(function(weather) {
+            $('.weather-period-title').html('Week: '+wnt.longDate(weather[0].date)+' - '+wnt.longDate(weather[6].date));
             $.each($('.weather-period'), function(index, item){
                 $(item).find('.weather-period-label').html(wnt.shortDate(weather[index].date));
                 $(item).find('img').attr('src', '/img/'+weather[index].icon_1+'.svg').css('opacity','0').animate({
@@ -142,52 +141,75 @@ var WeatherBar = React.createClass({   // Weather API
                 );
                 $(item).find('.temp-10am').html(Math.round(weather[index].temp_1)+'&deg;');
                 $(item).find('.temp-4pm').html(Math.round(weather[index].temp_2)+'&deg;');
-                // LEFT OFF HERE POPULATING ACCORDION WITH WEATHER DATA ... SHOULD MOVE WEATHER INTO REVENUE COMPONENT
             });
         });
-
-
-
-
-
-
+        $('.weather-period-set img').on('click', function () {
+            $(this).parent().find('.weather-details').show();
+        });
+        $('.weather-details').on('click', function () {
+            $(this).hide();
+        });
     },
     render: function() {
         return (
             <div className="weather-bar">
-                <div className="weather-period-title">Week: 05.24.15 - 05.30.15</div>
+                <div className="weather-period-title">Week:</div>
                 <div className="weather-period-set">
                     <div className="weather-period active">
                         <div className="weather-period-label">05.24</div>
                         <img src={this.state.icon} alt="Weather icon" />
                         <div className="weather-details">
-                            <div className="details-1">10AM <span className="temp-10am">53&deg;</span></div>
-                            <div className="details-2">4PM <span className="temp-4pm">30&deg;</span></div>
+                            <div className="details-1">10AM <span className="temp-10am"></span></div>
+                            <div className="details-2">4PM <span className="temp-4pm"></span></div>
                         </div>
                     </div>
                     <div className="weather-period">
                         <div className="weather-period-label">05.25</div>
                         <img src={this.state.icon} alt="Weather icon" />
+                        <div className="weather-details">
+                            <div className="details-1">10AM <span className="temp-10am"></span></div>
+                            <div className="details-2">4PM <span className="temp-4pm"></span></div>
+                        </div>
                     </div>
                     <div className="weather-period">
                         <div className="weather-period-label">05.26</div>
                         <img src={this.state.icon} alt="Weather icon" />
+                        <div className="weather-details">
+                            <div className="details-1">10AM <span className="temp-10am"></span></div>
+                            <div className="details-2">4PM <span className="temp-4pm"></span></div>
+                        </div>
                     </div>
                     <div className="weather-period">
                         <div className="weather-period-label">05.27</div>
                         <img src={this.state.icon} alt="Weather icon" />
+                        <div className="weather-details">
+                            <div className="details-1">10AM <span className="temp-10am"></span></div>
+                            <div className="details-2">4PM <span className="temp-4pm"></span></div>
+                        </div>
                     </div>
                     <div className="weather-period">
                         <div className="weather-period-label">05.28</div>
                         <img src={this.state.icon} alt="Weather icon" />
+                        <div className="weather-details">
+                            <div className="details-1">10AM <span className="temp-10am"></span></div>
+                            <div className="details-2">4PM <span className="temp-4pm"></span></div>
+                        </div>
                     </div>
                     <div className="weather-period">
                         <div className="weather-period-label">05.29</div>
                         <img src={this.state.icon} alt="Weather icon" />
+                        <div className="weather-details">
+                            <div className="details-1">10AM <span className="temp-10am"></span></div>
+                            <div className="details-2">4PM <span className="temp-4pm"></span></div>
+                        </div>
                     </div>
                     <div className="weather-period">
                         <div className="weather-period-label">05.30</div>
                         <img src={this.state.icon} alt="Weather icon" />
+                        <div className="weather-details">
+                            <div className="details-1">10AM <span className="temp-10am"></span></div>
+                            <div className="details-2">4PM <span className="temp-4pm"></span></div>
+                        </div>
                     </div>
                 </div>
                 <ActionMenu />
