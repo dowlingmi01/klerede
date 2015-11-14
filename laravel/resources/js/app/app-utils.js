@@ -3,6 +3,7 @@
 /********************************/
 
 var wnt = {
+    // NOTE: To just change dates with slashes to dates with dashes (or vice versa) use   ...   str.replace(/\//g,'-')
     formatDate: function(dateObj, digits) {   // Pass in 'double' as second paramter for yyyy-mm-dd, default is yyyy-m-d
         var mm = dateObj.getMonth()+1,
             dd = dateObj.getDate(),
@@ -43,6 +44,7 @@ var wnt = {
     },
     getDateRange: function(dateStr, period) {
         // period = last week, this week
+        // Returns array with two values, one for the start date and one for the end date ... ['yyyy-mm-dd','yyyy-mm-dd']
         var dateRange = [];
         var startDate = new Date(dateStr);
         var endDate = new Date(dateStr);

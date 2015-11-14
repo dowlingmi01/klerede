@@ -13,7 +13,7 @@ var BarSet = React.createClass({
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<div class='popover-weather-bar'><div class='popover-weather-10am'><img src='/img/blank.svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>Loading...</div><div class='popover-temp'>...</div></div><div class='popover-weather-4pm'><img src='/img/blank.svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>Loading...</div><div class='popover-temp'>...</div></div></div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
+                data-content={"<div class='popover-weather-bar'><div class='popover-weather-10am'><img src='/img/"+this.props.icon1+".svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>"+this.props.summary1+"</div><div class='popover-temp'>"+this.props.temp1+"</div></div><div class='popover-weather-4pm'><img src='/img/"+this.props.icon2+".svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>"+this.props.summary2+"</div><div class='popover-temp'>"+this.props.temp2+"</div></div></div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
                 data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
@@ -236,6 +236,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
             barDates: wnt.getMonth(wnt.today),   // wnt.yesterday was returning 8/31 and therefore 8/1 - 8/31
             days: wnt.selectedMonthDays,
+            weather: [],
 
             boxofficeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             cafeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -255,6 +256,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     componentDidMount: function() {
         // Members / Non-members ... Members buy memberships, but not admission
         // up/down, % change, $$$ (total current period), $$$ (total last period)
+        var self = this;
         $.post(
             wnt.apiMain,
             {
@@ -370,7 +372,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     membershipChange: this.calcChange(result.mem_sum.amount, result.mem_sum_prior.amount)
                 });
                 // Set null data to '-'
-                var self = this;
+                // var self = this;
                 $.each(this.state, function(stat, value){
                     if(value === null){
                         var stateObject = function() {
@@ -382,43 +384,47 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     }
                 });
                 this.formatNumbers;
-
-
                 // Set default for datepicker
                 $('#revenue #datepicker').val(wnt.datePickerStart);
                 // Switch format for datePickerStart to be used in weather API
                 wnt.datePickerStart = wnt.formatDate(new Date(wnt.datePickerStart));
-
+                /*
                 wnt.gettingData = $.Deferred();
                 wnt.getData('boxofficeTEST', 'sales', 'gate', '2015-08-01', '2015-8-3');
                 $.when(wnt.gettingData).done(function(data) {
                     console.log(data);
                     console.log(data[0].amount);
-                    /*self.setState({
-                        graphCap: 100000,
-                    });*/
                 });
-
-                /*
-                var d1 = $.Deferred();
-                var d2 = $.Deferred();
-                 
-                $.when( d1, d2 ).done(function ( v1, v2 ) {
-                    console.log( v1 ); // "Fish"
-                    console.log( v2 ); // "Pizza"
-                });
-                 
-                d1.resolve( "Fish" );
-                d2.resolve( "Pizza" );
                 */
-
-
-
             }
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
             console.log('REVENUE DATA ERROR! ... ' + result.statusText);
             console.log(result);
+        });
+        $.get(
+            wnt.apiWeather,
+            {
+                venue_id: wnt.venueID,
+                from: this.state.barDates[0].replace(/\//g,'-'),
+                to: this.state.barDates[this.state.barDates.length-1].replace(/\//g,'-')
+            }
+        )
+        .done(function(result){
+            console.log('Weather data loaded...');
+            wnt.weatherPeriod = result;
+            self.setState({
+                weather: result,
+            });
+        })
+        .fail(function(result){
+            var noData = {
+                icon_1: 'blank',
+                temp_1: '...',
+                summary_1: '...'
+            };
+            wnt.weatherPeriod = noData;
+            console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
         });
     },
     dataArray: function(stat, statUnits, days) {
@@ -499,26 +505,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
         this.formatNumbers();
         $('.bar-set').popover();
-        $('.bar-set').on('show.bs.popover', function () {
-            var date = $(this).find('.bar-set-date').data('date');
-            wnt.gettingWeatherData = $.Deferred();
-            wnt.getWeather(date);
-            $.when(wnt.gettingWeatherData).done(function(weather) {
-                // 10am weather
-                $('.popover-weather-icon').eq(0).attr('src','/img/'+weather.icon_1+'.svg');
-                weather.temp_1 !== '...' ? $('.popover-temp').eq(0).html(Math.round(weather.temp_1)+'&deg; F') : $('.popover-temp').eq(0).html(weather.temp_1);
-                $('.popover-weather-text').eq(0).html(weather.summary_1);
-                // 4pm weather
-                $('.popover-weather-icon').eq(1).attr('src','/img/'+weather.icon_2+'.svg');
-                weather.temp_1 !== '...' ? $('.popover-temp').eq(1).html(Math.round(weather.temp_2)+'&deg; F') : $('.popover-temp').eq(1).html(weather.temp_2);
-                $('.popover-weather-text').eq(1).html(weather.summary_2);
-            });
-        });
-        $('.bar-set').on('hide.bs.popover', function () {
-            $('.popover-weather-icon').attr('src','/img/blank.svg');
-            $('.popover-temp').html('...');
-            $('.popover-weather-text').html('Loading...');
-        });
+        //wnt.gettingWeatherData = $.Deferred();
+        //wnt.getWeather(this.state.barDates[0].replace(/\//g,'-'), this.state.barDates[this.state.barDates.length-1].replace(/\//g,'-'));
     },
     formatNumbers: function(){
         $.each($('#revenue-accordion .accordion-stat'), function(index, item){
@@ -541,6 +529,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return number;
     },
     weekChange: function(event) {
+        var self = this;
         wnt.datePickerStart = new Date(event.target.value);
         var selectedMonth = wnt.datePickerStart.getMonth()+1;
         var selectedYear = wnt.datePickerStart.getFullYear();
@@ -628,79 +617,100 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         .done(function(result) {
             console.log('Revenue data loaded (again)...');
             wnt.revenue = result;
-            if(this.isMounted()) {
-                // LOOP THROUGH DATA TO CREATE ARRAYS
-                var self = this;
-                var boxoffice = this.dataArray(result.box_bars, 'amount', wnt.selectedMonthDays);
-                $.each(boxoffice, function(index, item){
-                        boxoffice[index] = self.calcBarHeight(item);
-                });
-                var cafe = this.dataArray(result.cafe_bars, 'amount', wnt.selectedMonthDays);
-                $.each(cafe, function(index, item){
-                        cafe[index] = self.calcBarHeight(item);
-                });
-                var giftstore = this.dataArray(result.gift_bars, 'amount', wnt.selectedMonthDays);
-                $.each(giftstore, function(index, item){
-                        giftstore[index] = self.calcBarHeight(item);
-                });
-                var membership = this.dataArray(result.mem_bars, 'amount', wnt.selectedMonthDays);
-                $.each(membership, function(index, item){
-                        membership[index] = self.calcBarHeight(item);
-                });
-                // SET STATE TO ARRAYS FOR RENDERING
-                this.setState({
-                    days: wnt.selectedMonthDays,
-                    barDates: barDates,
-                    boxofficeHeight: boxoffice,
-                    cafeHeight: cafe,
-                    giftstoreHeight: giftstore,
-                    membershipHeight: membership,
-                    // NEW FOR ACCORDION ...
-                    boxofficeNow: result.box_sum.amount,
-                    boxofficeThen: result.box_sum_prior.amount,
-                    boxofficeChange: this.calcChange(result.box_sum.amount, result.box_sum_prior.amount),
-                    boxofficeNowON: result.box_sum_online.amount,
-                    boxofficeThenON: result.box_sum_online_prior.amount,
-                    boxofficeChangeON: this.calcChange(result.box_sum_online.amount, result.box_sum_online_prior.amount),
-                    boxofficeNowOFF: result.box_sum_offline.amount,
-                    boxofficeThenOFF: result.box_sum_offline_prior.amount,
-                    boxofficeChangeOFF: this.calcChange(result.box_sum_offline.amount, result.box_sum_offline_prior.amount),
+            // AFTER the bar graph data loads, grab the weather data BEFORE setting the state since the rendering happens after EVERY .setState() call
+            $.get(
+                wnt.apiWeather,
+                {
+                    venue_id: wnt.venueID,
+                    from: barDates[0].replace(/\//g,'-'),
+                    to: barDates[barDates.length-1].replace(/\//g,'-')
+                }
+            )
+            .done(function(weather){
+                console.log('Weather data loaded...');
+                wnt.weatherPeriod = weather;
+                if(self.isMounted()) {
+                    // LOOP THROUGH DATA TO CREATE ARRAYS
+                    var boxoffice = self.dataArray(result.box_bars, 'amount', wnt.selectedMonthDays);
+                    $.each(boxoffice, function(index, item){
+                            boxoffice[index] = self.calcBarHeight(item);
+                    });
+                    var cafe = self.dataArray(result.cafe_bars, 'amount', wnt.selectedMonthDays);
+                    $.each(cafe, function(index, item){
+                            cafe[index] = self.calcBarHeight(item);
+                    });
+                    var giftstore = self.dataArray(result.gift_bars, 'amount', wnt.selectedMonthDays);
+                    $.each(giftstore, function(index, item){
+                            giftstore[index] = self.calcBarHeight(item);
+                    });
+                    var membership = self.dataArray(result.mem_bars, 'amount', wnt.selectedMonthDays);
+                    $.each(membership, function(index, item){
+                            membership[index] = self.calcBarHeight(item);
+                    });
+                    // SET STATE TO ARRAYS FOR RENDERING
+                    self.setState({
+                        days: wnt.selectedMonthDays,
+                        barDates: barDates,
+                        boxofficeHeight: boxoffice,
+                        cafeHeight: cafe,
+                        giftstoreHeight: giftstore,
+                        membershipHeight: membership,
+                        // NEW FOR ACCORDION ...
+                        boxofficeNow: result.box_sum.amount,
+                        boxofficeThen: result.box_sum_prior.amount,
+                        boxofficeChange: self.calcChange(result.box_sum.amount, result.box_sum_prior.amount),
+                        boxofficeNowON: result.box_sum_online.amount,
+                        boxofficeThenON: result.box_sum_online_prior.amount,
+                        boxofficeChangeON: self.calcChange(result.box_sum_online.amount, result.box_sum_online_prior.amount),
+                        boxofficeNowOFF: result.box_sum_offline.amount,
+                        boxofficeThenOFF: result.box_sum_offline_prior.amount,
+                        boxofficeChangeOFF: self.calcChange(result.box_sum_offline.amount, result.box_sum_offline_prior.amount),
 
-                    groupsNow: result.groups_sum.amount,
-                    groupsThen: result.groups_sum_prior.amount,
-                    groupsChange: this.calcChange(result.groups_sum.amount, result.groups_sum_prior.amount),
+                        groupsNow: result.groups_sum.amount,
+                        groupsThen: result.groups_sum_prior.amount,
+                        groupsChange: self.calcChange(result.groups_sum.amount, result.groups_sum_prior.amount),
 
-                    cafeNow: result.cafe_sum.amount,
-                    cafeThen: result.cafe_sum_prior.amount,
-                    cafeChange: this.calcChange(result.cafe_sum.amount, result.cafe_sum_prior.amount),
+                        cafeNow: result.cafe_sum.amount,
+                        cafeThen: result.cafe_sum_prior.amount,
+                        cafeChange: self.calcChange(result.cafe_sum.amount, result.cafe_sum_prior.amount),
 
-                    giftstoreNow: result.gift_sum.amount,
-                    giftstoreThen: result.gift_sum_prior.amount,
-                    giftstoreChange: this.calcChange(result.gift_sum.amount, result.gift_sum_prior.amount),
+                        giftstoreNow: result.gift_sum.amount,
+                        giftstoreThen: result.gift_sum_prior.amount,
+                        giftstoreChange: self.calcChange(result.gift_sum.amount, result.gift_sum_prior.amount),
 
-                    membershipNow: result.mem_sum.amount,
-                    membershipThen: result.mem_sum_prior.amount,
-                    membershipChange: this.calcChange(result.mem_sum.amount, result.mem_sum_prior.amount)
-                });
+                        membershipNow: result.mem_sum.amount,
+                        membershipThen: result.mem_sum_prior.amount,
+                        membershipChange: self.calcChange(result.mem_sum.amount, result.mem_sum_prior.amount),
 
-                // Set null data to '-'
-                var self = this;
-                $.each(this.state, function(stat, value){
-                    if(value === null){
-                        var stateObject = function() {
-                            returnObj = {};
-                            returnObj[stat] = '-';
-                            return returnObj;
-                        };
-                        self.setState(stateObject);
-                    }
-                });
-            }
-        }.bind(this))   // .bind() gives context to 'this'
-        .fail(function(result) {
-            console.log('REVENUE DATA ERROR! ... ' + result.statusText);
-            console.log(result);
-        });
+                        weather: weather
+                    });
+                    // Set null data to '-'
+                    $.each(self.state, function(stat, value){
+                        if(value === null){
+                            var stateObject = function() {
+                                returnObj = {};
+                                returnObj[stat] = '-';
+                                return returnObj;
+                            };
+                            self.setState(stateObject);
+                        }
+                    });
+                }
+            }.bind(this))   // .bind() gives context to 'this'
+            .fail(function(result) {
+                console.log('REVENUE DATA ERROR! ... ' + result.statusText);
+                console.log(result);
+            });
+        })
+        .fail(function(result){
+            var noData = {
+                icon_1: 'blank',
+                temp_1: '...',
+                summary_1: '...'
+            };
+            wnt.weatherPeriod = noData;
+            console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
+        });    
     },
     graphFilter: function(event) {
         var filter = event.target.value;
@@ -913,7 +923,13 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             var box = 0,
                 cafe = 0,
                 gift = 0,
-                mem = 0;
+                mem = 0,
+                icon1 = 'blank',
+                icon2 = 'blank',
+                temp1 = '...',
+                temp2 = '...',
+                summary1 = '...',
+                summary2 = '...';
             if(wnt.revenue !== undefined){
                 if(wnt.revenue.box_bars[i] !== undefined){
                     box = this.formatSingleNumber(wnt.revenue.box_bars[i].amount);
@@ -928,7 +944,17 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     mem = this.formatSingleNumber(wnt.revenue.mem_bars[i].amount);
                 };
             };
-            bars.push(<BarSet date={this.state.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} />);
+            if(this.state.weather !== undefined){
+                if(this.state.weather[i] !== undefined){
+                    icon1 = this.state.weather[i].icon_1;
+                    icon2 = this.state.weather[i].icon_2;
+                    temp1 = Math.round(this.state.weather[i].temp_1)+'&deg; F';
+                    temp2 = Math.round(this.state.weather[i].temp_2)+'&deg; F';
+                    summary1 = this.state.weather[i].summary_1;
+                    summary2 = this.state.weather[i].summary_2;
+                };
+            }
+            bars.push(<BarSet date={this.state.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} icon1={icon1} icon2={icon2} temp1={temp1} temp2={temp2} summary1={summary1} summary2={summary2} />);
         }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
         return (
