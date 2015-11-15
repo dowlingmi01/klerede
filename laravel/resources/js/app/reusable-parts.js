@@ -102,3 +102,12 @@ var Dial = React.createClass({
 });
 
 console.log('Reusable parts loaded...');
+
+// Loading just time and date instead of full welcome message
+if(document.getElementById('time-date')){
+    React.render(
+        <TimeDate />,
+        document.getElementById('time-date')
+    );
+    console.log('Time and date only loaded...');
+}

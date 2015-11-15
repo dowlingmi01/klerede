@@ -24,6 +24,7 @@ body, p, td, label, .checkbox label {
 @darkgrey: rgba(66,66,66,1);
 @darkmediumgrey: rgba(82,82,82,1);
 @mediumgrey: rgba(135,135,135,1);
+@lightmediumgrey: rgba(185,185,185,1);
 @lightgrey: rgba(236,234,231,1);
 @white: rgba(255,255,255,1);
 
@@ -310,10 +311,19 @@ header {
         color: @aqua;
     }
 }
+.page {
+    background-color: @white;
+    font-size: 110%;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 25px;
+    position: relative;
+}
 /******************************/
 /******** WELCOME TEXT ********/
 /******************************/
-#welcome-text {
+#welcome-text,
+#time-date {
     font-size: 160%;
     font-weight: 500;
     @media (max-width: 767px) {
@@ -341,6 +351,13 @@ header {
 }
 .time-date-modifier {
     color: @mediumgrey;
+}
+.page-title {
+    float: left;
+    font-size: 200%;
+    font-weight: 500;
+    margin: 4px 0 0 0;
+    text-transform: uppercase;
 }
 /****************************************/
 /******** TOP VISITS STAT BLOCKS ********/
@@ -1315,12 +1332,34 @@ header {
         }
     }
 }
+/***********************/
+/******** FORMS ********/
+/***********************/
+input {
+    background-color: @lightgrey;
+    border: 0;
+    padding: 10px;
+}
+input.empty {
+    color: @lightmediumgrey;
+}
 /************************/
 /******** FOOTER ********/
 /************************/
 footer {
     text-align: right;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
