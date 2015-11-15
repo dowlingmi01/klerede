@@ -89,19 +89,71 @@ var GoalSetting = React.createClass({
                     <div className="col-sm-4">
                         <input type="text" id="goal-cafe" placeholder="$000,000" className="form-control" /><ButtonExpand target="#months-cafe" />
                         <div className="collapse" id="months-cafe">
-                            By Month:
-                            Jan: <input type="text" value="$0" />
-                            Feb: <input type="text" value="$0" />
-                            Mar: <input type="text" value="$0" />
-                            Apr: <input type="text" value="$0" />
-                            May: <input type="text" value="$0" />
-                            Jun: <input type="text" value="$0" />
-                            Jul: <input type="text" value="$0" />
-                            Aug: <input type="text" value="$0" />
-                            Sep: <input type="text" value="$0" />
-                            Oct: <input type="text" value="$0" />
-                            Nov: <input type="text" value="$0" />
-                            Dec: <input type="text" value="$0" />
+                            <div className="form-group">
+                                <div className="col-sm-8 collapse-title">
+                                    By Month:
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label for="goal-boxoffice-jan" className="col-sm-1 control-label">Jan:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-jan" placeholder="$0" className="form-control" />
+                                </div>
+                                <label for="goal-boxoffice-jul" className="col-sm-1 control-label">Jul:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-jul" placeholder="$0" className="form-control" />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label for="goal-boxoffice-feb" className="col-sm-1 control-label">Feb:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-feb" placeholder="$0" className="form-control" />
+                                </div>
+                                <label for="goal-boxoffice-aug" className="col-sm-1 control-label">Aug:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-aug" placeholder="$0" className="form-control" />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label for="goal-boxoffice-mar" className="col-sm-1 control-label">Mar:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-mar" placeholder="$0" className="form-control" />
+                                </div>
+                                <label for="goal-boxoffice-sep" className="col-sm-1 control-label">Sep:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-sep" placeholder="$0" className="form-control" />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label for="goal-boxoffice-apr" className="col-sm-1 control-label">Apr:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-apr" placeholder="$0" className="form-control" />
+                                </div>
+                                <label for="goal-boxoffice-oct" className="col-sm-1 control-label">Oct:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-oct" placeholder="$0" className="form-control" />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label for="goal-boxoffice-may" className="col-sm-1 control-label">May:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-may" placeholder="$0" className="form-control" />
+                                </div>
+                                <label for="goal-boxoffice-nov" className="col-sm-1 control-label">Nov:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-nov" placeholder="$0" className="form-control" />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label for="goal-boxoffice-jun" className="col-sm-1 control-label">Jun:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-jun" placeholder="$0" className="form-control" />
+                                </div>
+                                <label for="goal-boxoffice-dec" className="col-sm-1 control-label">Dec:</label>
+                                <div className="col-sm-3">
+                                    <input type="text" id="goal-boxoffice-dec" placeholder="$0" className="form-control" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
