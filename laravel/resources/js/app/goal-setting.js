@@ -5,8 +5,8 @@
 var GoalSetting = React.createClass({
     render: function() {
         return (
-            <div className="test">
-                Test
+            <div className="button-expand collapsed" data-toggle="collapse" data-target="#months-boxoffice">
+                <Caret />
             </div>
         );
     }
