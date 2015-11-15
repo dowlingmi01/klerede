@@ -76,6 +76,16 @@ var ActionMenu = React.createClass({
     }
 });
 
+var ButtonExpand = React.createClass({
+    render: function() {
+        return (
+            <div className="button-expand collapsed" data-toggle="collapse" data-target={this.props.target}>
+                <Caret />
+            </div>
+        );
+    }
+});
+
 var Segment = React.createClass({
     render: function() {
         return (
