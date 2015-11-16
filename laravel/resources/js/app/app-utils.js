@@ -161,42 +161,18 @@ var wnt = {
     },
     getGoals: function(year){
         $.get(wnt.apiGoals+'/'+wnt.venueID+'/'+year)
-        /*
-        RETURNS...
-        cafe/amount: Object
-            channel: "cafe"
-            months: Object
-                1: 0
-                2: 0
-                3: 0
-                4: 0
-                5: 0
-                6: 0
-                7: 0
-                8: 0
-                9: 0
-                10: 0
-                11: 0
-                12: 0
-                __proto__: Object
-            name: "Cafe"
-            type: "amount"
-            __proto__: Object
-        gate/amount: Object
-        membership/amount: Object
-        membership/units: Object
-        store/amount: Object
-        */
         .done(function(result){
             wnt.goals = result;
+            wnt.gettingGoalsData.resolve(result);
             console.log('Goals data loaded...');
         })
         .fail(function(result){
             console.log('GOALS DATA ERROR! ... ' + result.statusText);
             console.log(result);
+            wnt.gettingGoalsData.resolve(result);
         });
     },
-    setGoals: function(year, channel, type){
+    setGoals: function(data, year, channel, type){
         // PUT api/v1/goals/sales     /{venue_id}/{year}/{channel}/{type}[/{sub_channel}]
         // e.g. 2015/cafe/amount
         // request body = { "months": { 1: XXX, 2: XXX, 3: XXX, ... } }
@@ -206,22 +182,7 @@ var wnt = {
             url: wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type,  // OPTIONAL +'/'+sub_channel, ... for membership
             type: 'PUT',
             dataType: 'json',
-            data: {
-                'months': {
-                    1: 300,
-                    2: 300,
-                    3: 300,
-                    4: 300,
-                    5: 300,
-                    6: 300,
-                    7: 300,
-                    8: 300,
-                    9: 300,
-                    10: 300,
-                    11: 300,
-                    12: 300                    
-                }
-            },
+            data: data,
             success: function(result) {
                 console.log(result);
             },
