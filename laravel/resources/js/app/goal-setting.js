@@ -81,14 +81,23 @@ var GoalSetting = React.createClass({
         // Track Enter Key
         $('form').keypress(function(e) {
             if(e.which == 13) {
-                console.log('BLAM!!!');
+                console.log('BLAM!!!' + num);
             }
         });
         $('#button-save').on('click', function() {
             console.log('BLAM!!!');
         });
         $('input').on('blur', function() {
-            console.log('BLAM!!!');
+            $(this).val(parseInt($(this).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            console.log('BLUR!!!');
+        });
+        $('input').on('focus', function() {
+            $(this).val(Number($(this).val().replace(/[^0-9\.]+/g,"")));
+            //$(this).val().parseNumber({format:"$#,###", locale:"us"});
+            //$(this).val().formatNumber({format:"###", locale:"us"});
+            // var csqft_price = $('#goal-boxoffice').val();
+            // var number = Number( csqft_price.replace(/[^0-9\.]+/g,""));
+            console.log('FOCUS!!!');
         });
     },
     render: function() {
