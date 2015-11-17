@@ -144,11 +144,11 @@ var SalesGoals = React.createClass({
                 }
                 if(self.isMounted()) {
                     self.setState({
-                        goal: goalBoxoffice + goalCafe + goalGiftstore + self.state.goalMembership,
+                        /*goal: goalBoxoffice + goalCafe + goalGiftstore + self.state.goalMembership,
                         goalBoxoffice: goalBoxoffice,
                         goalCafe: goalCafe,
                         goalGiftstore: goalGiftstore,
-                        goalMembership: self.state.goalMembership,
+                        goalMembership: self.state.goalMembership,*/
                         sales: result.sales_year.amount,
                         barGradient: self.barGradient(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
