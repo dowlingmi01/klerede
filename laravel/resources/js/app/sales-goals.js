@@ -144,6 +144,7 @@ var SalesGoals = React.createClass({
                 }
                 if(self.isMounted()) {
                     self.setState({
+                        // UN-COMMENT TO GET WORKING AGAIN
                         /*goal: goalBoxoffice + goalCafe + goalGiftstore + self.state.goalMembership,
                         goalBoxoffice: goalBoxoffice,
                         goalCafe: goalCafe,

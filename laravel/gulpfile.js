@@ -55,7 +55,8 @@ gulp.task('libs', function(){
             'resources/js/libs/jquery.easing.1.3.js',
             'resources/js/libs/d3.min.js',
             'resources/js/libs/radialProgress.js',
-            'resources/js/libs/bootstrap.js'
+            'resources/js/libs/bootstrap.js',
+            'resources/js/libs/es5-shim.min.js'
         ])
         .pipe(concat('libs.js'))
         .pipe(uglify({mangle: false}))
