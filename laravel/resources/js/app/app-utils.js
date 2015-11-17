@@ -163,7 +163,10 @@ var wnt = {
         $.get(wnt.apiGoals+'/'+wnt.venueID+'/'+year)
         .done(function(result){
             wnt.goals = result;
-            wnt.gettingGoalsData.resolve(result);
+            // If there's a deferred set for the data call, resolve it
+            if(wnt.gettingGoalsData){
+                wnt.gettingGoalsData.resolve(result);
+            }
             console.log('Goals data loaded...');
         })
         .fail(function(result){

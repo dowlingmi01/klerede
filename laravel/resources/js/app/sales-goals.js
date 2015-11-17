@@ -92,6 +92,7 @@ var SalesGoals = React.createClass({
         }
     },
     componentDidMount: function() {
+        var self = this;
         $.post(
             wnt.apiMain,
             {
@@ -126,60 +127,84 @@ var SalesGoals = React.createClass({
         .done(function(result) {
             console.log('Sales Goals data loaded...');
             wnt.salesGoals = result;
-            if(this.isMounted()) {
-                this.setState({
-                    sales: result.sales_year.amount,
-                    barGradient: this.barGradient(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (result.sales_year.amount / this.state.goal) * 100
-                        ),
-                    boxoffice: result.boxoffice_year.amount,
-                    cafe: result.cafe_year.amount,
-                    giftstore: result.giftstore_year.amount,
-                    membership: result.membership_year.amount,
-                    statusBoxoffice: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
-                            'label'
-                        ),
-                    statusClassBoxoffice: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
-                            'class'
-                        ),
-                    statusCafe: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
-                            'label'
-                        ),
-                    statusClassCafe: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
-                            'class'
-                        ),
-                    statusGiftstore: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
-                            'label'
-                        ),
-                    statusClassGiftstore: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
-                            'class'
-                        ),
-                    statusMembership: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.membership_year.amount / 3250000) * 100,
-                            'label'
-                        ),
-                    statusClassMembership: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.membership_year.amount / 3250000) * 100,
-                            'class'
-                        )
-                });
-                this.formatNumbers();
-            }
+            // TO DO: Add goal API call nested???
+            wnt.gettingGoalsData = $.Deferred();
+            wnt.getGoals(wnt.thisYear);
+            $.when(wnt.gettingGoalsData).done(function(goals) {
+                var total = 0;
+                for(i=1; i<13; i++){
+                    var key = i;
+                    total += goals['gate/amount'].months[key.toString()];
+                }
+                // $('#goal-gate').val(total.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+                console.log(goals);
+                console.log(total);
+                if(self.isMounted()) {
+                    console.log(goals);
+                    self.setState({
+                        goal: total + self.state.goalCafe + self.state.goalGiftstore + self.state.goalMembership,
+                        goalBoxoffice: total,
+                        sales: result.sales_year.amount,
+                        barGradient: self.barGradient(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (result.sales_year.amount / self.state.goal) * 100
+                            ),
+                        boxoffice: result.boxoffice_year.amount,
+                        cafe: result.cafe_year.amount,
+                        giftstore: result.giftstore_year.amount,
+                        membership: result.membership_year.amount,
+                        statusBoxoffice: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
+                                'label'
+                            ),
+                        statusClassBoxoffice: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.boxoffice_year.amount / 8000000) * 100,
+                                'class'
+                            ),
+                        statusCafe: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                                'label'
+                            ),
+                        statusClassCafe: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.cafe_year.amount / 3250000) * 100,
+                                'class'
+                            ),
+                        statusGiftstore: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                                'label'
+                            ),
+                        statusClassGiftstore: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.giftstore_year.amount / 3250000) * 100,
+                                'class'
+                            ),
+                        statusMembership: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                                'label'
+                            ),
+                        statusClassMembership: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                                'class'
+                            )
+                    });
+                    self.formatNumbers();
+                    console.log(self.state.goal);
+                }
+            });
+
+
+
+
+
+
+            
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
             console.log('SALES GOALS DATA ERROR! ... ' + result.statusText);

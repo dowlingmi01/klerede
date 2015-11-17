@@ -89,6 +89,7 @@ var AccordionItemPlus = React.createClass({
 });
 
 var WeatherBar = React.createClass({   // Weather API
+    // TO DO: Combine into main component and remove old API call
     getInitialState: function() {
         return {
             icon: '',

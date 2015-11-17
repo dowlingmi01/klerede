@@ -92,6 +92,7 @@ var GoalSetting = React.createClass({
                 total += goals['gate/amount'].months[key.toString()];
             }
             $('#goal-gate').val(total.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            // Set individual months ... $('#goal-gate').parent().find('input').length
         });
         // When 'Enter' key is pressed ...
         $('form').keypress(function(e) {
