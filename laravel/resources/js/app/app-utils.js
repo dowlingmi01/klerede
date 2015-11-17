@@ -172,7 +172,10 @@ var wnt = {
         .fail(function(result){
             console.log('GOALS DATA ERROR! ... ' + result.statusText);
             console.log(result);
-            wnt.gettingGoalsData.resolve(result);
+            // If there's a deferred set for the data call, resolve it
+            if(wnt.gettingGoalsData){
+                wnt.gettingGoalsData.resolve(result);
+            }
         });
     },
     setGoals: function(data, year, channel, type){

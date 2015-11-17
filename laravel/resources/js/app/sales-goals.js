@@ -127,23 +127,28 @@ var SalesGoals = React.createClass({
         .done(function(result) {
             console.log('Sales Goals data loaded...');
             wnt.salesGoals = result;
-            // TO DO: Add goal API call nested???
+            // TO DO: Add goal API call nested???  HOW TO HANDLE GOAL UPDATES ON FILTER CHANGES???  SET THOSE based on wnt.goals and grab the proper months to add up
             wnt.gettingGoalsData = $.Deferred();
             wnt.getGoals(wnt.thisYear);
             $.when(wnt.gettingGoalsData).done(function(goals) {
-                var total = 0;
+                var goalBoxoffice = 0;
+                var goalCafe = 0;
+                var goalGiftstore = 0;
+                var goalMembership = 0;
                 for(i=1; i<13; i++){
                     var key = i;
-                    total += goals['gate/amount'].months[key.toString()];
+                    goalBoxoffice += goals['gate/amount'].months[key.toString()];
+                    goalCafe += goals['cafe/amount'].months[key.toString()];
+                    goalGiftstore += goals['store/amount'].months[key.toString()];
+                    // goalMembership += goals['membership/amount'].months[key.toString()];
                 }
-                // $('#goal-gate').val(total.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-                console.log(goals);
-                console.log(total);
                 if(self.isMounted()) {
-                    console.log(goals);
                     self.setState({
-                        goal: total + self.state.goalCafe + self.state.goalGiftstore + self.state.goalMembership,
-                        goalBoxoffice: total,
+                        goal: goalBoxoffice + goalCafe + goalGiftstore + self.state.goalMembership,
+                        goalBoxoffice: goalBoxoffice,
+                        goalCafe: goalCafe,
+                        goalGiftstore: goalGiftstore,
+                        goalMembership: self.state.goalMembership,
                         sales: result.sales_year.amount,
                         barGradient: self.barGradient(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
@@ -195,7 +200,6 @@ var SalesGoals = React.createClass({
                             )
                     });
                     self.formatNumbers();
-                    console.log(self.state.goal);
                 }
             });
 

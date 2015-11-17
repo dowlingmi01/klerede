@@ -86,12 +86,18 @@ var GoalSetting = React.createClass({
         wnt.getGoals(wnt.thisYear);
         $.when(wnt.gettingGoalsData).done(function(goals) {
             // Format = wnt.goals['gate/amount'].months['1']
-            var total = 0;
+            var goalBoxoffice = 0;
+            var goalCafe = 0;
+            var goalGiftstore = 0;
             for(i=1; i<13; i++){
                 var key = i;
-                total += goals['gate/amount'].months[key.toString()];
+                goalBoxoffice += goals['gate/amount'].months[key.toString()];
+                goalCafe += goals['cafe/amount'].months[key.toString()];
+                goalGiftstore += goals['store/amount'].months[key.toString()];
             }
-            $('#goal-gate').val(total.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $('#goal-gate').val(goalBoxoffice.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $('#goal-cafe').val(goalCafe.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $('#goal-store').val(goalGiftstore.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
             // Set individual months ... $('#goal-gate').parent().find('input').length
         });
         // When 'Enter' key is pressed ...
