@@ -1,0 +1,98 @@
+id,name,street,city,state,zip,country,lat,long
+1100,Event Network Inc,9606 Aero Dr #1000,San Diego,CA,92123,USA,32.8097932,-117.1230921
+1111,Shedd Aquarium,1200 S Lake Shore Dr,Chicago,IL,60605,USA,41.8675726,-87.614038
+1113,Marineland Dolphin Adventure,9600 N Ocean Shore Blvd,St Augustine,FL,32080,USA,29.6691487,-81.2130319
+1121,Indianapolis Zoo,1200 W Washington St,Indianapolis,IN,46222,USA,39.767649,-86.1800818
+1201,Chicago Children's Museum,700 E Grand Ave,Chicago,IL,60611,USA,41.891408,-87.609144
+1202,COSI,333 W Broad St,Columbus,OH,43215,USA,39.9598362,-83.0070197
+1203,Science City,30 W Pershing Rd,Kansas City,MO,64108,USA,39.0856079,-94.586018
+1204,Pacific Science Center,200 2nd Ave N,Seattle,WA,98109,USA,47.6194554,-122.3516326
+1301,Natural History Museum of Los Angeles County,900 Exposition Blvd,Los Angeles,CA,90007,USA,34.0170887,-118.2887598
+1302,La Brea Tar Pits,5801 Wilshire Blvd,Los Angeles,CA,90036,USA,34.0637876,-118.3554337
+1303,New York State Museum,222 Madison Ave,Albany,NY,12230,USA,42.6483795,-73.7617521
+1413,Pacific Science Center,200 2nd Ave N,Seattle,WA,98109,USA,47.6194554,-122.3516326
+1429,San Diego Natural History Museum,"Balboa Park, 1788 El Prado",San Diego,CA,92101,USA,32.732111,-117.1473601
+1438,Discovery Times Square,226 W 44th St,New York,NY,10036,USA,40.7575281,-73.9872229
+1501,Times Square,Times Square,Manhattan,NY,10036,USA,40.758895,-73.985131
+1502,USS Midway Museum,910 N Harbor Dr,San Diego,CA,92101,USA,32.7137398,-117.1751265
+1503,Boston Children's Museum,308 Congress St,Boston,MA,2210,USA,42.3516422,-71.0500753
+1504,San Diego Air & Space Museum,2001 Pan American Plaza,San Diego,CA,92101,USA,32.7262533,-117.1543461
+1505,Discovery Place,301 N Tryon St,Charlotte,NC,28202,USA,35.229067,-80.840667
+1508,Longwood Gardens,1001 Longwood Rd,Kennett Square,PA,19348,USA,39.8712981,-75.6751563
+1509,Penn Museum,3260 South St,Philadelphia,PA,19104,USA,39.9492336,-75.1913783
+1513,Seattle Aquarium,1483 Alaskan Way,Seattle,WA,98101,USA,47.6074305,-122.343002
+1514,Mystic Aquarium,55 Coogan Blvd,Mystic,CT,6355,USA,41.373329,-71.953237
+1515,Philadelphia Zoo,3400 W Girard Ave,Philadelphia,PA,19104,USA,39.9714554,-75.1954077
+1516,Museum of Science,1 Science Park,Boston,MA,2114,USA,42.367543,-71.071266
+1517,Abraham Lincoln Presidential Library,112 N 6th St,Springfield,IL,62701,USA,39.802266,-89.6474548
+1518,National Aquarium,501 E Pratt St,Baltimore,MD,21202,USA,39.2846012,-76.6070084
+1519,"Museum of Science and Industry, Chicago",5700 S Lake Shore Dr,Chicago,IL,60637,USA,41.7905726,-87.5830659
+1521,Port Discovery Children's Museum,35 Market Pl,Baltimore,MD,21202,USA,39.288989,-76.606296
+1522,Great Lakes Science Center,601 Erieside Ave,Cleveland,OH,44114,USA,41.507436,-81.6965884
+1523,South Carolina Aquarium,100 Aquarium Wharf,Charleston,SC,29401,USA,32.791038,-79.9254462
+1524,Griffith Observatory,2800 E Observatory Rd,Los Angeles,CA,90027,USA,34.1184341,-118.3003935
+1525,Royal Ontario Museum,100 Queens Park,Toronto,ON,M5S 2C6,Canada,43.6677097,-79.3947771
+1526,Phoenix Zoo,455 N Galvin Pkwy,Phoenix,AZ,85008,USA,33.4498992,-111.9466024
+1527,The Florida Aquarium,701 Channelside Dr,Tampa,FL,33602,USA,27.9442871,-82.4451338
+1529,Mystic Seaport,75 Greenmanville Ave,Mystic,CT,6355,USA,41.3612327,-71.9644725
+1530,Newseum,555 Pennsylvania Ave NW,Washington,DC,20001,USA,38.8930396,-77.0192849
+1531,Gettysburg National Military Park,1195 Baltimore Pike,Gettysburg,PA,17325,USA,39.8113023,-77.2233602
+1532,California Academy of Sciences,55 Music Concourse Dr,San Francisco,CA,94118,USA,37.7698646,-122.4660947
+1533,Pacific Aviation Museum Pearl Harbor,319 Lexington Blvd,Honolulu,HI,96818,USA,21.3597619,-157.96184
+1535,The Tech Museum of Innovation,201 S Market St,San Jose,CA,95113,USA,37.331629,-121.8901264
+1538,Polynesian Cultural Center,55-370 Kamehameha Hwy,Laie,HI,96762,USA,21.6408752,-157.9210532
+1539,New York Hall Of Science,47-01 111th St,Corona,NY,11368,USA,40.7473181,-73.8516908
+1540,Independence Visitor Center,1 N Independence Mall W,Philadelphia,PA,19106,USA,39.9510887,-75.1500623
+1541,Liberty Science Center,222 Jersey City Blvd,Jersey City,NJ,7305,USA,40.7085703,-74.0546292
+1543,Old Sturbridge Village,Old Sturbridge Village,Sturbridge,MA,1566,USA,42.1070372,-72.1161971
+1544,Philadelphia City Hall,1401 John F Kennedy Blvd,Philadelphia,PA,19107,USA,39.9523882,-75.1640233
+1547,The Children's Museum of Phoenix,215 N 7th St,Phoenix,AZ,85034,USA,33.4504124,-112.0646399
+1548,Connecticut Science Center,250 Columbus Blvd,Hartford,CT,6103,USA,41.7646661,-72.6687924
+1549,Ford's Theatre,511 10th St NW,Washington,DC,20004,USA,38.8969408,-77.0256002
+1550,The Henry Ford Museum,20900 Oakwood,Dearborn,MI,48124,USA,42.3031087,-83.2331085
+1551,Chicago Botanic Garden,1000 Lake Cook Rd,Glencoe,IL,60022,USA,42.15234,-87.786308
+1552,Washington National Cathedral,3101 Wisconsin Ave NW,Washington,DC,20016,USA,38.9305946,-77.0707808
+1553,Garden of the Gods Visitor & Nature Center,1805 N 30th St,Colorado Springs,CO,80904,USA,38.8783878,-104.8719558
+1554,Seven Falls,6 Lake Ave,Colorado Springs,CO,80906,USA,38.786154,-104.872312
+1555,Cleveland Metroparks Zoo,3900 Wildlife Way,Cleveland,OH,44109,USA,41.445521,-81.7079442
+1556,New England Aquarium,1 Central Wharf,Boston,MA,2110,USA,42.3591315,-71.0495815
+1558,Willis Tower,233 S Wacker Dr,Chicago,IL,60606,USA,41.8788764,-87.6359149
+1559,Naismith Memorial Basketball Hall of Fame,1000 Hall of Fame Ave,Springfield,MA,1105,USA,42.093774,-72.585129
+1560,Chicago History Museum,1601 N Clark St,Chicago,IL,60614,USA,41.9120377,-87.6314917
+1561,Adler Planetarium,1300 S Lake Shore Dr,Chicago,IL,60605,USA,41.866333,-87.6067829
+1562,Georgia Aquarium,225 Baker St NW,Atlanta,GA,30313,USA,33.763382,-84.3951098
+1564,Orlando Science Center,777 E Princeton St,Orlando,FL,32803,USA,28.5722669,-81.3682203
+1565,Kohl Children's Museum,2100 Patriot Blvd,Glenview,IL,60026,USA,42.093615,-87.8259454
+1566,Chabot Space & Science Center,10000 Skyline Blvd,Oakland,CA,94619,USA,37.8187281,-122.1806716
+1568,The Franklin Institute,222 N 20th St,Philadelphia,PA,19103,USA,39.9582109,-75.1731347
+1569,Brevard Zoo,8225 North Wickham Road,Melbourne,FL,32940,USA,28.2249886,-80.7138556
+1570,Texas State Aquarium,2710 N Shoreline Blvd,Corpus Christi,TX,78402,USA,27.8137986,-97.3920437
+1572,TELUS Spark,220 St Georges Dr NE,Calgary,AB,T2E 5T2,Canada,51.053258,-114.025608
+1573,The Mob Museum,300 Stewart Ave,Las Vegas,NV,89101,USA,36.1727958,-115.1412418
+1574,Perot Museum of Nature and Science,2201 N Field St,Dallas,TX,75201,USA,32.7869048,-96.8066981
+1575,Brooklyn Botanic Garden,990 Washington Ave,Brooklyn,NY,11225,USA,40.6660424,-73.9620886
+1576,LeMay - America's Car Museum,2702 East D St,Tacoma,WA,98421,USA,47.2361934,-122.4304946
+1577,Battleship USS Iowa,250 S Harbor Blvd,Los Angeles,CA,90731,USA,33.7422615,-118.2772823
+1578,Cleveland Museum of Natural History,1 Wade Oval Dr,Cleveland,OH,44106,USA,41.511522,-81.61288
+1579,The Alamo,300 Alamo Plaza,San Antonio,TX,78205,USA,29.4259671,-98.4861419
+1580,The Academy of Natural Sciences,1900 Benjamin Franklin Pkwy,Philadelphia,PA,19103,USA,39.9571192,-75.1712124
+1581,Desert Botanical Garden,1201 N Galvin Pkwy,Phoenix,AZ,85008,USA,33.460598,-111.947776
+1582,College Football Hall of Fame,250 Marietta St,Atlanta,GA,30313,USA,33.7600382,-84.3952373
+1583,Donald W. Reynolds Center for American Art and Portraiture,8th & F St NW,Washington,DC,20001,USA,38.8978673,-77.0229558
+1585,Oregon Museum of Science & Industry,1945 SE Water Ave,Portland,OR,97214,USA,45.5082103,-122.6657834
+1586,Missouri Botanical Garden,4344 Shaw Blvd,St. Louis,MO,63110,USA,38.6127672,-90.2593798
+1587,Reunion Tower,300 Reunion Blvd E,Dallas,TX,75207,USA,32.775604,-96.808953
+1588,Loveland Living Planet Aquarium,12033 Lone Peak Pkwy,Draper,UT,84020,USA,40.5324486,-111.893979
+1589,Museum at Prairiefire,5801 W 135th St,Overland Park,KS,66224,USA,38.8820282,-94.6520501
+1590,Alcatraz Cruises,Pier 33 The Embarcadero,San Francisco,CA,94111,USA,37.806539,-122.404464
+1593,Woodland Park Zoo,5500 Phinney Ave N,Seattle,WA,98103,USA,47.6689033,-122.3509372
+1594,Oregon Zoo,4001 Southwest Canyon Road,Portland,OR,97221,USA,45.5100418,-122.7159015
+1595,360 CHICAGO,"94, 875 N Michigan Ave",Chicago,IL,60611,USA,41.8988993,-87.6231649
+1596,Calgary Tower,101 9 Ave SW,Calgary,AB,T2P 1J9,Canada,51.044308,-114.0630914
+1597,The Queen Mary,1126 Queens Hwy,Long Beach,CA,90802,USA,33.7526356,-118.1903235
+1598,"Intrepid Sea, Air & Space Museum","Pier 86, W 46th St & 12th Ave",New York,NY,10036,USA,40.7645266,-73.9996076
+1599,National Museum of the Marine Corps,18900 Jefferson Davis Hwy,Triangle,VA,22172,USA,38.5434244,-77.3421514
+1601,Historic Park City Alliance,PO Box 1348,Park City,UT,84060,USA,40.6460672,-111.5002273
+1602,The Maritime Aquarium at Norwalk,10 N Water St,Norwalk,CT,6854,USA,41.1013968,-73.4165748
+1701,American Museum of Natural History,Central Park West & 79th St,New York,NY,10024,USA,40.7813241,-73.9739882
+1802,UC San Diego Health System,200 W Arbor Dr,San Diego,CA,92103,USA,32.7543883,-117.1680223

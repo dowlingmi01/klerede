@@ -26,6 +26,8 @@ class VenueTables extends Migration {
 			$table->timestamps();
 			$table->primary('id');
 		});
+		$venue_data = App\Helpers\Helper::readCSV(database_path('migrations/data/venues.csv'));
+		DB::table('venue')->insert($venue_data);
 
 		Schema::create('store', function(Blueprint $table)
 		{
@@ -35,6 +37,8 @@ class VenueTables extends Migration {
 			$table->timestamps();
 			$table->primary('id');
 		});
+		$store_data = App\Helpers\Helper::readCSV(database_path('migrations/data/stores.csv'));
+		DB::table('store')->insert($store_data);
 	}
 
 	/**
