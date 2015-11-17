@@ -7,7 +7,7 @@ class StoreTransaction extends Model {
 	protected $table = 'store_transaction';
 	static function getForXML(\SimpleXMLElement $xmlTran) {
 		$transaction = new StoreTransaction();
-		$transaction->venue_id = $xmlTran->RetailStoreID;
+		$transaction->store_id = $xmlTran->RetailStoreID;
 		$transaction->sequence = $xmlTran->SequenceNumber;
 		$transaction->business_day = $xmlTran->BusinessDayDate;
 		$transaction->time_start = $xmlTran->BeginDateTime;
@@ -18,7 +18,7 @@ class StoreTransaction extends Model {
 		$transaction->register_id = $xmlTran->WorkstationID;
 		$transaction->source_xml = $xmlTran->asXML();
 		if($xmlTran->RetailTransaction->Customer)
-			$transaction->member_xstore_id = MemberXstore::getForXML($transaction->venue_id,
+			$transaction->member_xstore_id = MemberXstore::getForXML($transaction->store_id,
 				$xmlTran->RetailTransaction->Customer,
 				$xmlTran->children('dtv', true)->PosTransactionProperties)->id;
 		foreach($xmlTran->RetailTransaction->LineItem as $xmlLine)
@@ -51,8 +51,8 @@ class StoreTransaction extends Model {
 			->where('business_day', '<=', $params->date_to)
 			->groupBy('business_day')
 		;
-		if(isset($params->venue_id))
-			$query->where('venue_id', $params->venue_id);
+		if(isset($params->store_id))
+			$query->where('store_id', $params->store_id);
 		if(isset($params->member)) {
 			if($params->member)
 				$query->whereNotNull('member_xstore_id');
