@@ -204,7 +204,7 @@ var wnt = {
 /********************************************/
 
 /************************************************************************************************************/
-wnt.today = new Date('2015-9-1');   // TEMPORARY OVERRIDE ... REMOVE STRING TO GET CURRENT DAY FOR ALL CALCULATIONS
+wnt.today = new Date(2015,8,1);   // 9/1/2015 ... TEMPORARY OVERRIDE ... REMOVE STRING TO GET CURRENT DAY FOR ALL CALCULATIONS
 /************************************************************************************************************/
 wnt.thisYear = wnt.today.getFullYear();
 wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
