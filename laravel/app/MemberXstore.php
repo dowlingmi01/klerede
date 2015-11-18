@@ -5,7 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 class MemberXstore extends Model {
 	protected $table = 'member_xstore';
 	protected $guarded = [];
-	static function getForXML($venue_id, \SimpleXMLElement $custXML, \SimpleXMLElement $tranPropXML) {
+	static function getForXML($store_id, \SimpleXMLElement $custXML, \SimpleXMLElement $tranPropXML) {
+		$store = Store::find($store_id);
+		$venue_id = $store ? $store->venue_id : $store_id;
 		$name = $custXML->Name;
 		$active = filter_var($custXML->ActiveFlag, FILTER_VALIDATE_BOOLEAN);
 		$xstore_id = $custXML->AlternateKey[0]->AlternateID;
