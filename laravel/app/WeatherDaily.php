@@ -1,5 +1,6 @@
 <?php namespace App;
 
+use App\Helpers\Helper;
 use Illuminate\Database\Eloquent\Model;
 
 class WeatherDaily extends Model {
@@ -31,4 +32,11 @@ class WeatherDaily extends Model {
 			return $dbquery->get()[0];
 		}
 	}
+	public function setDateAttribute($date) {
+		$this->attributes['date'] = $date;
+		Helper::setPeriodFields($this);
+	}
 }
+WeatherDaily::saving(function($weather) {
+	Helper::setPeriodFields($weather);
+});

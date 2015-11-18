@@ -17,6 +17,10 @@ class WeatherDailyTable extends Migration {
 			$table->increments('id');
 			$table->integer('venue_id');
 			$table->date('date');
+			$table->smallInteger('year');
+			$table->mediumInteger('quarter');
+			$table->mediumInteger('month');
+			$table->mediumInteger('week');
 			$table->string('summary_1');
 			$table->string('summary_2');
 			$table->string('icon_1');
