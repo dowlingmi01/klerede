@@ -30,6 +30,12 @@ var MembershipGoals = React.createClass({
         };
     },
     markerPosition: function(startDate, endDate, periodLength) {
+        // Needed to switch date format for cross-browser parsing
+        startDate = startDate.split('-');
+        startDate = startDate[1]+'/'+startDate[2]+'/'+startDate[0];
+        endDate = endDate.split('-');
+        endDate = endDate[1]+'/'+endDate[2]+'/'+endDate[0];
+        // Now it can be parsed in Firefox and Safari too
         var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
         var percentage = (days / periodLength) * 100;
         return percentage;

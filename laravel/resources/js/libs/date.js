@@ -227,7 +227,7 @@ Date.fullYearStart = '20';
 	 * @cat Plugins/Methods/Date
 	 */
 	add("getDayOfYear", function() {
-		var tmpdtm = new Date("1/1/" + this.getFullYear());
+		var tmpdtm = new Date(this.getFullYear(), 0, 1);   // "1/1/" + this.getFullYear()
 		return Math.floor((this.getTime() - tmpdtm.getTime()) / 86400000);
 	});
 	
@@ -447,7 +447,7 @@ Date.fullYearStart = '20';
 	Date.fromString = function(s, format)
 	{
 		var f = format || Date.format,
-		    d = new Date('01/01/1977'),
+		    d = new Date(1977, 0, 1),   // '01/01/1977'
 		    mLength = 0,
 		    iM, iD, iY,
 		    i, mStr;
