@@ -21,7 +21,11 @@ var wnt = {
         return dateStr[1]+'.'+dateStr[2]+'.'+dateStr[0].substring(2);
     },
     getWeek: function(dateStr) {
-        var dateObj = new Date(dateStr);   // Need to pass one day before (e.g. 8/14 becomes 8/13)
+        // NOT USED
+        // NUMBER: [1, 2], Format: ..., Used By: ..., When: ...
+        /*
+        console.log('DATE STRING FORMAT 1 (and 2) = ' + dateStr);
+        var dateObj = new Date(dateStr);   // Need to pass one day before ?? (e.g. 8/14 becomes 8/13)
         var week = [];
         for(i=0; i<7; i++){
             dateObj = new Date(dateStr);
@@ -29,11 +33,39 @@ var wnt = {
             week.push(wnt.doubleDigits(dateObj.getMonth()+1) + '.' + wnt.doubleDigits(dateObj.getDate()));
         }
         return week.reverse();
+        */
+    },
+    dateArray: function(dateStr) {
+        var dateArray = [];
+        if(dateStr.indexOf('-') !== -1){
+            dateStr = dateStr.split('-');
+            dateArray.push(parseInt(dateStr[0]));
+            dateArray.push(parseInt(dateStr[1]-1));
+            dateArray.push(parseInt(dateStr[2]));
+        };
+        if(dateStr.indexOf('/') !== -1){
+            dateStr = dateStr.split('/');
+            dateArray.push(parseInt(dateStr[2]));
+            dateArray.push(parseInt(dateStr[0]-1));
+            dateArray.push(parseInt(dateStr[1]));
+        };
+        return dateArray;
     },
     getMonth: function(dateStr) {
-        var dateObj = new Date(dateStr);
+        console.log('DATE STRING IS ... '+dateStr);
+        var dateArray = wnt.dateArray(dateStr);
+        // NUMBER: 3, Format: 2015-9-1, Used By: Revenue, When: [load, week change]
+        console.log('DATE STRING FORMAT 3 = ' + dateStr);
+        console.log('DATE ARRAY IS ... ');
+        console.log(dateArray);
+        // Have to use values in array individually and not as an array or else the month is wrong
+        var dateObj = new Date(dateArray[0], dateArray[1], dateArray[2]);
+        console.log('NEW DATE OBJECT IS');
+        console.log(dateObj);
         var thisYear = dateObj.getFullYear();
         var thisMonth = dateObj.getMonth()+1;
+        console.log('NEW DATE OBJECT MONTH = '+dateObj.getMonth());
+        console.log('NEW DATE OBJECT MONTH + 1 = '+thisMonth);
         var days = wnt.daysInMonth(thisMonth, dateObj.getFullYear());
         thisMonth = wnt.doubleDigits(thisMonth);
         var month = [];
@@ -43,11 +75,14 @@ var wnt = {
         return month;
     },
     getDateRange: function(dateStr, period) {
+        var dateArray = wnt.dateArray(dateStr);
+        // NUMBER: [4,5], Format: [09/01/2015, 2015-9-1], Used By: Revenue, When: [load, update, week change]
+        console.log('DATE STRING FORMAT 4 (and 5) = ' + dateStr + ' ... PERIOD = ' + period);
         // period = last week, this week
         // Returns array with two values, one for the start date and one for the end date ... ['yyyy-mm-dd','yyyy-mm-dd']
         var dateRange = [];
-        var startDate = new Date(dateStr);
-        var endDate = new Date(dateStr);
+        var startDate = new Date(dateArray[0], dateArray[1], dateArray[2]);
+        var endDate = new Date(dateArray[0], dateArray[1], dateArray[2]);
         if(period === 'last week'){
             startDate.setDate(startDate.getDate() - 7);
             dateRange.push(wnt.formatDate(startDate));
@@ -80,6 +115,8 @@ var wnt = {
         'December'
     ],
     daysInMonth: function(month, year){
+        // NUMBER: [6], Format: ..., Used By: Revenue, When: [load, update, week change]
+        console.log('DATE STRING FORMAT 6 = ' + month + ' AND ' + year);
         return new Date(year, month, 0).getDate();
     },
     period: function(monthStart, monthStop, abbr){   // EXAMPLE: wnt.period(0,3,true) returns ['Jan','Feb','Mar']
