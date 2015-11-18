@@ -16,6 +16,7 @@ class StatsTables extends Migration {
 		{
 			$table->smallInteger('id');
 			$table->string('code');
+			$table->primary('id');
 			$table->unique(['code']);
 		});
 		DB::table('channel')->insert([
@@ -28,6 +29,7 @@ class StatsTables extends Migration {
 		{
 			$table->smallInteger('id');
 			$table->string('code');
+			$table->primary('id');
 			$table->unique(['code']);
 		});
 		DB::table('box_office_product_kind')->insert([
@@ -41,6 +43,7 @@ class StatsTables extends Migration {
 		{
 			$table->smallInteger('id');
 			$table->string('code');
+			$table->primary('id');
 			$table->unique(['code']);
 		});
 		DB::table('membership_kind')->insert([

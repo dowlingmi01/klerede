@@ -15,7 +15,7 @@ class CreateStoreTransactionTable extends Migration {
 		Schema::create('store_transaction', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->integer('venue_id');
+			$table->integer('store_id');
 			$table->integer('register_id');
 			$table->integer('sequence');
 			$table->date('business_day');
@@ -30,7 +30,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->integer('member_xstore_id')->nullable();
 			$table->mediumText('source_xml')->nullable();
 			$table->timestamps();
-			$table->unique(['venue_id', 'register_id', 'sequence']);
+			$table->unique(['store_id', 'register_id', 'sequence']);
 		});
 		Schema::create('store_transaction_galaxy_member_info', function(Blueprint $table)
 		{

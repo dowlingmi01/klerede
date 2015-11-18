@@ -3,7 +3,7 @@ INSERT stat_sales
      , channel_id, box_office_product_kind_id
      , membership_kind_id, members, online
      , units, amount )
-SELECT t.venue_id, t.business_day, year(t.business_day)
+SELECT s.venue_id, t.business_day, year(t.business_day)
      , year(t.business_day)*100 + quarter(t.business_day)
      , year(t.business_day)*100 + month(t.business_day)
      , year(t.business_day)*100 + week(t.business_day)
@@ -12,5 +12,6 @@ SELECT t.venue_id, t.business_day, year(t.business_day)
      , count(distinct t.id), sum(sale_price)
   FROM store_transaction t
   JOIN store_transaction_line l ON l.store_transaction_id = t.id
- GROUP BY t.venue_id, t.business_day, members
+  JOIN store s ON s.id = t.store_id
+ GROUP BY s.venue_id, t.business_day, members
 ;
