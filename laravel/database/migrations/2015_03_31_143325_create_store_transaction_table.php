@@ -31,6 +31,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->mediumText('source_xml')->nullable();
 			$table->timestamps();
 			$table->unique(['store_id', 'register_id', 'sequence']);
+			$table->index(['store_id', 'business_day']);
 		});
 		Schema::create('store_transaction_galaxy_member_info', function(Blueprint $table)
 		{
