@@ -47,7 +47,7 @@ class PosLogImport extends Command {
 				DB::connection()->enableQueryLog();
 			$fileName = $this->argument('file_name');
 			$xmlLog = simplexml_load_file($fileName);
-			StoreTransaction::importXMLTransactions($xmlLog);
+			StoreTransaction::importXMLTransactions($xmlLog, $batch);
 			if($this->option('output-query-times')) {
 				$queries = DB::getQueryLog();
 				foreach($queries as $query)

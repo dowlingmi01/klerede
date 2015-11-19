@@ -29,6 +29,7 @@ class CreateStoreTransactionTable extends Migration {
 			$table->integer('member_id')->nullable();
 			$table->integer('member_xstore_id')->nullable();
 			$table->mediumText('source_xml')->nullable();
+			$table->integer('batch_id');
 			$table->timestamps();
 			$table->unique(['store_id', 'register_id', 'sequence']);
 			$table->index(['store_id', 'business_day']);
