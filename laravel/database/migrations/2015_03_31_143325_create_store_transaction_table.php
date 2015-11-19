@@ -50,7 +50,6 @@ class CreateStoreTransactionTable extends Migration {
 			$table->double('retail_price')->nullable();
 			$table->double('sale_price');
 			$table->integer('quantity');
-			$table->text('source_xml')->nullable();
 			$table->timestamps();
 			$table->unique(['store_transaction_id', 'sequence']);
 		});
