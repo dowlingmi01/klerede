@@ -173,7 +173,7 @@ STRAIGHT_JOIN cafe_product p ON l.cafe_product_code = p.code AND t.venue_id = p.
 LOAD DATA INFILE 'galaxyimport/storetranheader.txt'
 INTO TABLE store_transaction
 LINES TERMINATED BY '\r\n'
-(venue_id, register_id, sequence, business_day, time_end, operator_id)
+(store_id, register_id, sequence, business_day, time_end, operator_id)
 SET currency = 'USD'
 ;
 
@@ -192,7 +192,7 @@ LINES TERMINATED BY '\r\n'
 
 UPDATE store_transaction_galaxy_member_info i
 STRAIGHT_JOIN store_transaction t
-    ON t.venue_id = i.venue_id AND t.register_id = i.register_id AND t.sequence = i.sequence
+    ON t.store_id = i.venue_id AND t.register_id = i.register_id AND t.sequence = i.sequence
 STRAIGHT_JOIN member m on i.venue_id = m.venue_id AND i.member_code = m.code
    SET t.member_id = m.id
 ;
@@ -227,7 +227,7 @@ INSERT store_transaction_line
      ( store_transaction_id, sequence, store_product_id, sale_price, quantity )
 SELECT t.id, l.sequence, p.id, l.sale_price, l.quantity
   FROM store_transaction_line_galaxy l
-STRAIGHT_JOIN store_transaction t ON l.venue_id = t.venue_id
+STRAIGHT_JOIN store_transaction t ON l.venue_id = t.store_id
       AND l.register_id = t.register_id AND l.store_transaction_sequence = t.sequence
 STRAIGHT_JOIN store_product p ON l.store_product_scanned_code = p.scanned_code
 ;
