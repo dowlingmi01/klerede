@@ -113,4 +113,29 @@ class Stats {
 			$result[$name] = self::querySingle($venue_id, (object) $query);
 		return $result;
 	}
+	static function computeStoreSales($business_day) {
+		$channel_id = Channel::getFor('store')->id;
+
+		DB::table('stat_sales')->where('date', $business_day)->where('channel_id', $channel_id)->delete();
+
+		$dbquery = DB::table('store_transaction as t')
+			->join('store_transaction_line as l', 'store_transaction_id', '=', 't.id')
+			->join('store as s', 't.store_id', '=', 's.id')
+			->where('business_day', DB::raw("CAST('$business_day' AS date)"))
+			->groupBy('s.venue_id', 'members')
+			->select(['s.venue_id', 't.business_day', DB::raw('year(t.business_day)')
+				, DB::raw('year(t.business_day)*100 + quarter(t.business_day)')
+				, DB::raw('year(t.business_day)*100 + month(t.business_day)')
+				, DB::raw('year(t.business_day)*100 + week(t.business_day)')
+				, DB::raw("$channel_id, 0, 0")
+				, DB::raw('IF(member_xstore_id IS NULL AND member_id IS NULL, 0, 1) as members')
+				, DB::raw('0')
+				, DB::raw('count(distinct t.id)')
+				, DB::raw('sum(sale_price)')
+				, DB::raw('current_timestamp')]);
+		$insert = '	INSERT stat_sales ( venue_id, date, year, quarter, month, week
+		, channel_id, box_office_product_kind_id, membership_kind_id, members, online
+		, units, amount, created_at )' . $dbquery->toSql();
+		DB::insert($insert);
+	}
 }

@@ -1,8 +1,10 @@
 <?php namespace App\Console\Commands;
 
+use App\Batch;
 use App\StoreTransaction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Exception;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -39,15 +41,22 @@ class PosLogImport extends Command {
 	 */
 	public function fire()
 	{
-		if($this->option('output-query-times'))
-			DB::connection()->enableQueryLog();
-		$fileName = $this->argument('file_name');
-		$xmlLog = simplexml_load_file($fileName);
-		StoreTransaction::importXMLTransactions($xmlLog);
-		if($this->option('output-query-times')) {
-			$queries = DB::getQueryLog();
-			foreach($queries as $query)
-				fputcsv(STDOUT, [$query['time'], $query['query']]);
+		$batch = Batch::start($this->name, $this->argument());
+		try {
+			if($this->option('output-query-times'))
+				DB::connection()->enableQueryLog();
+			$fileName = $this->argument('file_name');
+			$xmlLog = simplexml_load_file($fileName);
+			StoreTransaction::importXMLTransactions($xmlLog, $batch);
+			if($this->option('output-query-times')) {
+				$queries = DB::getQueryLog();
+				foreach($queries as $query)
+					fputcsv(STDOUT, [$query['time'], $query['query']]);
+			}
+			$batch->finish();
+		} catch(Exception $e) {
+			$batch->error(sprintf("[%s] %s", get_class($e),  $e->getMessage()));
+			throw($e);
 		}
 	}
 

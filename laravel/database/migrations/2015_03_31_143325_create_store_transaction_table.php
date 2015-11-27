@@ -29,8 +29,10 @@ class CreateStoreTransactionTable extends Migration {
 			$table->integer('member_id')->nullable();
 			$table->integer('member_xstore_id')->nullable();
 			$table->mediumText('source_xml')->nullable();
+			$table->integer('batch_id');
 			$table->timestamps();
 			$table->unique(['store_id', 'register_id', 'sequence']);
+			$table->index(['business_day']);
 		});
 		Schema::create('store_transaction_galaxy_member_info', function(Blueprint $table)
 		{
@@ -50,7 +52,6 @@ class CreateStoreTransactionTable extends Migration {
 			$table->double('retail_price')->nullable();
 			$table->double('sale_price');
 			$table->integer('quantity');
-			$table->text('source_xml')->nullable();
 			$table->timestamps();
 			$table->unique(['store_transaction_id', 'sequence']);
 		});
