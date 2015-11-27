@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\PosLogConvert',
 		'App\Console\Commands\PosLogImport',
 		'App\Console\Commands\WeatherImport',
+		'App\Console\Commands\StatsSalesCompute',
 	];
 
 	/**
