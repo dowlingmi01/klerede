@@ -60,6 +60,12 @@ class WeatherDaily extends Model {
 	static private function getCacheKeyFor($venue_id, $date) {
 		return sprintf('weather-%s-%s', $venue_id, $date);
 	}
+	static public function setAll($date) {
+		$venues = Venue::all();
+		foreach($venues as $venue) {
+			self::getFor($venue->id, $date);
+		}
+	}
 }
 WeatherDaily::saving(function($weather) {
 	Helper::setPeriodFields($weather);
