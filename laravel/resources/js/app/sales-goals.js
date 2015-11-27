@@ -209,17 +209,14 @@ var SalesGoals = React.createClass({
                     self.formatNumbers();
                 }
             });
-
-
-
-
-
-
-            
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
             console.log('SALES GOALS DATA ERROR! ... ' + result.statusText);
         });
+        window.addEventListener("resize", this.drawDials);
+    },
+    componentWillUnmount: function() {
+        window.removeEventListener("resize", this.drawDials);
     },
     handleChange: function(event) {
         var filter = event.target.value;
@@ -482,28 +479,32 @@ var SalesGoals = React.createClass({
         });
     },
     drawDials: function() {
+        var diameter = 145;
+        var screenSize = window.innerWidth;
+        console.log(screenSize);
+        diameter = screenSize <= 1024 ? 100 : 145;
         d3.select('#earned-revenue-channels').selectAll('svg').remove();
         var rp1 = radialProgress(document.getElementById('div1'))
             .label('')
-            .diameter(145)
+            .diameter(diameter)
             .value((this.state.boxoffice / this.state.goalBoxoffice) * 100)
             .render();
 
         var rp2 = radialProgress(document.getElementById('div2'))
             .label('')
-            .diameter(145)
+            .diameter(diameter)
             .value((this.state.cafe / this.state.goalCafe) * 100)
             .render();
 
         var rp3 = radialProgress(document.getElementById('div3'))
             .label('')
-            .diameter(145)
+            .diameter(diameter)
             .value((this.state.giftstore / this.state.goalGiftstore) * 100)
             .render();
 
         var rp4 = radialProgress(document.getElementById('div4'))
             .label('')
-            .diameter(145)
+            .diameter(diameter)
             .value((this.state.membership / this.state.goalMembership) * 100)
             .render();
     },
@@ -620,4 +621,3 @@ if(document.getElementById('sales-goals-widget')){
     );
     console.log('Sales Goals row loaded...');
 }
-
