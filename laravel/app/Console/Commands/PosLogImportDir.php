@@ -1,29 +1,28 @@
 <?php namespace App\Console\Commands;
 
 use App\Batch;
-use App\StoreTransaction;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Exception;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class PosLogImport extends Command {
+class PosLogImportDir extends Command {
 
 	/**
 	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $name = 'kl:poslogimport';
+	protected $name = 'kl:poslogimport_dir';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Read PosLog xml file and import into db.';
+	protected $description = 'Read all poslog files from the specified dir and import them.';
 
 	/**
 	 * Create a new command instance.
@@ -44,16 +43,15 @@ class PosLogImport extends Command {
 	{
 		$batch = Batch::start($this->name, $this->argument());
 		try {
-			if($this->option('output-query-times'))
-				DB::connection()->enableQueryLog();
-			$fileName = $this->argument('file_name');
-			$xmlString = Storage::disk('poslog')->get($fileName);
-			$xmlLog = simplexml_load_string($xmlString);
-			StoreTransaction::importXMLTransactions($xmlLog, $batch);
-			if($this->option('output-query-times')) {
-				$queries = DB::getQueryLog();
-				foreach($queries as $query)
-					fputcsv(STDOUT, [$query['time'], $query['query']]);
+			$directory = $this->argument('directory');
+			$files = Storage::disk('poslog')->files($directory);
+			foreach($files as $file) {
+				if(File::extension($file) == 'xml') {
+					try {
+						Artisan::call('kl:poslogimport', ['file_name'=>$file]);
+					} catch(Exception $e) {
+					}
+				}
 			}
 			$batch->finish();
 		} catch(Exception $e) {
@@ -70,7 +68,7 @@ class PosLogImport extends Command {
 	protected function getArguments()
 	{
 		return [
-			['file_name', InputArgument::REQUIRED, 'Input file name. Relative to POSLOG_DIR.'],
+			['directory', InputArgument::REQUIRED, 'Directory to process. Relative to POSLOG_DIR.'],
 		];
 	}
 
@@ -82,7 +80,6 @@ class PosLogImport extends Command {
 	protected function getOptions()
 	{
 		return [
-			['output-query-times', null, InputOption::VALUE_NONE, 'Output query times in csv format for debugging purposes.', null]
 		];
 	}
 

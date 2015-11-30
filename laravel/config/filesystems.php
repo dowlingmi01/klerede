@@ -48,6 +48,11 @@ return [
 			'root'   => storage_path().'/app',
 		],
 
+		'poslog' => [
+			'driver' => 'local',
+			'root'   => env('POSLOG_DIR'),
+		],
+
 		's3' => [
 			'driver' => 's3',
 			'key'    => 'your-key',
