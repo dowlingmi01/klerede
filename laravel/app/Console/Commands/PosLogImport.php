@@ -5,6 +5,7 @@ use App\StoreTransaction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -46,7 +47,8 @@ class PosLogImport extends Command {
 			if($this->option('output-query-times'))
 				DB::connection()->enableQueryLog();
 			$fileName = $this->argument('file_name');
-			$xmlLog = simplexml_load_file($fileName);
+			$xmlString = Storage::disk('poslog')->get($fileName);
+			$xmlLog = simplexml_load_string($xmlString);
 			StoreTransaction::importXMLTransactions($xmlLog, $batch);
 			if($this->option('output-query-times')) {
 				$queries = DB::getQueryLog();
@@ -68,7 +70,7 @@ class PosLogImport extends Command {
 	protected function getArguments()
 	{
 		return [
-			['file_name', InputArgument::REQUIRED, 'Input file name.'],
+			['file_name', InputArgument::REQUIRED, 'Input file name. Relative to POSLOG_DIR.'],
 		];
 	}
 
