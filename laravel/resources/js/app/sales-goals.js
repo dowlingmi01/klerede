@@ -481,9 +481,14 @@ var SalesGoals = React.createClass({
     drawDials: function() {
         var diameter = 145;
         var screenSize = window.innerWidth;
+        var dialWidth = $('.dial-wrapper').width() / 4;
         console.log(screenSize);
-        diameter = screenSize <= 1024 ? 100 : 145;
-        d3.select('#earned-revenue-channels').selectAll('svg').remove();
+        diameter = screenSize <= 1024 ? dialWidth : 145;   // Set diameter if the screen size is tablet or smaller
+        $('.dial-wrapper .dial').css('width',dialWidth-5);
+
+
+        d3.select('#earned-revenue-channels').selectAll('svg').remove();   // TO DO: Don't remove markers, or redraw them
+
         var rp1 = radialProgress(document.getElementById('div1'))
             .label('')
             .diameter(diameter)
@@ -507,6 +512,27 @@ var SalesGoals = React.createClass({
             .diameter(diameter)
             .value((this.state.membership / this.state.goalMembership) * 100)
             .render();
+
+        for(i=1; i<5; i++){
+            var startMark = d3.select('#div'+i).selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+        }
+
+        $('.channel-info').css('opacity','0')
+            .animate({
+                opacity: '1'
+            },
+            1500,
+            'easeInSine'
+        );
+
+
+
+        this.setDots();
     },
     setDots: function(){
         diameter = $('#div1').width() -2;   // Tweaked via console
@@ -540,7 +566,6 @@ var SalesGoals = React.createClass({
             'easeOutElastic'
         );
         this.drawDials();
-        this.setDots();
     },
     render: function() {
         var gradient = {

@@ -326,13 +326,13 @@ $(function(){
     start();
 
     function start() {
-
+/*
         var rp1 = radialProgress(document.getElementById('div1'))
                 .label('')
                 .diameter(145)
                 .value(78)
                 .render();
-
+*/
         var rp2 = radialProgress(document.getElementById('div2'))
                 .label('')
                 .diameter(145)
@@ -374,14 +374,14 @@ $(function(){
                 .render();
 
         // STARTING MARKERS
-
+/*
         var startMark1 = d3.select('#div1').selectAll('svg').append("line")
                 .attr("x1", 58)
                 .attr("y1", -2)
                 .attr("x2", 58)
                 .attr("y2", 11)
                 .attr("stroke-width", "3");
-
+*/
         var startMark2 = d3.select('#div2').selectAll('svg').append("line")
                 .attr("x1", 58)
                 .attr("y1", -2)
@@ -425,13 +425,13 @@ $(function(){
                 .attr("stroke-width", "3");
 
         // GOAL MARKER DOTS
-
+/*
         var goalDot1 = d3.select('#div1').selectAll('svg').append("circle")
                 .attr("r", 8)
                 .attr("cx", 20)
                 .attr("cy", 20)
                 .attr("fill", "rgba(66,66,66,1)");
-
+*/
         var goalDot2 = d3.select('#div2').selectAll('svg').append("circle")
                 .attr("r", 8)
                 .attr("cx", 20)
