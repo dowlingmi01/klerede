@@ -172,6 +172,10 @@ var MembershipGoals = React.createClass({
         .fail(function(result) {
             console.log('MEMBERSHIP GOALS DATA ERROR! ... ' + result.statusText);
         });
+        window.addEventListener("resize", this.drawDials);
+    },
+    componentWillUnmount: function() {
+        window.removeEventListener("resize", this.drawDials);
     },
     handleChange: function(event) {
         var filter = event.target.value;
@@ -385,24 +389,53 @@ var MembershipGoals = React.createClass({
         });
     },
     drawDials: function() {
+        var diameter = 145;
+
         d3.select('#membership').selectAll('svg').remove();
+
         var rp5 = radialProgress(document.getElementById('div5'))
             .label('')
-            .diameter(145)
+            .diameter(diameter)
             .value((this.state.individual / this.state.goalIndividual) * 100)
             .render();
 
         var rp6 = radialProgress(document.getElementById('div6'))
             .label('')
-            .diameter(145)
+            .diameter(diameter)
             .value((this.state.family / this.state.goalFamily) * 100)
             .render();
 
         var rp7 = radialProgress(document.getElementById('div7'))
             .label('')
-            .diameter(145)
+            .diameter(diameter)
             .value((this.state.donor / this.state.goalDonor) * 100)
             .render();
+
+        // Generate the starting point markers
+        for(i=1; i<4; i++){
+            var startMark = d3.select('#div'+i).selectAll('svg').append("line")
+                .attr("x1", 58)
+                .attr("y1", -2)
+                .attr("x2", 58)
+                .attr("y2", 11)
+                .attr("stroke-width", "3");
+        }
+
+        // Show the details
+        $('.channel-info').css('opacity','0')
+            .animate({
+                opacity: '1'
+            },
+            1500,
+            'easeInSine'
+        );
+
+        // Equalize the row height
+        $('#total-membership-goals').height($('#membership').height())
+
+        // Set the goal dots
+
+        this.setDots();
     },
     setDots: function(){
         diameter = $('#div1').width() -2;   // Tweaked via console
@@ -432,7 +465,6 @@ var MembershipGoals = React.createClass({
             'easeOutElastic'
         );
         this.drawDials();
-        this.setDots();
     },
     render: function() {
         var gradient = {

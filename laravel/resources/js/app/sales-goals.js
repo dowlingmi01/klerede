@@ -458,7 +458,6 @@ var SalesGoals = React.createClass({
             });
         }
         event.target.blur();
-        //this.setDots();
     },
     formatNumbers: function(){
         $('#total-sales-goals .goalAmount').parseNumber({format:"$#,###", locale:"us"});
@@ -480,14 +479,12 @@ var SalesGoals = React.createClass({
     },
     drawDials: function() {
         var diameter = 145;
-        var screenSize = window.innerWidth;
-        var dialWidth = $('.dial-wrapper').width() / 4;
-        console.log(screenSize);
-        diameter = screenSize <= 1024 ? dialWidth : 145;   // Set diameter if the screen size is tablet or smaller
-        $('.dial-wrapper .dial').css('width',dialWidth-5);
-
-
-        d3.select('#earned-revenue-channels').selectAll('svg').remove();   // TO DO: Don't remove markers, or redraw them
+        //var screenSize = window.innerWidth;
+        //var dialWidth = $('.dial-wrapper').width() / 4;
+        //diameter = screenSize <= 1024 ? dialWidth : 145;   // Set diameter if the screen size is tablet or smaller
+        //$('.dial-wrapper .dial').css('width',dialWidth-5);
+        
+        d3.select('#earned-revenue-channels').selectAll('svg').remove();
 
         var rp1 = radialProgress(document.getElementById('div1'))
             .label('')
@@ -513,6 +510,7 @@ var SalesGoals = React.createClass({
             .value((this.state.membership / this.state.goalMembership) * 100)
             .render();
 
+        // Generate the starting point markers
         for(i=1; i<5; i++){
             var startMark = d3.select('#div'+i).selectAll('svg').append("line")
                 .attr("x1", 58)
@@ -522,6 +520,7 @@ var SalesGoals = React.createClass({
                 .attr("stroke-width", "3");
         }
 
+        // Show the details
         $('.channel-info').css('opacity','0')
             .animate({
                 opacity: '1'
@@ -530,8 +529,10 @@ var SalesGoals = React.createClass({
             'easeInSine'
         );
 
+        // Equalize the row height
+        $('#total-sales-goals').height($('#earned-revenue-channels').height())
 
-
+        // Set the goal dots
         this.setDots();
     },
     setDots: function(){
