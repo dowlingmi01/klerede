@@ -19,7 +19,7 @@ class WeatherImport extends Command {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Command description.';
+	protected $description = 'Retrieve weather data for the given date for all venues.';
 
 	/**
 	 * Create a new command instance.
@@ -38,17 +38,8 @@ class WeatherImport extends Command {
 	 */
 	public function fire()
 	{
-		$coordinates = '40.5324486,-111.893979';
-		$timeFormatF = 'Y-m-d\TH';
-		$interval = new \DateInterval('P1D');
-		$venue_id = 1588;
-		$dir = $this->argument('dir');
-		$date = new \DateTime('2015-01-01 12:00', new \DateTimeZone('PST') );
-		for($i = 0; $i < 274; $i++) {
-			$json = file_get_contents(sprintf('%s/%s,%s.json', $dir, $coordinates, $date->format($timeFormatF)));
-			WeatherDaily::getForJSON($venue_id, $date->format('Y-m-d'), $json);
-			$date->add($interval);
-		}
+		$date = $this->argument('date');
+		WeatherDaily::setAll($date);
 	}
 
 	/**
@@ -59,7 +50,7 @@ class WeatherImport extends Command {
 	protected function getArguments()
 	{
 		return [
-			['dir', InputArgument::REQUIRED, 'Input directory.'],
+			['date', InputArgument::REQUIRED, 'Date to import.'],
 		];
 	}
 
