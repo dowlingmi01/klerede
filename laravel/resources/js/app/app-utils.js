@@ -52,20 +52,12 @@ var wnt = {
         return dateArray;
     },
     getMonth: function(dateStr) {
-        console.log('DATE STRING IS ... '+dateStr);
         var dateArray = wnt.dateArray(dateStr);
         // NUMBER: 3, Format: 2015-9-1, Used By: Revenue, When: [load, week change]
-        console.log('DATE STRING FORMAT 3 = ' + dateStr);
-        console.log('DATE ARRAY IS ... ');
-        console.log(dateArray);
         // Have to use values in array individually and not as an array or else the month is wrong
         var dateObj = new Date(dateArray[0], dateArray[1], dateArray[2]);
-        console.log('NEW DATE OBJECT IS');
-        console.log(dateObj);
         var thisYear = dateObj.getFullYear();
         var thisMonth = dateObj.getMonth()+1;
-        console.log('NEW DATE OBJECT MONTH = '+dateObj.getMonth());
-        console.log('NEW DATE OBJECT MONTH + 1 = '+thisMonth);
         var days = wnt.daysInMonth(thisMonth, dateObj.getFullYear());
         thisMonth = wnt.doubleDigits(thisMonth);
         var month = [];
@@ -77,7 +69,6 @@ var wnt = {
     getDateRange: function(dateStr, period) {
         var dateArray = wnt.dateArray(dateStr);
         // NUMBER: [4,5], Format: [09/01/2015, 2015-9-1], Used By: Revenue, When: [load, update, week change]
-        console.log('DATE STRING FORMAT 4 (and 5) = ' + dateStr + ' ... PERIOD = ' + period);
         // period = last week, this week
         // Returns array with two values, one for the start date and one for the end date ... ['yyyy-mm-dd','yyyy-mm-dd']
         var dateRange = [];
@@ -116,7 +107,6 @@ var wnt = {
     ],
     daysInMonth: function(month, year){
         // NUMBER: [6], Format: ..., Used By: Revenue, When: [load, update, week change]
-        console.log('DATE STRING FORMAT 6 = ' + month + ' AND ' + year);
         return new Date(year, month, 0).getDate();
     },
     period: function(monthStart, monthStop, abbr){   // EXAMPLE: wnt.period(0,3,true) returns ['Jan','Feb','Mar']
