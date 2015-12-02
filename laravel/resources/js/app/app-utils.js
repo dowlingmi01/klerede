@@ -217,7 +217,7 @@ var wnt = {
             dataType: 'json',
             data: data,
             success: function(result) {
-                console.log(result);
+                console.log('Goals have been updated on the server.');
             },
             error: function(result) {
                 console.log('ERROR');
