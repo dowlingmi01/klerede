@@ -1,5 +1,6 @@
 <?php namespace App\Console\Commands;
 
+use App\Batch;
 use App\WeatherDaily;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -38,8 +39,10 @@ class WeatherImport extends Command {
 	 */
 	public function fire()
 	{
+		$batch = Batch::start($this->name, $this->argument());
 		$date = $this->argument('date');
-		WeatherDaily::setAll($date);
+		WeatherDaily::setAll($date, $batch);
+		$batch->finish();
 	}
 
 	/**

@@ -16,7 +16,11 @@ class WeatherDaily extends Model {
 			$data = json_decode($json);
 			$hours = ['1'=>10, '2'=>16];
 			foreach($hours as $num => $index) {
+				if(!isset($data->hourly->data[$index]))
+					throw new \Exception(sprintf('Incomplete weather data for %d-%s', $venue_id, $date));
 				$hData = $data->hourly->data[$index];
+				if(!isset($hData->temperature)||!isset($hData->summary)||!isset($hData->icon))
+					throw new \Exception(sprintf('Incomplete weather data for %d-%s', $venue_id, $date));
 				$weather_daily->{'temp_'.$num} = $hData->temperature;
 				$weather_daily->{'summary_'.$num} = $hData->summary;
 				$weather_daily->{'icon_'.$num} = $hData->icon;
@@ -60,10 +64,18 @@ class WeatherDaily extends Model {
 	static private function getCacheKeyFor($venue_id, $date) {
 		return sprintf('weather-%s-%s', $venue_id, $date);
 	}
-	static public function setAll($date) {
+	static public function setAll($date, Batch $batch = null) {
 		$venues = Venue::all();
 		foreach($venues as $venue) {
-			self::getFor($venue->id, $date);
+			try {
+				self::getFor($venue->id, $date);
+			} catch( \Exception $e ) {
+				if($batch) {
+					$batch->warningExc($e);
+				} else {
+					throw $e;
+				}
+			}
 		}
 	}
 }
