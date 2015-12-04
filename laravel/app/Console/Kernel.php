@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel {
 	protected $commands = [
 		'App\Console\Commands\Inspire',
 		'App\Console\Commands\PosLogConvert',
+		'App\Console\Commands\PosLogDaily',
 		'App\Console\Commands\PosLogImport',
 		'App\Console\Commands\PosLogImportDir',
 		'App\Console\Commands\WeatherImport',
