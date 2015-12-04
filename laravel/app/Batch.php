@@ -13,18 +13,27 @@ class Batch extends Model {
 		$this->time_finish = Carbon::now();
 		$this->save();
 	}
+	public function errorExc(\Exception $e) {
+		$this->error(sprintf("[%s] %s", get_class($e),  $e->getMessage()));
+	}
 	public function error($message) {
 		$this->status = 'error';
 		$this->time_finish = Carbon::now();
 		$this->save();
-		$batch_message = new BatchMessage();
-		$batch_message->type = 'error';
-		$batch_message->message = $message;
-		$this->messages()->save($batch_message);
+		$this->message($message, 'error');
 	}
 	public function info($message) {
+		$this->message($message, 'info');
+	}
+	public function warningExc(\Exception $e) {
+		$this->warning(sprintf("[%s] %s", get_class($e),  $e->getMessage()));
+	}
+	public function warning($message) {
+		$this->message($message, 'warning');
+	}
+	public function message($message, $type) {
 		$batch_message = new BatchMessage();
-		$batch_message->type = 'info';
+		$batch_message->type = $type;
 		$batch_message->message = $message;
 		$this->messages()->save($batch_message);
 	}
