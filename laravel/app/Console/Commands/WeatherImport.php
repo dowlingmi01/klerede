@@ -2,6 +2,7 @@
 
 use App\Batch;
 use App\WeatherDaily;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -53,7 +54,7 @@ class WeatherImport extends Command {
 	protected function getArguments()
 	{
 		return [
-			['date', InputArgument::REQUIRED, 'Date to import.'],
+			['date', InputArgument::OPTIONAL, 'Date to import.', Carbon::yesterday()->format('Y-m-d')],
 		];
 	}
 
