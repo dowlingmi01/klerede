@@ -412,7 +412,7 @@ var MembershipGoals = React.createClass({
             .render();
 
         // Generate the starting point markers
-        for(i=1; i<4; i++){
+        for(i=5; i<8; i++){
             var startMark = d3.select('#div'+i).selectAll('svg').append("line")
                 .attr("x1", 58)
                 .attr("y1", -2)
