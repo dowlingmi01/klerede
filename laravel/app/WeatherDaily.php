@@ -9,10 +9,10 @@ class WeatherDaily extends Model {
 	protected $guarded = [];
 	protected $hidden = ['id', 'source'];
 
-	static function getFor($venue_id, $date) {
+	static function getFor($venue_id, $date, $force = false) {
 		$weather_daily = WeatherDaily::firstOrNew(['venue_id'=>$venue_id, 'date'=>$date]);
-		if(!$weather_daily->exists) {
-			$json = self::retrieveJSON($venue_id, $date);
+		if($force || !$weather_daily->exists) {
+			$json = self::retrieveJSON($venue_id, $date, $force);
 			$data = json_decode($json);
 			$hours = ['1'=>10, '2'=>16];
 			foreach($hours as $num => $index) {
@@ -49,26 +49,32 @@ class WeatherDaily extends Model {
 		$this->attributes['date'] = $date;
 		Helper::setPeriodFields($this);
 	}
-	static public function retrieveJSON($venue_id, $date) {
+	static public function retrieveJSON($venue_id, $date, $force = false) {
 		$key = self::getCacheKeyFor($venue_id, $date);
-		$json = Cache::rememberForever($key, function () use ($venue_id, $date) {
+		$callback = function () use ($venue_id, $date) {
 			$baseURL = 'https://api.forecast.io/forecast/';
 			$apiKey = env('WEATHER_API_KEY');
 			$venue = Venue::find($venue_id);
 			$coordinates = sprintf("%.7f,%.7f", $venue->lat, $venue->long);
 			$url = sprintf('%s%s/%s,%sT12:00:00', $baseURL, $apiKey, $coordinates, $date);
 			return file_get_contents($url);
-		});
+		};
+		if($force) {
+			$json = $callback();
+			Cache::forever($key, $json);
+		} else {
+			$json = Cache::rememberForever($key, $callback);
+		}
 		return $json;
 	}
 	static private function getCacheKeyFor($venue_id, $date) {
 		return sprintf('weather-%s-%s', $venue_id, $date);
 	}
-	static public function setAll($date, Batch $batch = null) {
+	static public function setAll($date, $force = false, Batch $batch = null) {
 		$venues = Venue::all();
 		foreach($venues as $venue) {
 			try {
-				self::getFor($venue->id, $date);
+				self::getFor($venue->id, $date, $force);
 			} catch( \Exception $e ) {
 				if($batch) {
 					$batch->warningExc($e);
