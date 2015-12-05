@@ -121,7 +121,7 @@ var GoalSetting = React.createClass({
             if($(this).val() !== ''){
                 var channel = $(this).attr('id').split('-')[1];
                 if($(this).hasClass('total')){
-                    var month = $(this).val() / 12;
+                    var month = $(this).val() / 12;   // TO DO: Pull from months, not total division
                 };
                 var data = {
                     'months': {

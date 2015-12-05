@@ -530,6 +530,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return number;
     },
     weekChange: function(event) {
+        // TO DO: Switch date formats to double-digits for any API calls
         var self = this;
         wnt.datePickerStart = new Date(event.target.value);
         var selectedMonth = wnt.datePickerStart.getMonth()+1;

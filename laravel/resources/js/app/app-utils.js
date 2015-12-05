@@ -260,17 +260,17 @@ wnt.yesterdaylastyear = new Date(wnt.today);
 wnt.yesterdaylastyear.setDate(wnt.today.getDate() - 366);
 wnt.daybeforeyesterday = new Date(wnt.today);
 wnt.daybeforeyesterday.setDate(wnt.today.getDate() - 2);
-wnt.today = wnt.formatDate(wnt.today);
-wnt.yesterday = wnt.formatDate(wnt.yesterday);
-wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday);
-wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear);
+wnt.today = wnt.formatDate(wnt.today, 'double');
+wnt.yesterday = wnt.formatDate(wnt.yesterday, 'double');
+wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday, 'double');
+wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear, 'double');
 wnt.yearStart = wnt.thisYear+'-1-1';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
 wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';
 wnt.datePickerStart = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
-wnt.weekago = wnt.formatDate(wnt.weekago);
+wnt.weekago = wnt.formatDate(wnt.weekago, 'double');
 wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
 
 /**********************************/
