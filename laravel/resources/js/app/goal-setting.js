@@ -149,6 +149,10 @@ var GoalSetting = React.createClass({
             // If the value is 0, clear the field for input
             if($(this).val() === '0'){ $(this).val(''); }
         });
+        // Auto-expand months when total is clicked
+        $('.total').focus(function(){
+            $(this).parent().find('.collapsed').click();
+        });
     },
     totalChange: function(event){
         // When a total is changed, equalize the goal across the months
@@ -190,54 +194,54 @@ var GoalSetting = React.createClass({
                 <div className="form-group">
                     <label htmlFor="goal-mem-num" className="col-sm-2 control-label">Total Membership #:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-mem-num" placeholder="000,000" className="form-control total" onBlur={this.totalChange} />
+                        <input type="text" id="goal-mem-num" placeholder="000,000" className="form-control super-total" onBlur={this.totalChange} />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-num-fam" className="col-sm-3 control-label">Family #:</label>
                     <div className="col-sm-3">
-                        <input type="text" id="goal-mem-num-fam" placeholder="000,000" className="form-control" /><ButtonExpand target="#months-mem-num-fam" />
+                        <input type="text" id="goal-mem-num-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-fam" />
                         <GoalsMonths id="months-mem-num-fam" placeholder="0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-num-ind" className="col-sm-3 control-label">Individual #:</label>
                     <div className="col-sm-3">
-                        <input type="text" id="goal-mem-num-ind" placeholder="000,000" className="form-control" /><ButtonExpand target="#months-mem-num-ind" />
+                        <input type="text" id="goal-mem-num-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-ind" />
                         <GoalsMonths id="months-mem-num-ind" placeholder="0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-num-don" className="col-sm-3 control-label">Donor #:</label>
                     <div className="col-sm-3">
-                        <input type="text" id="goal-mem-num-don" placeholder="000,000" className="form-control" /><ButtonExpand target="#months-mem-num-don" />
+                        <input type="text" id="goal-mem-num-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-don" />
                         <GoalsMonths id="months-mem-num-don" placeholder="0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-dol" className="col-sm-2 control-label">Total Membership $:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-mem-dol" placeholder="$000,000" className="form-control total" onBlur={this.totalChange} />
+                        <input type="text" id="goal-mem-dol" placeholder="$000,000" className="form-control super-total" onBlur={this.totalChange} />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-dol-fam" className="col-sm-3 control-label">Family $:</label>
                     <div className="col-sm-3">
-                        <input type="text" id="goal-mem-dol-fam" placeholder="000,000" className="form-control" /><ButtonExpand target="#months-mem-dol-fam" />
+                        <input type="text" id="goal-mem-dol-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-fam" />
                         <GoalsMonths id="months-mem-dol-fam" placeholder="$0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-dol-ind" className="col-sm-3 control-label">Individual $:</label>
                     <div className="col-sm-3">
-                        <input type="text" id="goal-mem-dol-ind" placeholder="000,000" className="form-control" /><ButtonExpand target="#months-mem-dol-ind" />
+                        <input type="text" id="goal-mem-dol-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-ind" />
                         <GoalsMonths id="months-mem-dol-ind" placeholder="$0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-dol-don" className="col-sm-3 control-label">Donor $:</label>
                     <div className="col-sm-3">
-                        <input type="text" id="goal-mem-dol-don" placeholder="000,000" className="form-control" /><ButtonExpand target="#months-mem-dol-don" />
+                        <input type="text" id="goal-mem-dol-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-don" />
                         <GoalsMonths id="months-mem-dol-don" placeholder="$0" />
                     </div>
                 </div>
