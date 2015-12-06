@@ -4,8 +4,31 @@
 
 var GoalsMonths = React.createClass({
     monthChange: function(event){
-        console.log(event.target);
-        console.log('MONTH CHANGE');
+        var channel = $(event.target).closest('.goal-section').find('.total').attr('id').split('-')[1];
+        var monthTotals = [];
+        $.each($(event.target).closest('.goal-section').find('.month-total'), function(index, month){
+            console.log((index+1) + ' = ' + $(month).val());
+            monthTotals.push($(month).val());
+        });
+        var data = {
+            'months': {
+                1: monthTotals[0],
+                2: monthTotals[1],
+                3: monthTotals[2],
+                4: monthTotals[3],
+                5: monthTotals[4],
+                6: monthTotals[5],
+                7: monthTotals[6],
+                8: monthTotals[7],
+                9: monthTotals[8],
+                10: monthTotals[9],
+                11: monthTotals[10],
+                12: monthTotals[11]
+            }
+        };
+        wnt.setGoals(data, wnt.thisYear, channel, 'amount');
+        // Convert the number back to a string and format it for display
+        $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
     },
     render: function() {
         return (
@@ -84,6 +107,7 @@ var GoalSetting = React.createClass({
     componentDidMount: function(){
         wnt.gettingGoalsData = $.Deferred();
         wnt.getGoals(wnt.thisYear);
+        // Set fields with goals data from server
         $.when(wnt.gettingGoalsData).done(function(goals) {
             // Format = wnt.goals['gate/amount'].months['1']
             var goalBoxoffice = 0;
@@ -112,37 +136,6 @@ var GoalSetting = React.createClass({
                 $('input').blur();
             }
         });
-        // When 'Save' button is clicked ...
-        $('#button-save').on('click', function() {
-            console.log('The save button was clicked.');
-        });
-        // When input field is deselected, convert number to string for display
-        $('input').on('blur', function() {
-            if($(this).val() !== ''){
-                var channel = $(this).attr('id').split('-')[1];
-                if($(this).hasClass('total')){
-                    var month = $(this).val() / 12;   // TO DO: Pull from months, not total division
-                };
-                var data = {
-                    'months': {
-                        1: month,
-                        2: month,
-                        3: month,
-                        4: month,
-                        5: month,
-                        6: month,
-                        7: month,
-                        8: month,
-                        9: month,
-                        10: month,
-                        11: month,
-                        12: month
-                    }
-                };
-                wnt.setGoals(data, wnt.thisYear, channel, 'amount');
-                $(this).val(parseInt($(this).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-            }
-        });
         // When input field is selected, convert string to number
         $('input').on('focus', function() {
             $(this).val(Number($(this).val().replace(/[^0-9\.]+/g,"")));
@@ -161,6 +154,27 @@ var GoalSetting = React.createClass({
         $.each($(event.target).parent().find('.month-total'), function(index, month){
             $(month).val(monthTotal);
         });
+        // Then set the goals on the server
+        var channel = $(event.target).attr('id').split('-')[1];
+        var data = {
+            'months': {
+                1: monthTotal,
+                2: monthTotal,
+                3: monthTotal,
+                4: monthTotal,
+                5: monthTotal,
+                6: monthTotal,
+                7: monthTotal,
+                8: monthTotal,
+                9: monthTotal,
+                10: monthTotal,
+                11: monthTotal,
+                12: monthTotal
+            }
+        };
+        wnt.setGoals(data, wnt.thisYear, channel, 'amount');
+        // Convert the number back to a string and format it for display
+        $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
     },
     render: function() {
         return (
@@ -172,21 +186,21 @@ var GoalSetting = React.createClass({
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-gate" className="col-sm-2 control-label">Box Office:</label>
-                    <div className="col-sm-4">
+                    <div className="col-sm-4 goal-section">
                         <input type="text" id="goal-gate" placeholder="$000,000" className="form-control total" onBlur={this.totalChange} /><ButtonExpand target="#months-gate" />
                         <GoalsMonths id="months-gate" placeholder="$0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-cafe" className="col-sm-2 control-label">Cafe:</label>
-                    <div className="col-sm-4">
+                    <div className="col-sm-4 goal-section">
                         <input type="text" id="goal-cafe" placeholder="$000,000" className="form-control total" onBlur={this.totalChange} /><ButtonExpand target="#months-cafe" />
                         <GoalsMonths id="months-cafe" placeholder="$0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-store" className="col-sm-2 control-label">Gift Store:</label>
-                    <div className="col-sm-4">
+                    <div className="col-sm-4 goal-section">
                         <input type="text" id="goal-store" placeholder="$000,000" className="form-control total" onBlur={this.totalChange} /><ButtonExpand target="#months-store" />
                         <GoalsMonths id="months-store" placeholder="$0" />
                     </div>
@@ -199,21 +213,21 @@ var GoalSetting = React.createClass({
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-num-fam" className="col-sm-3 control-label">Family #:</label>
-                    <div className="col-sm-3">
+                    <div className="col-sm-3 goal-section">
                         <input type="text" id="goal-mem-num-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-fam" />
                         <GoalsMonths id="months-mem-num-fam" placeholder="0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-num-ind" className="col-sm-3 control-label">Individual #:</label>
-                    <div className="col-sm-3">
+                    <div className="col-sm-3 goal-section">
                         <input type="text" id="goal-mem-num-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-ind" />
                         <GoalsMonths id="months-mem-num-ind" placeholder="0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-num-don" className="col-sm-3 control-label">Donor #:</label>
-                    <div className="col-sm-3">
+                    <div className="col-sm-3 goal-section">
                         <input type="text" id="goal-mem-num-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-don" />
                         <GoalsMonths id="months-mem-num-don" placeholder="0" />
                     </div>
@@ -226,28 +240,23 @@ var GoalSetting = React.createClass({
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-dol-fam" className="col-sm-3 control-label">Family $:</label>
-                    <div className="col-sm-3">
+                    <div className="col-sm-3 goal-section">
                         <input type="text" id="goal-mem-dol-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-fam" />
                         <GoalsMonths id="months-mem-dol-fam" placeholder="$0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-dol-ind" className="col-sm-3 control-label">Individual $:</label>
-                    <div className="col-sm-3">
+                    <div className="col-sm-3 goal-section">
                         <input type="text" id="goal-mem-dol-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-ind" />
                         <GoalsMonths id="months-mem-dol-ind" placeholder="$0" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-mem-dol-don" className="col-sm-3 control-label">Donor $:</label>
-                    <div className="col-sm-3">
+                    <div className="col-sm-3 goal-section">
                         <input type="text" id="goal-mem-dol-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-don" />
                         <GoalsMonths id="months-mem-dol-don" placeholder="$0" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="col-sm-offset-2 col-sm-4 save-goals">
-                        <button type="button" className="btn btn-default" id="button-save">Save</button>
                     </div>
                 </div>
             </form>
