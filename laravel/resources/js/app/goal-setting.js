@@ -151,8 +151,9 @@ var GoalSetting = React.createClass({
         // When a total is changed, equalize the goal across the months
         var total = $(event.target).val();
         var monthTotal = Math.round(total / 12);
+        // Set the months in the display
         $.each($(event.target).parent().find('.month-total'), function(index, month){
-            $(month).val(monthTotal);
+            $(month).val(parseInt(monthTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
         });
         // Then set the goals on the server
         var channel = $(event.target).attr('id').split('-')[1];
