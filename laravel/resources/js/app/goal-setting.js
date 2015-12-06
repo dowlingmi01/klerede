@@ -5,27 +5,21 @@
 var GoalsMonths = React.createClass({
     monthChange: function(event){
         var channel = $(event.target).closest('.goal-section').find('.total').attr('id').split('-')[1];
-        var monthTotals = [];
-        $.each($(event.target).closest('.goal-section').find('.month-total'), function(index, month){
-            console.log((index+1) + ' = ' + $(month).val());
-            monthTotals.push($(month).val());
+        var data = {};
+        data.months = {};
+        var total = 0;
+        $(event.target).closest('.goal-section').find('.month-total').each(function(index, month){
+            var monthNumber = parseInt($(month).attr('id').split('-')[1]);
+            var monthVal = Number($(month).val().replace(/[^0-9\.]+/g,""));
+            // Populate correct month in object and process value to make it an integer
+            data.months[monthNumber] = monthVal;
+            // Increment total for updating
+            total += monthVal;
         });
-        var data = {
-            'months': {
-                1: monthTotals[0],
-                2: monthTotals[1],
-                3: monthTotals[2],
-                4: monthTotals[3],
-                5: monthTotals[4],
-                6: monthTotals[5],
-                7: monthTotals[6],
-                8: monthTotals[7],
-                9: monthTotals[8],
-                10: monthTotals[9],
-                11: monthTotals[10],
-                12: monthTotals[11]
-            }
-        };
+        // Convert total to formatted number for display
+        total = parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+        // Update section total when a month is changed
+        $(event.target).closest('.goal-section').find('.total').val(total);
         wnt.setGoals(data, wnt.thisYear, channel, 'amount');
         // Convert the number back to a string and format it for display
         $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
@@ -39,63 +33,63 @@ var GoalsMonths = React.createClass({
                     </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="goal-jan" className="col-sm-2 control-label">Jan:</label>
+                    <label htmlFor="goal-1" className="col-sm-2 control-label">Jan:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-jan" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-1" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
-                    <label htmlFor="goal-jul" className="col-sm-2 control-label">Jul:</label>
+                    <label htmlFor="goal-7" className="col-sm-2 control-label">Jul:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-jul" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-feb" className="col-sm-2 control-label">Feb:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-feb" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
-                    </div>
-                    <label htmlFor="goal-aug" className="col-sm-2 control-label">Aug:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-aug" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-7" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="goal-mar" className="col-sm-2 control-label">Mar:</label>
+                    <label htmlFor="goal-2" className="col-sm-2 control-label">Feb:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-mar" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-2" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
-                    <label htmlFor="goal-sep" className="col-sm-2 control-label">Sep:</label>
+                    <label htmlFor="goal-8" className="col-sm-2 control-label">Aug:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-sep" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-apr" className="col-sm-2 control-label">Apr:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-apr" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
-                    </div>
-                    <label htmlFor="goal-oct" className="col-sm-2 control-label">Oct:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-oct" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-8" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="goal-may" className="col-sm-2 control-label">May:</label>
+                    <label htmlFor="goal-3" className="col-sm-2 control-label">Mar:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-may" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-3" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
-                    <label htmlFor="goal-nov" className="col-sm-2 control-label">Nov:</label>
+                    <label htmlFor="goal-9" className="col-sm-2 control-label">Sep:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-nov" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-9" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="goal-jun" className="col-sm-2 control-label">Jun:</label>
+                    <label htmlFor="goal-4" className="col-sm-2 control-label">Apr:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-jun" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-4" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
-                    <label htmlFor="goal-dec" className="col-sm-2 control-label">Dec:</label>
+                    <label htmlFor="goal-10" className="col-sm-2 control-label">Oct:</label>
                     <div className="col-sm-4">
-                        <input type="text" id="goal-dec" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                        <input type="text" id="goal-10" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="goal-5" className="col-sm-2 control-label">May:</label>
+                    <div className="col-sm-4">
+                        <input type="text" id="goal-5" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                    </div>
+                    <label htmlFor="goal-11" className="col-sm-2 control-label">Nov:</label>
+                    <div className="col-sm-4">
+                        <input type="text" id="goal-11" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="goal-6" className="col-sm-2 control-label">Jun:</label>
+                    <div className="col-sm-4">
+                        <input type="text" id="goal-6" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
+                    </div>
+                    <label htmlFor="goal-12" className="col-sm-2 control-label">Dec:</label>
+                    <div className="col-sm-4">
+                        <input type="text" id="goal-12" placeholder={this.props.placeholder} className="form-control month-total" onBlur={this.monthChange} />
                     </div>
                 </div>
             </div>
@@ -116,14 +110,20 @@ var GoalSetting = React.createClass({
             // Add up months to get totals for display
             for(i=1; i<13; i++){
                 var key = i;
+                // Grab single month amount...
                 var goalBoxofficeMonth = goals['gate/amount'].months[key.toString()];
-                // Set months...
-                $('#goal-gate').parent().find('.month-total').eq(i-1).val(goalBoxofficeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+                var goalCafeMonth = goals['cafe/amount'].months[key.toString()];
+                var goalGiftstoreMonth = goals['store/amount'].months[key.toString()];
+                // Set corresponding month display...
+                $('#goal-gate').parent().find('#goal-'+i).val(goalBoxofficeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+                $('#goal-cafe').parent().find('#goal-'+i).val(goalCafeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+                $('#goal-store').parent().find('#goal-'+i).val(goalGiftstoreMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
                 // Increment totals
                 goalBoxoffice += goalBoxofficeMonth;
                 goalCafe += goals['cafe/amount'].months[key.toString()];
                 goalGiftstore += goals['store/amount'].months[key.toString()];
             }
+            // Set totals
             $('#goal-gate').val(goalBoxoffice.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
             $('#goal-cafe').val(goalCafe.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
             $('#goal-store').val(goalGiftstore.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
