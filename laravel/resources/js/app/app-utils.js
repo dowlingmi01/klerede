@@ -205,14 +205,16 @@ var wnt = {
             }
         });
     },
-    setGoals: function(data, year, channel, type){
+    setGoals: function(data, year, channel, type, subchannel){
         // PUT api/v1/goals/sales     /{venue_id}/{year}/{channel}/{type}[/{sub_channel}]
-        // e.g. 2015/cafe/amount
+        // e.g. 2015/cafe/amount ... or ... 2015/membership/units/family
         // request body = { "months": { 1: XXX, 2: XXX, 3: XXX, ... } }
         // NOTE: All 12 months must be present in the request
         // NOTE: sub_channel must be specified only for the membership channel
+        var url = wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type;
+        url = !subchannel ? url : url+'/'+subchannel;
         $.ajax({
-            url: wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type,  // OPTIONAL +'/'+sub_channel, ... for membership
+            url: url,
             type: 'PUT',
             dataType: 'json',
             data: data,

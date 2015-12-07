@@ -5,6 +5,8 @@
 var GoalsMonths = React.createClass({
     monthChange: function(event){
         var channel = $(event.target).closest('.goal-section').find('.total').attr('id').split('-')[1];
+        // Initialize subchannel to false
+        var subchannel = false;
         var data = {};
         data.months = {};
         var total = 0;
@@ -20,7 +22,7 @@ var GoalsMonths = React.createClass({
         total = parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
         // Update section total when a month is changed
         $(event.target).closest('.goal-section').find('.total').val(total);
-        wnt.setGoals(data, wnt.thisYear, channel, 'amount');
+        wnt.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
         // Convert the number back to a string and format it for display
         $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
     },
@@ -107,26 +109,50 @@ var GoalSetting = React.createClass({
             var goalBoxoffice = 0;
             var goalCafe = 0;
             var goalGiftstore = 0;
+            var goalMemFamUni = 0;
+            var goalMemFamDol = 0;
+            var goalMemIndUni = 0;
+            var goalMemIndDol = 0;
             // Add up months to get totals for display
             for(i=1; i<13; i++){
                 var key = i;
                 // Grab single month amount...
+                // wnt.goals['membership/amount'].sub_channels.family.months
+                // wnt.goals['membership/units'].sub_channels.family.months
                 var goalBoxofficeMonth = goals['gate/amount'].months[key.toString()];
                 var goalCafeMonth = goals['cafe/amount'].months[key.toString()];
                 var goalGiftstoreMonth = goals['store/amount'].months[key.toString()];
+                var famUni = goals['membership/units'].sub_channels.family.months[key.toString()];
+                var famDol = goals['membership/amount'].sub_channels.family.months[key.toString()];
+                var indUni = goals['membership/units'].sub_channels.individual.months[key.toString()];
+                var indDol = goals['membership/amount'].sub_channels.individual.months[key.toString()];
                 // Set corresponding month display...
                 $('#goal-gate').parent().find('#goal-'+i).val(goalBoxofficeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
                 $('#goal-cafe').parent().find('#goal-'+i).val(goalCafeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
                 $('#goal-store').parent().find('#goal-'+i).val(goalGiftstoreMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
                 // Increment totals
                 goalBoxoffice += goalBoxofficeMonth;
-                goalCafe += goals['cafe/amount'].months[key.toString()];
-                goalGiftstore += goals['store/amount'].months[key.toString()];
+                goalCafe += goalCafeMonth;
+                goalGiftstore += goalGiftstoreMonth;
+                goalMemFamUni += famUni;
+                goalMemFamDol += famDol;
+                goalMemIndUni += indUni;
+                goalMemIndDol += indDol;
             }
             // Set totals
             $('#goal-gate').val(goalBoxoffice.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
             $('#goal-cafe').val(goalCafe.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
             $('#goal-store').val(goalGiftstore.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            // Set membership sub-totals
+            $('#goal-mem-uni-fam').val(goalMemFamUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+            $('#goal-mem-uni-ind').val(goalMemIndUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+            $('#goal-mem-dol-fam').val(goalMemFamDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $('#goal-mem-dol-ind').val(goalMemIndDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            // Set Membership Super-totals
+            var goalMemUni = goalMemFamUni + goalMemIndUni;
+            var goalMemDol = goalMemFamDol + goalMemIndDol;
+            $('#goal-mem-uni').val(goalMemUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+            $('#goal-mem-dol').val(goalMemDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
             // Set individual months ... $('#goal-gate').parent().find('input').length
         });
         // When 'Enter' key is pressed ...
@@ -206,58 +232,62 @@ var GoalSetting = React.createClass({
                         <GoalsMonths id="months-store" placeholder="$0" />
                     </div>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-num" className="col-sm-2 control-label">Total Membership #:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-mem-num" placeholder="000,000" className="form-control super-total" onBlur={this.totalChange} />
+                <div className="super-set memberships-units">
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-uni" className="col-sm-2 control-label">Total Membership #:</label>
+                        <div className="col-sm-4">
+                            <input type="text" id="goal-mem-uni" placeholder="000,000" className="form-control super-total" onBlur={this.totalChange} />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-uni-fam" className="col-sm-3 control-label">Family #:</label>
+                        <div className="col-sm-3 goal-section">
+                            <input type="text" id="goal-mem-uni-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-uni-fam" />
+                            <GoalsMonths id="months-mem-uni-fam" placeholder="0" />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-uni-ind" className="col-sm-3 control-label">Individual #:</label>
+                        <div className="col-sm-3 goal-section">
+                            <input type="text" id="goal-mem-uni-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-uni-ind" />
+                            <GoalsMonths id="months-mem-uni-ind" placeholder="0" />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-uni-don" className="col-sm-3 control-label">Donor #:</label>
+                        <div className="col-sm-3 goal-section">
+                            <input type="text" id="goal-mem-uni-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-uni-don" />
+                            <GoalsMonths id="months-mem-uni-don" placeholder="0" />
+                        </div>
                     </div>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-num-fam" className="col-sm-3 control-label">Family #:</label>
-                    <div className="col-sm-3 goal-section">
-                        <input type="text" id="goal-mem-num-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-fam" />
-                        <GoalsMonths id="months-mem-num-fam" placeholder="0" />
+                <div className="super-set memberships-dollars">
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-dol" className="col-sm-2 control-label">Total Membership $:</label>
+                        <div className="col-sm-4">
+                            <input type="text" id="goal-mem-dol" placeholder="$000,000" className="form-control super-total" onBlur={this.totalChange} />
+                        </div>
                     </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-num-ind" className="col-sm-3 control-label">Individual #:</label>
-                    <div className="col-sm-3 goal-section">
-                        <input type="text" id="goal-mem-num-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-ind" />
-                        <GoalsMonths id="months-mem-num-ind" placeholder="0" />
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-dol-fam" className="col-sm-3 control-label">Family $:</label>
+                        <div className="col-sm-3 goal-section">
+                            <input type="text" id="goal-mem-dol-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-fam" />
+                            <GoalsMonths id="months-mem-dol-fam" placeholder="$0" />
+                        </div>
                     </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-num-don" className="col-sm-3 control-label">Donor #:</label>
-                    <div className="col-sm-3 goal-section">
-                        <input type="text" id="goal-mem-num-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-num-don" />
-                        <GoalsMonths id="months-mem-num-don" placeholder="0" />
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-dol-ind" className="col-sm-3 control-label">Individual $:</label>
+                        <div className="col-sm-3 goal-section">
+                            <input type="text" id="goal-mem-dol-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-ind" />
+                            <GoalsMonths id="months-mem-dol-ind" placeholder="$0" />
+                        </div>
                     </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-dol" className="col-sm-2 control-label">Total Membership $:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-mem-dol" placeholder="$000,000" className="form-control super-total" onBlur={this.totalChange} />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-dol-fam" className="col-sm-3 control-label">Family $:</label>
-                    <div className="col-sm-3 goal-section">
-                        <input type="text" id="goal-mem-dol-fam" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-fam" />
-                        <GoalsMonths id="months-mem-dol-fam" placeholder="$0" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-dol-ind" className="col-sm-3 control-label">Individual $:</label>
-                    <div className="col-sm-3 goal-section">
-                        <input type="text" id="goal-mem-dol-ind" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-ind" />
-                        <GoalsMonths id="months-mem-dol-ind" placeholder="$0" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-mem-dol-don" className="col-sm-3 control-label">Donor $:</label>
-                    <div className="col-sm-3 goal-section">
-                        <input type="text" id="goal-mem-dol-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-don" />
-                        <GoalsMonths id="months-mem-dol-don" placeholder="$0" />
+                    <div className="form-group">
+                        <label htmlFor="goal-mem-dol-don" className="col-sm-3 control-label">Donor $:</label>
+                        <div className="col-sm-3 goal-section">
+                            <input type="text" id="goal-mem-dol-don" placeholder="000,000" className="form-control total" /><ButtonExpand target="#months-mem-dol-don" />
+                            <GoalsMonths id="months-mem-dol-don" placeholder="$0" />
+                        </div>
                     </div>
                 </div>
             </form>
