@@ -4,6 +4,8 @@
 
 var GoalsMonths = React.createClass({
     monthChange: function(event){
+        // Remove the special characters for processing
+        $(event.target).val($(event.target).val().replace(/\D/g,''));
         var channel = $(event.target).closest('.goal-section').find('.total').attr('id').split('-')[1];
         // Initialize subchannel to false
         var subchannel = false;
@@ -19,12 +21,12 @@ var GoalsMonths = React.createClass({
             total += monthVal;
         });
         // Convert total to formatted number for display
-        total = parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+        total = parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
         // Update section total when a month is changed
         $(event.target).closest('.goal-section').find('.total').val(total);
         wnt.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
         // Convert the number back to a string and format it for display
-        $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+        $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
     },
     render: function() {
         return (
@@ -126,14 +128,14 @@ var GoalSetting = React.createClass({
                 var famDol = goals['membership/amount'].sub_channels.family.months[key.toString()];
                 var indUni = goals['membership/units'].sub_channels.individual.months[key.toString()];
                 var indDol = goals['membership/amount'].sub_channels.individual.months[key.toString()];
-                // Set corresponding month display...
-                $('#goal-gate').parent().find('#goal-'+i).val(goalBoxofficeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-                $('#goal-cafe').parent().find('#goal-'+i).val(goalCafeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-                $('#goal-store').parent().find('#goal-'+i).val(goalGiftstoreMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-                $('#goal-membership-uni-fam').parent().find('#goal-'+i).val(famUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-                $('#goal-membership-uni-ind').parent().find('#goal-'+i).val(indUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-                $('#goal-membership-dol-fam').parent().find('#goal-'+i).val(famDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-                $('#goal-membership-dol-ind').parent().find('#goal-'+i).val(indDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+               // Set corresponding month display...
+                $('#goal-gate').parent().find('#goal-'+i).val(goalBoxofficeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                $('#goal-cafe').parent().find('#goal-'+i).val(goalCafeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                $('#goal-store').parent().find('#goal-'+i).val(goalGiftstoreMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                $('#goal-membership-uni-fam').parent().find('#goal-'+i).val(famUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                $('#goal-membership-uni-ind').parent().find('#goal-'+i).val(indUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                $('#goal-membership-dol-fam').parent().find('#goal-'+i).val(famDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                $('#goal-membership-dol-ind').parent().find('#goal-'+i).val(indDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
                 // Increment totals
                 goalBoxoffice += goalBoxofficeMonth;
                 goalCafe += goalCafeMonth;
@@ -144,19 +146,19 @@ var GoalSetting = React.createClass({
                 goalMemIndDol += indDol;
             }
             // Set totals
-            $('#goal-gate').val(goalBoxoffice.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-            $('#goal-cafe').val(goalCafe.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-            $('#goal-store').val(goalGiftstore.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $('#goal-gate').val(goalBoxoffice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-cafe').val(goalCafe.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-store').val(goalGiftstore.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             // Set membership sub-totals
-            $('#goal-membership-uni-fam').val(goalMemFamUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-            $('#goal-membership-uni-ind').val(goalMemIndUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-            $('#goal-membership-dol-fam').val(goalMemFamDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
-            $('#goal-membership-dol-ind').val(goalMemIndDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $('#goal-membership-uni-fam').val(goalMemFamUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-uni-ind').val(goalMemIndUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-dol-fam').val(goalMemFamDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-dol-ind').val(goalMemIndDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             // Set Membership Super-totals
             var goalMemUni = goalMemFamUni + goalMemIndUni;
             var goalMemDol = goalMemFamDol + goalMemIndDol;
-            $('#goal-membership-uni').val(goalMemUni.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-            $('#goal-membership-dol').val(goalMemDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $('#goal-membership-uni').val(goalMemUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-dol').val(goalMemDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             // Set individual months ... $('#goal-gate').parent().find('input').length
         });
         // When 'Enter' key is pressed ...
@@ -178,12 +180,13 @@ var GoalSetting = React.createClass({
         });
     },
     totalChange: function(event){
-        // When a total is changed, equalize the goal across the months
-        var total = $(event.target).val();
+        // When a total is changed, remove the special characters for processing and equalize the goal across the months
+        var total = $(event.target).val().replace(/\D/g,'');
+        $(event.target).val(total);
         var monthTotal = Math.round(total / 12);
         // Set the months in the display
         $.each($(event.target).parent().find('.month-total'), function(index, month){
-            $(month).val(parseInt(monthTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+            $(month).val(parseInt(monthTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
         });
         // Then set the goals on the server
         var channel = $(event.target).attr('id').split('-')[1];
@@ -205,7 +208,7 @@ var GoalSetting = React.createClass({
         };
         wnt.setGoals(data, wnt.thisYear, channel, 'amount');
         // Convert the number back to a string and format it for display
-        $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }));
+        $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
     },
     render: function() {
         return (

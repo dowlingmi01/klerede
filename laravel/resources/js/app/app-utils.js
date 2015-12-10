@@ -5,11 +5,9 @@
 var wnt = {
     // NOTE: To just change dates with slashes to dates with dashes (or vice versa) use   ...   str.replace(/\//g,'-')
     formatDate: function(dateObj, digits) {   // Pass in 'double' as second paramter for yyyy-mm-dd, default is yyyy-m-d
-        var mm = dateObj.getMonth()+1,
-            dd = dateObj.getDate(),
-            formattedDate = digits === 'double' ? 
-                dateObj.getFullYear()+'-'+wnt.doubleDigits(mm)+'-'+wnt.doubleDigits(dd) : 
-                dateObj.getFullYear()+'-'+mm+'-'+dd;
+        var mm = dateObj.getMonth()+1;
+        var dd = dateObj.getDate();
+        var formattedDate = (digits === 'double') ? dateObj.getFullYear()+'-'+wnt.doubleDigits(mm)+'-'+wnt.doubleDigits(dd) : dateObj.getFullYear()+'-'+mm+'-'+dd;
         return formattedDate;
     },
     shortDate: function(dateStr){   // Pass in yyyy-mm-dd
