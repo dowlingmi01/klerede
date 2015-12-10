@@ -5,11 +5,11 @@
 var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
-            goal: 13000000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
+            goal: 16000000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
             goalBoxoffice: 4000000,
             goalCafe: 4000000,
             goalGiftstore: 4000000,
-            goalMembership: 3250000,
+            goalMembership: 4000000,
 
             boxoffice: 0,
             cafe: 0,
@@ -132,10 +132,7 @@ var SalesGoals = React.createClass({
         )
         .done(function(result) {
             console.log('Sales Goals data loaded...');
-            console.log(self.state.goal);
-            console.log(self.state.goalBoxoffice);
             wnt.salesGoals = result;
-            // TO DO: Add goal API call nested???  HOW TO HANDLE GOAL UPDATES ON FILTER CHANGES???  SET THOSE based on wnt.goals and grab the proper months to add up
             wnt.gettingGoalsData = $.Deferred();
             wnt.getGoals(wnt.thisYear);
             $.when(wnt.gettingGoalsData).done(function(goals) {
@@ -153,13 +150,29 @@ var SalesGoals = React.createClass({
                     // goalMembership += goals['membership/amount'].months[key.toString()];
                 }
                 // Set globals for easy access
-                // Months already exist as wnt.goals['gate/amount'].months[12]
-                // TO DO: Need quarters ... wnt.thisQuarterText = 'Q3' ... parseInt(wnt.thisQuarterText)
-                console.log(wnt.thisQuarterMonths);
                 wnt.goals.total = goalBoxoffice + goalCafe + goalGiftstore + self.state.goalMembership;
                 wnt.goals.boxoffice = goalBoxoffice;
                 wnt.goals.cafe = goalCafe;
                 wnt.goals.store = goalGiftstore;
+                // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
+                wnt.goals.boxofficeQuarter = 0;
+                wnt.goals.cafeQuarter = 0;
+                wnt.goals.storeQuarter = 0;
+                for(i=0; i<3; i++){
+                    var month = wnt.thisQuarterMonths[i];
+                    // Gate / Box Office
+                    var goal = wnt.goals['gate/amount'].months[month];
+                    wnt.goals.boxofficeQuarter += goal;
+                    // Cafe
+                    goal = wnt.goals['cafe/amount'].months[month];
+                    wnt.goals.cafeQuarter += goal;
+                    // Store
+                    goal = wnt.goals['store/amount'].months[month];
+                    wnt.goals.storeQuarter += goal;
+                }
+                wnt.goals.totalQuarter = wnt.goals.boxofficeQuarter + wnt.goals.cafeQuarter + wnt.goals.storeQuarter + 812500;
+                var monthNum = wnt.thisMonthNum + 1;
+                wnt.goals.totalMonth = wnt.goals['gate/amount'].months[monthNum] + wnt.goals['cafe/amount'].months[monthNum] + wnt.goals['store/amount'].months[monthNum] + 270833;
                 if(self.isMounted()) {
                     self.setState({
                         goal: wnt.goals.total,
@@ -234,12 +247,12 @@ var SalesGoals = React.createClass({
         if(filter === 'year'){
             this.setState({
                 barSegments: wnt.period(0, 12, true),
-                goal: 13000000,
+                goal: wnt.goals.total,
                 sales: wnt.salesGoals.sales_year.amount,
                 markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.sales_year.amount / 13000000) * 100
+                            (wnt.salesGoals.sales_year.amount / wnt.goals.total) * 100
                         ),
                 boxoffice: wnt.salesGoals.boxoffice_year.amount,
                 cafe: wnt.salesGoals.cafe_year.amount,
@@ -293,49 +306,49 @@ var SalesGoals = React.createClass({
         } else if(filter === 'quarter'){
             this.setState({
                 barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
-                goal: 5000000,
+                goal: wnt.goals.totalQuarter,
                 sales: wnt.salesGoals.sales_quarter.amount,
                 markerPosition: this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                            (wnt.salesGoals.sales_quarter.amount / 5000000) * 100
+                            (wnt.salesGoals.sales_quarter.amount / wnt.goals.totalQuarter) * 100
                         ),
                 boxoffice: wnt.salesGoals.boxoffice_quarter.amount,
                 cafe: wnt.salesGoals.cafe_quarter.amount,
                 giftstore: wnt.salesGoals.giftstore_quarter.amount,
                 membership: wnt.salesGoals.membership_quarter.amount,
-                goalBoxoffice: 2000000,
-                goalCafe: 812500,
-                goalGiftstore: 812500,
+                goalBoxoffice: wnt.goals.boxofficeQuarter,
+                goalCafe: wnt.goals.cafeQuarter,
+                goalGiftstore: wnt.goals.storeQuarter,
                 goalMembership: 812500,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.boxoffice_quarter.amount / 2000000) * 100,
+                        (wnt.salesGoals.boxoffice_quarter.amount / wnt.goals.boxofficeQuarter) * 100,
                         'label'
                     ),
                 statusClassBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.boxoffice_quarter.amount / 2000000) * 100,
+                        (wnt.salesGoals.boxoffice_quarter.amount / wnt.goals.boxofficeQuarter) * 100,
                         'class'
                     ),
                 statusCafe: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.cafe_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.cafe_quarter.amount / wnt.goals.cafeQuarter) * 100,
                         'label'
                     ),
                 statusClassCafe: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.cafe_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.cafe_quarter.amount / wnt.goals.cafeQuarter) * 100,
                         'class'
                     ),
                 statusGiftstore: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.giftstore_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.giftstore_quarter.amount / wnt.goals.storeQuarter) * 100,
                         'label'
                     ),
                 statusClassGiftstore: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.giftstore_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.giftstore_quarter.amount / wnt.goals.storeQuarter) * 100,
                         'class'
                     ),
                 statusMembership: this.dialStatus(
@@ -352,49 +365,49 @@ var SalesGoals = React.createClass({
         }  else if(filter === 'month'){
             this.setState({
                 barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
-                goal: 1000000,
+                goal: wnt.goals.totalMonth,
                 sales: wnt.salesGoals.sales_month.amount,
                 markerPosition: this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                            (wnt.salesGoals.sales_month.amount / 1000000) * 100
+                            (wnt.salesGoals.sales_month.amount / wnt.goals.totalMonth) * 100
                         ),
                 boxoffice: wnt.salesGoals.boxoffice_month.amount,
                 cafe: wnt.salesGoals.cafe_month.amount,
                 giftstore: wnt.salesGoals.giftstore_month.amount,
                 membership: wnt.salesGoals.membership_month.amount,
-                goalBoxoffice: 1000000,
-                goalCafe: 270833,
-                goalGiftstore: 270833,
+                goalBoxoffice: wnt.goals['gate/amount'].months[wnt.thisMonthNum + 1],
+                goalCafe: wnt.goals['cafe/amount'].months[wnt.thisMonthNum + 1],
+                goalGiftstore: wnt.goals['store/amount'].months[wnt.thisMonthNum + 1],
                 goalMembership: 270833,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.boxoffice_month.amount / 1000000) * 100,
+                        (wnt.salesGoals.boxoffice_month.amount / wnt.goals['gate/amount'].months[wnt.thisMonthNum + 1]) * 100,
                         'label'
                     ),
                 statusClassBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.boxoffice_month.amount / 1000000) * 100,
+                        (wnt.salesGoals.boxoffice_month.amount / wnt.goals['gate/amount'].months[wnt.thisMonthNum + 1]) * 100,
                         'class'
                     ),
                 statusCafe: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.cafe_month.amount / 270833) * 100,
+                        (wnt.salesGoals.cafe_month.amount / wnt.goals['cafe/amount'].months[wnt.thisMonthNum + 1]) * 100,
                         'label'
                     ),
                 statusClassCafe: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.cafe_month.amount / 270833) * 100,
+                        (wnt.salesGoals.cafe_month.amount / wnt.goals['cafe/amount'].months[wnt.thisMonthNum + 1]) * 100,
                         'class'
                     ),
                 statusGiftstore: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.giftstore_month.amount / 270833) * 100,
+                        (wnt.salesGoals.giftstore_month.amount / wnt.goals['store/amount'].months[wnt.thisMonthNum + 1]) * 100,
                         'label'
                     ),
                 statusClassGiftstore: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.giftstore_month.amount / 270833) * 100,
+                        (wnt.salesGoals.giftstore_month.amount / wnt.goals['store/amount'].months[wnt.thisMonthNum + 1]) * 100,
                         'class'
                     ),
                 statusMembership: this.dialStatus(
@@ -411,12 +424,12 @@ var SalesGoals = React.createClass({
         } else {
             this.setState({
                 barSegments: wnt.period(0, 12, true),
-                goal: 20000000,
+                goal: wnt.goals.total,
                 sales: wnt.salesGoals.sales_year.amount,
                 markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.salesGoals.sales_year.amount / 20000000) * 100
+                            (wnt.salesGoals.sales_year.amount / wnt.goals.total) * 100
                         ),
                 boxoffice: wnt.salesGoals.boxoffice_year.amount,
                 cafe: wnt.salesGoals.cafe_year.amount,
