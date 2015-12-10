@@ -241,18 +241,22 @@ if(wnt.thisMonthNum < 3){
     wnt.thisQuarterNum = [0,3];
     wnt.thisQuarterText = 'Q1';
     wnt.thisQuarterStart = '01';
+    wnt.thisQuarterMonths = [1,2,3];   // For goals
 } else if(wnt.thisMonthNum < 6){
     wnt.thisQuarterNum = [3,6];
     wnt.thisQuarterText = 'Q2';
     wnt.thisQuarterStart = '04';
+    wnt.thisQuarterMonths = [4,5,6];   // For goals
 } else if(wnt.thisMonthNum < 9){
     wnt.thisQuarterNum = [6,9];
     wnt.thisQuarterText = 'Q3';
     wnt.thisQuarterStart = '07';
+    wnt.thisQuarterMonths = [7,8,9];   // For goals
 } else {
     wnt.thisQuarterNum = [9,12];
     wnt.thisQuarterText = 'Q4';
     wnt.thisQuarterStart = '10';
+    wnt.thisQuarterMonths = [10,11,12];   // For goals
 }
 wnt.yesterday = new Date(wnt.today);
 wnt.yesterday.setDate(wnt.today.getDate() - 1);
