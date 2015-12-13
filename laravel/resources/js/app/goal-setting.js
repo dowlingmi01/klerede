@@ -21,8 +21,12 @@ var GoalsMonths = React.createClass({
             // Increment total for updating
             total += monthVal;
         });
-        // Convert total to formatted number for display
-        total = parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        // Convert total to formatted number for display, based on class of units or dollars
+        if($(event.target).closest('.goal-section').find('.total').hasClass('dollars')){
+            total = parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        } else {
+            total = parseInt(total).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
         // TO DO: Calculate super total if there is one
         // Update section total when a month is changed
         $(event.target).closest('.goal-section').find('.total').val(total);
