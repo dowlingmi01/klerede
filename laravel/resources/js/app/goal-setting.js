@@ -9,7 +9,6 @@ var GoalsMonths = React.createClass({
         var channel = $(event.target).closest('.goal-section').find('.total').attr('id').split('-')[1];
         // Initialize subchannel to false
         var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
-        console.log(subchannel);
         var data = {};
         data.months = {};
         var total = 0;
@@ -28,12 +27,20 @@ var GoalsMonths = React.createClass({
         } else {
             total = parseInt(total).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
-        // TO DO: Calculate super total if there is one
-        if(subchannel){
-            console.log($(event.target).closest('.super-set').find('.super-total').val());
-        }
         // Update section total when a month is changed
         $(event.target).closest('.goal-section').find('.total').val(total);
+        // Calculate super-total if there is one
+        if(subchannel){
+            var superTotal = 0;
+            $(event.target).closest('.super-set').find('.total').each(function(){
+                superTotal += Number($(this).val().replace(/[^0-9\.]+/g,""));
+            });
+            if($(event.target).hasClass('dollars')){
+                $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            } else {
+                $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            }
+        }
         wnt.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
         // Convert the number back to a string and format it for display
         if($(event.target).hasClass('dollars')){
@@ -199,7 +206,6 @@ var GoalSetting = React.createClass({
     },
     totalChange: function(event){
         var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
-        console.log(subchannel);
         // When a total is changed, remove the special characters for processing and equalize the goal across the months
         var total = $(event.target).val().replace(/\D/g,'');
         $(event.target).val(total);
@@ -212,7 +218,7 @@ var GoalSetting = React.createClass({
                 $(month).val(parseInt(monthTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
         });
-        // Set the super-total
+        // Set the super-total if there is one
         if(subchannel){
             var superTotal = 0;
             $(event.target).closest('.super-set').find('.total').each(function(){
