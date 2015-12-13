@@ -8,11 +8,12 @@ var GoalsMonths = React.createClass({
         $(event.target).val($(event.target).val().replace(/\D/g,''));
         var channel = $(event.target).closest('.goal-section').find('.total').attr('id').split('-')[1];
         // Initialize subchannel to false
-        var subchannel = false;
+        var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
+        console.log(subchannel);
         var data = {};
         data.months = {};
         var total = 0;
-        // TO DO: Set total to proper num format AND create proper num format method for easier useage
+        // TO DO: Create proper num format method for easier useage
         $(event.target).closest('.goal-section').find('.month-total').each(function(index, month){
             var monthNumber = parseInt($(month).attr('id').split('-')[1]);
             var monthVal = Number($(month).val().replace(/[^0-9\.]+/g,""));
@@ -28,6 +29,9 @@ var GoalsMonths = React.createClass({
             total = parseInt(total).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
         // TO DO: Calculate super total if there is one
+        if(subchannel){
+            console.log($(event.target).closest('.super-set').find('.super-total').val());
+        }
         // Update section total when a month is changed
         $(event.target).closest('.goal-section').find('.total').val(total);
         wnt.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
@@ -189,7 +193,13 @@ var GoalSetting = React.createClass({
             $(this).parent().find('.collapsed').click();
         });
     },
+    superTotalChange: function(event){
+        // TO DO: Equalize across totals AND months
+        console.log('SUPER TOTAL = '+$(event.target).val());
+    },
     totalChange: function(event){
+        var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
+        console.log(subchannel);
         // When a total is changed, remove the special characters for processing and equalize the goal across the months
         var total = $(event.target).val().replace(/\D/g,'');
         $(event.target).val(total);
@@ -202,6 +212,18 @@ var GoalSetting = React.createClass({
                 $(month).val(parseInt(monthTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
         });
+        // Set the super-total
+        if(subchannel){
+            var superTotal = 0;
+            $(event.target).closest('.super-set').find('.total').each(function(){
+                superTotal += Number($(this).val().replace(/[^0-9\.]+/g,""));
+            });
+            if($(event.target).hasClass('dollars')){
+                $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            } else {
+                $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            }
+        }
         // Then set the goals on the server
         var channel = $(event.target).attr('id').split('-')[1];
         var data = {
