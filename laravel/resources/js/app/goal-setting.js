@@ -201,8 +201,29 @@ var GoalSetting = React.createClass({
         });
     },
     superTotalChange: function(event){
-        // TO DO: Equalize across totals AND months
-        console.log('SUPER TOTAL = '+$(event.target).val());
+        var subchannels = $(event.target).closest('.super-set').find('.total').length;
+        var total = $(event.target).val() / subchannels;
+        var monthTotal = total / 12;
+        // Equalize across totals and months
+        $(event.target).closest('.super-set').find('.total').each(function(){
+            if($(event.target).hasClass('dollars')){
+                $(this).val(parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            } else {
+                $(this).val(parseInt(total).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            }
+        });
+        $(event.target).closest('.super-set').find('.month-total').each(function(){
+            if($(event.target).hasClass('dollars')){
+                $(this).val(parseInt(monthTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            } else {
+                $(this).val(parseInt(monthTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            }
+        });
+        if($(event.target).hasClass('dollars')){
+            $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        } else {
+            $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        }
     },
     totalChange: function(event){
         var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
