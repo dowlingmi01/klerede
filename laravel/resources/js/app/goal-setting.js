@@ -31,13 +31,16 @@ var GoalsMonths = React.createClass({
         $(event.target).closest('.goal-section').find('.total').val(total);
         // Calculate super-total if there is one
         if(subchannel){
+            subchannel = $(event.target).data('subchannel');
             var superTotal = 0;
             $(event.target).closest('.super-set').find('.total').each(function(){
                 superTotal += Number($(this).val().replace(/[^0-9\.]+/g,""));
             });
             if($(event.target).hasClass('dollars')){
+                wnt.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             } else {
+                wnt.setGoals(data, wnt.thisYear, channel, 'units', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
         }
@@ -217,7 +220,6 @@ var GoalSetting = React.createClass({
                 // Populate correct month in object
                 var monthNumber = parseInt($(month).attr('id').split('-')[1]);
                 data.months[monthNumber] = monthTotal;
-                console.log(data);
                 if($(event.target).hasClass('dollars')){
                     $(this).val(parseInt(monthTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
                 } else {
@@ -241,11 +243,27 @@ var GoalSetting = React.createClass({
         }
     },
     totalChange: function(event){
+        var channel = $(event.target).data('channel');
+        var data = {};
         var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
         // When a total is changed, remove the special characters for processing and equalize the goal across the months
         var total = $(event.target).val().replace(/\D/g,'');
         $(event.target).val(total);
         var monthTotal = Math.round(total / 12);
+        data.months = {
+            1: monthTotal,
+            2: monthTotal,
+            3: monthTotal,
+            4: monthTotal,
+            5: monthTotal,
+            6: monthTotal,
+            7: monthTotal,
+            8: monthTotal,
+            9: monthTotal,
+            10: monthTotal,
+            11: monthTotal,
+            12: monthTotal
+        };
         // Set the months in the display
         $.each($(event.target).parent().find('.month-total'), function(index, month){
             if($(month).hasClass('dollars')){
@@ -254,37 +272,23 @@ var GoalSetting = React.createClass({
                 $(month).val(parseInt(monthTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
         });
-        // Set the super-total if there is one
+        // Set the super-total if there is one, and set the goals on the API
         if(subchannel){
+            subchannel = $(event.target).data('subchannel');
             var superTotal = 0;
             $(event.target).closest('.super-set').find('.total').each(function(){
                 superTotal += Number($(this).val().replace(/[^0-9\.]+/g,""));
             });
             if($(event.target).hasClass('dollars')){
+                wnt.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             } else {
+                wnt.setGoals(data, wnt.thisYear, channel, 'units', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
+        } else {
+            wnt.setGoals(data, wnt.thisYear, channel, 'amount');
         }
-        // Then set the goals on the server
-        var channel = $(event.target).attr('id').split('-')[1];
-        var data = {
-            'months': {
-                1: monthTotal,
-                2: monthTotal,
-                3: monthTotal,
-                4: monthTotal,
-                5: monthTotal,
-                6: monthTotal,
-                7: monthTotal,
-                8: monthTotal,
-                9: monthTotal,
-                10: monthTotal,
-                11: monthTotal,
-                12: monthTotal
-            }
-        };
-        wnt.setGoals(data, wnt.thisYear, channel, 'amount');
         // Convert the number back to a string and format it for display
         if($(event.target).hasClass('dollars')){
             $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
