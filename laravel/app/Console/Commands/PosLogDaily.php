@@ -51,6 +51,7 @@ class PosLogDaily extends Command {
 			}
 			Artisan::call('kl:poslogimport_dir', ['directory'=>$dirname]);
 			$storage->move($dirname, 'proc/'.$dirname);
+			Artisan::call('kl:stats_sales_compute');
 		}
 	}
 
