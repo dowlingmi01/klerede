@@ -47,6 +47,7 @@ class StoreTransaction extends Model {
 			if( $xmlLine['VoidFlag'] != 'true' && ($xmlLine->Sale || $xmlLine->Return)) {
 				StoreTransactionLine::getForXML($transaction->id, $xmlLine);
 			}
+		StatStatus::newData(Channel::getFor('store')->id, $transaction->business_day);
 		return $transaction;
 	}
 	static function importXMLTransactions(\SimpleXMLElement $xmlLog, $batch) {
