@@ -147,17 +147,20 @@ var SalesGoals = React.createClass({
                     goalBoxoffice += goals['gate/amount'].months[key.toString()];
                     goalCafe += goals['cafe/amount'].months[key.toString()];
                     goalGiftstore += goals['store/amount'].months[key.toString()];
-                    // goalMembership += goals['membership/amount'].months[key.toString()];
+                    goalMembership += goals['membership/amount'].sub_channels.family.months[key.toString()];
+                    goalMembership += goals['membership/amount'].sub_channels.individual.months[key.toString()];
                 }
                 // Set globals for easy access
-                wnt.goals.total = goalBoxoffice + goalCafe + goalGiftstore + self.state.goalMembership;
+                wnt.goals.total = goalBoxoffice + goalCafe + goalGiftstore + goalMembership;
                 wnt.goals.boxoffice = goalBoxoffice;
                 wnt.goals.cafe = goalCafe;
                 wnt.goals.store = goalGiftstore;
+                wnt.goals.membership = goalMembership;
                 // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
                 wnt.goals.boxofficeQuarter = 0;
                 wnt.goals.cafeQuarter = 0;
                 wnt.goals.storeQuarter = 0;
+                wnt.goals.membershipQuarter = 0;
                 for(i=0; i<3; i++){
                     var month = wnt.thisQuarterMonths[i];
                     // Gate / Box Office
@@ -169,17 +172,21 @@ var SalesGoals = React.createClass({
                     // Store
                     goal = wnt.goals['store/amount'].months[month];
                     wnt.goals.storeQuarter += goal;
+                    // Membership
+                    goal = wnt.goals['membership/amount'].sub_channels.family.months[month];
+                    goal += wnt.goals['membership/amount'].sub_channels.individual.months[month];
+                    wnt.goals.membershipQuarter += goal;
                 }
-                wnt.goals.totalQuarter = wnt.goals.boxofficeQuarter + wnt.goals.cafeQuarter + wnt.goals.storeQuarter + 812500;
+                wnt.goals.totalQuarter = wnt.goals.boxofficeQuarter + wnt.goals.cafeQuarter + wnt.goals.storeQuarter + wnt.goals.membershipQuarter;
                 var monthNum = wnt.thisMonthNum + 1;
-                wnt.goals.totalMonth = wnt.goals['gate/amount'].months[monthNum] + wnt.goals['cafe/amount'].months[monthNum] + wnt.goals['store/amount'].months[monthNum] + 270833;
+                wnt.goals.totalMonth = wnt.goals['gate/amount'].months[monthNum] + wnt.goals['cafe/amount'].months[monthNum] + wnt.goals['store/amount'].months[monthNum] + wnt.goals['membership/amount'].sub_channels.family.months[monthNum] + wnt.goals['membership/amount'].sub_channels.individual.months[monthNum];
                 if(self.isMounted()) {
                     self.setState({
                         goal: wnt.goals.total,
                         goalBoxoffice: wnt.goals.boxoffice,
                         goalCafe: wnt.goals.cafe,
                         goalGiftstore: wnt.goals.store,
-                        goalMembership: self.state.goalMembership,   // TO DO: Pull from API
+                        goalMembership: wnt.goals.membership,
                         sales: result.sales_year.amount,
                         barGradient: self.barGradient(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
@@ -221,12 +228,12 @@ var SalesGoals = React.createClass({
                             ),
                         statusMembership: self.dialStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                                (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                                (wnt.salesGoals.membership_year.amount / wnt.goals.membership) * 100,
                                 'label'
                             ),
                         statusClassMembership: self.dialStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                                (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                                (wnt.salesGoals.membership_year.amount / wnt.goals.membership) * 100,
                                 'class'
                             )
                     });
@@ -261,7 +268,7 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: wnt.goals.boxoffice,
                 goalCafe: wnt.goals.cafe,
                 goalGiftstore: wnt.goals.store,
-                goalMembership: 3250000,
+                goalMembership: wnt.goals.membership,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.salesGoals.boxoffice_year.amount / wnt.goals.boxoffice) * 100,
@@ -294,12 +301,12 @@ var SalesGoals = React.createClass({
                     ),
                 statusMembership: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.membership_year.amount / wnt.goals.membership) * 100,
                         'label'
                     ),
                 statusClassMembership: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.membership_year.amount / wnt.goals.membership) * 100,
                         'class'
                     )
             });
@@ -320,7 +327,7 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: wnt.goals.boxofficeQuarter,
                 goalCafe: wnt.goals.cafeQuarter,
                 goalGiftstore: wnt.goals.storeQuarter,
-                goalMembership: 812500,
+                goalMembership: wnt.goals.membershipQuarter,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                         (wnt.salesGoals.boxoffice_quarter.amount / wnt.goals.boxofficeQuarter) * 100,
@@ -353,16 +360,17 @@ var SalesGoals = React.createClass({
                     ),
                 statusMembership: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.membership_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.membership_quarter.amount / wnt.goals.membershipQuarter) * 100,
                         'label'
                     ),
                 statusClassMembership: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.salesGoals.membership_quarter.amount / 812500) * 100,
+                        (wnt.salesGoals.membership_quarter.amount / wnt.goals.membershipQuarter) * 100,
                         'class'
                     )
             });
         }  else if(filter === 'month'){
+            var membershipMonth = wnt.goals['membership/amount'].sub_channels.family.months[wnt.thisMonthNum + 1] + wnt.goals['membership/amount'].sub_channels.individual.months[wnt.thisMonthNum + 1];
             this.setState({
                 barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
                 goal: wnt.goals.totalMonth,
@@ -379,7 +387,7 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: wnt.goals['gate/amount'].months[wnt.thisMonthNum + 1],
                 goalCafe: wnt.goals['cafe/amount'].months[wnt.thisMonthNum + 1],
                 goalGiftstore: wnt.goals['store/amount'].months[wnt.thisMonthNum + 1],
-                goalMembership: 270833,
+                goalMembership: membershipMonth,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                         (wnt.salesGoals.boxoffice_month.amount / wnt.goals['gate/amount'].months[wnt.thisMonthNum + 1]) * 100,
@@ -412,12 +420,12 @@ var SalesGoals = React.createClass({
                     ),
                 statusMembership: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.membership_month.amount / 270833) * 100,
+                        (wnt.salesGoals.membership_month.amount / membershipMonth) * 100,
                         'label'
                     ),
                 statusClassMembership: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.salesGoals.membership_month.amount / 270833) * 100,
+                        (wnt.salesGoals.membership_month.amount / membershipMonth) * 100,
                         'class'
                     )
             });
@@ -438,7 +446,7 @@ var SalesGoals = React.createClass({
                 goalBoxoffice: wnt.goals.boxoffice,
                 goalCafe: wnt.goals.cafe,
                 goalGiftstore: wnt.goals.store,
-                goalMembership: 3250000,
+                goalMembership: wnt.goals.membership,
                 statusBoxoffice: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.salesGoals.boxoffice_year.amount / wnt.goals.boxoffice) * 100,
@@ -471,12 +479,12 @@ var SalesGoals = React.createClass({
                     ),
                 statusMembership: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.membership_year.amount / wnt.goals.membership) * 100,
                         'label'
                     ),
                 statusClassMembership: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.salesGoals.membership_year.amount / 3250000) * 100,
+                        (wnt.salesGoals.membership_year.amount / wnt.goals.membership) * 100,
                         'class'
                     )
             });
