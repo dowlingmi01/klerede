@@ -137,5 +137,7 @@ class Stats {
 		, channel_id, box_office_product_kind_id, membership_kind_id, members, online
 		, units, amount, created_at )' . $dbquery->toSql();
 		DB::insert($insert);
+
+		StatStatus::computed($channel_id, $business_day);
 	}
 }

@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands;
 
 use App\Stats;
+use App\StatStatus;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,7 +21,7 @@ class StatsSalesCompute extends Command {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Compute store sales stats for the given date.';
+	protected $description = 'Compute store sales stats for the given date, or all pending.';
 
 	/**
 	 * Create a new command instance.
@@ -38,7 +39,14 @@ class StatsSalesCompute extends Command {
 	 * @return mixed
 	 */
 	public function fire()	{
-		Stats::computeStoreSales($this->argument('business_day'));
+		if($this->argument('business_day')) {
+			Stats::computeStoreSales($this->argument('business_day'));
+		} else {
+			$dates = StatStatus::where('status', 'new_data')->get();
+			foreach($dates as $date) {
+				Stats::computeStoreSales($date->date);
+			}
+		}
 	}
 
 	/**
@@ -49,7 +57,7 @@ class StatsSalesCompute extends Command {
 	protected function getArguments()
 	{
 		return [
-			['business_day', InputArgument::REQUIRED, 'Business day.'],
+			['business_day', InputArgument::OPTIONAL, 'Business day.'],
 		];
 	}
 
