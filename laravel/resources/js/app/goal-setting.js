@@ -128,10 +128,11 @@ var GoalsMonths = React.createClass({
 var GoalSetting = React.createClass({
     componentDidMount: function(){
         wnt.gettingGoalsData = $.Deferred();
-        wnt.getGoals(wnt.thisYear);
+        wnt.getGoals(wnt.thisYear, wnt.gettingGoalsData);
         // Set fields with goals data from server
         $.when(wnt.gettingGoalsData).done(function(goals) {
-            // Format = wnt.goals['gate/amount'].months['1']
+            // Set global for easy reuse
+            wnt.goals = goals;
             var goalBoxoffice = 0;
             var goalCafe = 0;
             var goalGiftstore = 0;
@@ -143,8 +144,6 @@ var GoalSetting = React.createClass({
             for(i=1; i<13; i++){
                 var key = i;
                 // Grab single month amount...
-                // wnt.goals['membership/amount'].sub_channels.family.months
-                // wnt.goals['membership/units'].sub_channels.family.months
                 var goalBoxofficeMonth = goals['gate/amount'].months[key.toString()];
                 var goalCafeMonth = goals['cafe/amount'].months[key.toString()];
                 var goalGiftstoreMonth = goals['store/amount'].months[key.toString()];

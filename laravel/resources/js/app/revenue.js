@@ -506,6 +506,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
         this.formatNumbers();
         $('.bar-set').popover();
+        /*
+        $( "div" ).mousemove(function( event ) {
+            var pageCoords = "( " + event.pageX + ", " + event.pageY + " )";
+            var clientCoords = "( " + event.clientX + ", " + event.clientY + " )";
+            $( "span:first" ).text( "( event.pageX, event.pageY ) : " + pageCoords );
+            $( "span:last" ).text( "( event.clientX, event.clientY ) : " + clientCoords );
+        });
+        */
         //wnt.gettingWeatherData = $.Deferred();
         //wnt.getWeather(this.state.barDates[0].replace(/\//g,'-'), this.state.barDates[this.state.barDates.length-1].replace(/\//g,'-'));
     },

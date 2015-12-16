@@ -94,6 +94,7 @@ var MembershipGoals = React.createClass({
         }
     },
     componentDidMount: function() {
+        var self = this;
         $.post(
             wnt.apiMain,
             {
@@ -124,50 +125,89 @@ var MembershipGoals = React.createClass({
         )
         .done(function(result) {
             console.log('Membership Goals data loaded...');
-            wnt.membersGoals = result;
-            if(this.isMounted()) {
-                this.setState({
-                    memberships: result.memberships_year.units,
-                    barGradient: this.barGradient(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (result.memberships_year.units / this.state.goal) * 100
-                        ),
-                    individual: result.individual_year.units,
-                    family: result.family_year.units,
-                    donor: result.donor_year.units,
-                    statusIndividual: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.individual_year.units / 10000) * 100,
-                            'label'
-                        ),
-                    statusClassIndividual: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.individual_year.units / 10000) * 100,
-                            'class'
-                        ),
-                    statusFamily: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.family_year.units / 10000) * 100,
-                            'label'
-                        ),
-                    statusClassFamily: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.family_year.units / 10000) * 100,
-                            'class'
-                        ),
-                    statusDonor: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.donor_year.units / 10000) * 100,
-                            'label'
-                        ),
-                    statusClassDonor: this.dialStatus(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.donor_year.units / 10000) * 100,
-                            'class'
-                        )
-                });
-                this.formatNumbers();
-            }
+            wnt.membershipSales = result;
+            wnt.gettingMembershipGoalsData = $.Deferred();
+            wnt.getGoals(wnt.thisYear, wnt.gettingMembershipGoalsData);
+            $.when(wnt.gettingMembershipGoalsData).done(function(goals) {
+                // Set global for easy reuse
+                wnt.membershipGoals = goals;
+                // Initialize goal totals
+                var goalFamily = 0;
+                var goalIndividual = 0;
+                var goalDonor = 0;
+                // Loop through months to calculate goal totals
+                for(i=1; i<13; i++){
+                    var key = i;
+                    goalFamily += wnt.membershipGoals['membership/units'].sub_channels.family.months[key.toString()];
+                    goalIndividual += wnt.membershipGoals['membership/units'].sub_channels.individual.months[key.toString()];
+                }
+                // Set globals for easy access
+                wnt.membershipGoals.totalMembership = goalFamily + goalIndividual;
+                wnt.membershipGoals.family = goalFamily;
+                wnt.membershipGoals.individual = goalIndividual;
+                // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
+                wnt.membershipGoals.familyQuarter = 0;
+                wnt.membershipGoals.individualQuarter = 0;
+                for(i=0; i<3; i++){
+                    var month = wnt.thisQuarterMonths[i];
+                    // Family
+                    var goal = wnt.membershipGoals['membership/units'].sub_channels.family.months[month];
+                    wnt.membershipGoals.familyQuarter += goal;
+                    // Individual
+                    goal = wnt.membershipGoals['membership/units'].sub_channels.individual.months[month];
+                    wnt.membershipGoals.individualQuarter += goal;
+                }
+                wnt.membershipGoals.totalMembershipQuarter = wnt.membershipGoals.familyQuarter + wnt.membershipGoals.individualQuarter;
+                var monthNum = wnt.thisMonthNum + 1;
+                wnt.membershipGoals.totalMembershipMonth = wnt.membershipGoals['membership/units'].sub_channels.family.months[monthNum] + wnt.membershipGoals['membership/units'].sub_channels.individual.months[monthNum];
+                if(self.isMounted()) {
+                    self.setState({
+                        goal: wnt.membershipGoals.totalMembership,
+                        goalFamily: wnt.membershipGoals.family,
+                        goalIndividual: wnt.membershipGoals.individual,
+                        goalDonor: self.state.goalDonor,
+                        memberships: result.memberships_year.units,
+                        barGradient: self.barGradient(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (result.memberships_year.units / wnt.membershipGoals.totalMembership) * 100
+                            ),
+                        individual: result.individual_year.units,
+                        family: result.family_year.units,
+                        donor: result.donor_year.units,
+                        statusIndividual: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.membershipSales.individual_year.units / wnt.membershipGoals.individual) * 100,
+                                'label'
+                            ),
+                        statusClassIndividual: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.membershipSales.individual_year.units / wnt.membershipGoals.individual) * 100,
+                                'class'
+                            ),
+                        statusFamily: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.membershipSales.family_year.units / wnt.membershipGoals.family) * 100,
+                                'label'
+                            ),
+                        statusClassFamily: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.membershipSales.family_year.units / wnt.membershipGoals.family) * 100,
+                                'class'
+                            ),
+                        statusDonor: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.membershipSales.donor_year.units / 10000) * 100,
+                                'label'
+                            ),
+                        statusClassDonor: self.dialStatus(
+                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+                                (wnt.membershipSales.donor_year.units / 10000) * 100,
+                                'class'
+                            )
+                    });
+                    self.formatNumbers();
+                }
+            });
         }.bind(this))   // .bind() gives context to 'this'
         .fail(function(result) {
             console.log('MEMBERSHIP GOALS DATA ERROR! ... ' + result.statusText);
@@ -182,188 +222,188 @@ var MembershipGoals = React.createClass({
         if(filter === 'year'){
             this.setState({
                 barSegments: wnt.period(0, 12, true),
-                goal: 20000,
-                memberships: wnt.membersGoals.memberships_year.units,
+                goal: wnt.membershipGoals.totalMembership,
+                memberships: wnt.membershipSales.memberships_year.units,
                 markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.memberships_year.units / 20000) * 100
+                            (wnt.membershipSales.memberships_year.units / wnt.membershipGoals.totalMembership) * 100
                         ),
-                individual: wnt.membersGoals.individual_year.units,
-                family: wnt.membersGoals.family_year.units,
-                donor: wnt.membersGoals.donor_year.units,
-                goalIndividual: 10000,
-                goalFamily: 10000,
+                individual: wnt.membershipSales.individual_year.units,
+                family: wnt.membershipSales.family_year.units,
+                donor: wnt.membershipSales.donor_year.units,
+                goalIndividual: wnt.membershipGoals.individual,
+                goalFamily: wnt.membershipGoals.family,
                 goalDonor: 10000,
                 statusIndividual: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        (wnt.membershipSales.individual_year.units / wnt.membershipGoals.individual) * 100,
                         'label'
                     ),
                 statusClassIndividual: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        (wnt.membershipSales.individual_year.units / wnt.membershipGoals.individual) * 100,
                         'class'
                     ),
                 statusFamily: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        (wnt.membershipSales.family_year.units / wnt.membershipGoals.family) * 100,
                         'label'
                     ),
                 statusClassFamily: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        (wnt.membershipSales.family_year.units / wnt.membershipGoals.family) * 100,
                         'class'
                     ),
                 statusDonor: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        (wnt.membershipSales.donor_year.units / 10000) * 100,
                         'label'
                     ),
                 statusClassDonor: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        (wnt.membershipSales.donor_year.units / 10000) * 100,
                         'class'
                     )
             });
         } else if(filter === 'quarter'){
             this.setState({
                 barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
-                goal: 5000,
-                memberships: wnt.membersGoals.memberships_quarter.units,
+                goal: wnt.membershipGoals.totalMembershipQuarter,
+                memberships: wnt.membershipSales.memberships_quarter.units,
                 markerPosition: this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                            (wnt.membersGoals.memberships_quarter.units / 5000) * 100
+                            (wnt.membershipSales.memberships_quarter.units / wnt.membershipGoals.totalMembershipQuarter) * 100
                         ),
-                individual: wnt.membersGoals.individual_quarter.units,
-                family: wnt.membersGoals.family_quarter.units,
-                donor: wnt.membersGoals.donor_quarter.units,
-                goalIndividual: 2500,
-                goalFamily: 2500,
+                individual: wnt.membershipSales.individual_quarter.units,
+                family: wnt.membershipSales.family_quarter.units,
+                donor: wnt.membershipSales.donor_quarter.units,
+                goalIndividual: wnt.membershipGoals.individualQuarter,
+                goalFamily: wnt.membershipGoals.familyQuarter,
                 goalDonor: 2500,
                 statusIndividual: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.membersGoals.individual_quarter.units / 2500) * 100,
+                        (wnt.membershipSales.individual_quarter.units / wnt.membershipGoals.individualQuarter) * 100,
                         'label'
                     ),
                 statusClassIndividual: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.membersGoals.individual_quarter.units / 2500) * 100,
+                        (wnt.membershipSales.individual_quarter.units / wnt.membershipGoals.individualQuarter) * 100,
                         'class'
                     ),
                 statusFamily: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.membersGoals.family_quarter.units / 2500) * 100,
+                        (wnt.membershipSales.family_quarter.units / wnt.membershipGoals.familyQuarter) * 100,
                         'label'
                     ),
                 statusClassFamily: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.membersGoals.family_quarter.units / 2500) * 100,
+                        (wnt.membershipSales.family_quarter.units / wnt.membershipGoals.familyQuarter) * 100,
                         'class'
                     ),
                 statusDonor: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.membersGoals.donor_quarter.units / 2500) * 100,
+                        (wnt.membershipSales.donor_quarter.units / 2500) * 100,
                         'label'
                     ),
                 statusClassDonor: this.dialStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                        (wnt.membersGoals.donor_quarter.units / 2500) * 100,
+                        (wnt.membershipSales.donor_quarter.units / 2500) * 100,
                         'class'
                     )
             });
         }  else if(filter === 'month'){
             this.setState({
                 barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
-                goal: 1750,
-                memberships: wnt.membersGoals.memberships_month.units,
+                goal: wnt.membershipGoals.totalMembershipMonth,
+                memberships: wnt.membershipSales.memberships_month.units,
                 markerPosition: this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                            (wnt.membersGoals.memberships_month.units / 1750) * 100
+                            (wnt.membershipSales.memberships_month.units / wnt.membershipGoals.totalMembershipMonth) * 100
                         ),
-                individual: wnt.membersGoals.individual_month.units,
-                family: wnt.membersGoals.family_month.units,
-                donor: wnt.membersGoals.donor_month.units,
-                goalIndividual: 875,
-                goalFamily: 875,
+                individual: wnt.membershipSales.individual_month.units,
+                family: wnt.membershipSales.family_month.units,
+                donor: wnt.membershipSales.donor_month.units,
+                goalIndividual: wnt.membershipGoals['membership/units'].sub_channels.individual.months[wnt.thisMonthNum + 1],
+                goalFamily: wnt.membershipGoals['membership/units'].sub_channels.family.months[wnt.thisMonthNum + 1],
                 goalDonor: 875,
                 statusIndividual: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.membersGoals.individual_month.units / 875) * 100,
+                        (wnt.membershipSales.individual_month.units / wnt.membershipGoals['membership/units'].sub_channels.individual.months[wnt.thisMonthNum + 1]) * 100,
                         'label'
                     ),
                 statusClassIndividual: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.membersGoals.individual_month.units / 875) * 100,
+                        (wnt.membershipSales.individual_month.units / wnt.membershipGoals['membership/units'].sub_channels.individual.months[wnt.thisMonthNum + 1]) * 100,
                         'class'
                     ),
                 statusFamily: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.membersGoals.family_month.units / 875) * 100,
+                        (wnt.membershipSales.family_month.units / wnt.membershipGoals['membership/units'].sub_channels.family.months[wnt.thisMonthNum + 1]) * 100,
                         'label'
                     ),
                 statusClassFamily: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.membersGoals.family_month.units / 875) * 100,
+                        (wnt.membershipSales.family_month.units / wnt.membershipGoals['membership/units'].sub_channels.family.months[wnt.thisMonthNum + 1]) * 100,
                         'class'
                     ),
                 statusDonor: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.membersGoals.donor_month.units / 875) * 100,
+                        (wnt.membershipSales.donor_month.units / 875) * 100,
                         'label'
                     ),
                 statusClassDonor: this.dialStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                        (wnt.membersGoals.donor_month.units / 875) * 100,
+                        (wnt.membershipSales.donor_month.units / 875) * 100,
                         'class'
                     )
             });
         } else {
             this.setState({
                 barSegments: wnt.period(0, 12, true),
-                goal: 20000,
-                memberships: wnt.membersGoals.memberships_year.units,
+                goal: wnt.membershipGoals.totalMembership,
+                memberships: wnt.membershipSales.memberships_year.units,
                 markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                 barGradient: this.barGradient(
                             this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membersGoals.memberships_year.units / 20000) * 100
+                            (wnt.membershipSales.memberships_year.units / wnt.membershipGoals.totalMembership) * 100
                         ),
-                individual: wnt.membersGoals.individual_year.units,
-                family: wnt.membersGoals.family_year.units,
-                donor: wnt.membersGoals.donor_year.units,
-                goalIndividual: 10000,
-                goalFamily: 10000,
+                individual: wnt.membershipSales.individual_year.units,
+                family: wnt.membershipSales.family_year.units,
+                donor: wnt.membershipSales.donor_year.units,
+                goalIndividual: wnt.membershipGoals.individual,
+                goalFamily: wnt.membershipGoals.family,
                 goalDonor: 10000,
                 statusIndividual: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        (wnt.membershipSales.individual_year.units / wnt.membershipGoals.individual) * 100,
                         'label'
                     ),
                 statusClassIndividual: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.individual_year.units / 10000) * 100,
+                        (wnt.membershipSales.individual_year.units / wnt.membershipGoals.individual) * 100,
                         'class'
                     ),
                 statusFamily: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        (wnt.membershipSales.family_year.units / wnt.membershipGoals.family) * 100,
                         'label'
                     ),
                 statusClassFamily: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.family_year.units / 10000) * 100,
+                        (wnt.membershipSales.family_year.units / wnt.membershipGoals.family) * 100,
                         'class'
                     ),
                 statusDonor: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        (wnt.membershipSales.donor_year.units / 10000) * 100,
                         'label'
                     ),
                 statusClassDonor: this.dialStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                        (wnt.membersGoals.donor_year.units / 10000) * 100,
+                        (wnt.membershipSales.donor_year.units / 10000) * 100,
                         'class'
                     )
             });
@@ -422,7 +462,7 @@ var MembershipGoals = React.createClass({
         }
 
         // Show the details
-        $('.channel-info').css('opacity','0')
+        $('#membership .channel-info').css('opacity','0')
             .animate({
                 opacity: '1'
             },
@@ -438,7 +478,7 @@ var MembershipGoals = React.createClass({
         this.setDots();
     },
     setDots: function(){
-        diameter = $('#div1').width() -2;   // Tweaked via console
+        diameter = $('#div5').width() -2;   // Tweaked via console
         radius = diameter / 2;
         centerX = radius;
         centerY = radius;

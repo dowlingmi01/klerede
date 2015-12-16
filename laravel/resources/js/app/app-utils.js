@@ -184,13 +184,12 @@ var wnt = {
             console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
         });
     },
-    getGoals: function(year){
+    getGoals: function(year, deferredObj){        
         $.get(wnt.apiGoals+'/'+wnt.venueID+'/'+year)
         .done(function(result){
-            wnt.goals = result;
             // If there's a deferred set for the data call, resolve it
-            if(wnt.gettingGoalsData){
-                wnt.gettingGoalsData.resolve(result);
+            if(deferredObj !== undefined){
+                deferredObj.resolve(result);
             }
             console.log('Goals data loaded...');
         })
@@ -198,8 +197,8 @@ var wnt = {
             console.log('GOALS DATA ERROR! ... ' + result.statusText);
             console.log(result);
             // If there's a deferred set for the data call, resolve it
-            if(wnt.gettingGoalsData){
-                wnt.gettingGoalsData.resolve(result);
+            if(deferredObj !== undefined){
+                deferredObj.resolve(result);
             }
         });
     },
