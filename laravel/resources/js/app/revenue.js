@@ -506,7 +506,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
         this.formatNumbers();
         $('.bar-set').popover();
-        $('.bar-set').on('show.bs.popover', function () {
+        $('.bar-set').on('shown.bs.popover', function () {
             var $popover = $('.popover');
             var pWidth = $popover.width();
             var pHeight = $popover.height();
@@ -515,9 +515,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             console.log(pWidth+' ... '+pHeight);
             $popover.css({
                 'position': 'fixed',
-                'z-index': '2015',
-                'top': pTop,
-                'left': pLeft
+                'z-index': '2015'
             });
         });
         /*

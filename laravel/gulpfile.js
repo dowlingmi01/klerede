@@ -72,8 +72,9 @@ gulp.task('app', function(){
             'resources/js/app/welcome-text.js',
             'resources/js/app/visits-blocks.js',
             'resources/js/app/sales-goals.js',
-            'resources/js/app/revenue.js',
             'resources/js/app/membership-goals.js',
+            'resources/js/app/revenue.js',
+            'resources/js/app/attendance.js',
             'resources/js/app/members-blocks.js',
             'resources/js/app/goal-setting.js'
         ])

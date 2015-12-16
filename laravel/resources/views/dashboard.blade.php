@@ -12,6 +12,8 @@
 
     <div id="revenue-row-widget"><!-- ReactJS component: Revenue --></div>
 
+    <div id="attendance-row-widget"><!-- ReactJS component: Attendance --></div>
+
     <div id="members-blocks-widget"><!-- ReactJS component: MembersBlocksSet --></div>
 
 @stop
