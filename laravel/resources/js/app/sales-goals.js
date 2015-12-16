@@ -518,7 +518,7 @@ var SalesGoals = React.createClass({
         //diameter = screenSize <= 1024 ? dialWidth : 145;   // Set diameter if the screen size is tablet or smaller
         //$('.dial-wrapper .dial').css('width',dialWidth-5);
         
-        d3.select('#earned-revenue-channels').selectAll('svg').remove();
+        d3.select('#earned-revenue-channels .dial-wrapper').selectAll('svg').remove();
 
         var rp1 = radialProgress(document.getElementById('div1'))
             .label('')
