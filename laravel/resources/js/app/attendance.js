@@ -12,7 +12,7 @@ var Attendance = React.createClass({
         return (
             <div className="row">
                 <div className="col-xs-12 col-md-12">
-                    <div className="widget" id="revenue">
+                    <div className="widget" id="attendance">
                         <h2>{this.state.title}</h2>
                     </div>
                 </div>
