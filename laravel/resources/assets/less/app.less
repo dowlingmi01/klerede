@@ -303,16 +303,6 @@ header {
         top: 15px;
     }
 }
-.popover-content {
-    a {
-        color: @darkgrey;
-        text-decoration: none;
-    }
-    a:hover {
-        color: @aqua;
-        text-decoration: none;
-    }
-}
 .page {
     background-color: @white;
     font-size: 110%;
@@ -757,6 +747,90 @@ header {
         fill: @white;
     }
 }
+body > .popover {
+    background-color: @darkmediumgrey;
+    border: none;
+    padding: 0;
+    position: fixed;
+    z-index: 2015;
+    .popover-weather-bar {
+        background-color: @lightblue;
+        border-radius: 6px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        color: @black;
+        overflow: hidden;
+        padding: 10px;
+        .popover-weather-10am,
+        .popover-weather-4pm {
+            float: left;
+            font-family: Raleway,sans-serif;
+            font-size: 70%;
+            text-transform: capitalize;
+            white-space: normal;
+            width: 120px;
+        }
+    }
+    .popover-content,
+    .popover-content td {
+        color: @white;
+        padding: 0;
+    }
+    .legend-circle-bo {
+        background-color: @cobalt;
+        border-radius: 5px;
+        clear: both;
+        float: left;
+        height: 10px;
+        width: 10px;
+    }
+    .legend-circle-c {
+        background-color: @teal;
+        border-radius: 5px;
+        clear: both;
+        float: left;
+        height: 10px;
+        width: 10px;
+    }
+    .legend-circle-gs {
+        background-color: @aqua;
+        border-radius: 5px;
+        clear: both;
+        float: left;
+        height: 10px;
+        width: 10px;
+    }
+    .legend-circle-m {
+        background-color: @gold;
+        border-radius: 5px;
+        clear: both;
+        float: left;
+        height: 10px;
+        width: 10px;
+    }
+    .popover-weather-icon {
+        background-color: #fff;
+        float: left;
+        height: 40px;
+        margin-right: 7px;
+        padding: 10px;
+        width: 40px;
+    }
+    .popover-data {
+        clear: both;
+        margin: 8px;
+        width: 100%;
+    }
+    .popover-data td {
+        padding: 5px;
+    }
+}
+body > .popover.top>.arrow {
+    border-top-color: @darkmediumgrey;
+}
+body > .popover.top>.arrow:after {
+    border-top-color: @darkmediumgrey;
+}
 #bar-graph-scroll-pane {
     clear: both;
     margin: 0 auto;
@@ -783,88 +857,6 @@ header {
         svg {
             bottom: 0;
             position: absolute;
-        }
-        .popover {
-            background-color: @darkmediumgrey;
-            border: none;
-            padding: 0;
-            .popover-weather-bar {
-                background-color: @lightblue;
-                border-radius: 6px;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
-                color: @black;
-                overflow: hidden;
-                padding: 10px;
-                .popover-weather-10am,
-                .popover-weather-4pm {
-                    float: left;
-                    font-family: Raleway,sans-serif;
-                    font-size: 70%;
-                    text-transform: capitalize;
-                    white-space: normal;
-                    width: 120px;
-                }
-            }
-            .popover-content,
-            .popover-content td {
-                color: @white;
-                padding: 0;
-            }
-            .legend-circle-bo {
-                background-color: @cobalt;
-                border-radius: 5px;
-                clear: both;
-                float: left;
-                height: 10px;
-                width: 10px;
-            }
-            .legend-circle-c {
-                background-color: @teal;
-                border-radius: 5px;
-                clear: both;
-                float: left;
-                height: 10px;
-                width: 10px;
-            }
-            .legend-circle-gs {
-                background-color: @aqua;
-                border-radius: 5px;
-                clear: both;
-                float: left;
-                height: 10px;
-                width: 10px;
-            }
-            .legend-circle-m {
-                background-color: @gold;
-                border-radius: 5px;
-                clear: both;
-                float: left;
-                height: 10px;
-                width: 10px;
-            }
-            .popover-weather-icon {
-                background-color: #fff;
-                float: left;
-                height: 40px;
-                margin-right: 7px;
-                padding: 10px;
-                width: 40px;
-            }
-            .popover-data {
-                clear: both;
-                margin: 8px;
-                width: 100%;
-            }
-            .popover-data td {
-                padding: 5px;
-            }
-        }
-        .popover.top>.arrow {
-            border-top-color: @darkmediumgrey;
-        }
-        .popover.top>.arrow:after {
-            border-top-color: @darkmediumgrey;
         }
     }
 }
@@ -1186,18 +1178,25 @@ header {
         }
     }
     .popover {
+        position: fixed;
         white-space: nowrap;
         .popover-content {
             padding: 5px 10px;
             a {
                 border-right: 1px solid @lightgrey;
+                color: @darkgrey;
                 margin-right: 10px;
                 padding-right: 10px;
+                text-decoration: none;
             }
             a:last-child {
                 border-right: none;
                 margin-right: 0;
                 padding-right: 0;
+            }
+            a:hover {
+                color: @aqua;
+                text-decoration: none;
             }
         }
     }

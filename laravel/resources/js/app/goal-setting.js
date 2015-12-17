@@ -306,21 +306,21 @@ var GoalSetting = React.createClass({
                 <div className="form-group">
                     <label htmlFor="goal-gate" className="col-sm-2 control-label">Box Office:</label>
                     <div className="col-sm-4 goal-section">
-                        <input type="text" id="goal-gate" placeholder="$000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-gate" />
+                        <input type="text" id="goal-gate" data-channel="gate" placeholder="$000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-gate" />
                         <GoalsMonths id="months-gate" placeholder="$0" num="dollars" channel="gate" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-cafe" className="col-sm-2 control-label">Cafe:</label>
                     <div className="col-sm-4 goal-section">
-                        <input type="text" id="goal-cafe" placeholder="$000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-cafe" />
+                        <input type="text" id="goal-cafe" data-channel="cafe" placeholder="$000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-cafe" />
                         <GoalsMonths id="months-cafe" placeholder="$0" num="dollars" channel="cafe" />
                     </div>
                 </div>
                 <div className="form-group">
                     <label htmlFor="goal-store" className="col-sm-2 control-label">Gift Store:</label>
                     <div className="col-sm-4 goal-section">
-                        <input type="text" id="goal-store" placeholder="$000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-store" />
+                        <input type="text" id="goal-store" data-channel="store" placeholder="$000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-store" />
                         <GoalsMonths id="months-store" placeholder="$0" num="dollars" channel="store" />
                     </div>
                 </div>

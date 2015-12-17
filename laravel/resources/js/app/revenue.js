@@ -505,23 +505,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             );
         });
         this.formatNumbers();
-        $('.bar-set').popover();
-        $('.bar-set').on('shown.bs.popover', function () {
+        $('.bar-set').popover({ container: 'body' });
+        /*$('.bar-set').on('shown.bs.popover', function () {
             var $popover = $('.popover');
-            var pWidth = $popover.width();
-            var pHeight = $popover.height();
-            var pTop = event.clientX;
-            var pLeft = event.clientY;
-            console.log(pWidth+' ... '+pHeight);
             $popover.css({
                 'position': 'fixed',
                 'z-index': '2015'
             });
-        });
+        });*/
         /*
-        $('#myPopover').on('hidden.bs.popover', function () {
-          // do something…
-        })
         $( "div" ).mousemove(function( event ) {
             var pageCoords = "( " + event.pageX + ", " + event.pageY + " )";
             var clientCoords = "( " + event.clientX + ", " + event.clientY + " )";
