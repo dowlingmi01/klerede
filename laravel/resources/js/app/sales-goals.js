@@ -372,6 +372,7 @@ var SalesGoals = React.createClass({
                     )
             });
         }  else if(filter === 'month'){
+            // TO DO: Allow for units too in membership goal
             var membershipMonth = wnt.salesGoals['membership/amount'].sub_channels.family.months[wnt.thisMonthNum + 1] + wnt.salesGoals['membership/amount'].sub_channels.individual.months[wnt.thisMonthNum + 1];
             this.setState({
                 barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
@@ -498,16 +499,26 @@ var SalesGoals = React.createClass({
         $('#total-sales-goals .goalAmount').formatNumber({format:"$#,###", locale:"us"});
         $('#total-sales-goals .bar-meter-marker').parseNumber({format:"$#,###", locale:"us"});
         $('#total-sales-goals .bar-meter-marker').formatNumber({format:"$#,###", locale:"us"});
+        // Fix for 0 (null) values
+        if($('#total-sales-goals .bar-meter-marker').html() === '$'){
+            $('#total-sales-goals .bar-meter-marker').html('$0');
+        }
         $.each($('#earned-revenue-channels .channel-amount'), function(index, item){
             if($(this).html() !== '-'){
                 $(this).parseNumber({format:"$#,###", locale:"us"});
                 $(this).formatNumber({format:"$#,###", locale:"us"});
+                if($(this).html() === '$'){
+                    $(this).html('$0');
+                }
             }
         });
         $.each($('#earned-revenue-channels .amount'), function(index, item){
             if($(this).html() !== '-'){
                 $(this).parseNumber({format:"$#,###", locale:"us"});
                 $(this).formatNumber({format:"$#,###", locale:"us"});
+                if($(this).html() === '$'){
+                    $(this).html('$0');
+                }
             }
         });
     },

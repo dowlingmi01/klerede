@@ -418,16 +418,32 @@ var MembershipGoals = React.createClass({
         $('#total-membership-goals .goalAmount').formatNumber({format:symbol+"#,###", locale:"us"});
         $('#total-membership-goals .bar-meter-marker').parseNumber({format:symbol+"#,###", locale:"us"});
         $('#total-membership-goals .bar-meter-marker').formatNumber({format:symbol+"#,###", locale:"us"});
+        if($('#total-membership-goals .bar-meter-marker').html() === '$'){
+            $('#total-membership-goals .bar-meter-marker').html('$0');
+        }
+        if($('#total-membership-goals .bar-meter-marker').html() === ''){
+            $('#total-membership-goals .bar-meter-marker').html('0');
+        }
         $.each($('#membership .channel-amount'), function(index, item){
             if($(this).html() !== '-'){
                 $(this).parseNumber({format:symbol+"#,###", locale:"us"});
                 $(this).formatNumber({format:symbol+"#,###", locale:"us"});
+                if($(this).html() === '$'){
+                    $(this).html('$0');
+                } else if($(this).html() === ''){
+                    $(this).html('0');
+                }
             }
         });
         $.each($('#membership .amount'), function(index, item){
             if($(this).html() !== '-'){
                 $(this).parseNumber({format:symbol+"#,###", locale:"us"});
                 $(this).formatNumber({format:symbol+"#,###", locale:"us"});
+                if($(this).html() === '$'){
+                    $(this).html('$0');
+                } else if($(this).html() === ''){
+                    $(this).html('0');
+                }
             }
         });
     },
