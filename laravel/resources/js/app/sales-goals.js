@@ -47,8 +47,8 @@ var SalesGoals = React.createClass({
     barGradient: function(expected, current) {
         /*
             <50         = Red               = Behind            = rgba(221,35,2,1)
-            >50 <75     = Orange            = behind            = rgba(235,164,9,1)
-            >75 <90     = Yellow            = Slightly behind   = rgba(255,254,19,1)
+            >50 <75     = Orange            = Behind            = rgba(235,164,9,1)
+            >75 <90     = Yellow            = Slightly Behind   = rgba(255,254,19,1)
             >90 <110    = Yellowish-green   = On Track          = rgba(170,202,55,1)
             >110        = Green             = Ahead             = rgba(72,126,3,1)
 
@@ -56,32 +56,40 @@ var SalesGoals = React.createClass({
             Each block counts as 2 so the marker is centered in the color
             (current / halfBlocksToMiddleOfCurrent) * 2HalvesEach 
             The % stops in the gradient are where to start the next color, not the color's width
+
+            Passing in marker position and % complete ... ((amount/goal) * 100)           
         */
         var gradient = ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green'];
         var diff = (current / expected) * 100;
         var band;
 
         if(diff < 50) {
+            // Behind: Marker (expected) should be in the 'middle' of red
             this.setState({ status: 'Behind', statusClass: 'behind' });
             band = Math.round((current / 1) * 2);
-            return 'Red '+(band)+'%, Orange, Yellow, YellowGreen, Green';   // ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green']
+            return 'Red '+(expected)+'%, Orange, Yellow, YellowGreen, Green';
         } else if(diff < 75) {
+            // Behind: Marker should be in the 'middle' of orange
             this.setState({ status: 'Behind', statusClass: 'behind' });
             band = Math.round((current / 3) * 2);
-            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow, YellowGreen, Green';   // ['Orange', 'Yellow', 'YellowGreen', 'Green']
+            return 'Red, Orange '+(expected)+'%, Yellow, YellowGreen, Green';
         } else if(diff < 90) {
+            // Slightly Behind: Marker should be in the 'middle' of yellow
             this.setState({ status: 'Slightly Behind', statusClass: 'slightly-behind' });
             band = Math.round((current / 5) * 2);
-            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen, Green';   // gradient.slice(2).toString()
+            return 'Red, Orange, Yellow '+(expected)+'%, YellowGreen, Green';
         } else if(diff < 110) {
+            // On Track: Marker should be in the 'middle' of Yellowish-green
             this.setState({ status: 'On Track', statusClass: 'on-track' });
             band = Math.round((current / 7) * 2);
-            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green';   // ['YellowGreen', 'Green']
+            return 'Red, Orange, Yellow, YellowGreen '+(expected)+'%, Green';
         } else {
+            // Ahead: Marker (expected) should be in the 'middle' of green (expected is % left position 0-100)
             this.setState({ status: 'Ahead', statusClass: 'ahead' });
             band = Math.round((current / 9) * 2);
-            return 'Red '+(band)+'%, Orange '+(band*2)+'%, Yellow '+(band*3)+'%, YellowGreen '+(band*4)+'%, Green'+(band*5)+'%';
+            return 'Red, Orange, Yellow, YellowGreen, Green '+(expected)+'%';
         }
+        
     },
     dialStatus: function(expected, current, type) {   // type = return CLASS or LABEL
         var diff = (current / expected) * 100;
