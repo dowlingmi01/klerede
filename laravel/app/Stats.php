@@ -15,16 +15,6 @@ class Stats {
 			$period = sprintf('%04d-%02d', $period / 100, $period % 100);
 	}
 	static function querySingle($venue_id, $query) {
-		$specs = (object) $query->specs;
-		if($specs->type == 'visits')
-			$table = 'stat_visits';
-		else if($specs->type == 'sales')
-			$table = 'stat_sales';
-		else if($specs->type == 'members')
-			$table = 'stat_members';
-
-		$dbquery = DB::table($table);
-		$dbquery->where('venue_id', $venue_id);
 		if(is_string($query->periods))
 			$periods = (object) ['period'=>$query->periods];
 		else
@@ -33,7 +23,24 @@ class Stats {
 			$periods->type = 'date';
 		if(!isset($periods->kind))
 			$periods->kind = 'detail';
+		if(isset($periods->hourly))
+			$periods->hourly = filter_var($periods->hourly, FILTER_VALIDATE_BOOLEAN);
+		else
+			$periods->hourly = false;
+
 		$includePeriod = $periods->type;
+
+		$specs = (object) $query->specs;
+		if($specs->type == 'visits')
+			$table = $periods->hourly ? 'stat_hourly_visits' : 'stat_visits';
+		else if($specs->type == 'sales')
+			$table = 'stat_sales';
+		else if($specs->type == 'members')
+			$table = 'stat_members';
+
+		$dbquery = DB::table($table);
+		$dbquery->where('venue_id', $venue_id);
+
 		if(isset($periods->period)) {
 			self::validatePeriod($periods->period, $periods->type);
 			$dbquery->where($periods->type, $periods->period);
@@ -73,6 +80,11 @@ class Stats {
 
 		if($includePeriod)
 			$dbquery->addSelect("$includePeriod as period");
+
+		if($periods->hourly) {
+			$dbquery->addSelect('hour');
+			$dbquery->groupBy('hour');
+		}
 
 		if($specs->type == 'members') {
 			if($periods->kind == 'average') {
