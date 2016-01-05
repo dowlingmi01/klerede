@@ -229,9 +229,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             value: 'TEST',
             month: wnt.thisMonthNum+1,
             monthStart: wnt.monthStart,
-            monthEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
-            periodStart: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1',
-            periodEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-7',
+            monthEnd: wnt.thisYear+'-'+ wnt.doubleDigits(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
+            periodStart: wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-01',
+            periodEnd: wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-07',
             priorPeriodStart: wnt.getDateRange(wnt.monthStart, 'last week')[0],   // default is last month's last week
             priorPeriodEnd: wnt.getDateRange(wnt.monthStart, 'last week')[1],   // default is last day of previous month
 
@@ -551,8 +551,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         var selectedMonth = wnt.datePickerStart.getMonth()+1;
         var selectedYear = wnt.datePickerStart.getFullYear();
         wnt.selectedMonthDays = wnt.daysInMonth(selectedMonth, selectedYear);
-        var selectedMonthStart = selectedYear+'-'+selectedMonth+'-1';   // yyyy-m-d
-        var selectedMonthEnd = selectedYear+'-'+selectedMonth+'-'+wnt.selectedMonthDays;   // yyyy-m-d
+        var selectedMonthStart = selectedYear+'-'+wnt.doubleDigits(selectedMonth)+'-01';   // yyyy-m-d
+        var selectedMonthEnd = selectedYear+'-'+wnt.doubleDigits(selectedMonth)+'-'+wnt.selectedMonthDays;   // yyyy-m-d
         var selectedDay = wnt.datePickerStart.getDate();
 
         $("#bar-graph-slider").slider('value', (selectedDay / wnt.selectedMonthDays) * 100);

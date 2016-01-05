@@ -7,7 +7,7 @@ var wnt = {
     formatDate: function(dateObj, digits) {   // Pass in 'double' as second paramter for yyyy-mm-dd, default is yyyy-m-d
         var mm = dateObj.getMonth()+1;
         var dd = dateObj.getDate();
-        var formattedDate = (digits === 'double') ? dateObj.getFullYear()+'-'+wnt.doubleDigits(mm)+'-'+wnt.doubleDigits(dd) : dateObj.getFullYear()+'-'+mm+'-'+dd;
+        var formattedDate = dateObj.getFullYear()+'-'+wnt.doubleDigits(mm)+'-'+wnt.doubleDigits(dd);
         return formattedDate;
     },
     shortDate: function(dateStr){   // Pass in yyyy-mm-dd
@@ -267,9 +267,9 @@ wnt.today = wnt.formatDate(wnt.today, 'double');
 wnt.yesterday = wnt.formatDate(wnt.yesterday, 'double');
 wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday, 'double');
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear, 'double');
-wnt.yearStart = wnt.thisYear+'-1-1';
-wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
-wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';
+wnt.yearStart = wnt.thisYear+'-01-01';
+wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-01';
+wnt.monthStart = wnt.thisYear+'-'+wnt.doubleDigits(wnt.thisMonthNum+1)+'-01';
 wnt.datePickerStart = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
