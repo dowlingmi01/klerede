@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-		$schedule->command('kl:poslog_daily')->dailyAt('14:00')->environments('production');
-		$schedule->command('kl:weatherimport')->dailyAt('12:00')->environments('production');
+		$schedule->command('kl:poslog_daily')->dailyAt('17:00')->environments('production');
+		$schedule->command('kl:weatherimport')->dailyAt('14:00')->environments('production');
 	}
 }
