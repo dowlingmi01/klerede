@@ -57,6 +57,14 @@ body {
     /* Setting base font size to work with expected font unit conversion (pt --> %) for Raleway font family */
     letter-spacing: .05em;
 }
+@media print {
+    body * {
+        display: none;
+    }
+    body .printable {
+        display: block;
+    }
+}
 h1 {
     font-family: 'Raleway', sans-serif;   /* CURRENTLY NO H1 TAG */
 }
@@ -1187,19 +1195,20 @@ body > .popover.top>.arrow:after {
         white-space: nowrap;
         .popover-content {
             padding: 5px 10px;
-            a {
+            a, span {
                 border-right: 1px solid @lightgrey;
                 color: @darkgrey;
+                cursor: pointer;
                 margin-right: 10px;
                 padding-right: 10px;
                 text-decoration: none;
             }
-            a:last-child {
+            span:last-child {
                 border-right: none;
                 margin-right: 0;
                 padding-right: 0;
             }
-            a:hover {
+            a:hover, span:hover {
                 color: @aqua;
                 text-decoration: none;
             }

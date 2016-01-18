@@ -222,6 +222,12 @@ var wnt = {
                 console.log('ERROR');
             }
         });
+    },
+    print: function(link){
+        var widget = $(link).closest('.widget');
+        $(widget).addClass('printable').parents().addClass('printable');
+        window.print();
+        // LEFT OFF WITH ... adds + and arrow to print, but nothing else.
     }
 };
 
