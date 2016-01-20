@@ -58,13 +58,15 @@ body {
     letter-spacing: .05em;
 }
 @media print {
-    body * {
+    body .unprintable {
         display: none;
     }
-    body .printable {
-        display: block;
-    }
+
 }
+body .printable {
+        display: block;
+        -webkit-print-color-adjust: exact;
+    }
 h1 {
     font-family: 'Raleway', sans-serif;   /* CURRENTLY NO H1 TAG */
 }

@@ -225,9 +225,11 @@ var wnt = {
     },
     print: function(link){
         var widget = $(link).closest('.widget');
-        $(widget).addClass('printable').parents().addClass('printable');
+        $('*').addClass('unprintable');
+        $(widget).toggleClass('unprintable printable').find('*').toggleClass('unprintable printable');
+        $(widget).parents().toggleClass('unprintable printable');
+        $('.popover').hide();
         window.print();
-        // LEFT OFF WITH ... adds + and arrow to print, but nothing else.
     }
 };
 
