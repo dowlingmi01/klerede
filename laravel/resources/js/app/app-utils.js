@@ -230,6 +230,70 @@ var wnt = {
         $(widget).parents().toggleClass('unprintable printable');
         $('.popover').hide();
         window.print();
+    },
+    export: function(link){
+        // TO DO: abstract conditionals
+        var widget = $(link).closest('.widget');
+        if($(widget).attr('id') === 'total-sales-goals') {
+            var data = [["Period", "Sales Goal", "Actual", "Status"], [
+                $(widget).find('.form-control option:selected').text(),
+                $(widget).find('.goalAmount').text().replace(/,/g, ''),
+                $(widget).find('.bar-meter-marker').text().replace(/,/g, ''),
+                $(widget).find('.goalStatusText').text()
+            ]];
+        } else if($(widget).attr('id') === 'total-membership-goals') {
+            var data = [["Period", "Membership Goal", "Actual", "Status"], [
+                $(widget).find('.form-control option:selected').text(),
+                $(widget).find('.goalAmount').text().replace(/,/g, ''),
+                $(widget).find('.bar-meter-marker').text().replace(/,/g, ''),
+                $(widget).find('.goalStatusText').text()
+            ]];
+        } else if($(widget).attr('id') === 'earned-revenue-channels') {
+            var data = [["Period", "Channel", "Goal", "Actual", "Status"]];
+            $(widget).find('.dial').each(function(){
+                var row = [
+                    $('#total-sales-goals').find('.form-control option:selected').text(),
+                    $(this).find('.channel-name').text(),
+                    $(this).find('.channel-goal .amount').text().replace(/,/g, ''),
+                    $(this).find('.channel-amount').text().replace(/,/g, ''),
+                    $(this).find('.channel-status').text(),
+                ];
+                data.push(row);
+            });
+        } else if($(widget).attr('id') === 'membership') {
+            var data = [["Period", "Channel", "Goal", "Actual", "Status"]];
+            $(widget).find('.dial').each(function(){
+                var row = [
+                    $('#total-membership-goals').find('.form-control option:selected').text(),
+                    $(this).find('.channel-name').text(),
+                    $(this).find('.channel-goal .amount').text().replace(/,/g, ''),
+                    $(this).find('.channel-amount').text().replace(/,/g, ''),
+                    $(this).find('.channel-status').text(),
+                ];
+                data.push(row);
+            });
+        } else if($(widget).attr('id') === 'earned-revenue') {
+            var data = [["Period", "Channel", "Previous Amount", "New Amount", "Percent Change", "Direction"]];
+            $(widget).find('#revenue-accordion > li').each(function(){
+                var row = [
+                    $(widget).find('.weather-period-title').text(),
+                    $(this).find('span').eq(0).text(),
+                    $(this).find('.accordion-compared-to').eq(0).text().replace(/,/g, ''),
+                    $(this).find('.accordion-stat').eq(0).text().replace(/,/g, ''),
+                    $(this).find('.accordion-stat-change').eq(0).text(),
+                    $(this).find('.change').eq(0).attr('class'),
+                ];
+                data.push(row);
+            });
+        }
+        var csvContent = "data:text/csv;charset=utf-8,";
+        data.forEach(function(infoArray, index){
+           dataString = infoArray.join(",");
+           csvContent += index < data.length ? dataString+ "\n" : dataString;
+        });
+        var encodedUri = encodeURI(csvContent);
+        $('.popover').hide();
+        window.open(encodedUri);
     }
 };
 

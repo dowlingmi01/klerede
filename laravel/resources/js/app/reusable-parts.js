@@ -69,7 +69,7 @@ var TimeDate = React.createClass({
 var ActionMenu = React.createClass({
     render: function() {
         return (
-            <div className="plus-sign-menu" data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a> <span>Save</span> <span>Email</span> <span onClick='wnt.print(this);'>Print</span>" data-placement="top">
+            <div className="plus-sign-menu" data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a> <span onClick='wnt.export(this);'>Save</span> <span>Email</span> <span onClick='wnt.print(this);'>Print</span>" data-placement="top">
                 <PlusSign className="plus-sign-button" />
             </div>
         );
