@@ -367,6 +367,10 @@ wnt.gettingData;
 $(function(){
     $('.plus-sign-menu').popover();
     $('circle').popover();
+    // $(event.target).closest('.accordion-sub-item').toggleClass('open').find('ul').eq(0).toggle();
+    $('.accordion-sub-item').on('click', function(){
+        $(this).toggleClass('open').find('ul').toggle();
+    });
 });
 
 console.log('App utilities loaded...');
@@ -420,15 +424,6 @@ $(function(){
           .attr("d", lineFunction(lineData))
           .attr("fill", "rgba(236,234,231,1)");
     */
-    
-    /********************************/
-    /******** TEST ACCORDION ********/
-    /********************************/
-    $('#revenue-accordion li').click(function(){
-        // Activate target accordion
-        $(this).toggleClass('open');
-        $(this).find('ul').toggle();
-    });
 
     /*********************************/
     /******** TEST DATEPICKER ********/

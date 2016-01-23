@@ -35,9 +35,13 @@ var BarSet = React.createClass({
 });
 
 var AccordionItem = React.createClass({
+    toggleAccordion: function(event){
+        // Turn caret and hide/show content
+        $(event.target).closest('.accordion-item').toggleClass('open').find('ul').eq(0).toggle();
+    },
     render: function() {
         return (
-            <li className={this.props.className}>{this.props.label} <Caret className="accordion-caret" />
+            <li className={this.props.className+" accordion-item"} onClick={this.toggleAccordion}>{this.props.label} <Caret className="accordion-caret" />
                 <ul className="accordion">
                     <li>
                         <ChangeArrow className={"change " + this.props.arrow} />
@@ -53,9 +57,15 @@ var AccordionItem = React.createClass({
 });
 
 var AccordionItemPlus = React.createClass({
+    toggleAccordion: function(event){
+        // Turn caret and hide/show content
+        if($(event.target).closest('.accordion-sub-item').length === 0){
+            $(event.target).closest('.accordion-item').toggleClass('open').find('ul').eq(0).toggle().find('ul').eq(0).toggle();
+        }
+    },
     render: function() {
         return (
-            <li className={this.props.className}>{this.props.label} <Caret className="accordion-caret" />
+            <li className={this.props.className+" accordion-item"} onClick={this.toggleAccordion}>{this.props.label} <Caret className="accordion-caret" />
                 <ul className="accordion">
                     <li>
                         <ChangeArrow className={"change " + this.props.arrow} />
@@ -64,8 +74,8 @@ var AccordionItemPlus = React.createClass({
                         <LongArrow className="long-arrow" />
                         <span className="accordion-compared-to">{this.props.comparedTo}</span>
                         <ul>
-                            <li className="breakdown">
-                                Online
+                            <li className="breakdown accordion-sub-item">
+                                Online <Caret className="accordion-caret" />
                                 <ul>
                                     <li>
                                         <ChangeArrow className={"change " + this.props.arrowON} />
@@ -76,8 +86,8 @@ var AccordionItemPlus = React.createClass({
                                     </li>
                                 </ul>
                             </li>
-                            <li className="breakdown">
-                                Offline
+                            <li className="breakdown accordion-sub-item">
+                                Offline <Caret className="accordion-caret" />
                                 <ul>
                                     <li>
                                         <ChangeArrow className={"change " + this.props.arrowOFF} />
