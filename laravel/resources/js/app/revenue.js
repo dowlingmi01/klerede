@@ -941,6 +941,13 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
         event.target.blur();
     },
+    channelFilter: function(event){
+        // Toggle the legend/filter checkmark
+        $(event.target).closest('.bar-graph-legend-item').find('.legend-check-circle').toggleClass('active');
+        // Legend items each have a data attribute for matching to their respective bar segments to toggle
+        var filter = $(event.target).closest('.bar-graph-legend-item').data('segment');
+        $('.'+filter).toggle();
+    },
     render: function(){
         // LOOP FOR BAR SETS
         var bars = [];
@@ -1011,26 +1018,26 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </form>
 
                         <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
+                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Box Office
                             </div>
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
+                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Cafe
                             </div>
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
+                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Gift Store
                             </div>
-                            <div className="bar-graph-legend-item">
-                                <div className="legend-check-circle">
+                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Membership
