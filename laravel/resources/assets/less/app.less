@@ -1802,8 +1802,16 @@ div.dp-popup td.disabled {
   shape-rendering: crispEdges;
 }
 .x.axis line, .x.axis .minor {
-  stroke: @lightgrey;
+  stroke: @darkgrey;
+}
+.x.axis.grid line {
+    stroke: @lightgrey;
 }
 .y.axis line {
   stroke: @darkgrey;
+}
+#graph path.graph-line {
+    stroke: @mediumpurple;
+    stroke-dasharray: 3px, 3px;
+    stroke-width: 3px;
 }

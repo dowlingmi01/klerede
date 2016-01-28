@@ -118,16 +118,22 @@ var Attendance = React.createClass({
 
         // Add an SVG element with the desired dimensions and margin.
         // <svg width="51.9px" height="22.322px" viewBox="0 0 51.9 22.322" preserveAspectRatio="xMidYMid meet"
+        //.attr("viewBox", "0 0 " + w + " " + h )
+        //    .attr("preserveAspectRatio", "xMidYMid meet");
+        var gw = w + m[1] + m[3];
+        var gh = h + m[0] + m[2];
         var graph = d3.select("#graph").append("svg:svg")
-              .attr("width", w + m[1] + m[3])
-              .attr("height", h + m[0] + m[2])
-              .append("svg:g")
-              .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+            .attr("width", gw)
+            .attr("height", gh)
+            .attr("viewBox", "0 0 " + gw + " " + gh )
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .append("svg:g")
+            .attr("transform", "translate(" + m[3] + "," + m[0] + ")");   // Moves it within the viewport
 
         // create xAxis
         var xAxis = d3.svg.axis()
             .scale(x)
-            .tickSize(-h)
+            //.tickSize(-h)
             .tickSubdivide(true)
             .tickFormat(function(i) {
                 if(self.state.visits[i] !== undefined){
@@ -135,12 +141,19 @@ var Attendance = React.createClass({
                     return label;
                 }
             });
+        var xAxisGrid = d3.svg.axis()   // Second xAxis declaration for the light grid lines
+            .scale(x)
+            .tickSize(-h)
+            .tickSubdivide(true);
         // .tickFormat(function(d) { return dataset[d].keyword; })
         // Add the x-axis.
         graph.append("svg:g")
               .attr("class", "x axis")
               .attr("transform", "translate(0," + h + ")")
               .call(xAxis);
+        // graph.append("svg:g")   // Second xAxis drawing for the light grid lines
+        //       .attr("class", "x axis grid")
+        //       .call(xAxisGrid);
 
         // create left yAxis
         var yAxisLeft = d3.svg.axis()
@@ -155,7 +168,7 @@ var Attendance = React.createClass({
         
         // Add the line by appending an svg:path element with the data line we created above
         // do this AFTER the axes above so that the line is above the tick-lines
-        graph.append("svg:path").attr("d", line(data));
+        graph.append("svg:path").attr("class", "graph-line").attr("d", line(data));
     },
     render: function() {
         return (
