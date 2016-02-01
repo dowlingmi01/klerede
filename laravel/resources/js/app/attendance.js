@@ -6,20 +6,47 @@ var Attendance = React.createClass({
     getInitialState: function() {
         return {
             title: 'Hourly Attendance',
-            visits: []
+            visitsHourlyAll: [],
+            visitsHourlyGA: [],
+            visitsHourlyGroup: [],
+            visitsHourlyMembership: []
         };
     },
-    componentDidMount: function() {
+    callAPI: function(filter) {
+        console.log('API FILTER = '+filter);
+        var period = (filter === 'lastyear') ? wnt.yesterdaylastyear : wnt.yesterday;
+        console.log('PERIOD = ' + period);
         var self = this;
         $.post(
             wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {
-                    visits_hourly: {
-                        specs: { type: 'visits' },   // kinds: ['ga' / 'group' / 'membership']
+                    visits_hourly_all: {
+                        specs: { type: 'visits' },
                         periods: { 
-                            period: wnt.yesterday,
+                            period: period,
+                            hourly: true
+                        }
+                    },
+                    visits_hourly_ga: {
+                        specs: { type: 'visits', kinds: ['ga'] },
+                        periods: { 
+                            period: period,
+                            hourly: true
+                        }
+                    },
+                    visits_hourly_group: {
+                        specs: { type: 'visits', kinds: ['group'] },
+                        periods: { 
+                            period: period,
+                            hourly: true
+                        }
+                    },
+                    visits_hourly_membership: {
+                        specs: { type: 'visits', kinds: ['membership'] },
+                        periods: { 
+                            period: period,
                             hourly: true
                         }
                     }
@@ -28,15 +55,16 @@ var Attendance = React.createClass({
         )
         .done(function(result) {
             console.log('Attendance data loaded...');
-            console.log(result);
             wnt.attendance = result;
-            console.log(wnt.attendance.visits_hourly);
             if(this.isMounted()) {
                 // LOOP THROUGH DATA TO CREATE ARRAYS
                 var self = this;
                 // SET STATE TO ARRAYS FOR RENDERING
                 this.setState({
-                    visits: result.visits_hourly
+                    visitsHourlyAll: result.visits_hourly_all,
+                    visitsHourlyGA: result.visits_hourly_ga,
+                    visitsHourlyGroup: result.visits_hourly_group,
+                    visitsHourlyMembership: result.visits_hourly_membership
                 });
                 // Set null data to '-'
                 // var self = this;
@@ -58,6 +86,9 @@ var Attendance = React.createClass({
             console.log('ATTENDANCE DATA ERROR! ... ' + result.statusText);
             console.log(result);
         });
+    },
+    componentDidMount: function() {
+        this.callAPI();
         this.drawGraph();
     },
     componentDidUpdate: function(){
@@ -69,57 +100,78 @@ var Attendance = React.createClass({
         return hour;
     },
     drawGraph: function(){
-        // Remove previous graph
+        // NOTE: Using the "ALL" data first to get the max units for X and Y
+        // Remove previous graphs
         d3.select('#graph').selectAll('svg').remove();
         var self = this;
         // define dimensions of graph
-        var m = [80, 80, 80, 80]; // margins
+        var m = [20, 80, 60, 80]; // margins
         var w = 1000 - m[1] - m[3]; // width
         var h = 400 - m[0] - m[2]; // height
-        
-        // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
-        //var data = [3, 6, 2, 7, 5, 2, 0, 3, 8, 9, 2, 5, 9, 3, 6, 3, 6, 2, 7, 5, 2, 1, 3, 8, 9, 2, 5, 9, 2, 7];
-        var data = [];
-        var maxVal = 0;
-        console.log(this.state.visits.length);
-        for (var i = 0; i < this.state.visits.length; i++) {
-            var units = parseInt(this.state.visits[i].units);
-            // if(units > maxVal) {
-            //     maxVal = units;
-            // }
-            data.push(units);
+        // create a simple array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
+        var visitsHourlyAll = [];
+        var visitsHourlyGA = [];
+        var visitsHourlyGroup = [];
+        var visitsHourlyMembership = [];
+        for (var i = 0; i < this.state.visitsHourlyAll.length; i++) {
+            // Set hour from total array to-loop-for in the 'sub-array'
+            var hour = this.state.visitsHourlyAll[i].hour;
+            // Also, push unit value into array for the total line
+            visitsHourlyAll.push(parseInt(this.state.visitsHourlyAll[i].units));
+            // Loop through each 'sub-array' to find unit tied to matching hour from ALL, or push a zero
+            var hourGA = false;
+            var hourGroup = false;
+            var hourMembership = false;
+            loopGA:
+            for (var j=0; j < this.state.visitsHourlyGA.length; j++){
+                if (this.state.visitsHourlyGA[j].hour === hour){
+                    visitsHourlyGA.push(parseInt(this.state.visitsHourlyGA[j].units));
+                    hourGA = true;
+                    break loopGA;
+                }
+            }
+            if(hourGA === false){
+                visitsHourlyGA.push(0);
+            }
+            loopGroup:
+            for (var j=0; j < this.state.visitsHourlyGroup.length; j++){
+                if (this.state.visitsHourlyGroup[j].hour === hour){
+                    visitsHourlyGroup.push(parseInt(this.state.visitsHourlyGroup[j].units));
+                    hourGroup = true;
+                    break loopGroup;
+                }
+            }
+            if(hourGroup === false){
+                visitsHourlyGroup.push(0);
+            }
+            loopMembership:
+            for (var j=0; j < this.state.visitsHourlyMembership.length; j++){
+                if (this.state.visitsHourlyMembership[j].hour === hour){
+                    visitsHourlyMembership.push(parseInt(this.state.visitsHourlyMembership[j].units));
+                    hourMembership = true;
+                    break loopMembership;
+                }
+            }
+            if(hourMembership === false){
+                visitsHourlyMembership.push(0);
+            }
         }
-        console.log('MAX = ' + maxVal);
-
-        // X scale will fit all values from data[] within pixels 0-w
-        var x = d3.scale.linear().domain([0, data.length-1]).range([0, w]);  // added '-1' to not leave space on end
-        // Y scale will fit values from 0-10 within pixels h-0 (Note the inverted domain for the y-scale: bigger is up!)
-        var y = d3.scale.linear().domain([0, d3.max(data)]).range([h, 0]);
-            // automatically determining max range can work something like this
-            // var y = d3.scale.linear().domain([0, d3.max(data)]).range([h, 0]);
-
-        // create a line function that can convert data[] into x and y points
+        // X scale will fit all values from the array within pixels 0-w (added '-1' to NOT leave space on end of graph)
+        var x = d3.scale.linear().domain([0, visitsHourlyAll.length-1]).range([0, w]);
+        // Y scale will fit all values from 0 to d3.max(visitsHourlyAll) within pixels h-0
+        var y = d3.scale.linear().domain([0, d3.max(visitsHourlyAll)]).range([h, 0]);
+        // create a line function that can convert array into x and y points
         // SVG starts here
         var line = d3.svg.line()
             .interpolate("basis")  // basis is the smoothest ... "a B-spline, with control point duplication on the ends"
             // assign the X function to plot our line as we wish
             .x(function(d,i) { 
-                // verbose logging to show what's actually being done
-                console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
-                // return the X coordinate where we want to plot this datapoint
-                return x(i); 
+                return x(i);   // return the X coordinate where we want to plot this datapoint
             })
-            .y(function(d) { 
-                // verbose logging to show what's actually being done
-                console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
-                // return the Y coordinate where we want to plot this datapoint
-                return y(d); 
+            .y(function(d) {
+                return y(d);   // return the Y coordinate where we want to plot this datapoint
             });
-
         // Add an SVG element with the desired dimensions and margin.
-        // <svg width="51.9px" height="22.322px" viewBox="0 0 51.9 22.322" preserveAspectRatio="xMidYMid meet"
-        //.attr("viewBox", "0 0 " + w + " " + h )
-        //    .attr("preserveAspectRatio", "xMidYMid meet");
         var gw = w + m[1] + m[3];
         var gh = h + m[0] + m[2];
         var graph = d3.select("#graph").append("svg:svg")
@@ -129,31 +181,22 @@ var Attendance = React.createClass({
             .attr("preserveAspectRatio", "xMidYMid meet")
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + "," + m[0] + ")");   // Moves it within the viewport
-
         // create xAxis
         var xAxis = d3.svg.axis()
             .scale(x)
             //.tickSize(-h)
             .tickSubdivide(true)
             .tickFormat(function(i) {
-                if(self.state.visits[i] !== undefined){
-                    var label = self.convertHour(self.state.visits[i].hour)
+                if(self.state.visitsHourlyAll[i] !== undefined){
+                    var label = self.convertHour(self.state.visitsHourlyAll[i].hour)
                     return label;
                 }
             });
-        var xAxisGrid = d3.svg.axis()   // Second xAxis declaration for the light grid lines
-            .scale(x)
-            .tickSize(-h)
-            .tickSubdivide(true);
-        // .tickFormat(function(d) { return dataset[d].keyword; })
         // Add the x-axis.
         graph.append("svg:g")
               .attr("class", "x axis")
               .attr("transform", "translate(0," + h + ")")
               .call(xAxis);
-        // graph.append("svg:g")   // Second xAxis drawing for the light grid lines
-        //       .attr("class", "x axis grid")
-        //       .call(xAxisGrid);
 
         // create left yAxis
         var yAxisLeft = d3.svg.axis()
@@ -165,18 +208,71 @@ var Attendance = React.createClass({
               .attr("class", "y axis")
               //.attr("transform", "translate(-5,0)")  // -25???   separated the Y axis from the graph (weird.  why would they do this?)
               .call(yAxisLeft);
-        
-        // Add the line by appending an svg:path element with the data line we created above
+        // Add the line by appending an svg:path element with the array line we created above
         // do this AFTER the axes above so that the line is above the tick-lines
-        graph.append("svg:path").attr("class", "graph-line").attr("d", line(data));
+        graph.append("svg:path").attr("class", "graph-line line-all").attr("d", line(visitsHourlyAll));
+        graph.append("svg:path").attr("class", "graph-line line-ga").attr("d", line(visitsHourlyGA));
+        graph.append("svg:path").attr("class", "graph-line line-group").attr("d", line(visitsHourlyGroup));
+        graph.append("svg:path").attr("class", "graph-line line-membership").attr("d", line(visitsHourlyMembership));
+    },
+    channelFilter: function(event){
+        // Toggle the legend/filter checkmark
+        $(event.target).closest('.line-graph-legend-item').find('.legend-check-circle').toggleClass('active');
+        // Legend items each have a data attribute for matching to their respective bar segments to toggle
+        var filter = $(event.target).closest('.line-graph-legend-item').data('segment');
+        $('.'+filter).toggle();
+    },
+    periodChange: function(event){
+        var filter = event.target.value;
+        this.callAPI(filter);
+        // Reset filters
+        $('.line-graph-legend-item').find('.legend-check-circle').addClass('active');
     },
     render: function() {
         return (
             <div className="row">
                 <div className="col-xs-12 col-md-12">
                     <div className="widget" id="attendance">
+                        
                         <h2>{this.state.title}</h2>
+
+                        <form id="filter-revenue-units">
+                            <select className="form-control" onChange={this.periodChange}>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="lastyear">A Year Ago</option>
+                            </select>
+                            <Caret className="filter-caret" />
+                        </form>
+
+                        <div className="line-graph-legend">
+                            <div className="line-graph-legend-item" data-segment="line-all" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                All
+                            </div>
+                            <div className="line-graph-legend-item" data-segment="line-ga" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                General Admission
+                            </div>
+                            <div className="line-graph-legend-item" data-segment="line-group" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Groups
+                            </div>
+                            <div className="line-graph-legend-item" data-segment="line-membership" onClick={this.channelFilter}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Membership
+                            </div>
+                        </div>
+
                         <div id="graph" className="aGraph"></div>
+
                     </div>
                 </div>
             </div>

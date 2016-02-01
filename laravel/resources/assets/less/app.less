@@ -727,10 +727,12 @@ header {
         width: 11px;
     }
 }
-.bar-graph-legend {
+.bar-graph-legend,
+.line-graph-legend {
     float: right;
     margin-top: 10px;
-    .bar-graph-legend-item {
+    .bar-graph-legend-item,
+    .line-graph-legend-item {
         float: left;
         span {
             display: inline-block;
@@ -742,6 +744,10 @@ header {
     .bar-graph-legend-item:nth-child(2) .legend-check-circle { background-color: @teal }
     .bar-graph-legend-item:nth-child(3) .legend-check-circle { background-color: @aqua; }
     .bar-graph-legend-item:nth-child(4) .legend-check-circle { background-color: @gold; }
+    .line-graph-legend-item:nth-child(1) .legend-check-circle { background-color: @darkpurple2; }
+    .line-graph-legend-item:nth-child(2) .legend-check-circle { background-color: @mediumpurple }
+    .line-graph-legend-item:nth-child(3) .legend-check-circle { background-color: @lightpurple; }
+    .line-graph-legend-item:nth-child(4) .legend-check-circle { background-color: @slateblue; }
 }
 .legend-check-circle {
     border-radius: 10px;
@@ -1223,6 +1229,34 @@ body > .popover.top>.arrow:after {
         }
     }
 }
+/***************************************/
+/******** ATTENDANCE LINE GRAPH ********/
+/***************************************/
+#graph path {
+    stroke: @darkgrey;
+    stroke-width: 1;
+    fill: none;
+}
+.axis {
+  shape-rendering: crispEdges;
+}
+.x.axis line, .x.axis .minor {
+  stroke: @darkgrey;
+}
+.x.axis.grid line {
+    stroke: @lightgrey;
+}
+.y.axis line {
+  stroke: @darkgrey;
+}
+#graph path.graph-line {
+    stroke: @darkpurple2;
+    stroke-width: 5px;
+}
+#graph path.line-all { stroke: @darkpurple2; }
+#graph path.line-ga { stroke: @mediumpurple; stroke-dasharray: 15px, 5px, 2px, 5px; stroke-width: 3px; }
+#graph path.line-group { stroke: @lightpurple; stroke-dasharray: 15px, 5px; stroke-width: 3px; }
+#graph path.line-membership { stroke: @slateblue; stroke-dasharray: 2px, 2px; stroke-width: 3px; }
 /***********************************************/
 /******** BOTTOM MEMBERSHIP STAT BLOCKS ********/
 /***********************************************/
@@ -1785,33 +1819,4 @@ div.dp-popup td.disabled {
 }
 .ui-state-focus {
     outline: none;
-}
-
-
-
-
-
-
-/* TEST SIMPLE LINE GRAPH */
-#graph path {
-    stroke: @darkgrey;
-    stroke-width: 1;
-    fill: none;
-}
-.axis {
-  shape-rendering: crispEdges;
-}
-.x.axis line, .x.axis .minor {
-  stroke: @darkgrey;
-}
-.x.axis.grid line {
-    stroke: @lightgrey;
-}
-.y.axis line {
-  stroke: @darkgrey;
-}
-#graph path.graph-line {
-    stroke: @mediumpurple;
-    stroke-dasharray: 3px, 3px;
-    stroke-width: 3px;
 }
