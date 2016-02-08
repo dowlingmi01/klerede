@@ -958,6 +958,64 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         var filter = $(event.target).closest('.bar-graph-legend-item').data('segment');
         $('.'+filter).toggle();
     },
+    periodChange: function(event){
+        var filter = event.target.value;
+        console.log(filter);
+        if(filter === 'month'){
+            // TO DO: LEFT OFF HERE: Able to resize bar sets and spacing; need to call new data and style dates
+            // TO DO: Dynamically set based on days in month
+            $('.bar-set').css('width','10px');
+            // BAR SET PLACEMENT
+            var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
+            var barSpacing = $('#bar-graph-scroll-pane').width() / 31;
+            var barWidth = $('.bar-set').width();
+            var barPlacement = (barSpacing - barWidth) / 2;
+            var weekWidth = $('#bar-graph-scroll-pane').width();
+            var monthWidth = (weekWidth / 31) * days;
+            $('#bar-graph').css('width',monthWidth+'px');
+            $.each($('.bar-set'), function(index, item){
+                $(item).css('left',barPlacement+'px')
+                barPlacement = barPlacement + barSpacing;
+            });
+            // TEMP - DATE TRUNCATION
+            $.each($('.bar-set-date'),function(index,value){
+                $(value).html($(value).html().split('.')[1]);
+            });
+        } else if(filter === 'week') {
+            $('.bar-set').css('width','25px');
+            // BAR SET PLACEMENT
+            var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
+            var barSpacing = $('#bar-graph-scroll-pane').width() / 7;   // 31 or 7 or
+            var barWidth = $('.bar-set').width();
+            var barPlacement = (barSpacing - barWidth) / 2;
+            var weekWidth = $('#bar-graph-scroll-pane').width();
+            var monthWidth = (weekWidth / 7) * days;   // 31 or 7 or
+            $('#bar-graph').css('width',monthWidth+'px');
+            $.each($('.bar-set'), function(index, item){
+                $(item).css('left',barPlacement+'px')
+                barPlacement = barPlacement + barSpacing;
+            });
+            // TEMP - DATE ELONGATION
+            $.each($('.bar-set-date'),function(index,value){
+                var month = wnt.thisMonthNum + 1;   // TEMP: NEED MONTH FROM FILTER
+                $(value).html(month + '.' + $(value).html());
+            });
+        } else if(filter === 'quarter') {   // TO DO: NEW BAR SETS (each meter is a week's worth)
+            $('.bar-set').css('width','25px');
+            // BAR SET PLACEMENT
+            var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
+            var barSpacing = $('#bar-graph-scroll-pane').width() / 7;   // 31 or 7 or
+            var barWidth = $('.bar-set').width();
+            var barPlacement = (barSpacing - barWidth) / 2;
+            var weekWidth = $('#bar-graph-scroll-pane').width();
+            var monthWidth = (weekWidth / 7) * days;   // 31 or 7 or
+            $('#bar-graph').css('width',monthWidth+'px');
+            $.each($('.bar-set'), function(index, item){
+                $(item).css('left',barPlacement+'px')
+                barPlacement = barPlacement + barSpacing;
+            });
+        }
+    },
     render: function(){
         // LOOP FOR BAR SETS
         var bars = [];
@@ -1005,7 +1063,12 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     <div className="widget" id="revenue">
                         <h2>Revenue</h2>
                         <form id="filter-revenue-week">
-                            <span className="week-picker-text">Week beginning</span>
+                            <select className="form-control week-picker-text" onChange={this.periodChange}>
+                                <option value="week">Week beginning</option>
+                                <option value="month">Month beginning</option>
+                                <option value="quarter">Quarter beginning</option>
+                            </select>
+                            <Caret className="filter-caret" />
                             <input type="text" id="datepicker" onFocus={this.weekChange} />
                         </form>
 

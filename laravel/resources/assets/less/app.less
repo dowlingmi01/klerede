@@ -727,6 +727,12 @@ header {
         width: 11px;
     }
 }
+#filter-revenue-week {
+    .filter-caret {
+        right: 180px;
+        top: 18px;
+    }
+}
 .bar-graph-legend,
 .line-graph-legend {
     float: right;
@@ -1809,9 +1815,14 @@ div.dp-popup td.disabled {
 }
 
 
-.week-picker-text {
+#revenue .form-control.week-picker-text {
     float: left;
     margin: 3px 5px 0 0;
+}
+#filter-revenue-week #datepicker,
+#filter-revenue-week .dp-choose-date {
+    position: relative;
+    top: 8px;
 }
 /* SLIDER OVERRIDE FOR BLUE OUTLINE IN CHROME */
 .ui-slider .ui-slider-handle {
