@@ -149,18 +149,20 @@ var WeatherBar = React.createClass({   // Weather API
         wnt.weatherRange = wnt.getDateRange(wnt.datePickerStart, 'this week');
         wnt.getWeather(wnt.weatherRange[0], wnt.weatherRange[1]);
         $.when(wnt.gettingWeatherData).done(function(weather) {
-            $('.weather-period-title').html('Week: '+wnt.longDate(weather[0].date)+' - '+wnt.longDate(weather[6].date));
-            $.each($('.weather-period'), function(index, item){
-                $(item).find('.weather-period-label').html(wnt.shortDate(weather[index].date));
-                $(item).find('img').attr('src', '/img/'+weather[index].icon_1+'.svg').css('opacity','0').animate({
-                        opacity: '1'
-                    },
-                    1500,
-                    'easeInSine'
-                );
-                $(item).find('.temp-10am').html(Math.round(weather[index].temp_1)+'&deg;');
-                $(item).find('.temp-4pm').html(Math.round(weather[index].temp_2)+'&deg;');
-            });
+            if(weather.length > 0){   // Fallback for no weather data
+                $('.weather-period-title').html('Week: '+wnt.longDate(weather[0].date)+' - '+wnt.longDate(weather[6].date));
+                $.each($('.weather-period'), function(index, item){
+                    $(item).find('.weather-period-label').html(wnt.shortDate(weather[index].date));
+                    $(item).find('img').attr('src', '/img/'+weather[index].icon_1+'.svg').css('opacity','0').animate({
+                            opacity: '1'
+                        },
+                        1500,
+                        'easeInSine'
+                    );
+                    $(item).find('.temp-10am').html(Math.round(weather[index].temp_1)+'&deg;');
+                    $(item).find('.temp-4pm').html(Math.round(weather[index].temp_2)+'&deg;');
+                });
+            }
         });
         $('.weather-period-set img').on('click', function () {
             $(this).parent().find('.weather-details').show();
@@ -244,15 +246,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             graphCap: 80000,
             graphHeight: 300,
 
-            value: 'TEST',
-            month: wnt.thisMonthNum+1,
-            monthStart: wnt.monthStart,
-            monthEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear),
-            periodStart: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1',
-            periodEnd: wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-7',
-            priorPeriodStart: wnt.getDateRange(wnt.monthStart, 'last week')[0],   // default is last month's last week
-            priorPeriodEnd: wnt.getDateRange(wnt.monthStart, 'last week')[1],   // default is last day of previous month
-
             barDates: wnt.getMonth(wnt.today),   // wnt.yesterday was returning 8/31 and therefore 8/1 - 8/31
             days: wnt.selectedMonthDays,
             weather: [],
@@ -272,10 +265,16 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             membershipChange: [0, 'up']
         };
     },
-    callAPI: function(periodStart, periodEnd) {
-        console.log(periodStart, periodEnd);
+    callAPI: function(periodStart, periodEnd, priorPeriod) {
+        // priorPeriod = ['last quarter','last month','last week']
+        // Turn priorPeriod text into 2-part array of start and end dates for the prior period
+        // TO DO: Update wnt.getDateRange to handle month and quarter
+        priorPeriod = wnt.getDateRange(periodStart, priorPeriod);
+        console.log(periodStart, periodEnd, priorPeriod);
+        // Grab array of dates based on date picker
+        // TO DO: CURENTLY ONLY GRABS ONE MONTH
         wnt.barDates = wnt.getMonth(wnt.datePickerStart);
-        console.log('BAR DATES!!! = '+wnt.barDates);   // LEFT OFF HERE!  This works
+        console.log('BAR DATES!!! = '+wnt.barDates);
         var self = this;
         $.post(
             wnt.apiMain,
@@ -284,25 +283,26 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 queries: {
                     box_bars: { specs: { type: 'sales', channel: 'gate' },
                         periods: { from: periodStart, to: periodEnd } },
-                    box_sum: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: self.state.periodStart, to: self.state.periodEnd, kind: 'sum' } },
+                    box_sum: { specs: { type: 'sales', channel: 'gate' },
+                        // Shouldn't grab from STATE???
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: self.state.priorPeriodStart, to: self.state.priorPeriodEnd, kind: 'sum' } },
+                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
                     box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: self.state.periodStart, to: self.state.periodEnd, kind: 'sum' } },
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: self.state.priorPeriodStart, to: self.state.priorPeriodEnd, kind: 'sum' } },
+                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
                     box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: self.state.periodStart, to: self.state.periodEnd, kind: 'sum' } },
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: self.state.priorPeriodStart, to: self.state.priorPeriodEnd, kind: 'sum' } },
+                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: periodStart, to: periodEnd } },
                     cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: self.state.periodStart, to: self.state.periodEnd, kind: 'sum' } },
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: self.state.priorPeriodStart, to: self.state.priorPeriodEnd, kind: 'sum' } },
+                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
                     cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
                         periods: { from: periodStart, to: periodEnd } },
                     cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
@@ -311,9 +311,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     gift_bars: { specs: { type: 'sales', channel: 'store' }, 
                         periods: { from: periodStart, to: periodEnd } },
                     gift_sum: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: self.state.periodStart, to: self.state.periodEnd, kind: 'sum' } },
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: self.state.priorPeriodStart, to: self.state.priorPeriodEnd, kind: 'sum' } },
+                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
                     gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
                         periods: { from: periodStart, to: periodEnd } },
                     gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
@@ -322,14 +322,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     mem_bars: { specs: { type: 'sales', channel: 'membership' },
                         periods: { from: periodStart, to: periodEnd } },
                     mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: self.state.periodStart, to: self.state.periodEnd, kind: 'sum' } },
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: self.state.priorPeriodStart, to: self.state.priorPeriodEnd, kind: 'sum' } },
+                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: self.state.periodStart, to: self.state.periodEnd, kind: 'sum' } },
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: self.state.priorPeriodStart, to: self.state.priorPeriodEnd, kind: 'sum' } },
+                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     visitors: { specs: { type: 'visits' },
                         periods: { from: periodStart, to: periodEnd } }
@@ -350,12 +350,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             .done(function(weather){
                 console.log('Weather data loaded...');
                 wnt.weatherPeriod = weather;
-                if(self.isMounted()) {  // TO DO: Integrate weather API call here
+                if(self.isMounted()) {
                     // LOOP THROUGH DATA TO CREATE ARRAYS
                     var boxoffice = self.dataArray(result.box_bars, 'amount', self.state.days);
+                    console.log('BOXOFFICE ...',boxoffice);
                     $.each(boxoffice, function(index, item){
                             boxoffice[index] = self.calcBarHeight(item);
                     });
+                    console.log('BOXOFFICE ...',boxoffice);
                     var cafe = self.dataArray(result.cafe_bars, 'amount', self.state.days);
                     $.each(cafe, function(index, item){
                             cafe[index] = self.calcBarHeight(item);
@@ -416,10 +418,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         }
                     });
                     self.formatNumbers;
-                    // Set default for datepicker
-                    $('#revenue #datepicker').val(wnt.datePickerStart);
-                    // Switch format for datePickerStart to be used in weather API
-                    wnt.datePickerStart = wnt.formatDate(new Date(wnt.datePickerStart));
                 }
             }.bind(this))   // .bind() gives context to 'this'
             .fail(function(result) {
@@ -438,8 +436,12 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
     },
     componentDidMount: function() {
+        // Set default for datepicker
+        $('#revenue #datepicker').val(wnt.datePickerStart);
+        // Switch format for datePickerStart to be used in weather API
+        wnt.datePickerStart = wnt.formatDate(new Date(wnt.datePickerStart));
         // Call method to load revenue and weather data
-        this.callAPI(this.state.monthStart, this.state.monthEnd);
+        this.callAPI(wnt.monthStart, wnt.monthEnd, 'last week');
     },
     dataArray: function(stat, statUnits, days) {
         var data = [];
@@ -938,6 +940,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     periodChange: function(event){
         var filter = event.target.value;
+        var self = this;
         console.log(filter);
         if(filter === 'week') {
             $('.bar-set').css('width','25px');
@@ -978,16 +981,81 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $.each($('.bar-set-date'),function(index,value){
                 $(value).html($(value).html().split('.')[1]);
             });
+            // // Call method to load revenue and weather data
+            // this.callAPI(wnt.monthStart, wnt.monthEnd, 'last week');
         } else if(filter === 'quarter') {   // TO DO: NEW BAR SETS (each meter is a week's worth)
+            // TO DO: CHANGE THE FOLLOWING SHORTCUT INTO ACTUAL WEEK ARGUMENTS IN API CALL
+            // STEP 1: Get new data ... current year's worth?
+                // this.callAPI(QUARTERSTART, QUARTEREND, 'last quarter');
+            // STEP 2: Combine data into new arrays of data ... do in API call method?
+            // Test if divisible by 7
+            /*
+            var boxoffice = self.dataArray(result.box_bars, 'amount', self.state.days);
+                    console.log('BOXOFFICE ...',boxoffice);
+                    $.each(boxoffice, function(index, item){
+                            boxoffice[index] = self.calcBarHeight(item);
+                    });
+            */
+            var boxoffice = wnt.revenue.box_bars.filter(function(entry,index){
+                if(index % 7 === 0){
+                    return entry;   // Need to total other 6 into this entry
+                }
+            });
+            boxoffice = self.dataArray(boxoffice, 'amount', boxoffice.length);
+            $.each(boxoffice, function(index, item){
+                boxoffice[index] = self.calcBarHeight(item);
+            });
+            var cafe = wnt.revenue.cafe_bars.filter(function(entry,index){
+                if(index % 7 === 0){
+                    return entry;   // Need to total other 6 into this entry
+                }
+            });
+            cafe = self.dataArray(cafe, 'amount', cafe.length);
+            $.each(cafe, function(index, item){
+                cafe[index] = self.calcBarHeight(item);
+            });
+            var giftstore = wnt.revenue.gift_bars.filter(function(entry,index){
+                if(index % 7 === 0){
+                    return entry;   // Need to total other 6 into this entry
+                }
+            });
+
+
+            // yyyy/mm/dd
+            wnt.barDates = self.dataArray(giftstore, 'period', giftstore.length);
+
+
+
+            giftstore = self.dataArray(giftstore, 'amount', giftstore.length);
+            $.each(giftstore, function(index, item){
+                giftstore[index] = self.calcBarHeight(item);
+            });
+            var membership = wnt.revenue.mem_bars.filter(function(entry,index){
+                if(index % 7 === 0){
+                    return entry;   // Need to total other 6 into this entry
+                }
+            });
+            membership = self.dataArray(membership, 'amount', membership.length);
+            $.each(membership, function(index, item){
+                membership[index] = self.calcBarHeight(item);
+            });
+            self.setState({
+                boxofficeHeight: boxoffice,
+                cafeHeight: cafe,
+                giftstoreHeight: giftstore,
+                membershipHeight: membership,
+
+                barDates: wnt.barDates
+            });
             console.log(wnt.selectedMonthDays);
-            $('.bar-set').css('width','25px');
+            $('.bar-set').css('width','50px');
             // BAR SET PLACEMENT
             var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
-            var barSpacing = $('#bar-graph-scroll-pane').width() / 7;   // 31 or 7 or
+            var barSpacing = $('#bar-graph-scroll-pane').width() / 5;   // 31 or 7 or
             var barWidth = $('.bar-set').width();
             var barPlacement = (barSpacing - barWidth) / 2;
             var weekWidth = $('#bar-graph-scroll-pane').width();
-            var monthWidth = (weekWidth / 7) * days;   // 31 or 7 or
+            var monthWidth = (weekWidth / 5) * days;   // 31 or 7 or
             $('#bar-graph').css('width',monthWidth+'px');
             $.each($('.bar-set'), function(index, item){
                 $(item).css('left',barPlacement+'px')

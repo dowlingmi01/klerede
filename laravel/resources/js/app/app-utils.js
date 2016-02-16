@@ -65,6 +65,7 @@ var wnt = {
         return month;
     },
     getDateRange: function(dateStr, period) {
+        // period = ['last week', 'last month', 'last quarter', 'last year', 'this week']
         var dateArray = wnt.dateArray(dateStr);
         // NUMBER: [4,5], Format: [09/01/2015, 2015-9-1], Used By: Revenue, When: [load, update, week change]
         // period = last week, this week
@@ -341,7 +342,8 @@ wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday, 'double');
 wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear, 'double');
 wnt.yearStart = wnt.thisYear+'-1-1';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
-wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';
+wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';   // e.g. 2015-12-1
+wnt.monthEnd = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear);
 wnt.datePickerStart = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
