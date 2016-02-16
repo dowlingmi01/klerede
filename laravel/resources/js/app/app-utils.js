@@ -349,6 +349,7 @@ wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
 wnt.weekago = wnt.formatDate(wnt.weekago, 'double');
 wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
+wnt.barDates = wnt.getMonth(wnt.today);
 
 /**********************************/
 /******** GLOBAL VARIABLES ********/

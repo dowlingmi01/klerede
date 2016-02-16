@@ -4,17 +4,21 @@
 
 var BarSet = React.createClass({
     convertDate: function(date) {
-        date = date.split('/');
-        date = date[1]+'.'+date[2];
-        return date;
+        if(date !== undefined){
+            date = date.split('/');
+            date = date[1]+'.'+date[2];
+            return date;
+        }
     },
     rolloverDate: function(date) {
-        date = date.split('/');
-        date = new Date(date[0], date[1]-1, date[2]);
-        dow = Date.dayNames[date.getDay()];
-        m = Date.monthNames[date.getMonth()];
-        date = dow + ', ' + m + ' ' + date.getDate() + ', ' + date.getFullYear();
-        return date;
+        if(date !== undefined){
+            date = date.split('/');
+            date = new Date(date[0], date[1]-1, date[2]);
+            dow = Date.dayNames[date.getDay()];
+            m = Date.monthNames[date.getMonth()];
+            date = dow + ', ' + m + ' ' + date.getDate() + ', ' + date.getFullYear();
+            return date;
+        }
     },
     render: function() {
         return (  // TO DO: MAKE POPOVER DATA INTO TABLES ... {"goalStatusText " + this.state.statusClass}
@@ -1001,10 +1005,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     return entry;   // Need to total other 6 into this entry
                 }
             });
+            console.log('NEW BOXOFFICE ARRAY', boxoffice);
             boxoffice = self.dataArray(boxoffice, 'amount', boxoffice.length);
             $.each(boxoffice, function(index, item){
                 boxoffice[index] = self.calcBarHeight(item);
             });
+            console.log('NEW NEW BOXOFFICE ARRAY', boxoffice);
+
+
+
             var cafe = wnt.revenue.cafe_bars.filter(function(entry,index){
                 if(index % 7 === 0){
                     return entry;   // Need to total other 6 into this entry
@@ -1014,22 +1023,31 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $.each(cafe, function(index, item){
                 cafe[index] = self.calcBarHeight(item);
             });
+
+
+
+
+
             var giftstore = wnt.revenue.gift_bars.filter(function(entry,index){
                 if(index % 7 === 0){
                     return entry;   // Need to total other 6 into this entry
                 }
             });
 
-
+            console.log('NEW GIFT ARRAY', giftstore);
             // yyyy/mm/dd
             wnt.barDates = self.dataArray(giftstore, 'period', giftstore.length);
-
-
+            console.log('WNT BARDATES', wnt.barDates);
 
             giftstore = self.dataArray(giftstore, 'amount', giftstore.length);
             $.each(giftstore, function(index, item){
                 giftstore[index] = self.calcBarHeight(item);
             });
+            console.log('NEW NEW GIFT ARRAY', giftstore);
+
+
+
+
             var membership = wnt.revenue.mem_bars.filter(function(entry,index){
                 if(index % 7 === 0){
                     return entry;   // Need to total other 6 into this entry
@@ -1039,14 +1057,16 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $.each(membership, function(index, item){
                 membership[index] = self.calcBarHeight(item);
             });
-            self.setState({
+            self.setState({   // testing state vs setstate for a forceUpdate()
                 boxofficeHeight: boxoffice,
                 cafeHeight: cafe,
                 giftstoreHeight: giftstore,
                 membershipHeight: membership,
 
-                barDates: wnt.barDates
+                barDates: wnt.barDates   // BUG: Graph still using previous barDates on re-render
             });
+            self.forceUpdate();   // shouldComponentUpdate()
+            console.log('STATE BARDATES',this.state.barDates);
             console.log(wnt.selectedMonthDays);
             $('.bar-set').css('width','50px');
             // BAR SET PLACEMENT
@@ -1064,6 +1084,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
     },
     render: function(){
+        console.log('RENDERING BARDATES ...',this.state.barDates);
         // LOOP FOR BAR SETS
         var bars = [];
         for (var i = 0; i < this.state.days; i++) {
@@ -1101,7 +1122,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     summary2 = this.state.weather[i].summary_2;
                 };
             }
-            bars.push(<BarSet date={this.state.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} icon1={icon1} icon2={icon2} temp1={temp1} temp2={temp2} summary1={summary1} summary2={summary2} />);
+            bars.push(<BarSet date={wnt.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} icon1={icon1} icon2={icon2} temp1={temp1} temp2={temp2} summary1={summary1} summary2={summary2} />);
         }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
         return (
