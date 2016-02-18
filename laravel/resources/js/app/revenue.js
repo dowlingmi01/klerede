@@ -1038,6 +1038,12 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             // yyyy/mm/dd
             wnt.barDates = self.dataArray(giftstore, 'period', giftstore.length);
             console.log('WNT BARDATES', wnt.barDates);
+            wnt.barDates = wnt.barDates.map(function(entry){
+                return entry.replace(/-/g,'/');
+            });
+            console.log('WNT BARDATES MAPPED', wnt.barDates);
+
+
 
             giftstore = self.dataArray(giftstore, 'amount', giftstore.length);
             $.each(giftstore, function(index, item){
@@ -1065,7 +1071,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
                 barDates: wnt.barDates   // BUG: Graph still using previous barDates on re-render
             });
-            self.forceUpdate();   // shouldComponentUpdate()
+            self.forceUpdate();   // shouldComponentUpdate()  // bug is date format switching to - from /
             console.log('STATE BARDATES',this.state.barDates);
             console.log(wnt.selectedMonthDays);
             $('.bar-set').css('width','50px');
