@@ -23,7 +23,7 @@ elixir.config.sourcemaps = false;
 /******** TASKS ********/
 /***********************/
 
-// GULP defaults ... 'gulp watch' will compile the scss, minify, AND move it to the public folder
+// GULP defaults ... 'gulp watch' will compile the less, minify, AND move it to the public folder
 elixir(function(mix) {
     // Sergio's report task
     mix.browserify('report.js', elixir.jsOutput, 'resources/js', {debug:true});
