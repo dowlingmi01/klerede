@@ -79,11 +79,40 @@ var wnt = {
             endDate.setDate(endDate.getDate() - 1);
             dateRange.push(wnt.formatDate(endDate));
             return dateRange;
+        } else if(period === 'last month'){
+            startDate.setDate(1);
+            startDate.setMonth(startDate.getMonth()-1);
+            dateRange.push(wnt.formatDate(startDate));
+            var days = wnt.daysInMonth(startDate.getMonth()+1,startDate.getFullYear());
+            endDate.setDate(days);
+            endDate.setMonth(endDate.getMonth()-1);
+            dateRange.push(wnt.formatDate(endDate));
+            return dateRange;
+        } else if(period === 'last quarter'){
+            startDate.setDate(1);
+            startDate.setMonth(startDate.getMonth()-3);
+            var year = startDate.getFullYear();
+            var ranges = [
+                [year+'-1-1', year+'-3-31'],
+                [year+'-4-1', year+'-6-30'],
+                [year+'-7-1', year+'-9-30'],
+                [year+'-10-1', year+'-12-31']
+            ];
+            return ranges[Math.floor(startDate.getMonth() / 3)];
         } else if(period === 'this week'){
             dateRange.push(wnt.formatDate(startDate));
             endDate.setDate(endDate.getDate() + 6);
             dateRange.push(wnt.formatDate(endDate));
             return dateRange;
+        } else if(period === 'this quarter'){
+            var year = startDate.getFullYear();
+            var ranges = [
+                [year+'-1-1', year+'-3-31'],
+                [year+'-4-1', year+'-6-30'],
+                [year+'-7-1', year+'-9-30'],
+                [year+'-10-1', year+'-12-31']
+            ];
+            return ranges[Math.floor(startDate.getMonth() / 3)];
         };
     },
     doubleDigits: function(num) {
