@@ -74,21 +74,22 @@ CREATE VIEW visit AS
 SELECT u.UsageID AS source_id
      , 1588 AS venue_id
 	 , u.ACP AS acp_id
+     , a.FacilityID as facility_id
 	 , ISNULL(MAX(p.PLU), MAX(t.PLU)) AS box_office_product_code
 	 , u.VisualID AS ticket_code
 	 , CASE WHEN MAX(p.PLU) IS NOT NULL THEN 'pass'
             WHEN MAX(t.PLU) IS NOT NULL THEN 'ticket'
             ELSE 'pass'
        END AS kind
-	 , u.OperationID AS operation_id
 	 , u.Qty AS quantity
 	 , u.UseNo AS use_no
 	 , u.UseTime AS time
   FROM Galaxy1..Usage u
   LEFT JOIN Galaxy1..Tickets t ON u.VisualID = t.VisualID
   LEFT JOIN Galaxy1..Passes p ON u.VisualID = p.VisualID
+  LEFT JOIN Galaxy1..ACPs a ON u.ACP = a.AcpId
  WHERE code = 0 AND u.Status = 0
- GROUP BY u.UsageID, u.ACP, u.VisualID, u.OperationID, u.Qty, u.UseNo, u.UseTime
+ GROUP BY u.UsageID, u.ACP, a.FacilityID, u.VisualID, u.Qty, u.UseNo, u.UseTime
 GO
 IF object_id('member') IS NOT NULL
    DROP VIEW member;

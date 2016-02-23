@@ -110,14 +110,15 @@ UPDATE member, (SELECT member_id, max(id) as maxid FROM membership GROUP BY memb
 LOAD DATA INFILE 'galaxyimport/visit.txt'
 INTO TABLE visit_galaxy
 LINES TERMINATED BY '\r\n'
-(source_id, venue_id, acp_id, box_office_product_code, ticket_code, kind, operation_id, quantity, use_no, time)
+(source_id, venue_id, acp_id, @facility_id, box_office_product_code, ticket_code, kind, quantity, use_no, time)
+SET facility_id = if(@facility_id = '', 0, @facility_id)
 ;
 
 INSERT visit
-     ( source_id, venue_id, acp_id, box_office_product_id, ticket_code, membership_id
-     , kind, operation_id, quantity, use_no, time)
-SELECT source_id, v.venue_id, acp_id, p.id, ticket_code, m.id
-     , v.kind, operation_id, quantity, use_no, time
+     ( source_id, venue_id, acp_id, facility_id, box_office_product_id, ticket_code, membership_id
+     , kind, quantity, use_no, time)
+SELECT source_id, v.venue_id, acp_id, facility_id, p.id, ticket_code, m.id
+     , v.kind, quantity, use_no, time
   FROM visit_galaxy v
   JOIN box_office_product p
     ON v.box_office_product_code = p.code
