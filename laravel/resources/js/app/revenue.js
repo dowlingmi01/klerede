@@ -250,7 +250,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             graphCap: 80000,
             graphHeight: 300,
 
-            barDates: wnt.getMonth(wnt.today),   // wnt.yesterday was returning 8/31 and therefore 8/1 - 8/31
             days: wnt.selectedMonthDays,
             weather: [],
 
@@ -278,6 +277,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // TO DO: CURENTLY ONLY GRABS ONE MONTH
         if(periodType === 'last quarter'){
             wnt.barDates = wnt.getMonth(wnt.datePickerStart);   // TO DO: GET DATES FOR BARS IN QUARTER VIEW
+            // EXAMPLE convert '2015-00' to '01.01'
         } else {
             wnt.barDates = wnt.getMonth(wnt.datePickerStart);
         }
@@ -287,6 +287,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             {
                 venue_id: wnt.venueID,
                 queries: {
+                    // TO DO: Set queries to be able to pull weeks of data too
                     // _BARS are used for the graph and ...
                     box_bars: { specs: { type: 'sales', channel: 'gate' },
                         periods: { from: periodStart, to: periodEnd } },
@@ -348,6 +349,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         )
         .done(function(result) {
             console.log('Revenue data loaded...');
+            // TO DO: Set barDates loop here???
             wnt.revenue = result;
             $.get(
                 wnt.apiWeather,
@@ -996,6 +998,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             console.log('QUARTER DATES', quarterDates);
             this.callAPI(quarterDates[0], quarterDates[1], 'last quarter');
             // TO DO: Get new data ... current quarter's worth
+            // TO DO: Convert week numbers to dates
             /*
             var boxoffice = self.dataArray(result.box_bars, 'amount', self.state.days);
                     console.log('BOXOFFICE ...',boxoffice);
@@ -1032,7 +1035,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
 
             var giftstore = wnt.revenue.gift_bars.filter(function(entry,index){
-                if(index % 7 === 0){
+                if(index % 7 === 0){   // Give me every 7th date
                     return entry;   // Need to total other 6 into this entry
                 }
             });
@@ -1075,7 +1078,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 barDates: wnt.barDates   // BUG: Graph still using previous barDates on re-render
             });
             self.forceUpdate();   // shouldComponentUpdate()  // bug is date format switching to - from /
-            console.log('STATE BARDATES',this.state.barDates);
             console.log(wnt.selectedMonthDays);
             $('.bar-set').css('width','50px');
             // BAR SET PLACEMENT
@@ -1093,7 +1095,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
     },
     render: function(){
-        console.log('RENDERING BARDATES ...',this.state.barDates);
         // LOOP FOR BAR SETS
         var bars = [];
         for (var i = 0; i < this.state.days; i++) {
