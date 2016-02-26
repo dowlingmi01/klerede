@@ -35,9 +35,11 @@
                                 <li><a href="/campaigns">Campaigns</a></li>
                             </ul>-->
                         </li>
+                        <!--
                         <li><a href="#"><span class="membership">MEMBERSHIP</span>RELAY</a></li>
                         <li><a href="#"><span class="marketing">MARKETING</span>RELAY</a></li>
                         <li><a href="#"><span class="retail">RETAIL</span>RELAY</a></li>
+                        -->
                     </ul>
                 </div>
                 <div class="col-xs-12 col-sm-10 main-content">
