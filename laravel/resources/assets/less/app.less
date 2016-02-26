@@ -1444,6 +1444,11 @@ body > .popover.top>.arrow:after {
 }
 
 /********** USER SETTINGS PAGE **********/
+
+#settings-page .image-and-text {
+    position: relative;
+}
+
 #settings-page .user-image {
     content:url(http://klerede:8888/img/user-no-image.png);
     background-color: #dcb335;
@@ -1456,6 +1461,13 @@ body > .popover.top>.arrow:after {
     margin-right: 9px;
     width: 160px;
     margin-bottom: 20px;
+    position: relative;
+}
+
+#settings-page .user-image-text {
+    position: absolute;
+    top: 42%;
+    left: 1.5%;
 }
 
 #settings-page .content-box {
@@ -1468,7 +1480,7 @@ body > .popover.top>.arrow:after {
 #settings-page .setting-title {
     font-weight: 700;
     float: left;
-    width: 110px;
+    width: 10%;
     text-align: right;
 }
 
@@ -1486,16 +1498,16 @@ body > .popover.top>.arrow:after {
 }
 
 #settings-page .content-box a {
-    width: 50px;    
-    text-align: left;
+    width: 10%;    
+    text-align: right;
     display: inline-block;
 }
 
 #settings-page .name-content, .username-content, .email-content, 
 .password-content, .acct-type-content, .goals-content, .users-content {
     float: left;
-    margin: 0 50px;
-    width: 630px;
+    padding: 0 47px;
+    width: 60%;
 }
 
 
