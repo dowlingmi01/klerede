@@ -314,7 +314,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
                     // Bar graph visitors used to calculate Per Cap ...
                     visitors: { specs: { type: 'visits' },
-                        periods: { from: periodStart, to: periodEnd } }
+                        periods: { from: periodStart, to: periodEnd } },
 
                     // Accordion data ...
                     box_sum: { specs: { type: 'sales', channel: 'gate' },
@@ -339,7 +339,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                         
                         groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
+                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
