@@ -288,62 +288,76 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 venue_id: wnt.venueID,
                 queries: {
                     // TO DO: Set queries to be able to pull weeks of data too
-                    // _BARS are used for the graph and ...
-                    box_bars: { specs: { type: 'sales', channel: 'gate' },
+                    // periods: { type: 'week', from: '2015-01', to:'2015-24' }
+                    // Bar graph data ...
+                    box_bars: { specs: { type: 'sales', channel: 'gate' }, 
                         periods: { from: periodStart, to: periodEnd } },
-                    // _SUM(s) are used for the accordion
-                    box_sum: { specs: { type: 'sales', channel: 'gate' },
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-                    box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-                    box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { from: periodStart, to: periodEnd } },
-                    cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
-                    // Used for member/non-member filter breakdowns
-                    cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                        periods: { from: periodStart, to: periodEnd } },
-                    cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                        periods: { from: periodStart, to: periodEnd } },
-                    
+                        cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
+                            periods: { from: periodStart, to: periodEnd } },
+                        cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
+                            periods: { from: periodStart, to: periodEnd } },
+
                     gift_bars: { specs: { type: 'sales', channel: 'store' }, 
                         periods: { from: periodStart, to: periodEnd } },
-                    gift_sum: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-                    gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                        periods: { from: periodStart, to: periodEnd } },
-                    gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
-                        periods: { from: periodStart, to: periodEnd } },
-                    
+
+                        gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
+                            periods: { from: periodStart, to: periodEnd } },
+                        gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
+                            periods: { from: periodStart, to: periodEnd } },
+
                     mem_bars: { specs: { type: 'sales', channel: 'membership' },
                         periods: { from: periodStart, to: periodEnd } },
-                    mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
+
+                    // Bar graph visitors used to calculate Per Cap ...
+                    visitors: { specs: { type: 'visits' },
+                        periods: { from: periodStart, to: periodEnd } },
+
+                    // Accordion data ...
+                    box_sum: { specs: { type: 'sales', channel: 'gate' },
                         periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                        
+                        box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
+                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+
+                            box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                                periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+
+                                box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
+                                    periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+
+                            box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                                periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+
+                                box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
+                                    periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
                         periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                        
+                        groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
+                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
-                    // Used to calculate Per Cap
-                    visitors: { specs: { type: 'visits' },
-                        periods: { from: periodStart, to: periodEnd } }
+                    cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        
+                        cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
+                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
+                    
+                    gift_sum: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                    
+                        gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
+                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                    
+                    mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        
+                        mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
+                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
                 }
             }
         )
