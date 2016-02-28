@@ -124,6 +124,22 @@ var wnt = {
         var weekNum = Math.ceil((dayOfYear - firstWeekLength) / 7);
         return weekNum;
     },
+    getWeekNumberDates: function(weekNum){
+        // Example: 2016-00
+        weekNum = weekNum.split('-');
+        var weeksYear = parseInt(weekNum[0]);
+        var firstDayOfYear = new Date(weeksYear, 0, 1);
+        var firstWeekLength = 7 - firstDayOfYear.getDay();
+        weekNum = parseInt(weekNum[1]);
+        var dayOfYear = (weekNum * 7) + firstWeekLength;
+        var weekDates = new Date(weeksYear, 0);
+        var weekDateEnd = new Date(weekDates.setDate(dayOfYear));
+        var weekDateStart = new Date(weekDates.setDate(dayOfYear-6));
+        weekDates = [];
+        weekDates.push(weekDateStart);
+        weekDates.push(weekDateEnd);
+        return weekDates;
+    },
     doubleDigits: function(num) {
         num = num < 10 ? '0'+num : num;
         return num;
