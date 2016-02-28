@@ -115,6 +115,15 @@ var wnt = {
             return ranges[Math.floor(startDate.getMonth() / 3)];
         };
     },
+    getWeekNumber: function(dateStr){
+        var dateArray = wnt.dateArray(dateStr);
+        var dateObj = new Date(dateArray[0], dateArray[1], dateArray[2]);
+        var firstDayOfYear = new Date(dateArray[0], 0, 1);
+        var firstWeekLength = 7 - firstDayOfYear.getDay();
+        var dayOfYear = dateObj.getDayOfYear() + 1;   // Day of year is zero-based, so add one
+        var weekNum = Math.ceil((dayOfYear - firstWeekLength) / 7);
+        return weekNum;
+    },
     doubleDigits: function(num) {
         num = num < 10 ? '0'+num : num;
         return num;
