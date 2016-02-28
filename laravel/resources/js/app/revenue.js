@@ -245,9 +245,8 @@ var WeatherBar = React.createClass({   // Weather API
 
 var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS) AND accordion details (NEW)
     getInitialState: function() {
-        wnt.graphCap = 80000;   // TEMPORARY
+        wnt.graphCap = 80000;   // TEMPORARY (used in graphFilter and graphUnits)
         return {
-            graphCap: 80000,
             graphHeight: 300,
 
             days: wnt.selectedMonthDays,
@@ -268,16 +267,29 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             membershipChange: [0, 'up']
         };
     },
-    callAPI: function(periodStart, periodEnd, periodType) {
-        // periodType = ['last quarter','last month','last week']
-        // Turn periodType text into 2-part array of start and end dates for the prior period
-        var priorPeriod = wnt.getDateRange(periodStart, periodType);
-        console.log(periodStart, periodEnd, periodType, priorPeriod);
+    callAPI: function(periodStart, periodEnd, period) {
+        // period = ['last quarter','last month','last week']
+        // Turn period text into 2-part array of start and end dates for the prior period
+        var priorPeriod = wnt.getDateRange(periodStart, period);
+        console.log(periodStart, periodEnd, period, priorPeriod);
+        var periodType = 'date';   // Set default
+
+
+
         // Grab array of dates based on date picker
         // TO DO: CURENTLY ONLY GRABS ONE MONTH
-        if(periodType === 'last quarter'){
+        if(period === 'last quarter'){
+            periodStart = wnt.getWeekNumber(periodStart, 'format');
+            periodEnd = wnt.getWeekNumber(periodEnd, 'format');
+            priorPeriod[0] = wnt.getWeekNumber(priorPeriod[0], 'format');
+            priorPeriod[1] = wnt.getWeekNumber(priorPeriod[1], 'format');
+            periodType = 'week';
+
+            console.log('WEEKS =', periodStart, periodEnd, priorPeriod[0], priorPeriod[1], periodType);
+
             wnt.barDates = wnt.getMonth(wnt.datePickerStart);   // TO DO: GET DATES FOR BARS IN QUARTER VIEW
             // EXAMPLE convert '2015-00' to '01.01'
+
         } else {
             wnt.barDates = wnt.getMonth(wnt.datePickerStart);
         }
@@ -289,75 +301,80 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 queries: {
                     // TO DO: Set queries to be able to pull weeks of data too
                     // periods: { type: 'week', from: '2015-01', to:'2015-24' }
+                    // periods: { type: 'date', from: '2015-1-1', to:'2015-1-31' }
                     // Bar graph data ...
                     box_bars: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd } },
 
                     cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd } },
 
                         cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: periodType, from: periodStart, to: periodEnd } },
                         cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: periodType, from: periodStart, to: periodEnd } },
 
                     gift_bars: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd } },
 
                         gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: periodType, from: periodStart, to: periodEnd } },
                         gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: periodType, from: periodStart, to: periodEnd } },
 
                     mem_bars: { specs: { type: 'sales', channel: 'membership' },
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd } },
+
+                    // Bar graph totals used to calculate max graph height ...
+                    total_bars: { specs: { type: 'sales' }, 
+                        periods: { type: periodType, from: periodStart, to: periodEnd } },
 
                     // Bar graph visitors used to calculate Per Cap ...
                     visitors: { specs: { type: 'visits' },
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd } },
 
                     // Accordion data ...
                     box_sum: { specs: { type: 'sales', channel: 'gate' },
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd, kind: 'sum' } },
                         
                         box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: periodType, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                             box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                                periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                                periods: { type: periodType, from: periodStart, to: periodEnd, kind: 'sum' } },
 
                                 box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                                    periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                                    periods: { type: periodType, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                             box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                                periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                                periods: { type: periodType, from: periodStart, to: periodEnd, kind: 'sum' } },
 
                                 box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                                    periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                                    periods: { type: periodType, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd, kind: 'sum' } },
                         
                         groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: periodType, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd, kind: 'sum' } },
                         
                         cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
+                            periods: { type: periodType, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
                     
                     gift_sum: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd, kind: 'sum' } },
                     
                         gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: periodType, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
                     
                     mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: periodType, from: periodStart, to: periodEnd, kind: 'sum' } },
                         
                         mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
+                            periods: { type: periodType, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
                 }
             }
         )
@@ -365,6 +382,17 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             console.log('Revenue data loaded...');
             // TO DO: Set barDates loop here???
             wnt.revenue = result;
+            // Setting max units and dollars for graph height
+            wnt.revenue.total_bars_amount = wnt.revenue.total_bars.map(function(entry){
+                return parseInt(entry.amount);
+            });
+            wnt.revenue.total_bars_amount.max = d3.max(wnt.revenue.total_bars_amount);
+            wnt.revenue.total_bars_units = wnt.revenue.total_bars.map(function(entry){
+                return parseInt(entry.units);
+            });
+            wnt.revenue.total_bars_units.max = d3.max(wnt.revenue.total_bars_units);
+            // Set Y bars
+            self.changeYMarkers(wnt.revenue.total_bars_amount.max);   // TO DO: Need argument for dollars vs. units
             $.get(
                 wnt.apiWeather,
                 {
@@ -479,8 +507,22 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return data;
     },
     calcBarHeight: function(amount) {
-        var barSectionHeight = (amount / wnt.graphCap) * this.state.graphHeight;
+        var barSectionHeight = (amount / wnt.revenue.total_bars_amount.max) * this.state.graphHeight;
         return barSectionHeight+'px';
+    },
+    changeYMarkers: function(max) {
+        var segment = Math.ceil(max / 4);
+        // TO DO: Minify numbers and change Y-axis main label
+        segment = segment > 999 ? (segment/1000).toFixed(0) : segment;
+        $('.y-marker').eq(0).attr('data-content', (segment * 4).toFixed(0));
+        $('.y-marker').eq(1).attr('data-content', (segment * 3).toFixed(0));
+        $('.y-marker').eq(2).attr('data-content', (segment * 2).toFixed(0));
+        $('.y-marker').eq(3).attr('data-content', segment);
+        if(max < 1000){
+            $('.bar-graph-label-y').text('Hundreds');
+        } else {
+            $('.bar-graph-label-y').text('Thousands');
+        }
     },
     calcChange: function(newstat, oldstat) {
         // NEW!!! ... 3 ... AND OLD ... It's the same!
@@ -1009,7 +1051,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         } else if(filter === 'quarter') {   // TO DO: NEW BAR SETS (each meter is a week's worth)
             // GET START AND END DATES FOR QUARTER via passing in a date string
             var quarterDates = wnt.getDateRange(wnt.datePickerStart, 'this quarter');
-            console.log('QUARTER DATES', quarterDates);
+            console.log('QUARTER DATES', quarterDates);   // Translate dates into week numbers?
             this.callAPI(quarterDates[0], quarterDates[1], 'last quarter');
             // TO DO: Get new data ... current quarter's worth
             // TO DO: Convert week numbers to dates
@@ -1157,8 +1199,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         <form id="filter-revenue-week">
                             <select className="form-control week-picker-text" onChange={this.periodChange}>
                                 <option value="week">Week beginning</option>
-                                <option value="month">Month beginning</option>
-                                <option value="quarter">Quarter beginning</option>
+                                <option value="month">Month containing</option>
+                                <option value="quarter">Quarter containing</option>
                             </select>
                             <Caret className="filter-caret" />
                             <input type="text" id="datepicker" onFocus={this.weekChange} />
