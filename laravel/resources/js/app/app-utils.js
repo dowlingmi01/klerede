@@ -135,10 +135,11 @@ var wnt = {
         var firstWeekLength = 7 - firstDayOfYear.getDay();
         weekNum = parseInt(weekNum[1]);
         var dayOfYear = (weekNum * 7) + firstWeekLength;
-        var weekDates = new Date(weeksYear, 0);
-        var weekDateEnd = new Date(weekDates.setDate(dayOfYear));
-        var weekDateStart = new Date(weekDates.setDate(dayOfYear-6));
-        weekDates = [];
+        var weekDateStart = new Date(weeksYear, 0);
+        weekDateStart = new Date(weekDateStart.setDate(dayOfYear-6));
+        var weekDateEnd = new Date(weeksYear, 0);
+        weekDateEnd = new Date(weekDateEnd.setDate(dayOfYear));
+        var weekDates = [];
         weekDates.push(weekDateStart);
         weekDates.push(weekDateEnd);
         return weekDates;

@@ -393,6 +393,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.revenue.total_bars_units.max = d3.max(wnt.revenue.total_bars_units);
             // Set Y bars
             self.changeYMarkers(wnt.revenue.total_bars_amount.max);   // TO DO: Need argument for dollars vs. units
+            // Set barDates
+            wnt.barDates = [];
+            wnt.revenue.total_bars.forEach(function(entry){
+                var dateObj = wnt.getWeekNumberDates(entry.period)[0];
+                var dateStr = wnt.doubleDigits(dateObj.getMonth()+1) + '.' + wnt.doubleDigits(dateObj.getDate());
+                wnt.barDates.push(dateStr);
+            });
+            console.log(wnt.barDates);
             $.get(
                 wnt.apiWeather,
                 {
