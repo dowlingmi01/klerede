@@ -5,14 +5,16 @@
 var BarSet = React.createClass({
     convertDate: function(date) {
         if(date !== undefined){
-            date = date.split('/');
+            var delimeter = date.indexOf('/') !== -1 ? '/' : '-';
+            date = date.split(delimeter);
             date = date[1]+'.'+date[2];
             return date;
         }
     },
     rolloverDate: function(date) {
         if(date !== undefined){
-            date = date.split('/');
+            var delimeter = date.indexOf('/') !== -1 ? '/' : '-';
+            date = date.split(delimeter);
             date = new Date(date[0], date[1]-1, date[2]);
             dow = Date.dayNames[date.getDay()];
             m = Date.monthNames[date.getMonth()];
@@ -393,15 +395,33 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.revenue.total_bars_units.max = d3.max(wnt.revenue.total_bars_units);
             // Set Y bars
             self.changeYMarkers(wnt.revenue.total_bars_amount.max);   // TO DO: Need argument for dollars vs. units
+            
+
+
+
+
+            // TO DO: Process date versions too and not just week versions
             // Set barDates
             wnt.barDates = [];
             wnt.revenue.total_bars.forEach(function(entry){
-                var dateObj = wnt.getWeekNumberDates(entry.period)[0];
-                var dateStr = wnt.doubleDigits(dateObj.getMonth()+1) + '.' + wnt.doubleDigits(dateObj.getDate());
+                // IF IT'S A WEEK NUMBER VS NOT
+                var dateObj, dateStr;
+                if(periodType ==='week'){
+                    dateObj = wnt.getWeekNumberDates(entry.period)[0];
+                    dateStr = dateObj.getFullYear() + '/' + wnt.doubleDigits(dateObj.getMonth()+1) + '/' + wnt.doubleDigits(dateObj.getDate());
+                } else {
+                    dateStr = entry.period;
+                }
                 wnt.barDates.push(dateStr);
             });
             console.log(wnt.barDates);
-            $.get(
+
+
+
+
+
+
+        $.get(
                 wnt.apiWeather,
                 {
                     venue_id: wnt.venueID,
