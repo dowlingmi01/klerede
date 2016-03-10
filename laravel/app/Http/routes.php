@@ -52,6 +52,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
 	});
+	Route::controller('import', 'ImportController');
 });
 
 Route::get('dashboard', function()
