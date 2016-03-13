@@ -18,21 +18,6 @@ var wnt = {
         dateStr = dateStr.split('-');
         return dateStr[1]+'.'+dateStr[2]+'.'+dateStr[0].substring(2);
     },
-    getWeek: function(dateStr) {
-        // NOT USED
-        // NUMBER: [1, 2], Format: ..., Used By: ..., When: ...
-        /*
-        console.log('DATE STRING FORMAT 1 (and 2) = ' + dateStr);
-        var dateObj = new Date(dateStr);   // Need to pass one day before ?? (e.g. 8/14 becomes 8/13)
-        var week = [];
-        for(i=0; i<7; i++){
-            dateObj = new Date(dateStr);
-            dateObj.setDate(dateObj.getDate() - i);
-            week.push(wnt.doubleDigits(dateObj.getMonth()+1) + '.' + wnt.doubleDigits(dateObj.getDate()));
-        }
-        return week.reverse();
-        */
-    },
     dateArray: function(dateStr) {
         var dateArray = [];
         if(dateStr.indexOf('-') !== -1){
@@ -65,54 +50,46 @@ var wnt = {
         return month;
     },
     getDateRange: function(dateStr, period) {
-        // period = ['last week', 'last month', 'last quarter', 'last year', 'this week']
-        var dateArray = wnt.dateArray(dateStr);
-        // NUMBER: [4,5], Format: [09/01/2015, 2015-9-1], Used By: Revenue, When: [load, update, week change]
-        // period = last week, this week
+        // period = ['last week', 'last month', 'last quarter', 'this week', 'this month', 'this quarter']
         // Returns array with two values, one for the start date and one for the end date ... ['yyyy-mm-dd','yyyy-mm-dd']
+        var dateArray = wnt.dateArray(dateStr);   // Break dateStr into correct array of integers
         var dateRange = [];
-        var startDate = new Date(dateArray[0], dateArray[1], dateArray[2]);
-        var endDate = new Date(dateArray[0], dateArray[1], dateArray[2]);
-        if(period === 'last week'){
-            startDate.setDate(startDate.getDate() - 7);
-            dateRange.push(wnt.formatDate(startDate));
-            endDate.setDate(endDate.getDate() - 1);
-            dateRange.push(wnt.formatDate(endDate));
+        var dateObj = new Date(dateArray[0], dateArray[1], dateArray[2]);
+        period = period.split(' ');
+        if(period[1] === 'week'){
+            dateObj = dateObj.getDay() !== 0 ? dateObj.previous().sunday() : dateObj;
+            dateObj = period[0] === 'last' ? dateObj.previous().sunday() : dateObj;
+            dateRange.push(wnt.formatDate(dateObj));
+            dateObj.next().saturday();
+            dateObj.next().saturday();   // Testing grabbing 2 weeks worth of data for slider
+            dateRange.push(wnt.formatDate(dateObj));
             return dateRange;
-        } else if(period === 'last month'){
-            startDate.setDate(1);
-            startDate.setMonth(startDate.getMonth()-1);
-            dateRange.push(wnt.formatDate(startDate));
-            var days = wnt.daysInMonth(startDate.getMonth()+1,startDate.getFullYear());
-            endDate.setDate(days);
-            endDate.setMonth(endDate.getMonth()-1);
-            dateRange.push(wnt.formatDate(endDate));
+        } else if(period[1] === 'month'){
+            dateObj.moveToFirstDayOfMonth();
+            dateObj = period[0] === 'last' ? dateObj.previous().month() : dateObj;
+            dateRange.push(wnt.formatDate(dateObj));
+            dateObj.moveToLastDayOfMonth();
+            dateRange.push(wnt.formatDate(dateObj));
             return dateRange;
-        } else if(period === 'last quarter'){
-            startDate.setDate(1);
-            startDate.setMonth(startDate.getMonth()-3);
-            var year = startDate.getFullYear();
-            var ranges = [
-                [year+'-1-1', year+'-3-31'],
-                [year+'-4-1', year+'-6-30'],
-                [year+'-7-1', year+'-9-30'],
-                [year+'-10-1', year+'-12-31']
-            ];
-            return ranges[Math.floor(startDate.getMonth() / 3)];
-        } else if(period === 'this week'){
-            dateRange.push(wnt.formatDate(startDate));
-            endDate.setDate(endDate.getDate() + 6);
-            dateRange.push(wnt.formatDate(endDate));
-            return dateRange;
-        } else if(period === 'this quarter'){
-            var year = startDate.getFullYear();
-            var ranges = [
-                [year+'-1-1', year+'-3-31'],
-                [year+'-4-1', year+'-6-30'],
-                [year+'-7-1', year+'-9-30'],
-                [year+'-10-1', year+'-12-31']
-            ];
-            return ranges[Math.floor(startDate.getMonth() / 3)];
+        } else if(period[1] === 'quarter'){
+            var year = dateObj.getFullYear();
+            var q1 = [new Date(year, 0, 1), new Date(year, 2, 31)];
+            var q2 = [new Date(year, 3, 1), new Date(year, 5, 30)];
+            var q3 = [new Date(year, 6, 1), new Date(year, 8, 30)];
+            var q4 = [new Date(year, 9, 1), new Date(year, 11, 31)];
+            if(dateObj.between(q1[0], q1[1])){
+                dateRange = period[0] === 'last' ? [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])] : [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])];
+                return dateRange;
+            } else if(dateObj.between(q2[0], q2[1])) {
+                dateRange = period[0] === 'last' ? [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])] : [wnt.formatDate(q2[0]), wnt.formatDate(q2[1])];
+                return dateRange;
+            } else if(dateObj.between(q3[0], q3[1])) {
+                dateRange = period[0] === 'last' ? [wnt.formatDate(q2[0]), wnt.formatDate(q2[1])] : [wnt.formatDate(q3[0]), wnt.formatDate(q3[1])];
+                return dateRange;
+            } else {
+                dateRange = period[0] === 'last' ? [wnt.formatDate(q3[0]), wnt.formatDate(q3[1])] : [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])];
+                return dateRange;
+            }
         };
     },
     getWeekNumber: function(dateStr, format){
@@ -402,7 +379,7 @@ wnt.yearStart = wnt.thisYear+'-1-1';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
 wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';   // e.g. 2015-12-1
 wnt.monthEnd = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear);
-wnt.datePickerStart = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
+wnt.filterDates = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
 wnt.weekago = wnt.formatDate(wnt.weekago, 'double');
