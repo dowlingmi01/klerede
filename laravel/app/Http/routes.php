@@ -66,3 +66,8 @@ Route::get('goals', function()
 {
     return View::make('goals');
 });
+
+Route::get('help', function()
+{
+    return View::make('help');
+});
