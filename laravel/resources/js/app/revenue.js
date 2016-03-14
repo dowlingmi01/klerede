@@ -5,18 +5,29 @@
 var BarSet = React.createClass({
     convertDate: function(date) {
         if(date !== undefined){
-            date = date.split('/');
-            date = date[1]+'.'+date[2];
+            var delimeter = date.indexOf('/') !== -1 ? '/' : '-';
+            date = date.split(delimeter);
+            date = wnt.filterPeriod === 'month' ? date[2] : date[1]+'.'+date[2];
             return date;
         }
     },
     rolloverDate: function(date) {
         if(date !== undefined){
-            date = date.split('/');
+            var delimeter = date.indexOf('/') !== -1 ? '/' : '-';
+            date = date.split(delimeter);
             date = new Date(date[0], date[1]-1, date[2]);
             dow = Date.dayNames[date.getDay()];
+            d = date.getDate();
+            y = date.getFullYear();
             m = Date.monthNames[date.getMonth()];
-            date = dow + ', ' + m + ' ' + date.getDate() + ', ' + date.getFullYear();
+            date2 = date.next().saturday();
+            d2 = date2.getDate();
+            m2 = Date.monthNames[date2.getMonth()];
+            if(wnt.filterPeriod === 'quarter'){
+                date = m.substring(0,3)+' '+d+' - '+m2.substring(0,3)+' '+d2+', '+y;
+            } else {
+                date = dow+', '+m+' '+d+', '+y;
+            }
             return date;
         }
     },
@@ -150,7 +161,7 @@ var WeatherBar = React.createClass({   // Weather API
         );
         // Load weather data in revenue accordion
         wnt.gettingWeatherData = $.Deferred();
-        wnt.weatherRange = wnt.getDateRange(wnt.datePickerStart, 'this week');
+        wnt.weatherRange = wnt.getDateRange(wnt.filterDates, 'this week');
         wnt.getWeather(wnt.weatherRange[0], wnt.weatherRange[1]);
         $.when(wnt.gettingWeatherData).done(function(weather) {
             if(weather.length > 0){   // Fallback for no weather data
@@ -245,9 +256,8 @@ var WeatherBar = React.createClass({   // Weather API
 
 var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS) AND accordion details (NEW)
     getInitialState: function() {
-        wnt.graphCap = 80000;   // TEMPORARY
+        wnt.graphCap = 80000;   // TEMPORARY (used in filterVisitors and filterUnits)
         return {
-            graphCap: 80000,
             graphHeight: 300,
 
             days: wnt.selectedMonthDays,
@@ -268,103 +278,129 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             membershipChange: [0, 'up']
         };
     },
-    callAPI: function(periodStart, periodEnd, periodType) {
-        // periodType = ['last quarter','last month','last week']
-        // Turn periodType text into 2-part array of start and end dates for the prior period
-        var priorPeriod = wnt.getDateRange(periodStart, periodType);
-        console.log(periodStart, periodEnd, periodType, priorPeriod);
-        // Grab array of dates based on date picker
-        // TO DO: CURENTLY ONLY GRABS ONE MONTH
-        if(periodType === 'last quarter'){
-            wnt.barDates = wnt.getMonth(wnt.datePickerStart);   // TO DO: GET DATES FOR BARS IN QUARTER VIEW
-            // EXAMPLE convert '2015-00' to '01.01'
-        } else {
-            wnt.barDates = wnt.getMonth(wnt.datePickerStart);
-        }
+    callAPI: function() {
+        // LEFT OFF HERE
+        // wnt.filterVisitors(totals)   // TO DO: Use in post
+        // wnt.filterUnits(dollars)   // TO DO: Use in post
         var self = this;
+        var currentPeriod = wnt.getDateRange(wnt.filterDates, 'this '+wnt.filterPeriod);
+        var priorPeriod = wnt.getDateRange(wnt.filterDates, 'last '+wnt.filterPeriod);
+        wnt.barScope = 'date';
+        // Get week numbers for quarter data retrieval
+        if(wnt.filterPeriod === 'quarter'){
+            currentPeriod[0] = wnt.getWeekNumber(currentPeriod[0], 'format');
+            currentPeriod[1] = wnt.getWeekNumber(currentPeriod[1], 'format');
+            priorPeriod[0] = wnt.getWeekNumber(priorPeriod[0], 'format');
+            priorPeriod[1] = wnt.getWeekNumber(priorPeriod[1], 'format');
+            wnt.barScope = 'week';
+        }
         $.post(
             wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {
-                    // TO DO: Set queries to be able to pull weeks of data too
-                    // periods: { type: 'week', from: '2015-01', to:'2015-24' }
                     // Bar graph data ...
                     box_bars: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                     cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                         cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
                         cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                     gift_bars: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                         gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
                         gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
-                            periods: { from: periodStart, to: periodEnd } },
+                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                     mem_bars: { specs: { type: 'sales', channel: 'membership' },
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+
+                    // Bar graph totals used to calculate max graph height ...
+                    total_bars: { specs: { type: 'sales' }, 
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                     // Bar graph visitors used to calculate Per Cap ...
                     visitors: { specs: { type: 'visits' },
-                        periods: { from: periodStart, to: periodEnd } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                     // Accordion data ...
                     box_sum: { specs: { type: 'sales', channel: 'gate' },
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
                         box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                             box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                                periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                                periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
 
                                 box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                                    periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                                    periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                             box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                                periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                                periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
 
                                 box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                                    periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                                    periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
                         groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
                     cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
                         cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
+                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
                     
                     gift_sum: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                     
                         gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
                     
                     mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
                         mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
-                            periods: { from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
+                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
                 }
             }
         )
         .done(function(result) {
             console.log('Revenue data loaded...');
-            // TO DO: Set barDates loop here???
             wnt.revenue = result;
+            // Setting max values for graph height
+            // Grab amounts into new array
+            wnt.revenue.total_bars_amount = wnt.revenue.total_bars.map(function(entry){
+                return parseInt(entry.amount);
+            });
+            // Find max in array
+            wnt.revenue.total_bars_amount.max = d3.max(wnt.revenue.total_bars_amount);
+            // Set Y-axis based on max value
+            self.changeYMarkers(wnt.revenue.total_bars_amount.max);   // TO DO: Need argument for dollars vs. per cap?
+            // TO DO: Process date versions too and not just week versions
+            // Set barDates (relies on length of totals array, so must be set after data is received)
+            wnt.barDates = [];
+            wnt.revenue.total_bars.forEach(function(entry){
+                // IF IT'S A WEEK NUMBER VS NOT
+                var dateObj, dateStr;
+                if(wnt.barScope === 'week'){
+                    dateObj = wnt.getWeekNumberDates(entry.period)[0];
+                    dateStr = dateObj.getFullYear() + '-' + wnt.doubleDigits(dateObj.getMonth()+1) + '-' + wnt.doubleDigits(dateObj.getDate());
+                } else {
+                    dateStr = entry.period;
+                }
+                wnt.barDates.push(dateStr);
+            });
             $.get(
                 wnt.apiWeather,
                 {
@@ -461,11 +497,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     componentDidMount: function() {
         // Set default for datepicker
-        $('#revenue #datepicker').val(wnt.datePickerStart);
-        // Switch format for datePickerStart to be used in weather API
-        wnt.datePickerStart = wnt.formatDate(new Date(wnt.datePickerStart));
+        $('#revenue #datepicker').val(wnt.filterDates);
+        // Set filter defaults as globals
+        // Switch format for filterDates to be used in weather API
+        wnt.filterDates = wnt.formatDate(new Date(wnt.filterDates));
+        wnt.filterPeriod = $('#bg-period').val();
+        wnt.filterVisitors = $('#bg-visitors').val();
+        wnt.filterUnits = $('#bg-units').val();
         // Call method to load revenue and weather data
-        this.callAPI(wnt.monthStart, wnt.monthEnd, 'last week');
+        this.callAPI();
     },
     dataArray: function(stat, statUnits, days) {
         var data = [];
@@ -479,8 +519,59 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return data;
     },
     calcBarHeight: function(amount) {
-        var barSectionHeight = (amount / wnt.graphCap) * this.state.graphHeight;
+        var barSectionHeight = (amount / wnt.revenue.total_bars_amount.max) * this.state.graphHeight;
         return barSectionHeight+'px';
+    },
+    calcBarWidth: function() {
+        // BAR SET PLACEMENT
+        // wnt.barScope = ['date', 'week']
+        // wnt.filterPeriod = ['week', 'month', 'quarter']
+        // Possible combos = date/week, date/month, week/quarter
+        var self = this;
+        var viewportWidth = $('#bar-graph-scroll-pane').width();
+        var bars, dataSetWidth;
+        if(wnt.filterPeriod === 'quarter'){
+            // Show 14 bar sets for quarter view
+            bars = 14;
+        } else if (wnt.filterPeriod === 'month'){
+            // Show all days for the given month view
+            bars = wnt.barDates[0].split('-');
+            bars = wnt.daysInMonth(bars[1], bars[0]);
+        } else {
+            // Show 7 days for the default week view
+            bars = 7;
+        }
+        var slices = (bars * 2) + 1;   // Width of bars and spaces between; the increments for placement and width
+        var barWidth = viewportWidth / slices;
+        dataSetWidth = ((wnt.revenue.total_bars.length * 2) + 1) * barWidth;
+        $('.bar-set').css('width', barWidth+'px');   // Set width of bars
+        var barPlacement = barWidth;   // Initialize increment for first placement from the left
+        $('#bar-graph').css('width', dataSetWidth+'px');   // Set width of data holder under viewport
+        $.each($('.bar-set'), function(index, item){
+            $(item).css('left', barPlacement+'px')
+            barPlacement = barPlacement + (barWidth * 2);
+        });
+    },
+    changeYMarkers: function(max) {
+        var segment = Math.ceil(max / 4);
+        // Minify numbers (e.g. 1000 = 1) and change Y-axis main label
+        segment = segment > 999 ? (segment/1000).toFixed(0) : segment;
+        $('.y-marker').eq(0).attr('data-content', (segment * 4).toFixed(0));
+        $('.y-marker').eq(1).attr('data-content', (segment * 3).toFixed(0));
+        $('.y-marker').eq(2).attr('data-content', (segment * 2).toFixed(0));
+        $('.y-marker').eq(3).attr('data-content', segment);
+        if(max < 1000){
+            $('.bar-graph-label-y').text('Hundreds');
+        } else {
+            $('.bar-graph-label-y').text('Thousands');
+        }
+    },
+    setSliderPosition: function(){
+        // TO DO: Set slider position?
+        // $("#bar-graph-slider").slider('value', (selectedDay / wnt.selectedMonthDays) * 100);   // Set slider location
+        // $("#bar-graph-slider").slider('value',50);
+        // This works ... 0-100 ... SET POSITION OF SLIDER BASED ON DATE
+        // july 5 = 5/31 = 16.13% for slider value
     },
     calcChange: function(newstat, oldstat) {
         // NEW!!! ... 3 ... AND OLD ... It's the same!
@@ -492,20 +583,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         change = [change, direction]
         return change;
     },
-    componentDidUpdate: function(){
+    animateBars: function(){
         var self = this;
-        // BAR SET PLACEMENT
-        var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
-        var barSpacing = $('#bar-graph-scroll-pane').width() / 7;
-        var barWidth = $('.bar-set').width();
-        var barPlacement = (barSpacing - barWidth) / 2;
-        var weekWidth = $('#bar-graph-scroll-pane').width();
-        var monthWidth = (weekWidth / 7) * days;
-        $('#bar-graph').css('width',monthWidth+'px');
-        $.each($('.bar-set'), function(index, item){
-            $(item).css('left',barPlacement+'px')
-            barPlacement = barPlacement + barSpacing;
-        });
         // ANIMATIONS
         $.each($('.bar-section-boxoffice'), function(index, item){
             $(this).css('height','0')
@@ -543,6 +622,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 'easeOutElastic'
             );
         });
+    },
+    componentDidUpdate: function(){
+        this.calcBarWidth();
+        this.animateBars();
         this.formatNumbers();
         $('.bar-set').popover({ container: 'body' });
     },
@@ -566,192 +649,20 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         number = $.formatNumber(number, {format:"$#,###", locale:"us"});
         return number;
     },
-    weekChange: function(event) {
-        // TO DO: Switch date formats to double-digits for any API calls
-        var self = this;
-        wnt.datePickerStart = new Date(event.target.value);
-        var selectedMonth = wnt.datePickerStart.getMonth()+1;
-        var selectedYear = wnt.datePickerStart.getFullYear();
-        wnt.selectedMonthDays = wnt.daysInMonth(selectedMonth, selectedYear);
-        var selectedMonthStart = selectedYear+'-'+selectedMonth+'-1';   // yyyy-m-d
-        var selectedMonthEnd = selectedYear+'-'+selectedMonth+'-'+wnt.selectedMonthDays;   // yyyy-m-d
-        var selectedDay = wnt.datePickerStart.getDate();
-
-        $("#bar-graph-slider").slider('value', (selectedDay / wnt.selectedMonthDays) * 100);
-
-        wnt.datePickerStart = wnt.formatDate(wnt.datePickerStart);
-        var weekEnd = new Date(wnt.datePickerStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-        weekEnd = wnt.formatDate(weekEnd);
-        var priorWeekRange = wnt.getDateRange(wnt.datePickerStart, 'last week');
-        var priorWeekStart = priorWeekRange[0];
-        var priorWeekEnd = priorWeekRange[1];
-        // SET DATES FOR BAR TAGS
-        var barDatesWeekEnd = new Date(wnt.datePickerStart);
-        barDatesWeekEnd.setDate(barDatesWeekEnd.getDate() + 8);
-        barDatesWeekEnd = wnt.formatDate(barDatesWeekEnd);
-        // NEW: Set dates to all in selected month
-        // $("#bar-graph-slider").slider('value',50);      //  This works ... 0-100 ... SET POSITION OF SLIDER BASED ON DATE
-        // july 5 = 5/31 = 16.13% for slider value
-        var barDates = wnt.getMonth(wnt.datePickerStart);
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
-                    box_bars: { specs: { type: 'sales', channel: 'gate' },
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    box_sum: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
-                    box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
-                    box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
-                    box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
-                    box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
-                    box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
-
-                    cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
-                    cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
-                    cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    
-                    gift_bars: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    gift_sum: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
-                    gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
-                    gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    
-                    mem_bars: { specs: { type: 'sales', channel: 'membership' },
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } },
-                    mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
-                    mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
-
-                    groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: wnt.datePickerStart, to: weekEnd, kind: 'sum' } },
-                    groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { from: priorWeekStart, to: priorWeekEnd, kind: 'sum' } },
-
-                    visitors: { specs: { type: 'visits' },
-                        periods: { from: selectedMonthStart, to: selectedMonthEnd } }
-                }
-            }
-        )
-        .done(function(result) {
-            console.log('Revenue data loaded (again)...');
-            wnt.revenue = result;
-            // AFTER the bar graph data loads, grab the weather data BEFORE setting the state since the rendering happens after EVERY .setState() call
-            $.get(
-                wnt.apiWeather,
-                {
-                    venue_id: wnt.venueID,
-                    from: barDates[0].replace(/\//g,'-'),
-                    to: barDates[barDates.length-1].replace(/\//g,'-')
-                }
-            )
-            .done(function(weather){
-                console.log('Weather data loaded...');
-                wnt.weatherPeriod = weather;
-                if(self.isMounted()) {
-                    // LOOP THROUGH DATA TO CREATE ARRAYS
-                    var boxoffice = self.dataArray(result.box_bars, 'amount', wnt.selectedMonthDays);
-                    $.each(boxoffice, function(index, item){
-                            boxoffice[index] = self.calcBarHeight(item);
-                    });
-                    var cafe = self.dataArray(result.cafe_bars, 'amount', wnt.selectedMonthDays);
-                    $.each(cafe, function(index, item){
-                            cafe[index] = self.calcBarHeight(item);
-                    });
-                    var giftstore = self.dataArray(result.gift_bars, 'amount', wnt.selectedMonthDays);
-                    $.each(giftstore, function(index, item){
-                            giftstore[index] = self.calcBarHeight(item);
-                    });
-                    var membership = self.dataArray(result.mem_bars, 'amount', wnt.selectedMonthDays);
-                    $.each(membership, function(index, item){
-                            membership[index] = self.calcBarHeight(item);
-                    });
-                    // SET STATE TO ARRAYS FOR RENDERING
-                    self.setState({
-                        days: wnt.selectedMonthDays,
-                        barDates: barDates,
-                        boxofficeHeight: boxoffice,
-                        cafeHeight: cafe,
-                        giftstoreHeight: giftstore,
-                        membershipHeight: membership,
-                        // NEW FOR ACCORDION ...
-                        boxofficeNow: result.box_sum.amount,
-                        boxofficeThen: result.box_sum_prior.amount,
-                        boxofficeChange: self.calcChange(result.box_sum.amount, result.box_sum_prior.amount),
-                        boxofficeNowON: result.box_sum_online.amount,
-                        boxofficeThenON: result.box_sum_online_prior.amount,
-                        boxofficeChangeON: self.calcChange(result.box_sum_online.amount, result.box_sum_online_prior.amount),
-                        boxofficeNowOFF: result.box_sum_offline.amount,
-                        boxofficeThenOFF: result.box_sum_offline_prior.amount,
-                        boxofficeChangeOFF: self.calcChange(result.box_sum_offline.amount, result.box_sum_offline_prior.amount),
-
-                        groupsNow: result.groups_sum.amount,
-                        groupsThen: result.groups_sum_prior.amount,
-                        groupsChange: self.calcChange(result.groups_sum.amount, result.groups_sum_prior.amount),
-
-                        cafeNow: result.cafe_sum.amount,
-                        cafeThen: result.cafe_sum_prior.amount,
-                        cafeChange: self.calcChange(result.cafe_sum.amount, result.cafe_sum_prior.amount),
-
-                        giftstoreNow: result.gift_sum.amount,
-                        giftstoreThen: result.gift_sum_prior.amount,
-                        giftstoreChange: self.calcChange(result.gift_sum.amount, result.gift_sum_prior.amount),
-
-                        membershipNow: result.mem_sum.amount,
-                        membershipThen: result.mem_sum_prior.amount,
-                        membershipChange: self.calcChange(result.mem_sum.amount, result.mem_sum_prior.amount),
-
-                        weather: weather
-                    });
-                    // Set null data to '-'
-                    $.each(self.state, function(stat, value){
-                        if(value === null){
-                            var stateObject = function() {
-                                returnObj = {};
-                                returnObj[stat] = '-';
-                                return returnObj;
-                            };
-                            self.setState(stateObject);
-                        }
-                    });
-                }
-            }.bind(this))   // .bind() gives context to 'this'
-            .fail(function(result) {
-                console.log('REVENUE DATA ERROR! ... ' + result.statusText);
-                console.log(result);
-            });
-        })
-        .fail(function(result){
-            var noData = {
-                icon_1: 'blank',
-                temp_1: '...',
-                summary_1: '...'
-            };
-            wnt.weatherPeriod = noData;
-            console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
-        });
+    filterPeriod: function(event){
+        wnt.filterPeriod = event.target.value;
+        this.callAPI();
     },
-    graphFilter: function(event) {
+    filterDates: function(event) {
+        wnt.filterDates = wnt.formatDate(new Date(event.target.value));
+        this.callAPI();
+    },
+    filterVisitors: function(event) {
+        // TO DO: Reset rollover data, RE-CALC Y-AXIS
+        // TO DO: Call API and move actions
+        wnt.filterVisitors = event.target.value;
+        this.callAPI();
+
         var filter = event.target.value;
         var self = this;
         // Math.max(wnt.revenue.cafe[0].amount,wnt.revenue.cafe[1].amount,wnt.revenue.cafe[2].amount,wnt.revenue.cafe[3].amount,wnt.revenue.cafe[4].amount,wnt.revenue.cafe[5].amount,wnt.revenue.cafe[6].amount)
@@ -802,7 +713,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             $.each(wnt.revenue.mem_bars, function(index, value){
                 greatest.push(value.amount);
             });
-            greatest = Math.max.apply(null, greatest);
+            greatest = Math.max.apply(null, greatest);   // Could use d3.max(greatest) instead
             wnt.graphCap = Math.ceil(greatest / 1000) * 1000;
             $('.y-marker').eq(0).attr('data-content','8');
             $('.y-marker').eq(1).attr('data-content','6');
@@ -887,7 +798,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
         event.target.blur();
     },
-    graphUnits: function(event) {
+    filterUnits: function(event) {
+        // TO DO: Call API and move actions
+        wnt.filterUnits = event.target.value;
+        this.callAPI();
         // Per Cap = XYZ Sales / Total Visitors
         var filter = event.target.value;
         var self = this;
@@ -955,158 +869,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
         event.target.blur();
     },
-    channelFilter: function(event){
+    filterChannels: function(event){
+        // TO DO: Call API and move actions???
+        // TO DO: Switch filter to set heights to '0'?, re-calc y-axis, only show 'non-zero' info in rollover unless the data really is zero.
+
         // Toggle the legend/filter checkmark
         $(event.target).closest('.bar-graph-legend-item').find('.legend-check-circle').toggleClass('active');
         // Legend items each have a data attribute for matching to their respective bar segments to toggle
         var filter = $(event.target).closest('.bar-graph-legend-item').data('segment');
         $('.'+filter).toggle();
-    },
-    periodChange: function(event){
-        var filter = event.target.value;
-        var self = this;
-        if(filter === 'week') {
-            $('.bar-set').css('width','25px');
-            // BAR SET PLACEMENT
-            var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
-            var barSpacing = $('#bar-graph-scroll-pane').width() / 7;   // 31 or 7 or
-            var barWidth = $('.bar-set').width();
-            var barPlacement = (barSpacing - barWidth) / 2;
-            var weekWidth = $('#bar-graph-scroll-pane').width();
-            var monthWidth = (weekWidth / 7) * days;   // 31 or 7 or
-            $('#bar-graph').css('width',monthWidth+'px');
-            $.each($('.bar-set'), function(index, item){
-                $(item).css('left',barPlacement+'px')
-                barPlacement = barPlacement + barSpacing;
-            });
-            // TEMP - DATE ELONGATION
-            $.each($('.bar-set-date'),function(index,value){
-                var month = wnt.thisMonthNum + 1;   // TEMP: NEED MONTH FROM FILTER
-                $(value).html(month + '.' + $(value).html());
-            });
-        } else if(filter === 'month'){
-            // TO DO: Able to resize bar sets and spacing; need to call new data and style dates
-            // TO DO: Dynamically set based on days in month
-            $('.bar-set').css('width','10px');
-            // BAR SET PLACEMENT
-            var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
-            var barSpacing = $('#bar-graph-scroll-pane').width() / 31;
-            var barWidth = $('.bar-set').width();
-            var barPlacement = (barSpacing - barWidth) / 2;
-            var weekWidth = $('#bar-graph-scroll-pane').width();
-            var monthWidth = (weekWidth / 31) * days;
-            $('#bar-graph').css('width',monthWidth+'px');
-            $.each($('.bar-set'), function(index, item){
-                $(item).css('left',barPlacement+'px')
-                barPlacement = barPlacement + barSpacing;
-            });
-            // TEMP - DATE TRUNCATION
-            $.each($('.bar-set-date'),function(index,value){
-                $(value).html($(value).html().split('.')[1]);
-            });
-            // // Call method to load revenue and weather data
-            // this.callAPI(wnt.monthStart, wnt.monthEnd, 'last week');
-        } else if(filter === 'quarter') {   // TO DO: NEW BAR SETS (each meter is a week's worth)
-            // GET START AND END DATES FOR QUARTER via passing in a date string
-            var quarterDates = wnt.getDateRange(wnt.datePickerStart, 'this quarter');
-            console.log('QUARTER DATES', quarterDates);
-            this.callAPI(quarterDates[0], quarterDates[1], 'last quarter');
-            // TO DO: Get new data ... current quarter's worth
-            // TO DO: Convert week numbers to dates
-            /*
-            var boxoffice = self.dataArray(result.box_bars, 'amount', self.state.days);
-                    console.log('BOXOFFICE ...',boxoffice);
-                    $.each(boxoffice, function(index, item){
-                            boxoffice[index] = self.calcBarHeight(item);
-                    });
-            */
-            var boxoffice = wnt.revenue.box_bars.filter(function(entry,index){
-                if(index % 7 === 0){
-                    return entry;   // Need to total other 6 into this entry
-                }
-            });
-            console.log('NEW BOXOFFICE ARRAY', boxoffice);
-            boxoffice = self.dataArray(boxoffice, 'amount', boxoffice.length);
-            $.each(boxoffice, function(index, item){
-                boxoffice[index] = self.calcBarHeight(item);
-            });
-            console.log('NEW NEW BOXOFFICE ARRAY', boxoffice);
-
-
-
-            var cafe = wnt.revenue.cafe_bars.filter(function(entry,index){
-                if(index % 7 === 0){
-                    return entry;   // Need to total other 6 into this entry
-                }
-            });
-            cafe = self.dataArray(cafe, 'amount', cafe.length);
-            $.each(cafe, function(index, item){
-                cafe[index] = self.calcBarHeight(item);
-            });
-
-
-
-
-
-            var giftstore = wnt.revenue.gift_bars.filter(function(entry,index){
-                if(index % 7 === 0){   // Give me every 7th date
-                    return entry;   // Need to total other 6 into this entry
-                }
-            });
-
-            console.log('NEW GIFT ARRAY', giftstore);
-            // yyyy/mm/dd
-            wnt.barDates = self.dataArray(giftstore, 'period', giftstore.length);
-            console.log('WNT BARDATES', wnt.barDates);
-            wnt.barDates = wnt.barDates.map(function(entry){
-                return entry.replace(/-/g,'/');
-            });
-            console.log('WNT BARDATES MAPPED', wnt.barDates);
-
-
-
-            giftstore = self.dataArray(giftstore, 'amount', giftstore.length);
-            $.each(giftstore, function(index, item){
-                giftstore[index] = self.calcBarHeight(item);
-            });
-            console.log('NEW NEW GIFT ARRAY', giftstore);
-
-
-
-
-            var membership = wnt.revenue.mem_bars.filter(function(entry,index){
-                if(index % 7 === 0){
-                    return entry;   // Need to total other 6 into this entry
-                }
-            });
-            membership = self.dataArray(membership, 'amount', membership.length);
-            $.each(membership, function(index, item){
-                membership[index] = self.calcBarHeight(item);
-            });
-            self.setState({   // testing state vs setstate for a forceUpdate()
-                boxofficeHeight: boxoffice,
-                cafeHeight: cafe,
-                giftstoreHeight: giftstore,
-                membershipHeight: membership,
-
-                barDates: wnt.barDates   // BUG: Graph still using previous barDates on re-render
-            });
-            self.forceUpdate();   // shouldComponentUpdate()  // bug is date format switching to - from /
-            console.log(wnt.selectedMonthDays);
-            $('.bar-set').css('width','50px');
-            // BAR SET PLACEMENT
-            var days = wnt.daysInMonth(wnt.thisMonthNum,wnt.thisYear);   // SET BASED ON MONTH IN FILTER
-            var barSpacing = $('#bar-graph-scroll-pane').width() / 5;   // 31 or 7 or
-            var barWidth = $('.bar-set').width();
-            var barPlacement = (barSpacing - barWidth) / 2;
-            var weekWidth = $('#bar-graph-scroll-pane').width();
-            var monthWidth = (weekWidth / 5) * days;   // 31 or 7 or
-            $('#bar-graph').css('width',monthWidth+'px');
-            $.each($('.bar-set'), function(index, item){
-                $(item).css('left',barPlacement+'px')
-                barPlacement = barPlacement + barSpacing;
-            });
-        }
     },
     render: function(){
         // LOOP FOR BAR SETS
@@ -1148,24 +919,24 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             }
             bars.push(<BarSet date={wnt.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} icon1={icon1} icon2={icon2} temp1={temp1} temp2={temp2} summary1={summary1} summary2={summary2} />);
         }
-        // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH DATEPICKER PLUGIN
+        // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH datepicker PLUGIN
         return (
             <div className="row">
                 <div className="col-xs-8 col-md-8">
                     <div className="widget" id="revenue">
                         <h2>Revenue</h2>
                         <form id="filter-revenue-week">
-                            <select className="form-control week-picker-text" onChange={this.periodChange}>
+                            <select id="bg-period" className="form-control" onChange={this.filterPeriod}>
                                 <option value="week">Week beginning</option>
-                                <option value="month">Month beginning</option>
-                                <option value="quarter">Quarter beginning</option>
+                                <option value="month">Month containing</option>
+                                <option value="quarter">Quarter containing</option>
                             </select>
                             <Caret className="filter-caret" />
-                            <input type="text" id="datepicker" onFocus={this.weekChange} />
+                            <input type="text" id="datepicker" onFocus={this.filterDates} />
                         </form>
 
                         <form id="filter-revenue-section">
-                            <select className="form-control" onChange={this.graphFilter}>
+                            <select id="bg-visitors" className="form-control" onChange={this.filterVisitors}>
                                 <option value="totals">Totals</option>
                                 <option value="members">Members</option>
                                 <option value="nonmembers">Non-members</option>
@@ -1175,7 +946,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </form>
 
                         <form id="filter-revenue-units">
-                            <select className="form-control" onChange={this.graphUnits}>
+                            <select id="bg-units" className="form-control" onChange={this.filterUnits}>
                                 <option value="dollars">Dollars</option>
                                 <option value="percap">Per Cap</option>
                             </select>
@@ -1183,25 +954,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </form>
 
                         <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" onClick={this.channelFilter}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Box Office
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" onClick={this.channelFilter}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Cafe
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" onClick={this.channelFilter}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Gift Store
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" onClick={this.channelFilter}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
