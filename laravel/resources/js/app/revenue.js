@@ -32,7 +32,7 @@ var BarSet = React.createClass({
         }
     },
     processLineItem: function(value, classExt, label) {
-        var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+" Test</td><td>"+value+"</td></tr>" : '';
+        var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+"</td><td>"+value+"</td></tr>" : '';
         return html;
     },
     render: function() {
@@ -280,8 +280,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         };
     },
     callAPI: function() {
-        // wnt.filterVisitors(totals)   // TO DO: Use in post
-        // wnt.filterUnits(dollars)   // TO DO: Use in post
         var self = this;
         var currentPeriod = wnt.getDateRange(wnt.filterDates, 'this '+wnt.filterPeriod);
         var priorPeriod = wnt.getDateRange(wnt.filterDates, 'last '+wnt.filterPeriod);
@@ -520,7 +518,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return data;
     },
     calcBarHeight: function(amount) {
-        var barSectionHeight = (amount / d3.max(wnt.revenue.total_bars_amount)) * $('#bar-graph').height();
+        var max = d3.max(wnt.revenue.total_bars_amount);
+        if(wnt.filterUnits === 'dollars'){ max = ((((d3.max(wnt.revenue.total_bars_amount)/4)/1000).toFixed(0))*4)*1000; }
+        var barSectionHeight = (amount / max) * $('#bar-graph').height();
         return barSectionHeight+'px';
     },
     calcBarWidth: function() {
@@ -609,14 +609,22 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
     },
     changeYMarkers: function(max) {
-        var segment = Math.ceil(max / 4);
+        // LEFT OFF HERE ... Why isn't y-axis looking right with rollover amounts?
+        var segment = wnt.filterUnits === 'percap' ? Math.round((max/4)*100)/100 : Math.ceil(max/4);
         // Minify numbers (e.g. 1000 = 1) and change Y-axis main label
         segment = segment > 999 ? (segment/1000).toFixed(0) : segment;
         $('.y-marker').eq(0).attr('data-content', (segment * 4).toFixed(0));
         $('.y-marker').eq(1).attr('data-content', (segment * 3).toFixed(0));
         $('.y-marker').eq(2).attr('data-content', (segment * 2).toFixed(0));
-        $('.y-marker').eq(3).attr('data-content', segment);
+        $('.y-marker').eq(3).attr('data-content', (segment * 1).toFixed(0));
         if(wnt.filterUnits === 'percap'){
+            var fourth = Math.round((segment*4)*100)/100;
+            var third = Math.round((segment*3)*100)/100;
+            var second = Math.round((segment*2)*100)/100;
+            $('.y-marker').eq(0).attr('data-content', fourth.toFixed(2));
+            $('.y-marker').eq(1).attr('data-content', third.toFixed(2));
+            $('.y-marker').eq(2).attr('data-content', second.toFixed(2));
+            $('.y-marker').eq(3).attr('data-content', segment.toFixed(2));
             $('.bar-graph-label-y').text(' ');
         } else if(max < 1000){
             $('.bar-graph-label-y').text('Hundreds');
@@ -703,8 +711,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     formatSingleNumber: function(number){   // Used in bar set rollovers
         number = number.toString();
         if(wnt.filterUnits === 'percap'){
-            number = $.parseNumber(number, {format:"$#,##0.#0", locale:"us"});
-            number = $.formatNumber(number, {format:"$#,##0.#0", locale:"us"});
+            number = $.parseNumber(number, {format:"$#,##0.00", locale:"us"});
+            number = $.formatNumber(number, {format:"$#,##0.00", locale:"us"});
         } else {
             number = $.parseNumber(number, {format:"$#,###", locale:"us"});
             number = $.formatNumber(number, {format:"$#,###", locale:"us"});
@@ -720,7 +728,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         this.callAPI();
     },
     filterVisitors: function(event) {
-        // LEFT OFF HERE ... TO DO: Reset rollover data, RE-CALC Y-AXIS
         wnt.filterVisitors = event.target.value;
         this.callAPI();
         event.target.blur();
