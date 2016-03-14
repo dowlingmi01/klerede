@@ -256,10 +256,7 @@ var WeatherBar = React.createClass({   // Weather API
 
 var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS) AND accordion details (NEW)
     getInitialState: function() {
-        wnt.graphCap = 80000;   // TEMPORARY (used in filterVisitors and filterUnits)
         return {
-            graphHeight: 300,
-
             days: wnt.selectedMonthDays,
             weather: [],
 
@@ -279,7 +276,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         };
     },
     callAPI: function() {
-        // LEFT OFF HERE
         // wnt.filterVisitors(totals)   // TO DO: Use in post
         // wnt.filterUnits(dollars)   // TO DO: Use in post
         var self = this;
@@ -378,15 +374,52 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         .done(function(result) {
             console.log('Revenue data loaded...');
             wnt.revenue = result;
-            // Setting max values for graph height
-            // Grab amounts into new array
+            // Set max values for y-axis by grabbing amounts into new array and finding the max in that array
             wnt.revenue.total_bars_amount = wnt.revenue.total_bars.map(function(entry){
                 return parseInt(entry.amount);
             });
-            // Find max in array
+            // Calc per cap before getting max for y-axis
+            if(wnt.filterUnits === 'percap'){
+                $.each(wnt.revenue.box_bars, function(index, item){
+                    if(wnt.revenue.visitors[index] !== undefined){
+                        wnt.revenue.box_bars[index].amount = wnt.revenue.box_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                    } else {
+                        wnt.revenue.box_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                    }
+                });
+                $.each(wnt.revenue.cafe_bars, function(index, item){
+                    if(wnt.revenue.visitors[index] !== undefined){
+                        wnt.revenue.cafe_bars[index].amount = wnt.revenue.cafe_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                    } else {
+                        wnt.revenue.cafe_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                    }
+                });
+                $.each(wnt.revenue.gift_bars, function(index, item){
+                    if(wnt.revenue.visitors[index] !== undefined){
+                        wnt.revenue.gift_bars[index].amount = wnt.revenue.gift_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                    } else {
+                        wnt.revenue.gift_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                    }
+                });
+                $.each(wnt.revenue.mem_bars, function(index, item){
+                    if(wnt.revenue.visitors[index] !== undefined){
+                        wnt.revenue.mem_bars[index].amount = wnt.revenue.mem_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                    } else {
+                        wnt.revenue.mem_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                    }
+                });
+                // Set total_bars_amount array to per cap calculations
+                $.each(wnt.revenue.total_bars_amount, function(index, item){
+                    if(wnt.revenue.visitors[index] !== undefined){
+                        wnt.revenue.total_bars_amount[index] = wnt.revenue.total_bars_amount[index] / parseInt(wnt.revenue.visitors[index].units);
+                    } else {
+                        wnt.revenue.total_bars_amount[index] = 0;   // Set to 0 if there are no visitors
+                    }
+                });
+            }
             wnt.revenue.total_bars_amount.max = d3.max(wnt.revenue.total_bars_amount);
             // Set Y-axis based on max value
-            self.changeYMarkers(wnt.revenue.total_bars_amount.max);   // TO DO: Need argument for dollars vs. per cap?
+            self.changeYMarkers(wnt.revenue.total_bars_amount.max);
             // TO DO: Process date versions too and not just week versions
             // Set barDates (relies on length of totals array, so must be set after data is received)
             wnt.barDates = [];
@@ -416,19 +449,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     // LOOP THROUGH DATA TO CREATE ARRAYS
                     var boxoffice = self.dataArray(result.box_bars, 'amount', self.state.days);
                     $.each(boxoffice, function(index, item){
-                            boxoffice[index] = self.calcBarHeight(item);
+                        boxoffice[index] = self.calcBarHeight(item);
                     });
                     var cafe = self.dataArray(result.cafe_bars, 'amount', self.state.days);
                     $.each(cafe, function(index, item){
-                            cafe[index] = self.calcBarHeight(item);
+                        cafe[index] = self.calcBarHeight(item);
                     });
                     var giftstore = self.dataArray(result.gift_bars, 'amount', self.state.days);
                     $.each(giftstore, function(index, item){
-                            giftstore[index] = self.calcBarHeight(item);
+                        giftstore[index] = self.calcBarHeight(item);
                     });
                     var membership = self.dataArray(result.mem_bars, 'amount', self.state.days);
                     $.each(membership, function(index, item){
-                            membership[index] = self.calcBarHeight(item);
+                        membership[index] = self.calcBarHeight(item);
                     });
                     // SET STATE TO ARRAYS FOR RENDERING
                     self.setState({
@@ -519,7 +552,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return data;
     },
     calcBarHeight: function(amount) {
-        var barSectionHeight = (amount / wnt.revenue.total_bars_amount.max) * this.state.graphHeight;
+        // LEFT OFF HERE: Why are percap bars so short?  if there are no visitors for a day, set all other values to 0 since there can be no percap
+        console.log(amount);
+        var barSectionHeight = (amount / wnt.revenue.total_bars_amount.max) * $('#bar-graph').height();
         return barSectionHeight+'px';
     },
     calcBarWidth: function() {
@@ -560,7 +595,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $('.y-marker').eq(1).attr('data-content', (segment * 3).toFixed(0));
         $('.y-marker').eq(2).attr('data-content', (segment * 2).toFixed(0));
         $('.y-marker').eq(3).attr('data-content', segment);
-        if(max < 1000){
+        if(wnt.filterUnits === 'percap'){
+            $('.bar-graph-label-y').text(' ');
+        } else if(max < 1000){
             $('.bar-graph-label-y').text('Hundreds');
         } else {
             $('.bar-graph-label-y').text('Thousands');
@@ -645,8 +682,13 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     formatSingleNumber: function(number){   // Used in bar set rollovers
         number = number.toString();
-        number = $.parseNumber(number, {format:"$#,###", locale:"us"});
-        number = $.formatNumber(number, {format:"$#,###", locale:"us"});
+        if(wnt.filterUnits === 'percap'){
+            number = $.parseNumber(number, {format:"$#,###.#0", locale:"us"});
+            number = $.formatNumber(number, {format:"$#,###.#0", locale:"us"});
+        } else {
+            number = $.parseNumber(number, {format:"$#,###", locale:"us"});
+            number = $.formatNumber(number, {format:"$#,###", locale:"us"});
+        }
         return number;
     },
     filterPeriod: function(event){
@@ -662,6 +704,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // TO DO: Call API and move actions
         wnt.filterVisitors = event.target.value;
         this.callAPI();
+        event.target.blur();
 
         var filter = event.target.value;
         var self = this;
@@ -799,74 +842,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterUnits: function(event) {
-        // TO DO: Call API and move actions
         wnt.filterUnits = event.target.value;
         this.callAPI();
-        // Per Cap = XYZ Sales / Total Visitors
-        var filter = event.target.value;
-        var self = this;
-        if(filter === 'dollars'){
-            wnt.graphCap = 80000;
-            $('.bar-graph-label-y').show();
-            $('.y-marker').eq(0).attr('data-content','80');
-            $('.y-marker').eq(1).attr('data-content','60');
-            $('.y-marker').eq(2).attr('data-content','40');
-            $('.y-marker').eq(3).attr('data-content','20');
-            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
-            $.each(boxoffice, function(index, item){
-                    boxoffice[index] = self.calcBarHeight(item);
-            });
-            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
-            $.each(cafe, function(index, item){
-                    cafe[index] = self.calcBarHeight(item);
-            });
-            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
-            $.each(giftstore, function(index, item){
-                    giftstore[index] = self.calcBarHeight(item);
-            });
-            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
-            $.each(membership, function(index, item){
-                    membership[index] = self.calcBarHeight(item);
-            });
-            // SET STATE TO ARRAYS FOR RENDERING
-            this.setState({
-                boxofficeHeight: boxoffice,
-                cafeHeight: cafe,
-                giftstoreHeight: giftstore,
-                membershipHeight: membership
-            });
-        } else {
-            wnt.graphCap = 20;
-            $('.bar-graph-label-y').hide();
-            $('.y-marker').eq(0).attr('data-content','20');
-            $('.y-marker').eq(1).attr('data-content','15');
-            $('.y-marker').eq(2).attr('data-content','10');
-            $('.y-marker').eq(3).attr('data-content','5');
-            var visitors = this.dataArray(wnt.revenue.visitors, 'units', this.state.days);
-            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
-            $.each(boxoffice, function(index, item){
-                    boxoffice[index] = self.calcBarHeight(item / visitors[index]);
-            });
-            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
-            $.each(cafe, function(index, item){
-                    cafe[index] = self.calcBarHeight(item / visitors[index]);
-            });
-            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
-            $.each(giftstore, function(index, item){
-                    giftstore[index] = self.calcBarHeight(item / visitors[index]);
-            });
-            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
-            $.each(membership, function(index, item){
-                    membership[index] = self.calcBarHeight(item / visitors[index]);
-            });
-            // SET STATE TO ARRAYS FOR RENDERING
-            this.setState({
-                boxofficeHeight: boxoffice,
-                cafeHeight: cafe,
-                giftstoreHeight: giftstore,
-                membershipHeight: membership
-            });
-        }
         event.target.blur();
     },
     filterChannels: function(event){
@@ -927,7 +904,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         <h2>Revenue</h2>
                         <form id="filter-revenue-week">
                             <select id="bg-period" className="form-control" onChange={this.filterPeriod}>
-                                <option value="week">Week beginning</option>
+                                <option value="week">Week containing</option>
                                 <option value="month">Month containing</option>
                                 <option value="quarter">Quarter containing</option>
                             </select>
