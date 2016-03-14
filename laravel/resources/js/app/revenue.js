@@ -31,12 +31,16 @@ var BarSet = React.createClass({
             return date;
         }
     },
+    processLineItem: function(value, classExt, label) {
+        var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+" Test</td><td>"+value+"</td></tr>" : '';
+        return html;
+    },
     render: function() {
         return (  // TO DO: MAKE POPOVER DATA INTO TABLES ... {"goalStatusText " + this.state.statusClass}
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<div class='popover-weather-bar'><div class='popover-date'>"+this.rolloverDate(this.props.date)+"</div><div class='popover-weather-10am'><img src='/img/"+this.props.icon1+".svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>"+this.props.summary1+"</div><div class='popover-temp'>"+this.props.temp1+"</div></div><div class='popover-weather-4pm'><img src='/img/"+this.props.icon2+".svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>"+this.props.summary2+"</div><div class='popover-temp'>"+this.props.temp2+"</div></div></div><table class='popover-data'><tr><td><div class='legend-circle-bo'></div></td><td>Box Office</td><td>"+this.props.box+"</td></tr><tr><td><div class='legend-circle-c'></div></td><td>Cafe</td><td>"+this.props.cafe+"</td></tr><tr><td><div class='legend-circle-gs'></div></td><td>Gift Store</td><td>"+this.props.gift+"</td></tr><tr><td><div class='legend-circle-m'></div></td><td>Members</td><td>"+this.props.mem+"</td></tr></table>"} 
+                data-content={"<div class='popover-weather-bar'><div class='popover-date'>"+this.rolloverDate(this.props.date)+"</div><div class='popover-weather-10am'><img src='/img/"+this.props.icon1+".svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>"+this.props.summary1+"</div><div class='popover-temp'>"+this.props.temp1+"</div></div><div class='popover-weather-4pm'><img src='/img/"+this.props.icon2+".svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>"+this.props.summary2+"</div><div class='popover-temp'>"+this.props.temp2+"</div></div></div><table class='popover-data'>"+this.processLineItem(this.props.box, 'bo', 'Box Office')+this.processLineItem(this.props.cafe, 'c', 'Cafe')+this.processLineItem(this.props.gift, 'gs', 'Gift Store')+this.processLineItem(this.props.mem, 'm', 'Membership')+"</table>"} 
                 data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
@@ -290,6 +294,12 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             priorPeriod[1] = wnt.getWeekNumber(priorPeriod[1], 'format');
             wnt.barScope = 'week';
         }
+        var totalBars = { type: 'sales' };
+        if(wnt.filterVisitors === 'members'){
+            totalBars = { type: 'sales', members: true };
+        } else if(wnt.filterVisitors === 'nonmembers'){
+            totalBars = { type: 'sales', members: false };
+        }
         $.post(
             wnt.apiMain,
             {
@@ -319,7 +329,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                     // Bar graph totals used to calculate max graph height ...
-                    total_bars: { specs: { type: 'sales' }, 
+                    total_bars: { specs: totalBars, 
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
                     // Bar graph visitors used to calculate Per Cap ...
@@ -375,56 +385,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             console.log('Revenue data loaded...');
             wnt.revenue = result;
             // Set max values for y-axis by grabbing amounts into new array and finding the max in that array
-            wnt.revenue.total_bars_amount = wnt.revenue.total_bars.map(function(entry){
-                return parseInt(entry.amount);
-            });
+            self.calcBarTotals();
             // Calc per cap before getting max for y-axis
-            if(wnt.filterUnits === 'percap'){
-                $.each(wnt.revenue.box_bars, function(index, item){
-                    if(wnt.revenue.visitors[index] !== undefined){
-                        wnt.revenue.box_bars[index].amount = wnt.revenue.box_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
-                    } else {
-                        wnt.revenue.box_bars[index].amount = 0;   // Set to 0 if there are no visitors
-                    }
-                });
-                $.each(wnt.revenue.cafe_bars, function(index, item){
-                    if(wnt.revenue.visitors[index] !== undefined){
-                        wnt.revenue.cafe_bars[index].amount = wnt.revenue.cafe_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
-                    } else {
-                        wnt.revenue.cafe_bars[index].amount = 0;   // Set to 0 if there are no visitors
-                    }
-                });
-                $.each(wnt.revenue.gift_bars, function(index, item){
-                    if(wnt.revenue.visitors[index] !== undefined){
-                        wnt.revenue.gift_bars[index].amount = wnt.revenue.gift_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
-                    } else {
-                        wnt.revenue.gift_bars[index].amount = 0;   // Set to 0 if there are no visitors
-                    }
-                });
-                $.each(wnt.revenue.mem_bars, function(index, item){
-                    if(wnt.revenue.visitors[index] !== undefined){
-                        wnt.revenue.mem_bars[index].amount = wnt.revenue.mem_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
-                    } else {
-                        wnt.revenue.mem_bars[index].amount = 0;   // Set to 0 if there are no visitors
-                    }
-                });
-                // Set total_bars_amount array to per cap calculations
-                $.each(wnt.revenue.total_bars_amount, function(index, item){
-                    if(wnt.revenue.visitors[index] !== undefined){
-                        wnt.revenue.total_bars_amount[index] = wnt.revenue.total_bars_amount[index] / parseInt(wnt.revenue.visitors[index].units);
-                    } else {
-                        wnt.revenue.total_bars_amount[index] = 0;   // Set to 0 if there are no visitors
-                    }
-                });
-            }
-            wnt.revenue.total_bars_amount.max = d3.max(wnt.revenue.total_bars_amount);
+            self.calcPerCap();
             // Set Y-axis based on max value
-            self.changeYMarkers(wnt.revenue.total_bars_amount.max);
-            // TO DO: Process date versions too and not just week versions
+            self.changeYMarkers(d3.max(wnt.revenue.total_bars_amount));
             // Set barDates (relies on length of totals array, so must be set after data is received)
             wnt.barDates = [];
             wnt.revenue.total_bars.forEach(function(entry){
-                // IF IT'S A WEEK NUMBER VS NOT
                 var dateObj, dateStr;
                 if(wnt.barScope === 'week'){
                     dateObj = wnt.getWeekNumberDates(entry.period)[0];
@@ -447,19 +415,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 wnt.weatherPeriod = weather;
                 if(self.isMounted()) {
                     // LOOP THROUGH DATA TO CREATE ARRAYS
-                    var boxoffice = self.dataArray(result.box_bars, 'amount', self.state.days);
+                    var boxoffice = self.dataArray(wnt.revenue.box_bars, 'amount', self.state.days);
                     $.each(boxoffice, function(index, item){
                         boxoffice[index] = self.calcBarHeight(item);
                     });
-                    var cafe = self.dataArray(result.cafe_bars, 'amount', self.state.days);
+                    var cafe = self.dataArray(wnt.revenue.cafe_bars, 'amount', self.state.days);
                     $.each(cafe, function(index, item){
                         cafe[index] = self.calcBarHeight(item);
                     });
-                    var giftstore = self.dataArray(result.gift_bars, 'amount', self.state.days);
+                    var giftstore = self.dataArray(wnt.revenue.gift_bars, 'amount', self.state.days);
                     $.each(giftstore, function(index, item){
                         giftstore[index] = self.calcBarHeight(item);
                     });
-                    var membership = self.dataArray(result.mem_bars, 'amount', self.state.days);
+                    var membership = self.dataArray(wnt.revenue.mem_bars, 'amount', self.state.days);
                     $.each(membership, function(index, item){
                         membership[index] = self.calcBarHeight(item);
                     });
@@ -552,9 +520,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return data;
     },
     calcBarHeight: function(amount) {
-        // LEFT OFF HERE: Why are percap bars so short?  if there are no visitors for a day, set all other values to 0 since there can be no percap
-        console.log(amount);
-        var barSectionHeight = (amount / wnt.revenue.total_bars_amount.max) * $('#bar-graph').height();
+        var barSectionHeight = (amount / d3.max(wnt.revenue.total_bars_amount)) * $('#bar-graph').height();
         return barSectionHeight+'px';
     },
     calcBarWidth: function() {
@@ -587,6 +553,61 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             barPlacement = barPlacement + (barWidth * 2);
         });
     },
+    calcBarTotals: function(){
+        // box_bars for non-members and mem_bars for members
+        if(wnt.filterVisitors === 'members'){
+            wnt.revenue.box_bars = [];
+            wnt.revenue.gift_bars = wnt.revenue.gift_bars_members;
+            wnt.revenue.cafe_bars = wnt.revenue.cafe_bars_members;
+        } else if(wnt.filterVisitors === 'nonmembers'){
+            wnt.revenue.gift_bars = wnt.revenue.gift_bars_nonmembers;
+            wnt.revenue.cafe_bars = wnt.revenue.cafe_bars_nonmembers;
+            wnt.revenue.mem_bars = [];
+        }
+        wnt.revenue.total_bars_amount = wnt.revenue.total_bars.map(function(entry){
+            return parseInt(entry.amount);
+        });
+    },
+    calcPerCap: function(){
+        if(wnt.filterUnits === 'percap'){
+            $.each(wnt.revenue.box_bars, function(index, item){
+                if(wnt.revenue.visitors[index] !== undefined){
+                    wnt.revenue.box_bars[index].amount = wnt.revenue.box_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                } else {
+                    wnt.revenue.box_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                }
+            });
+            $.each(wnt.revenue.cafe_bars, function(index, item){
+                if(wnt.revenue.visitors[index] !== undefined){
+                    wnt.revenue.cafe_bars[index].amount = wnt.revenue.cafe_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                } else {
+                    wnt.revenue.cafe_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                }
+            });
+            $.each(wnt.revenue.gift_bars, function(index, item){
+                if(wnt.revenue.visitors[index] !== undefined){
+                    wnt.revenue.gift_bars[index].amount = wnt.revenue.gift_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                } else {
+                    wnt.revenue.gift_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                }
+            });
+            $.each(wnt.revenue.mem_bars, function(index, item){
+                if(wnt.revenue.visitors[index] !== undefined){
+                    wnt.revenue.mem_bars[index].amount = wnt.revenue.mem_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
+                } else {
+                    wnt.revenue.mem_bars[index].amount = 0;   // Set to 0 if there are no visitors
+                }
+            });
+            // Set total_bars_amount array to per cap calculations
+            $.each(wnt.revenue.total_bars_amount, function(index, item){
+                if(wnt.revenue.visitors[index] !== undefined){
+                    wnt.revenue.total_bars_amount[index] = wnt.revenue.total_bars_amount[index] / parseInt(wnt.revenue.visitors[index].units);
+                } else {
+                    wnt.revenue.total_bars_amount[index] = 0;   // Set to 0 if there are no visitors
+                }
+            });
+        }
+    },
     changeYMarkers: function(max) {
         var segment = Math.ceil(max / 4);
         // Minify numbers (e.g. 1000 = 1) and change Y-axis main label
@@ -611,7 +632,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // july 5 = 5/31 = 16.13% for slider value
     },
     calcChange: function(newstat, oldstat) {
-        // NEW!!! ... 3 ... AND OLD ... It's the same!
         var change = parseFloat(newstat) - parseFloat(oldstat);   // Calculate difference
         change = (change / newstat) * 100;   // Calculate percentage
         var direction = change < 0 ? "down" : "up";   // Test for negative or positive and set arrow direction
@@ -683,8 +703,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     formatSingleNumber: function(number){   // Used in bar set rollovers
         number = number.toString();
         if(wnt.filterUnits === 'percap'){
-            number = $.parseNumber(number, {format:"$#,###.#0", locale:"us"});
-            number = $.formatNumber(number, {format:"$#,###.#0", locale:"us"});
+            number = $.parseNumber(number, {format:"$#,##0.#0", locale:"us"});
+            number = $.formatNumber(number, {format:"$#,##0.#0", locale:"us"});
         } else {
             number = $.parseNumber(number, {format:"$#,###", locale:"us"});
             number = $.formatNumber(number, {format:"$#,###", locale:"us"});
@@ -700,145 +720,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         this.callAPI();
     },
     filterVisitors: function(event) {
-        // TO DO: Reset rollover data, RE-CALC Y-AXIS
-        // TO DO: Call API and move actions
+        // LEFT OFF HERE ... TO DO: Reset rollover data, RE-CALC Y-AXIS
         wnt.filterVisitors = event.target.value;
         this.callAPI();
-        event.target.blur();
-
-        var filter = event.target.value;
-        var self = this;
-        // Math.max(wnt.revenue.cafe[0].amount,wnt.revenue.cafe[1].amount,wnt.revenue.cafe[2].amount,wnt.revenue.cafe[3].amount,wnt.revenue.cafe[4].amount,wnt.revenue.cafe[5].amount,wnt.revenue.cafe[6].amount)
-        /*
-            $.each([ 52, 97 ], function( index, value ) {
-                alert( index + ": " + value );
-            });
-        */
-        var greatest = [];
-        $.each(wnt.revenue.box_bars, function(index, value){
-            greatest.push(value.amount);
-        });
-        greatest = Math.max.apply(null, greatest);
-
-        if(filter === 'totals'){
-            wnt.graphCap = 80000;
-            $('.bar-graph-label-y').show();
-            $('.y-marker').eq(0).attr('data-content','80');
-            $('.y-marker').eq(1).attr('data-content','60');
-            $('.y-marker').eq(2).attr('data-content','40');
-            $('.y-marker').eq(3).attr('data-content','20');
-            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
-            $.each(boxoffice, function(index, item){
-                    boxoffice[index] = self.calcBarHeight(item);
-            });
-            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
-            $.each(cafe, function(index, item){
-                    cafe[index] = self.calcBarHeight(item);
-            });
-            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
-            $.each(giftstore, function(index, item){
-                    giftstore[index] = self.calcBarHeight(item);
-            });
-            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
-            $.each(membership, function(index, item){
-                    membership[index] = self.calcBarHeight(item);
-            });
-            // SET STATE TO ARRAYS FOR RENDERING
-            this.setState({
-                boxofficeHeight: boxoffice,
-                cafeHeight: cafe,
-                giftstoreHeight: giftstore,
-                membershipHeight: membership
-            });
-        } else if(filter === 'members'){
-            // TEMPORARILY LOCALIZED since this is the largest area of $$$ for the graph cap
-            var greatest = [];
-            $.each(wnt.revenue.mem_bars, function(index, value){
-                greatest.push(value.amount);
-            });
-            greatest = Math.max.apply(null, greatest);   // Could use d3.max(greatest) instead
-            wnt.graphCap = Math.ceil(greatest / 1000) * 1000;
-            $('.y-marker').eq(0).attr('data-content','8');
-            $('.y-marker').eq(1).attr('data-content','6');
-            $('.y-marker').eq(2).attr('data-content','4');
-            $('.y-marker').eq(3).attr('data-content','2');
-            var cafe = this.dataArray(wnt.revenue.cafe_bars_members, 'amount', this.state.days);
-            $.each(cafe, function(index, item){
-                    cafe[index] = self.calcBarHeight(item);
-            });
-            var giftstore = this.dataArray(wnt.revenue.gift_bars_members, 'amount', this.state.days);
-            $.each(giftstore, function(index, item){
-                    giftstore[index] = self.calcBarHeight(item);
-            });
-            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
-            $.each(membership, function(index, item){
-                    membership[index] = self.calcBarHeight(item);
-            });
-            // SET STATE TO ARRAYS FOR RENDERING
-            this.setState({
-                boxofficeHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                cafeHeight: cafe,
-                giftstoreHeight: giftstore,
-                membershipHeight: membership
-            });
-        } else if(filter === 'nonmembers'){
-            wnt.graphCap = 80000;
-            $('.bar-graph-label-y').show();
-            $('.y-marker').eq(0).attr('data-content','80');
-            $('.y-marker').eq(1).attr('data-content','60');
-            $('.y-marker').eq(2).attr('data-content','40');
-            $('.y-marker').eq(3).attr('data-content','20');
-
-            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
-            $.each(boxoffice, function(index, item){
-                    boxoffice[index] = self.calcBarHeight(item);
-            });
-            var cafe = this.dataArray(wnt.revenue.cafe_bars_nonmembers, 'amount', this.state.days);
-            $.each(cafe, function(index, item){
-                    cafe[index] = self.calcBarHeight(item);
-            });
-            var giftstore = this.dataArray(wnt.revenue.gift_bars_nonmembers, 'amount', this.state.days);
-            $.each(giftstore, function(index, item){
-                    giftstore[index] = self.calcBarHeight(item);
-            });
-            // SET STATE TO ARRAYS FOR RENDERING
-            this.setState({
-                boxofficeHeight: boxoffice,
-                cafeHeight: cafe,
-                giftstoreHeight: giftstore,
-                membershipHeight: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            });
-        } else {
-            wnt.graphCap = 80000;
-            $('.bar-graph-label-y').show();
-            $('.y-marker').eq(0).attr('data-content','80');
-            $('.y-marker').eq(1).attr('data-content','60');
-            $('.y-marker').eq(2).attr('data-content','40');
-            $('.y-marker').eq(3).attr('data-content','20');
-            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
-            $.each(boxoffice, function(index, item){
-                    boxoffice[index] = self.calcBarHeight(item);
-            });
-            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
-            $.each(cafe, function(index, item){
-                    cafe[index] = self.calcBarHeight(item);
-            });
-            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
-            $.each(giftstore, function(index, item){
-                    giftstore[index] = self.calcBarHeight(item);
-            });
-            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
-            $.each(membership, function(index, item){
-                    membership[index] = self.calcBarHeight(item);
-            });
-            // SET STATE TO ARRAYS FOR RENDERING
-            this.setState({
-                boxofficeHeight: boxoffice,
-                cafeHeight: cafe,
-                giftstoreHeight: giftstore,
-                membershipHeight: membership
-            });
-        }
         event.target.blur();
     },
     filterUnits: function(event) {
@@ -917,7 +801,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                 <option value="totals">Totals</option>
                                 <option value="members">Members</option>
                                 <option value="nonmembers">Non-members</option>
-                                <option value="custom">Custom</option>
                             </select>
                             <Caret className="filter-caret" />
                         </form>
