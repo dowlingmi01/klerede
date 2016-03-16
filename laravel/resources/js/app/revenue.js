@@ -609,7 +609,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
     },
     changeYMarkers: function(max) {
-        // LEFT OFF HERE ... Why isn't y-axis looking right with rollover amounts?
         var segment = wnt.filterUnits === 'percap' ? Math.round((max/4)*100)/100 : Math.ceil(max/4);
         // Minify numbers (e.g. 1000 = 1) and change Y-axis main label
         segment = segment > 999 ? (segment/1000).toFixed(0) : segment;
@@ -738,6 +737,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterChannels: function(event){
+        // LEFT OFF HERE ...
         // TO DO: Call API and move actions???
         // TO DO: Switch filter to set heights to '0'?, re-calc y-axis, only show 'non-zero' info in rollover unless the data really is zero.
 
