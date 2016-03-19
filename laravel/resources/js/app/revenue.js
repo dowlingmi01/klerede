@@ -35,12 +35,20 @@ var BarSet = React.createClass({
         var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+"</td><td>"+value+"</td></tr>" : '';
         return html;
     },
+    renderWeather: function(){
+        if(wnt.filterPeriod !== 'quarter'){
+            var weather = "<div class='popover-weather-10am'><img src='/img/"+this.props.icon1+".svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>"+this.props.summary1+"</div><div class='popover-temp'>"+this.props.temp1+"</div></div><div class='popover-weather-4pm'><img src='/img/"+this.props.icon2+".svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>"+this.props.summary2+"</div><div class='popover-temp'>"+this.props.temp2+"</div></div>";
+            return weather;
+        } else {
+            return '';
+        }
+    },
     render: function() {
         return (  // TO DO: MAKE POPOVER DATA INTO TABLES ... {"goalStatusText " + this.state.statusClass}
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<div class='popover-weather-bar'><div class='popover-date'>"+this.rolloverDate(this.props.date)+"</div><div class='popover-weather-10am'><img src='/img/"+this.props.icon1+".svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>"+this.props.summary1+"</div><div class='popover-temp'>"+this.props.temp1+"</div></div><div class='popover-weather-4pm'><img src='/img/"+this.props.icon2+".svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>"+this.props.summary2+"</div><div class='popover-temp'>"+this.props.temp2+"</div></div></div><table class='popover-data'>"+this.processLineItem(this.props.box, 'bo', 'Box Office')+this.processLineItem(this.props.cafe, 'c', 'Cafe')+this.processLineItem(this.props.gift, 'gs', 'Gift Store')+this.processLineItem(this.props.mem, 'm', 'Membership')+"</table>"} 
+                data-content={"<div class='popover-weather-bar'><div class='popover-date'>"+this.rolloverDate(this.props.date)+"</div>"+this.renderWeather()+"</div><table class='popover-data'>"+this.processLineItem(this.props.box, 'bo', 'Box Office')+this.processLineItem(this.props.cafe, 'c', 'Cafe')+this.processLineItem(this.props.gift, 'gs', 'Gift Store')+this.processLineItem(this.props.mem, 'm', 'Membership')+"</table>"} 
                 data-placement="auto"
                 data-trigger="click hover">
                 <div className="bar-section bar-section-boxoffice"></div>
