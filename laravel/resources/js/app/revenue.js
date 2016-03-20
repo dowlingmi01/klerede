@@ -133,81 +133,6 @@ var AccordionItemPlus = React.createClass({
     }
 });
 
-var WeatherBar = React.createClass({   // Weather API
-    // TO DO: Combine into main component and remove old API call
-    getInitialState: function() {
-        return {
-            icon: '',
-            temp: '',
-            description: ''
-        };
-    },
-    componentDidMount: function() {
-        $.get('http://api.openweathermap.org/data/2.5/weather', {
-            APPID: '86376bb7c673c089067f51ae70a6e79e',
-            units: 'imperial',
-            zip: wnt.venueZip
-        })
-        .done(function(result) {
-            wnt.weather = result;
-            if(this.isMounted()) {
-                this.setState({
-                    icon: '/img/'+result.weather[0].icon+'.svg',
-                    temp: Math.round(result.main.temp),
-                    description: result.weather[0].description
-                });
-            }
-            console.log('Weather data loaded...');
-        }.bind(this))   // .bind() gives context to 'this'
-        .fail(function(result) {
-            console.log('WEATHER DATA ERROR! ... ' + result.statusText);
-        });
-    },
-    componentDidUpdate: function(){
-        $('.weather-icon img').css('opacity','0')
-            .animate({
-                opacity: '1'
-            },
-            1500,
-            'easeInSine'
-        );
-        // Load weather data in revenue accordion
-        wnt.gettingWeatherData = $.Deferred();
-        wnt.weatherRange = wnt.getDateRange(wnt.filterDates, 'this week');
-        wnt.getWeather(wnt.weatherRange[0], wnt.weatherRange[1]);
-        $.when(wnt.gettingWeatherData).done(function(weather) {
-            if(weather.length > 0){   // Fallback for no weather data
-                $('.weather-period-title').html(wnt.longDate(weather[0].date)+' - '+wnt.longDate(weather[6].date));
-                /*$.each($('.weather-period'), function(index, item){
-                    $(item).find('.weather-period-label').html(wnt.shortDate(weather[index].date));
-                    $(item).find('img').attr('src', '/img/'+weather[index].icon_1+'.svg').css('opacity','0').animate({
-                            opacity: '1'
-                        },
-                        1500,
-                        'easeInSine'
-                    );
-                    $(item).find('.temp-10am').html(Math.round(weather[index].temp_1)+'&deg;');
-                    $(item).find('.temp-4pm').html(Math.round(weather[index].temp_2)+'&deg;');
-                });*/
-            }
-        });
-        /*$('.weather-period-set img').on('click', function () {
-            $(this).parent().find('.weather-details').show();
-        });
-        $('.weather-details').on('click', function () {
-            $(this).hide();
-        });*/
-    },
-    render: function() {
-        return (
-            <div className="weather-bar">
-                <div className="weather-period-title"></div>
-                <ActionMenu />
-            </div>
-        );
-    }
-});
-
 var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS) AND accordion details (NEW)
     getInitialState: function() {
         return {
@@ -588,6 +513,29 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // This works ... 0-100 ... SET POSITION OF SLIDER BASED ON DATE
         // july 5 = 5/31 = 16.13% for slider value
     },
+    setDateHeader: function(){
+        $('.weather-period-title').html(wnt.barDates[0]+' - '+wnt.barDates[wnt.barDates.length-1]);
+        console.log('SET DATE HEADER', wnt.filterPeriod, wnt.barScope);
+        var date = wnt.barDates[0];
+        if(date !== undefined){
+            var delimeter = date.indexOf('/') !== -1 ? '/' : '-';
+            date = date.split(delimeter);
+            date = new Date(date[0], date[1]-1, date[2]);
+            dow = Date.dayNames[date.getDay()];
+            d = date.getDate();
+            y = date.getFullYear();
+            m = Date.monthNames[date.getMonth()];
+            date2 = date.next().saturday();
+            d2 = date2.getDate();
+            m2 = Date.monthNames[date2.getMonth()];
+            if(wnt.filterPeriod === 'quarter'){
+                date = m.substring(0,3)+' '+d+' - '+m2.substring(0,3)+' '+d2+', '+y;
+            } else {
+                date = dow+', '+m+' '+d+', '+y;
+            }
+            console.log('DAAAAYYYYYYTTTEEE', date);   // LEFT OFF HERE: Getting dates formatted in accordion header
+        }
+    },
     calcChange: function(newstat, oldstat) {
         var change = parseFloat(newstat) - parseFloat(oldstat);   // Calculate difference
         change = (change / newstat) * 100;   // Calculate percentage
@@ -641,6 +589,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         this.calcBarWidth();
         this.animateBars();
         this.formatNumbers();
+        this.setDateHeader();
         $('.bar-set').popover({ container: 'body' });
     },
     formatNumbers: function(){
@@ -823,7 +772,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 </div>
                 <div className="col-xs-4 col-md-4 arrow-connector-left">
                     <div className="widget" id="earned-revenue">
-                        <WeatherBar />
+                        <div className="weather-bar">
+                            <div className="weather-period-title"></div>
+                            <ActionMenu />
+                        </div>
                         <h2>Earned Revenue</h2>
                         <ul id="revenue-accordion">
                             <AccordionItemPlus 
