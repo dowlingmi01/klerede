@@ -514,27 +514,24 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // july 5 = 5/31 = 16.13% for slider value
     },
     setDateHeader: function(){
-        $('.weather-period-title').html(wnt.barDates[0]+' - '+wnt.barDates[wnt.barDates.length-1]);
-        console.log('SET DATE HEADER', wnt.filterPeriod, wnt.barScope);
-        var date = wnt.barDates[0];
-        if(date !== undefined){
-            var delimeter = date.indexOf('/') !== -1 ? '/' : '-';
-            date = date.split(delimeter);
-            date = new Date(date[0], date[1]-1, date[2]);
-            dow = Date.dayNames[date.getDay()];
-            d = date.getDate();
-            y = date.getFullYear();
-            m = Date.monthNames[date.getMonth()];
-            date2 = date.next().saturday();
-            d2 = date2.getDate();
-            m2 = Date.monthNames[date2.getMonth()];
-            if(wnt.filterPeriod === 'quarter'){
-                date = m.substring(0,3)+' '+d+' - '+m2.substring(0,3)+' '+d2+', '+y;
-            } else {
-                date = dow+', '+m+' '+d+', '+y;
-            }
-            console.log('DAAAAYYYYYYTTTEEE', date);   // LEFT OFF HERE: Getting dates formatted in accordion header
+        var delimeter = wnt.barDates[0].indexOf('/') !== -1 ? '/' : '-';
+        var date1 = wnt.barDates[0].split(delimeter);
+        var date2 = wnt.barDates[wnt.barDates.length-1].split(delimeter);
+        date1 = new Date(date1[0], date1[1]-1, date1[2]);
+        date2 = new Date(date2[0], date2[1]-1, date2[2]);
+        d1 = date1.getDate();
+        y1 = date1.getFullYear();
+        m1 = Date.monthNames[date1.getMonth()];
+        d2 = date2.getDate();
+        y2 = date2.getFullYear();
+        m2 = Date.monthNames[date2.getMonth()];
+        var displayDate;
+        if(y1 === y2){
+            displayDate = m1.substring(0,3)+' '+d1+' - '+m2.substring(0,3)+' '+d2+', '+y2;
+        } else {
+            displayDate = m1.substring(0,3)+' '+d1+', '+y1+' - '+m2.substring(0,3)+' '+d2+', '+y2;
         }
+        $('.weather-period-title').html(displayDate);
     },
     calcChange: function(newstat, oldstat) {
         var change = parseFloat(newstat) - parseFloat(oldstat);   // Calculate difference

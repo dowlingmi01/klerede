@@ -61,7 +61,7 @@ var wnt = {
             dateObj = period[0] === 'last' ? dateObj.previous().sunday() : dateObj;
             dateRange.push(wnt.formatDate(dateObj));
             dateObj.next().saturday();
-            dateObj.next().saturday();   // Testing grabbing 2 weeks worth of data for slider
+            //dateObj.next().saturday();   // Testing grabbing 2 weeks worth of data for slider
             dateRange.push(wnt.formatDate(dateObj));
             return dateRange;
         } else if(period[1] === 'month'){
