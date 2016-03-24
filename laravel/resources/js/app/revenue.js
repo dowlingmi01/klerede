@@ -378,6 +378,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.filterPeriod = $('#bg-period').val();
         wnt.filterVisitors = $('#bg-visitors').val();
         wnt.filterUnits = $('#bg-units').val();
+        wnt.filterChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
         // Call method to load revenue and weather data
         this.callAPI();
     },
@@ -439,8 +440,30 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.revenue.cafe_bars = wnt.revenue.cafe_bars_nonmembers;
             wnt.revenue.mem_bars = [];
         }
+        // Create arrays of values for channels to be used in calculating total values based on channel filters
         wnt.revenue.total_bars_amount = wnt.revenue.total_bars.map(function(entry){
             return parseInt(entry.amount);
+        });
+        wnt.revenue.box_bars_amount = wnt.revenue.box_bars.map(function(entry){
+            return parseInt(entry.amount);
+        });
+        wnt.revenue.cafe_bars_amount = wnt.revenue.cafe_bars.map(function(entry){
+            return parseInt(entry.amount);
+        });
+        wnt.revenue.gift_bars_amount = wnt.revenue.gift_bars.map(function(entry){
+            return parseInt(entry.amount);
+        });
+        wnt.revenue.mem_bars_amount = wnt.revenue.mem_bars.map(function(entry){
+            return parseInt(entry.amount);
+        });
+        $.each(wnt.filterChannels, function(channel, value){
+            // If the channel is off, subtract it from the total_bars_amount...
+            if(value === 0){
+                wnt.revenue.total_bars_amount = wnt.revenue.total_bars_amount.map(function(entry, index){
+                    return parseInt(entry - wnt.revenue[channel+'_bars_amount'][index]);
+                });
+                wnt.revenue[channel+'_bars'] = [];
+            }
         });
     },
     calcPerCap: function(){
@@ -633,15 +656,18 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterChannels: function(event){
-        // LEFT OFF HERE ...
-        // TO DO: Call API and move actions???
-        // TO DO: Switch filter to set heights to '0'?, re-calc y-axis, only show 'non-zero' info in rollover unless the data really is zero.
-
+        // Change bars first...
         // Toggle the legend/filter checkmark
         $(event.target).closest('.bar-graph-legend-item').find('.legend-check-circle').toggleClass('active');
         // Legend items each have a data attribute for matching to their respective bar segments to toggle
         var filter = $(event.target).closest('.bar-graph-legend-item').data('segment');
         $('.'+filter).toggle();
+        // Set the global filter for processing in the API call
+        wnt.filterChannels = {};
+        $('.bar-graph-legend-item').each(function(i, item){
+            wnt.filterChannels[$(item).data('channel')] = $(item).find('.active').length;
+        });
+        this.callAPI();   // Needed to get rollovers updated properly
     },
     render: function(){
         // LOOP FOR BAR SETS
@@ -717,25 +743,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </form>
 
                         <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" onClick={this.filterChannels}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Box Office
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" onClick={this.filterChannels}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Cafe
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" onClick={this.filterChannels}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Gift Store
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" onClick={this.filterChannels}>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
