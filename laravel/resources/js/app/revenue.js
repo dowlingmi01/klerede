@@ -377,7 +377,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.filterDates = wnt.formatDate(new Date(wnt.filterDates));
         wnt.filterPeriod = $('#bg-period').val();
         wnt.filterVisitors = $('#bg-visitors').val();
-        wnt.filterUnits = $('#bg-units').val();
+        wnt.filterUnits = $('#bg-units .selected').data('value');
         wnt.filterChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
         // Call method to load revenue and weather data
         this.callAPI();
@@ -651,7 +651,13 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterUnits: function(event) {
-        wnt.filterUnits = event.target.value;
+        wnt.filterUnits = $(event.target).closest('.filter-units').data('value');
+        $.each($('#bg-units .filter-units'), function(index, item){
+            $(item).toggleClass('selected');
+        });
+        $.each($('#revenue .y-marker'), function(index, item){
+            $(item).toggleClass('percap');
+        });
         this.callAPI();
         event.target.blur();
     },
@@ -711,144 +717,151 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH datepicker PLUGIN
         return (
-            <div className="row">
-                <div className="col-xs-8 col-md-8">
-                    <div className="widget" id="revenue">
-                        <h2>Revenue</h2>
-                        <form id="filter-revenue-week">
-                            <select id="bg-period" className="form-control" onChange={this.filterPeriod}>
-                                <option value="week">Week containing</option>
-                                <option value="month">Month containing</option>
-                                <option value="quarter">Quarter containing</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                            <input type="text" id="datepicker" onFocus={this.filterDates} />
-                        </form>
+            <div>
+                <div className="row">
+                    <div className="col-xs-12 col-md-12">
+                        <div className="widget" id="revenue">
+                            <h2>Revenue</h2>
+                            <form id="filter-revenue-week">
+                                <select id="bg-period" className="form-control" onChange={this.filterPeriod}>
+                                    <option value="week">Week containing</option>
+                                    <option value="month">Month containing</option>
+                                    <option value="quarter">Quarter containing</option>
+                                </select>
+                                <Caret className="filter-caret" />
+                                <input type="text" id="datepicker" onFocus={this.filterDates} />
+                            </form>
 
-                        <form id="filter-revenue-section">
-                            <select id="bg-visitors" className="form-control" onChange={this.filterVisitors}>
-                                <option value="totals">Totals</option>
-                                <option value="members">Members</option>
-                                <option value="nonmembers">Non-members</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
+                            <form id="filter-revenue-section">
+                                <select id="bg-visitors" className="form-control" onChange={this.filterVisitors}>
+                                    <option value="totals">Totals</option>
+                                    <option value="members">Members</option>
+                                    <option value="nonmembers">Non-members</option>
+                                </select>
+                                <Caret className="filter-caret" />
+                            </form>
 
-                        <form id="filter-revenue-units">
-                            <select id="bg-units" className="form-control" onChange={this.filterUnits}>
-                                <option value="dollars">Dollars</option>
-                                <option value="percap">Per Cap</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
+                            <div id="bg-units" onClick={this.filterUnits}>
+                                <div data-value="dollars" className="filter-units selected">
+                                    Dollars
+                                    <div className="filter-highlight"></div>
+                                </div>
+                                <div data-value="percap" className="filter-units">
+                                    Per Cap
+                                    <div className="filter-highlight"></div>
+                                </div>
+                            </div>
 
-                        <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
-                                <div className="legend-check-circle active">
-                                    <CheckMark className="legend-check" />
+                            <div className="bar-graph-legend">
+                                <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
+                                    <div className="legend-check-circle active">
+                                        <CheckMark className="legend-check" />
+                                    </div>
+                                    Box Office
                                 </div>
-                                Box Office
-                            </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
-                                <div className="legend-check-circle active">
-                                    <CheckMark className="legend-check" />
+                                <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
+                                    <div className="legend-check-circle active">
+                                        <CheckMark className="legend-check" />
+                                    </div>
+                                    Cafe
                                 </div>
-                                Cafe
-                            </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
-                                <div className="legend-check-circle active">
-                                    <CheckMark className="legend-check" />
+                                <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
+                                    <div className="legend-check-circle active">
+                                        <CheckMark className="legend-check" />
+                                    </div>
+                                    Gift Store
                                 </div>
-                                Gift Store
-                            </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
-                                <div className="legend-check-circle active">
-                                    <CheckMark className="legend-check" />
+                                <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
+                                    <div className="legend-check-circle active">
+                                        <CheckMark className="legend-check" />
+                                    </div>
+                                    Membership
                                 </div>
-                                Membership
                             </div>
+
+                            <div id="bar-graph-scroll-pane">
+                                <div id="bar-graph-y">
+                                    <div className="y-marker" data-content="80"></div>
+                                    <div className="y-marker" data-content="60"></div>
+                                    <div className="y-marker" data-content="40"></div>
+                                    <div className="y-marker" data-content="20"></div>
+                                    <div className="bar-graph-label-y">Thousands</div>
+                                </div>
+                                <div id="bar-graph">
+                                    {bars}
+                                    <div className="bar-line"></div>
+                                    <div className="bar-line"></div>
+                                    <div className="bar-line"></div>
+                                    <div className="bar-line"></div>
+                                    <div className="bar-graph-Note"><NoteIcon /></div>
+                                    <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
+                                </div>
+                                <div className="scroll-bar-wrap ui-widget-content ui-corner-bottom">
+                                    <div className="bar-graph-slider scroll-bar" id="bar-graph-slider"></div>
+                                </div>
+                            </div>
+
                         </div>
-
-                        <div id="bar-graph-scroll-pane">
-                            <div id="bar-graph-y">
-                                <div className="y-marker" data-content="80"></div>
-                                <div className="y-marker" data-content="60"></div>
-                                <div className="y-marker" data-content="40"></div>
-                                <div className="y-marker" data-content="20"></div>
-                                <div className="bar-graph-label-y">Thousands</div>
-                            </div>
-                            <div id="bar-graph">
-                                {bars}
-                                <div className="bar-line"></div>
-                                <div className="bar-line"></div>
-                                <div className="bar-line"></div>
-                                <div className="bar-line"></div>
-                                <div className="bar-graph-Note"><NoteIcon /></div>
-                                <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
-                            </div>
-                            <div className="scroll-bar-wrap ui-widget-content ui-corner-bottom">
-                                <div className="bar-graph-slider scroll-bar" id="bar-graph-slider"></div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-                <div className="col-xs-4 col-md-4 arrow-connector-left">
-                    <div className="widget" id="earned-revenue">
-                        <div className="weather-bar">
-                            <div className="weather-period-title"></div>
-                            <ActionMenu />
+                <div className="row">
+                    <div className="col-xs-12 col-md-12 arrow-connector-left">
+                        <div className="widget" id="earned-revenue">
+                            <div className="weather-bar">
+                                <div className="weather-period-title"></div>
+                                <ActionMenu />
+                            </div>
+                            <h2>Earned Revenue</h2>
+                            <ul id="revenue-accordion">
+                                <AccordionItemPlus 
+                                    className="box-office"
+                                    label="Box Office Total"
+
+                                    stat={this.state.boxofficeNow}
+                                    statChange={this.state.boxofficeChange[0]}
+                                    arrow={this.state.boxofficeChange[1]}
+                                    comparedTo={this.state.boxofficeThen}
+
+                                    statON={this.state.boxofficeNowON}
+                                    statChangeON={this.state.boxofficeChangeON[0]}
+                                    arrowON={this.state.boxofficeChangeON[1]}
+                                    comparedToON={this.state.boxofficeThenON}
+
+                                    statOFF={this.state.boxofficeNowOFF}
+                                    statChangeOFF={this.state.boxofficeChangeOFF[0]}
+                                    arrowOFF={this.state.boxofficeChangeOFF[1]}
+                                    comparedToOFF={this.state.boxofficeThenOFF} />
+
+                                <AccordionItem
+                                    className="groups"
+                                    label="Groups"
+                                    stat={this.state.groupsNow}
+                                    statChange={this.state.groupsChange[0]}
+                                    arrow={this.state.groupsChange[1]}
+                                    comparedTo={this.state.groupsThen} />
+                                <AccordionItem
+                                    className="cafe"
+                                    label="Cafe Total"
+                                    stat={this.state.cafeNow}
+                                    statChange={this.state.cafeChange[0]}
+                                    arrow={this.state.cafeChange[1]}
+                                    comparedTo={this.state.cafeThen} />
+                                <AccordionItem
+                                    className="gift-store"
+                                    label="Gift Store Total"
+                                    stat={this.state.giftstoreNow}
+                                    statChange={this.state.giftstoreChange[0]}
+                                    arrow={this.state.giftstoreChange[1]}
+                                    comparedTo={this.state.giftstoreThen} />
+                                <AccordionItem
+                                    className="membership"
+                                    label="Membership"
+                                    stat={this.state.membershipNow}
+                                    statChange={this.state.membershipChange[0]}
+                                    arrow={this.state.membershipChange[1]}
+                                    comparedTo={this.state.membershipThen} />
+                            </ul>
                         </div>
-                        <h2>Earned Revenue</h2>
-                        <ul id="revenue-accordion">
-                            <AccordionItemPlus 
-                                className="box-office"
-                                label="Box Office Total"
-
-                                stat={this.state.boxofficeNow}
-                                statChange={this.state.boxofficeChange[0]}
-                                arrow={this.state.boxofficeChange[1]}
-                                comparedTo={this.state.boxofficeThen}
-
-                                statON={this.state.boxofficeNowON}
-                                statChangeON={this.state.boxofficeChangeON[0]}
-                                arrowON={this.state.boxofficeChangeON[1]}
-                                comparedToON={this.state.boxofficeThenON}
-
-                                statOFF={this.state.boxofficeNowOFF}
-                                statChangeOFF={this.state.boxofficeChangeOFF[0]}
-                                arrowOFF={this.state.boxofficeChangeOFF[1]}
-                                comparedToOFF={this.state.boxofficeThenOFF} />
-
-                            <AccordionItem
-                                className="groups"
-                                label="Groups"
-                                stat={this.state.groupsNow}
-                                statChange={this.state.groupsChange[0]}
-                                arrow={this.state.groupsChange[1]}
-                                comparedTo={this.state.groupsThen} />
-                            <AccordionItem
-                                className="cafe"
-                                label="Cafe Total"
-                                stat={this.state.cafeNow}
-                                statChange={this.state.cafeChange[0]}
-                                arrow={this.state.cafeChange[1]}
-                                comparedTo={this.state.cafeThen} />
-                            <AccordionItem
-                                className="gift-store"
-                                label="Gift Store Total"
-                                stat={this.state.giftstoreNow}
-                                statChange={this.state.giftstoreChange[0]}
-                                arrow={this.state.giftstoreChange[1]}
-                                comparedTo={this.state.giftstoreThen} />
-                            <AccordionItem
-                                className="membership"
-                                label="Membership"
-                                stat={this.state.membershipNow}
-                                statChange={this.state.membershipChange[0]}
-                                arrow={this.state.membershipChange[1]}
-                                comparedTo={this.state.membershipThen} />
-                        </ul>
                     </div>
                 </div>
             </div>

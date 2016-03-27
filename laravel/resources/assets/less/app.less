@@ -34,7 +34,7 @@ body, p, td, label, .checkbox label {
 @darkpurple2: rgba(76,4,67,1);
 @mediumpurple: rgba(112,27,125,1);
 @lightpurple: rgba(176,141,181,1);
-@teal: rgba(35,145,146,1);
+@teal: rgba(35,145,146,1); 
 @cobalt: rgba(52,62,112,1);
 @rust: rgba(141,55,8,1);
 @slateblue: rgba(156,186,204,1);
@@ -46,6 +46,11 @@ body, p, td, label, .checkbox label {
 @yellowgreen: yellowgreen;
 @orange: rgba(241,135,13,1);
 @red: rgba(173,29,14,1);
+
+@boxoffice: rgba(69,90,133,1);
+@cafe: rgba(90,163,163,1);
+@giftstore: rgba(178,202,19,1);
+@membership: rgba(76,27,97,1);
 
 @grid-gutter-width: 15px;
 
@@ -608,7 +613,7 @@ header {
 }
 #revenue,
 #earned-revenue {
-    height: 530px;  /* 675px */
+    height: 490px;  /* 675px */
 }
 .widget#earned-revenue {
     padding: 0;
@@ -709,12 +714,31 @@ header {
         width: 11px;
     }
 }
-#filter-revenue-units {
+.filter-highlight {
+    background-color: @gold;
+    display: none;
+    height: 3px;
+    left: 50%;
+    position: relative;
+    transform: translateX(-50%);
+    width: 33px;
+}
+.selected .filter-highlight {
+    display: block;
+}
+#bg-units {
     clear: both;
     display: inline-block;
     float: left;
     margin-top: 10px;
     position: relative;
+    .filter-units {
+        cursor: pointer;
+        float: left;
+        margin-left: 10px;
+        padding-right: 20px;
+        text-transform: uppercase;        
+    }
     .form-control {
         padding-right: 30px;
         width: auto;
@@ -737,6 +761,7 @@ header {
 .line-graph-legend {
     float: right;
     margin-top: 10px;
+    text-transform: uppercase;
     .bar-graph-legend-item,
     .line-graph-legend-item {
         float: left;
@@ -746,10 +771,10 @@ header {
             padding: 3px 10px 0 3px;
         }
     }
-    .bar-graph-legend-item:nth-child(1) .legend-check-circle { background-color: @cobalt; }
-    .bar-graph-legend-item:nth-child(2) .legend-check-circle { background-color: @teal }
-    .bar-graph-legend-item:nth-child(3) .legend-check-circle { background-color: @aqua; }
-    .bar-graph-legend-item:nth-child(4) .legend-check-circle { background-color: @gold; }
+    .bar-graph-legend-item:nth-child(1) .legend-check-circle { background-color: @boxoffice; }
+    .bar-graph-legend-item:nth-child(2) .legend-check-circle { background-color: @cafe }
+    .bar-graph-legend-item:nth-child(3) .legend-check-circle { background-color: @giftstore; }
+    .bar-graph-legend-item:nth-child(4) .legend-check-circle { background-color: @membership; }
     .line-graph-legend-item:nth-child(1) .legend-check-circle { background-color: @darkpurple2; }
     .line-graph-legend-item:nth-child(2) .legend-check-circle { background-color: @mediumpurple }
     .line-graph-legend-item:nth-child(3) .legend-check-circle { background-color: @lightpurple; }
@@ -809,7 +834,7 @@ body > .popover {
         padding: 0;
     }
     .legend-circle-bo {
-        background-color: @cobalt;
+        background-color: @boxoffice;
         border-radius: 5px;
         clear: both;
         float: left;
@@ -817,7 +842,7 @@ body > .popover {
         width: 10px;
     }
     .legend-circle-c {
-        background-color: @teal;
+        background-color: @cafe;
         border-radius: 5px;
         clear: both;
         float: left;
@@ -825,7 +850,7 @@ body > .popover {
         width: 10px;
     }
     .legend-circle-gs {
-        background-color: @aqua;
+        background-color: @giftstore;
         border-radius: 5px;
         clear: both;
         float: left;
@@ -833,7 +858,7 @@ body > .popover {
         width: 10px;
     }
     .legend-circle-m {
-        background-color: @gold;
+        background-color: @membership;
         border-radius: 5px;
         clear: both;
         float: left;
@@ -915,6 +940,9 @@ body > .popover.top>.arrow:after {
     position: relative;
     top: -10px;
 }
+.percap.y-marker:before {
+    left: -30px;
+}
 .y-marker:nth-child(2) { top: 25%; }
 .y-marker:nth-child(3) { top: 50%; }
 .y-marker:nth-child(4) { top: 75%; }
@@ -939,16 +967,16 @@ body > .popover.top>.arrow:after {
     width: 100%;
 }
 .bar-section:nth-child(1) {
-    background-color: @cobalt;
+    background-color: @boxoffice;
 }
 .bar-section:nth-child(2) {
-    background-color: @teal;
+    background-color: @cafe;
 }
 .bar-section:nth-child(3) {
-    background-color: @aqua;
+    background-color: @giftstore;
 }
 .bar-section:nth-child(4) {
-    background-color: @gold;
+    background-color: @membership;
 }
 .bar-graph-label-y {
     font-size: 80%;
@@ -1168,9 +1196,9 @@ body > .popover.top>.arrow:after {
     }
     .notes { color: @darkgrey; }
     .box-office{
-        color: @cobalt;
+        color: @boxoffice;
         .change path {
-            fill: @cobalt;
+            fill: @boxoffice;
         }
     }
     .groups {
@@ -1180,21 +1208,21 @@ body > .popover.top>.arrow:after {
         }
     }
     .cafe {
-        color: @teal;
+        color: @cafe;
         .change path {
-            fill: @teal;
+            fill: @cafe;
         }
     }
     .gift-store {
-        color: @aqua;
+        color: @giftstore;
         .change path {
-            fill: @aqua;
+            fill: @giftstore;
         }
     }
     .membership {
-        color: @gold;
+        color: @membership;
         .change path {
-            fill: @gold;
+            fill: @membership;
         }
     }
 }
