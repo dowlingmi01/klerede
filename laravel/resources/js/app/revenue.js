@@ -717,96 +717,90 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH datepicker PLUGIN
         return (
-            <div>
-                <div className="row">
-                    <div className="col-xs-12 col-md-12">
-                        <div className="widget" id="revenue">
-                            <h2>Revenue</h2>
-                            <form id="filter-revenue-week">
-                                <select id="bg-period" className="form-control" onChange={this.filterPeriod}>
-                                    <option value="week">Week containing</option>
-                                    <option value="month">Month containing</option>
-                                    <option value="quarter">Quarter containing</option>
-                                </select>
-                                <Caret className="filter-caret" />
-                                <input type="text" id="datepicker" onFocus={this.filterDates} />
-                            </form>
+            <div className="row">
+                <div className="col-xs-12 col-md-12">
+                    <div className="widget" id="revenue">
+                        <h2>Revenue</h2>
+                        <form id="filter-revenue-week">
+                            <select id="bg-period" className="form-control" onChange={this.filterPeriod}>
+                                <option value="week">Week containing</option>
+                                <option value="month">Month containing</option>
+                                <option value="quarter">Quarter containing</option>
+                            </select>
+                            <Caret className="filter-caret" />
+                            <input type="text" id="datepicker" onFocus={this.filterDates} />
+                        </form>
 
-                            <form id="filter-revenue-section">
-                                <select id="bg-visitors" className="form-control" onChange={this.filterVisitors}>
-                                    <option value="totals">Totals</option>
-                                    <option value="members">Members</option>
-                                    <option value="nonmembers">Non-members</option>
-                                </select>
-                                <Caret className="filter-caret" />
-                            </form>
+                        <form id="filter-revenue-section">
+                            <select id="bg-visitors" className="form-control" onChange={this.filterVisitors}>
+                                <option value="totals">Totals</option>
+                                <option value="members">Members</option>
+                                <option value="nonmembers">Non-members</option>
+                            </select>
+                            <Caret className="filter-caret" />
+                        </form>
 
-                            <div id="bg-units" onClick={this.filterUnits}>
-                                <div data-value="dollars" className="filter-units selected">
-                                    Dollars
-                                    <div className="filter-highlight"></div>
-                                </div>
-                                <div data-value="percap" className="filter-units">
-                                    Per Cap
-                                    <div className="filter-highlight"></div>
-                                </div>
+                        <div id="bg-units" onClick={this.filterUnits}>
+                            <div data-value="dollars" className="filter-units selected">
+                                Dollars
+                                <div className="filter-highlight"></div>
                             </div>
-
-                            <div className="bar-graph-legend">
-                                <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
-                                    <div className="legend-check-circle active">
-                                        <CheckMark className="legend-check" />
-                                    </div>
-                                    Box Office
-                                </div>
-                                <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
-                                    <div className="legend-check-circle active">
-                                        <CheckMark className="legend-check" />
-                                    </div>
-                                    Cafe
-                                </div>
-                                <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
-                                    <div className="legend-check-circle active">
-                                        <CheckMark className="legend-check" />
-                                    </div>
-                                    Gift Store
-                                </div>
-                                <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
-                                    <div className="legend-check-circle active">
-                                        <CheckMark className="legend-check" />
-                                    </div>
-                                    Membership
-                                </div>
+                            <div data-value="percap" className="filter-units">
+                                Per Cap
+                                <div className="filter-highlight"></div>
                             </div>
-
-                            <div id="bar-graph-scroll-pane">
-                                <div id="bar-graph-y">
-                                    <div className="y-marker" data-content="80"></div>
-                                    <div className="y-marker" data-content="60"></div>
-                                    <div className="y-marker" data-content="40"></div>
-                                    <div className="y-marker" data-content="20"></div>
-                                    <div className="bar-graph-label-y">Thousands</div>
-                                </div>
-                                <div id="bar-graph">
-                                    {bars}
-                                    <div className="bar-line"></div>
-                                    <div className="bar-line"></div>
-                                    <div className="bar-line"></div>
-                                    <div className="bar-line"></div>
-                                    <div className="bar-graph-Note"><NoteIcon /></div>
-                                    <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
-                                </div>
-                                <div className="scroll-bar-wrap ui-widget-content ui-corner-bottom">
-                                    <div className="bar-graph-slider scroll-bar" id="bar-graph-slider"></div>
-                                </div>
-                            </div>
-
                         </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-xs-12 col-md-12 arrow-connector-left">
-                        <div className="widget" id="earned-revenue">
+
+                        <div className="bar-graph-legend">
+                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Box Office
+                            </div>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Cafe
+                            </div>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Gift Store
+                            </div>
+                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
+                                <div className="legend-check-circle active">
+                                    <CheckMark className="legend-check" />
+                                </div>
+                                Membership
+                            </div>
+                        </div>
+
+                        <div id="bar-graph-scroll-pane">
+                            <div id="bar-graph-y">
+                                <div className="y-marker" data-content="80"></div>
+                                <div className="y-marker" data-content="60"></div>
+                                <div className="y-marker" data-content="40"></div>
+                                <div className="y-marker" data-content="20"></div>
+                                <div className="bar-graph-label-y">Thousands</div>
+                            </div>
+                            <div id="bar-graph">
+                                {bars}
+                                <div className="bar-line"></div>
+                                <div className="bar-line"></div>
+                                <div className="bar-line"></div>
+                                <div className="bar-line"></div>
+                                <div className="bar-graph-Note"><NoteIcon /></div>
+                                <div className="bar-graph-label-projected"><div className="legend-projected"></div> Projected</div>
+                            </div>
+                            <div className="scroll-bar-wrap ui-widget-content ui-corner-bottom">
+                                <div className="bar-graph-slider scroll-bar" id="bar-graph-slider"></div>
+                            </div>
+                        </div>
+
+                        <div id="earned-revenue">
                             <div className="weather-bar">
                                 <div className="weather-period-title"></div>
                                 <ActionMenu />
@@ -831,7 +825,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     statChangeOFF={this.state.boxofficeChangeOFF[0]}
                                     arrowOFF={this.state.boxofficeChangeOFF[1]}
                                     comparedToOFF={this.state.boxofficeThenOFF} />
-
                                 <AccordionItem
                                     className="groups"
                                     label="Groups"
@@ -862,6 +855,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.membershipThen} />
                             </ul>
                         </div>
+
                     </div>
                 </div>
             </div>
