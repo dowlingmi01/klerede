@@ -582,6 +582,8 @@ header {
     }
 }
 #earned-revenue {
+    margin-top: 10px;
+    min-height: 0;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -1138,11 +1140,9 @@ body > .popover.top>.arrow:after {
 }
 /******** WEATHER AND ACCORDION ********/
 .weather-bar {
-    background-color: @lightblue;
     .weather-period-title {
-        background-color: @mediumblue;
-        font-size: 150%;
-        font-weight: 600;
+        font-size: 140%;
+        font-weight: 400;
         padding: 7px;
     }
     .weather-period-set {
@@ -1209,9 +1209,23 @@ body > .popover.top>.arrow:after {
         list-style: none;
         padding: 0;
     }
+    .accordion-stat-label {
+        color: @darkgrey;
+        font-size: 90%;
+        text-transform: uppercase;
+    }
+    .accordion-stat-label,
+    .accordion-change,
+    .accordion-compare {
+        border-right: 1px solid @lightgrey;
+        margin-bottom: 0;
+    }
+    .accordion-compare {
+        border-right: none;
+    }
     .accordion-stat,
     .accordion-stat-change {
-        font-size: 130%;
+        font-size: 100%;
         font-weight: 600;
         margin-right: 10px;
     }
@@ -1236,26 +1250,30 @@ body > .popover.top>.arrow:after {
     .open > svg {
         transform: rotate(0deg);
     }
-    li {
-        border-top: 1px solid @lightgrey;
+    .accordion-item {
         cursor: pointer;
+        float: left;
         font-size: 130%;
-        margin: 0 10px;
+        padding: 5px 15px 0 15px;
+        .row {
+            border-top: 1px solid @darkgrey;
+            margin-bottom: 0;
+            padding-top: 8px;
+        }
         li {
             margin: 10px 0 0 0;
         }
-        padding: 10px 15px;
         .long-arrow {
             height: 9px;
             margin-right: 5px;
             width: 20px;
         }
         .change {
-            height: 24px;
+            height: 18px;
             margin-right: 5px;
             position: relative;
-            top: 6px;
-            width: 20px;
+            top: 3px;
+            width: 15px;
         }
         .down {
             transform: rotate(180deg);

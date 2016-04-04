@@ -62,23 +62,24 @@ var BarSet = React.createClass({
 });
 
 var AccordionItem = React.createClass({
-    toggleAccordion: function(event){
-        // Turn caret and hide/show content
-        $(event.target).closest('.accordion-item').toggleClass('open').find('ul').eq(0).toggle();
-    },
     render: function() {
         return (
-            <li className={this.props.className+" accordion-item"} onClick={this.toggleAccordion}>{this.props.label} <Caret className="accordion-caret" />
-                <ul className="accordion">
-                    <li>
+            <div className={this.props.className+" accordion-item col-md-6"}>
+                <div className="row">
+                    <div className="col-md-4 accordion-stat-label">
+                        {this.props.label}
+                    </div>
+                    <div className="col-md-3 accordion-change">
                         <ChangeArrow className={"change " + this.props.arrow} />
                         <span className="accordion-stat-change">{this.props.statChange}%</span>
+                    </div>
+                    <div className="col-md-5 accordion-compare">
                         <span className="accordion-stat">{this.props.stat}</span>
                         <LongArrow className="long-arrow" />
                         <span className="accordion-compared-to">{this.props.comparedTo}</span>
-                    </li>
-                </ul>
-            </li>
+                    </div>
+                </div>
+            </div>
         );
     }
 });
@@ -92,7 +93,7 @@ var AccordionItemPlus = React.createClass({
     },
     render: function() {
         return (
-            <li className={this.props.className+" accordion-item"} onClick={this.toggleAccordion}>{this.props.label} <Caret className="accordion-caret" />
+            <div className={this.props.className+" accordion-item col-md-6"} onClick={this.toggleAccordion}>{this.props.label} <Caret className="accordion-caret" />
                 <ul className="accordion">
                     <li>
                         <ChangeArrow className={"change " + this.props.arrow} />
@@ -128,7 +129,7 @@ var AccordionItemPlus = React.createClass({
                         </ul>
                     </li>
                 </ul>
-            </li>
+            </div>
         );
     }
 });
@@ -720,7 +721,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             <div className="row">
                 <div className="col-xs-12 col-md-12">
                     <div className="widget" id="revenue">
-                        <h2>Revenue</h2>
+                        <h2>Earned Revenue</h2>
                         <form id="filter-revenue-week">
                             <select id="bg-period" className="form-control" onChange={this.filterPeriod}>
                                 <option value="week">Week containing</option>
@@ -803,28 +804,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         <div id="earned-revenue">
                             <div className="weather-bar">
                                 <div className="weather-period-title"></div>
-                                <ActionMenu />
                             </div>
-                            <h2>Earned Revenue</h2>
-                            <ul id="revenue-accordion">
-                                <AccordionItemPlus 
-                                    className="box-office"
-                                    label="Box Office Total"
-
-                                    stat={this.state.boxofficeNow}
-                                    statChange={this.state.boxofficeChange[0]}
-                                    arrow={this.state.boxofficeChange[1]}
-                                    comparedTo={this.state.boxofficeThen}
-
-                                    statON={this.state.boxofficeNowON}
-                                    statChangeON={this.state.boxofficeChangeON[0]}
-                                    arrowON={this.state.boxofficeChangeON[1]}
-                                    comparedToON={this.state.boxofficeThenON}
-
-                                    statOFF={this.state.boxofficeNowOFF}
-                                    statChangeOFF={this.state.boxofficeChangeOFF[0]}
-                                    arrowOFF={this.state.boxofficeChangeOFF[1]}
-                                    comparedToOFF={this.state.boxofficeThenOFF} />
+                            <div id="revenue-accordion" className="row">
                                 <AccordionItem
                                     className="groups"
                                     label="Groups"
@@ -833,19 +814,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     arrow={this.state.groupsChange[1]}
                                     comparedTo={this.state.groupsThen} />
                                 <AccordionItem
-                                    className="cafe"
-                                    label="Cafe Total"
-                                    stat={this.state.cafeNow}
-                                    statChange={this.state.cafeChange[0]}
-                                    arrow={this.state.cafeChange[1]}
-                                    comparedTo={this.state.cafeThen} />
-                                <AccordionItem
                                     className="gift-store"
-                                    label="Gift Store Total"
+                                    label="Gift Store"
                                     stat={this.state.giftstoreNow}
                                     statChange={this.state.giftstoreChange[0]}
                                     arrow={this.state.giftstoreChange[1]}
                                     comparedTo={this.state.giftstoreThen} />
+                                <AccordionItem 
+                                    className="box-office"
+                                    label="Box Office"
+                                    stat={this.state.boxofficeNow}
+                                    statChange={this.state.boxofficeChange[0]}
+                                    arrow={this.state.boxofficeChange[1]}
+                                    comparedTo={this.state.boxofficeThen} />
                                 <AccordionItem
                                     className="membership"
                                     label="Membership"
@@ -853,7 +834,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     statChange={this.state.membershipChange[0]}
                                     arrow={this.state.membershipChange[1]}
                                     comparedTo={this.state.membershipThen} />
-                            </ul>
+                                <AccordionItem
+                                    className="cafe"
+                                    label="Cafe"
+                                    stat={this.state.cafeNow}
+                                    statChange={this.state.cafeChange[0]}
+                                    arrow={this.state.cafeChange[1]}
+                                    comparedTo={this.state.cafeThen} />
+                            </div>
                         </div>
 
                     </div>
