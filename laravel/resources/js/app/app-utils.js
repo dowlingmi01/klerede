@@ -409,6 +409,30 @@ $(function(){
     $('.accordion-sub-item').on('click', function(){
         $(this).toggleClass('open').find('ul').toggle();
     });
+    // Hide or show the settings modal
+    $('.user-wrapper').on('click', function(){
+        $('.user-name').toggleClass('active');
+        $('#utilities').toggleClass('active');
+    });
+    // Utility menu items
+    $('.utility').on('click', function(e){
+        var linkType = $(e.target).data('type');
+        var utility = $(e.target).data('utility');
+        if(linkType === 'page'){
+            window.location.href = utility;
+        } else if(linkType === 'modal'){
+            $('div[id="'+utility+'"]').toggleClass('active');
+        }
+    });
+    // Close the settings modal
+    $('#close-utilities').on('click', function(){
+        $('.user-name').removeClass('active');
+        $('#utilities').removeClass('active');
+    });
+    // Close the manage users modal
+    $('#close-users').on('click', function(){
+        $('#manage-users').removeClass('active');
+    });
 });
 
 console.log('App utilities loaded...');

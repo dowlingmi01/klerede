@@ -175,8 +175,11 @@ header {
             }
         }
         .utilities-wrapper {
+            cursor: pointer;
             display: inline-block;
+            position: relative;
             text-align: left;
+            top: -5px;
             @media (max-width: 767px) {
                 top: 0;
                 transform: translateY(0);
@@ -184,6 +187,21 @@ header {
             .user-name {
                 color: @gold;
                 font-size: 120%;
+                margin-right: 20px;
+            }
+            .utilities-caret {
+                height: 8px;
+                left: 5px;
+                position: relative;
+                transition: 0.5s;
+                transform: rotate(-90deg);
+                width: 12px;
+                path {
+                    fill: @white;
+                }
+            }
+            .user-name.active .utilities-caret {
+                transform: rotate(0deg);
             }
             .utilities {
                 display: inline-block;
@@ -204,9 +222,71 @@ header {
                 }
             }
         }
-        
     }
-
+}
+#utilities,
+#manage-users {
+    background-color: @black;
+    display: block;
+    height: 100vh;
+    overflow: hidden;
+    position: absolute;
+    right: -250px;
+    top: 108px;
+    transition: 0.5s;
+    width: 0;
+    z-index: 2000;
+    h3 {
+        color: @white;
+        font-size: 16px;
+        font-weight: 300;
+        margin: 0;
+        padding: 0 30px 20px 30px;
+        text-transform: uppercase;
+        .close {
+            color: @white;
+            cursor: pointer;
+            float: right;
+            font-size: 16px;
+            font-weight: 300;
+            opacity: 1;
+            text-shadow: none;
+        }
+    }
+    .utility {
+        border-top: 1px solid @darkgrey;
+        color: @white;
+        cursor: pointer;
+        margin: 0 30px;
+        padding: 10px;
+        a {
+            color: @white;
+        }
+        .utilities-caret {
+            float: right;
+            height: 8px;
+            transition: 0.5s;
+            transform: rotate(-90deg);
+            width: 12px;
+            path {
+                fill: @white;
+            }
+        }
+    }
+    .utility.last {
+        margin-bottom: 30px;
+    }
+}
+#manage-users {
+    background-color: @white;
+    h3 {
+        background-color: @black;
+    }
+}
+#utilities.active,
+#manage-users.active {
+    right: 0;
+    width: 250px;
 }
 /**********************/
 /******** MENU ********/
