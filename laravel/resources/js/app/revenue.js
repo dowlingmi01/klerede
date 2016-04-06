@@ -73,10 +73,14 @@ var AccordionItem = React.createClass({
                         <ChangeArrow className={"change " + this.props.arrow} />
                         <span className="accordion-stat-change">{this.props.statChange}%</span>
                     </div>
-                    <div className="col-md-5 accordion-compare">
-                        <span className="accordion-stat">{this.props.stat}</span>
-                        <LongArrow className="long-arrow" />
+                    <div className="col-md-2 accordion-compare">
                         <span className="accordion-compared-to">{this.props.comparedTo}</span>
+                    </div>
+                    <div className="col-md-1 accordion-compare">
+                        <LongArrow className="long-arrow" />
+                    </div>
+                    <div className="col-md-2 accordion-compare">
+                        <span className="accordion-stat">{this.props.stat}</span>
                     </div>
                 </div>
             </div>
@@ -217,24 +221,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
                             periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
 
-                            box_sum_online: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                                periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
-
-                                box_sum_online_prior: { specs: { type: 'sales', channel: 'gate', online: true }, 
-                                    periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-
-                            box_sum_offline: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                                periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
-
-                                box_sum_offline_prior: { specs: { type: 'sales', channel: 'gate', online: false }, 
-                                    periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-
-                    groups_sum: { specs: { type: 'sales', kinds: ['group'] }, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
-                        
-                        groups_sum_prior: { specs: { type: 'sales', kinds: ['group'] }, 
-                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-
                     cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
@@ -315,16 +301,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         boxofficeNow: result.box_sum.amount,
                         boxofficeThen: result.box_sum_prior.amount,
                         boxofficeChange: self.calcChange(result.box_sum.amount, result.box_sum_prior.amount),
-                        boxofficeNowON: result.box_sum_online.amount,
-                        boxofficeThenON: result.box_sum_online_prior.amount,
-                        boxofficeChangeON: self.calcChange(result.box_sum_online.amount, result.box_sum_online_prior.amount),
-                        boxofficeNowOFF: result.box_sum_offline.amount,
-                        boxofficeThenOFF: result.box_sum_offline_prior.amount,
-                        boxofficeChangeOFF: self.calcChange(result.box_sum_offline.amount, result.box_sum_offline_prior.amount),
-
-                        groupsNow: result.groups_sum.amount,
-                        groupsThen: result.groups_sum_prior.amount,
-                        groupsChange: self.calcChange(result.groups_sum.amount, result.groups_sum_prior.amount),
 
                         cafeNow: result.cafe_sum.amount,
                         cafeThen: result.cafe_sum_prior.amount,
@@ -806,20 +782,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                 <div className="weather-period-title"></div>
                             </div>
                             <div id="revenue-accordion" className="row">
-                                <AccordionItem
-                                    className="groups"
-                                    label="Groups"
-                                    stat={this.state.groupsNow}
-                                    statChange={this.state.groupsChange[0]}
-                                    arrow={this.state.groupsChange[1]}
-                                    comparedTo={this.state.groupsThen} />
-                                <AccordionItem
-                                    className="gift-store"
-                                    label="Gift Store"
-                                    stat={this.state.giftstoreNow}
-                                    statChange={this.state.giftstoreChange[0]}
-                                    arrow={this.state.giftstoreChange[1]}
-                                    comparedTo={this.state.giftstoreThen} />
                                 <AccordionItem 
                                     className="box-office"
                                     label="Box Office"
@@ -828,19 +790,26 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     arrow={this.state.boxofficeChange[1]}
                                     comparedTo={this.state.boxofficeThen} />
                                 <AccordionItem
-                                    className="membership"
-                                    label="Membership"
-                                    stat={this.state.membershipNow}
-                                    statChange={this.state.membershipChange[0]}
-                                    arrow={this.state.membershipChange[1]}
-                                    comparedTo={this.state.membershipThen} />
-                                <AccordionItem
                                     className="cafe"
                                     label="Cafe"
                                     stat={this.state.cafeNow}
                                     statChange={this.state.cafeChange[0]}
                                     arrow={this.state.cafeChange[1]}
                                     comparedTo={this.state.cafeThen} />
+                                <AccordionItem
+                                    className="gift-store"
+                                    label="Gift Store"
+                                    stat={this.state.giftstoreNow}
+                                    statChange={this.state.giftstoreChange[0]}
+                                    arrow={this.state.giftstoreChange[1]}
+                                    comparedTo={this.state.giftstoreThen} />
+                                <AccordionItem
+                                    className="membership"
+                                    label="Membership"
+                                    stat={this.state.membershipNow}
+                                    statChange={this.state.membershipChange[0]}
+                                    arrow={this.state.membershipChange[1]}
+                                    comparedTo={this.state.membershipThen} />
                             </div>
                         </div>
 
