@@ -582,6 +582,13 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             );
         });
     },
+    toggleDetails: function(event){
+        var handle = $(event.target).closest('.chart-handle');
+        var label = $(handle).find('.handle-label');
+        $('#earned-revenue').toggleClass('active');
+        $(handle).toggleClass('active');
+        $(handle).hasClass('active') ? $(label).text('Hide Chart') : $(label).text('Show Chart');
+    },
     componentDidUpdate: function(){
         this.calcBarWidth();
         this.animateBars();
@@ -615,8 +622,12 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return number;
     },
     filterPeriod: function(event){
+        // week, month, quarter
         wnt.filterPeriod = event.target.value;
+        // Set comparison filter in details
+        $('#bg-compare').val('prior-'+wnt.filterPeriod);   // Does NOT trigger other event!  :D
         this.callAPI();
+        event.target.blur();
     },
     filterDates: function(event) {
         wnt.filterDates = wnt.formatDate(new Date(event.target.value));
@@ -651,6 +662,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.filterChannels[$(item).data('channel')] = $(item).find('.active').length;
         });
         this.callAPI();   // Needed to get rollovers updated properly
+    },
+    filterCompare: function(event){
+        // LEFT OFF HERE:  It works!!!  Need to handle "year ago" scenarios for month and quarter
+        wnt.filterCompare = event.target.value;
+        wnt.filterPeriod = wnt.filterCompare.split('-')[1];
+        $('#bg-period').val(wnt.filterPeriod);
+        console.log('COMPARE CHANGED TO ...', wnt.filterCompare, 'PERIOD =', wnt.filterPeriod);
+        this.callAPI();
+        event.target.blur();
     },
     render: function(){
         // LOOP FOR BAR SETS
@@ -780,6 +800,16 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         <div id="earned-revenue">
                             <div className="weather-bar">
                                 <div className="weather-period-title"></div>
+                                <form id="filter-comparison">
+                                    <select id="bg-compare" className="form-control" onChange={this.filterCompare}>
+                                        <option value="prior-week">Compared to prior week</option>
+                                        <option value="prior-month">Compared to prior month</option>
+                                        <option value="lastyear-month">Compared to same month last year</option>
+                                        <option value="prior-quarter">Compared to prior quarter</option>
+                                        <option value="lastyear-quarter">Compared to same quarter last year</option>
+                                    </select>
+                                    <Caret className="filter-caret" />
+                                </form>
                             </div>
                             <div id="revenue-accordion" className="row">
                                 <AccordionItem 
@@ -812,7 +842,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.membershipThen} />
                             </div>
                         </div>
-
+                    </div>
+                    <div onClick={this.toggleDetails} className="chart-handle">
+                        <Caret className="handle-caret" /> <span className="handle-label">Show Chart</span>
                     </div>
                 </div>
             </div>

@@ -382,9 +382,13 @@ header {
 .filter-caret {
     height: 7px;
     position: absolute;
-    right: 20px;
+    right: 25px;
     top: 30px;
     width: 11px;
+}
+#filter-comparison .filter-caret {
+    right: 10px;
+    top: 15px;
 }
 #total-sales-goals,
 #total-membership-goals {
@@ -572,7 +576,9 @@ header {
         padding-right: 20px;
         transition: none;
         width: 180px;
-
+    }
+    #filter-comparison .form-control {
+        width: 240px;
     }
 }
 #total-sales-goals,
@@ -582,10 +588,15 @@ header {
     }
 }
 #earned-revenue {
+    height: 0;
     margin-top: 10px;
     min-height: 0;
     overflow-y: scroll;
     overflow-x: hidden;
+    transition: 0.5s;
+}
+#earned-revenue.active {
+    height: 125px;
 }
 .arrow-connector-right:after {
     border: solid transparent;
@@ -1141,6 +1152,7 @@ body > .popover.top>.arrow:after {
 /******** WEATHER AND ACCORDION ********/
 .weather-bar {
     .weather-period-title {
+        float: left;
         font-size: 140%;
         font-weight: 400;
         padding: 7px;
@@ -1203,6 +1215,7 @@ body > .popover.top>.arrow:after {
 }
 #revenue-accordion,
 .accordion {
+    clear: both;
     list-style: none;
     padding: 0;
     ul {
@@ -1320,6 +1333,31 @@ body > .popover.top>.arrow:after {
         .change path {
             fill: @membership;
         }
+    }
+}
+.chart-handle {
+    background-color: @white;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    cursor: pointer;
+    display: block;
+    left: 50%;
+    padding: 5px 0;
+    position: relative;
+    text-align: center;
+    text-transform: uppercase;
+    transform: translateX(-50%);
+    width: 150px;
+    svg {
+        height: 7px;
+        margin-right: 5px;
+        transition: 0.5s;
+        width: 11px;
+    }
+}
+.chart-handle.active {
+    svg {
+        transform: rotate(180deg);
     }
 }
 .widget {
