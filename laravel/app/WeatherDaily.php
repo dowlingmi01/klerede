@@ -9,6 +9,11 @@ class WeatherDaily extends Model {
 	protected $guarded = [];
 	protected $hidden = ['id', 'source'];
 
+	public function hours() {
+		return $this->hasMany('App\WeatherHourly');
+	}
+
+	static function getFor($venue_id, $date, $force = false, $reprocess = false) {
 	static function getFor($venue_id, $date, $force = false) {
 		$weather_daily = WeatherDaily::firstOrNew(['venue_id'=>$venue_id, 'date'=>$date]);
 		if($force || !$weather_daily->exists) {
