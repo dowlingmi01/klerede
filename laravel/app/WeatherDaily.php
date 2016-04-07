@@ -14,9 +14,8 @@ class WeatherDaily extends Model {
 	}
 
 	static function getFor($venue_id, $date, $force = false, $reprocess = false) {
-	static function getFor($venue_id, $date, $force = false) {
 		$weather_daily = WeatherDaily::firstOrNew(['venue_id'=>$venue_id, 'date'=>$date]);
-		if($force || !$weather_daily->exists) {
+		if($force || $reprocess || !$weather_daily->exists) {
 			$json = self::retrieveJSON($venue_id, $date, $force);
 			$data = json_decode($json);
 			$hours = ['1'=>10, '2'=>16];
@@ -91,11 +90,11 @@ class WeatherDaily extends Model {
 	static private function getCacheKeyFor($venue_id, $date) {
 		return sprintf('weather-%s-%s', $venue_id, $date);
 	}
-	static public function setAll($date, $force = false, Batch $batch = null) {
+	static public function setAll($date, $force = false, $reprocess = false, Batch $batch = null) {
 		$venues = Venue::all();
 		foreach($venues as $venue) {
 			try {
-				self::getFor($venue->id, $date, $force);
+				self::getFor($venue->id, $date, $force, $reprocess);
 			} catch( \Exception $e ) {
 				if($batch) {
 					$batch->warningExc($e);

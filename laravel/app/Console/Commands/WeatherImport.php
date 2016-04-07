@@ -42,7 +42,7 @@ class WeatherImport extends Command {
 	{
 		$batch = Batch::start($this->name, $this->argument());
 		$date = $this->argument('date');
-		WeatherDaily::setAll($date, $this->option('force'), $batch);
+		WeatherDaily::setAll($date, $this->option('force'), $this->option('reprocess'), $batch);
 		$batch->finish();
 	}
 
@@ -67,6 +67,7 @@ class WeatherImport extends Command {
 	{
 		return [
 			['force', null, InputOption::VALUE_NONE, 'Force retrieval regardless of cache state.', null],
+			['reprocess', null, InputOption::VALUE_NONE, 'Force reprocess of date respecting cache.', null],
 		];
 	}
 
