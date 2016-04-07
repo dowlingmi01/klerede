@@ -31,7 +31,23 @@ class WeatherDaily extends Model {
 				$weather_daily->{'icon_'.$num} = $hData->icon;
 			}
 			$weather_daily->source = $json;
+			if($weather_daily->exists) {
+				$weather_daily->hours()->delete();
+			}
 			$weather_daily->save();
+			for($hour = 0; $hour < 24; $hour++) {
+				if(!isset($data->hourly->data[$index]))
+					throw new \Exception(sprintf('Incomplete weather data for %d-%s', $venue_id, $date));
+				$hData = $data->hourly->data[$hour];
+				if(!isset($hData->temperature)||!isset($hData->summary)||!isset($hData->icon))
+					throw new \Exception(sprintf('Incomplete weather data for %d-%s', $venue_id, $date));
+				$hourly = new WeatherHourly();
+				$hourly->hour = $hour;
+				$hourly->temp = $hData->temperature;
+				$hourly->summary = $hData->summary;
+				$hourly->icon = $hData->icon;
+				$weather_daily->hours()->save($hourly);
+			}
 		} else {
 			$key = self::getCacheKeyFor($venue_id, $date);
 			if(!Cache::has($key)) {
