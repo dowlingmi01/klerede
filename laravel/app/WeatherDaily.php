@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 class WeatherDaily extends Model {
 	protected $table = 'weather_daily';
 	protected $guarded = [];
-	protected $hidden = ['id', 'source'];
+	protected $hidden = ['id', 'source', 'created_at', 'updated_at'];
 
 	public function hours() {
 		return $this->hasMany('App\WeatherHourly');
