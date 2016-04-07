@@ -587,7 +587,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         var label = $(handle).find('.handle-label');
         $('#earned-revenue').toggleClass('active');
         $(handle).toggleClass('active');
-        $(handle).hasClass('active') ? $(label).text('Hide Chart') : $(label).text('Show Chart');
+        $(handle).hasClass('active') ? $(label).text('Hide Details') : $(label).text('Show Details');
     },
     componentDidUpdate: function(){
         this.calcBarWidth();
@@ -844,7 +844,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </div>
                     </div>
                     <div onClick={this.toggleDetails} className="chart-handle">
-                        <Caret className="handle-caret" /> <span className="handle-label">Show Chart</span>
+                        <Caret className="handle-caret" /> <span className="handle-label">Show Details</span>
                     </div>
                 </div>
             </div>
