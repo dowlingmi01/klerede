@@ -56,14 +56,26 @@ class WeatherDaily extends Model {
 		return $weather_daily;
 	}
 	static function queryD($query) {
-		$dbquery = WeatherDaily::where('venue_id', $query->venue_id);
+		if($query->hourly) {
+			$dbquery = WeatherDaily::with('hours');
+		} else {
+			$dbquery = WeatherDaily::query();
+		}
+		$dbquery->where('venue_id', $query->venue_id);
 		if(isset($query->from)) {
 			$dbquery->whereBetween('date', [$query->from, $query->to]);
-			return $dbquery->get();
 		} else {
 			$dbquery->where('date', $query->date);
-			return $dbquery->get()[0];
 		}
+		$result = $dbquery->get();
+		if($query->hourly) {
+			foreach($result as &$day) {
+				$day->hours->keyBy('hour');
+			}
+		}
+		if(isset($query->from))
+			$result = $result[0];
+		return $result;
 	}
 	public function setDateAttribute($date) {
 		$this->attributes['date'] = $date;

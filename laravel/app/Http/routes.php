@@ -41,6 +41,10 @@ Route::group(['prefix'=>'api/v1'], function() {
 	});
 	Route::get('weather/query', function() {
 		$input = (object) Request::all();
+		if(isset($input->hourly))
+			$input->hourly = filter_var($input->hourly, FILTER_VALIDATE_BOOLEAN);
+		else
+			$input->hourly = false;
 		$result = WeatherDaily::queryD($input);
 		return Response::json($result);
 	});
