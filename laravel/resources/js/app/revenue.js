@@ -44,7 +44,7 @@ var BarSet = React.createClass({
         }
     },
     render: function() {
-        return (  // TO DO: MAKE POPOVER DATA INTO TABLES ... {"goalStatusText " + this.state.statusClass}
+        return (
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
@@ -162,7 +162,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     callAPI: function() {
         var self = this;
         var currentPeriod = wnt.getDateRange(wnt.filterDates, 'this '+wnt.filterPeriod);
-        var priorPeriod = wnt.getDateRange(wnt.filterDates, 'last '+wnt.filterPeriod);
+        var priorPeriod = wnt.getDateRange(wnt.filterDates, wnt.filterCompare+' '+wnt.filterPeriod);
         wnt.barScope = 'date';
         // Get week numbers for quarter data retrieval
         if(wnt.filterPeriod === 'quarter'){
@@ -353,6 +353,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // Switch format for filterDates to be used in weather API
         wnt.filterDates = wnt.formatDate(new Date(wnt.filterDates));
         wnt.filterPeriod = $('#bg-period').val();
+        wnt.filterCompare = 'last';
         wnt.filterVisitors = $('#bg-visitors').val();
         wnt.filterUnits = $('#bg-units .selected').data('value');
         wnt.filterChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
@@ -625,7 +626,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // week, month, quarter
         wnt.filterPeriod = event.target.value;
         // Set comparison filter in details
-        $('#bg-compare').val('prior-'+wnt.filterPeriod);   // Does NOT trigger other event!  :D
+        // Default to 'last' instead of 'lastyear'
+        wnt.filterCompare = 'last';
+        $('#bg-compare').val(wnt.filterCompare+'-'+wnt.filterPeriod);   // Does NOT trigger other event!  :D
         this.callAPI();
         event.target.blur();
     },
@@ -664,11 +667,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         this.callAPI();   // Needed to get rollovers updated properly
     },
     filterCompare: function(event){
-        // LEFT OFF HERE:  It works!!!  Need to handle "year ago" scenarios for month and quarter
         wnt.filterCompare = event.target.value;
         wnt.filterPeriod = wnt.filterCompare.split('-')[1];
+        wnt.filterCompare = wnt.filterCompare.split('-')[0];
         $('#bg-period').val(wnt.filterPeriod);
-        console.log('COMPARE CHANGED TO ...', wnt.filterCompare, 'PERIOD =', wnt.filterPeriod);
         this.callAPI();
         event.target.blur();
     },
@@ -802,10 +804,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                 <div className="weather-period-title"></div>
                                 <form id="filter-comparison">
                                     <select id="bg-compare" className="form-control" onChange={this.filterCompare}>
-                                        <option value="prior-week">Compared to prior week</option>
-                                        <option value="prior-month">Compared to prior month</option>
+                                        <option value="last-week">Compared to last week</option>
+                                        <option value="last-month">Compared to last month</option>
                                         <option value="lastyear-month">Compared to same month last year</option>
-                                        <option value="prior-quarter">Compared to prior quarter</option>
+                                        <option value="last-quarter">Compared to last quarter</option>
                                         <option value="lastyear-quarter">Compared to same quarter last year</option>
                                     </select>
                                     <Caret className="filter-caret" />

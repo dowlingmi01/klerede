@@ -50,7 +50,12 @@ var wnt = {
         return month;
     },
     getDateRange: function(dateStr, period) {
-        // period = ['last week', 'last month', 'last quarter', 'this week', 'this month', 'this quarter']
+        console.log('PERIOD!!!', period);
+        // period = [
+        //              'this week', 'this month', 'this quarter',
+        //              'last week', 'last month', 'last quarter',
+        //              'lastyear month', 'lastyear quarter'
+        //          ]
         // Returns array with two values, one for the start date and one for the end date ... ['yyyy-mm-dd','yyyy-mm-dd']
         var dateArray = wnt.dateArray(dateStr);   // Break dateStr into correct array of integers
         var dateRange = [];
@@ -66,7 +71,11 @@ var wnt = {
             return dateRange;
         } else if(period[1] === 'month'){
             dateObj.moveToFirstDayOfMonth();
-            dateObj = period[0] === 'last' ? dateObj.previous().month() : dateObj;
+            if(period[0] === 'last'){
+                dateObj.previous().month();
+            } else if(period[0] === 'lastyear'){
+                dateObj.previous().year();
+            }
             dateRange.push(wnt.formatDate(dateObj));
             dateObj.moveToLastDayOfMonth();
             dateRange.push(wnt.formatDate(dateObj));
@@ -78,16 +87,41 @@ var wnt = {
             var q3 = [new Date(year, 6, 1), new Date(year, 8, 30)];
             var q4 = [new Date(year, 9, 1), new Date(year, 11, 31)];
             if(dateObj.between(q1[0], q1[1])){
-                dateRange = period[0] === 'last' ? [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])] : [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])];
+                // dateRange = period[0] === 'last' ? [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])] : [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])];
+                if(period[0] === 'last'){
+                    dateRange = [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])];
+                } else if(period[0] === 'lastyear'){
+                    dateRange = [wnt.formatDate(q1[0].previous().year()), wnt.formatDate(q1[1].previous().year())];
+                } else {
+                    dateRange = [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])];
+                }
                 return dateRange;
             } else if(dateObj.between(q2[0], q2[1])) {
-                dateRange = period[0] === 'last' ? [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])] : [wnt.formatDate(q2[0]), wnt.formatDate(q2[1])];
+                if(period[0] === 'last'){
+                    dateRange = [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])];
+                } else if(period[0] === 'lastyear'){
+                    dateRange = [wnt.formatDate(q2[0].previous().year()), wnt.formatDate(q2[1].previous().year())];
+                } else {
+                    dateRange = [wnt.formatDate(q2[0]), wnt.formatDate(q2[1])];
+                }
                 return dateRange;
             } else if(dateObj.between(q3[0], q3[1])) {
-                dateRange = period[0] === 'last' ? [wnt.formatDate(q2[0]), wnt.formatDate(q2[1])] : [wnt.formatDate(q3[0]), wnt.formatDate(q3[1])];
+                if(period[0] === 'last'){
+                    dateRange = [wnt.formatDate(q2[0]), wnt.formatDate(q2[1])];
+                } else if(period[0] === 'lastyear'){
+                    dateRange = [wnt.formatDate(q3[0].previous().year()), wnt.formatDate(q3[1].previous().year())];
+                } else {
+                    dateRange = [wnt.formatDate(q3[0]), wnt.formatDate(q3[1])];
+                }
                 return dateRange;
             } else {
-                dateRange = period[0] === 'last' ? [wnt.formatDate(q3[0]), wnt.formatDate(q3[1])] : [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])];
+                if(period[0] === 'last'){
+                    dateRange = [wnt.formatDate(q3[0]), wnt.formatDate(q3[1])];
+                } else if(period[0] === 'lastyear'){
+                    dateRange = [wnt.formatDate(q4[0].previous().year()), wnt.formatDate(q4[1].previous().year())];
+                } else {
+                    dateRange = [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])];
+                }
                 return dateRange;
             }
         };
