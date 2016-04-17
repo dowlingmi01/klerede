@@ -1267,6 +1267,7 @@ body > .popover.top>.arrow:after {
     }
     .accordion-item {
         cursor: pointer;
+        display: none;
         float: left;
         font-size: 130%;
         padding: 5px 15px 0 15px;
@@ -1303,8 +1304,11 @@ body > .popover.top>.arrow:after {
             }
         }
     }
+    .accordion-item.active {
+        display: block;
+    }
     .notes { color: @darkgrey; }
-    .box-office{
+    .box{
         color: @boxoffice;
         .change path {
             fill: @boxoffice;
@@ -1322,13 +1326,13 @@ body > .popover.top>.arrow:after {
             fill: @cafe;
         }
     }
-    .gift-store {
+    .gift {
         color: @giftstore;
         .change path {
             fill: @giftstore;
         }
     }
-    .membership {
+    .mem {
         color: @membership;
         .change path {
             fill: @membership;

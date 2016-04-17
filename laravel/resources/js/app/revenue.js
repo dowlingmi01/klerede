@@ -64,7 +64,7 @@ var BarSet = React.createClass({
 var AccordionItem = React.createClass({
     render: function() {
         return (
-            <div className={this.props.className+" accordion-item col-md-6"}>
+            <div className={this.props.className+" accordion-item col-md-6 active"}>
                 <div className="row">
                     <div className="col-md-4 accordion-stat-label">
                         {this.props.label}
@@ -265,6 +265,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 }
                 wnt.barDates.push(dateStr);
             });
+            console.log('DATES FOR WEATHER API CALL =', wnt.barDates[0], wnt.barDates[wnt.barDates.length-1]);
             $.get(
                 wnt.apiWeather,
                 {
@@ -675,6 +676,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // Legend items each have a data attribute for matching to their respective bar segments to toggle
         var filter = $(event.target).closest('.bar-graph-legend-item').data('segment');
         $('.'+filter).toggle();
+        // Use channel data to hide or show matching accordion details
+        var channel = $(event.target).closest('.bar-graph-legend-item').data('channel');
+        $('.accordion-item.'+channel).toggleClass('active');
         // Set the global filter for processing in the API call
         wnt.filterChannels = {};
         $('.bar-graph-legend-item').each(function(i, item){
@@ -831,7 +835,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                             </div>
                             <div id="revenue-accordion" className="row">
                                 <AccordionItem 
-                                    className="box-office"
+                                    className="box"
                                     label="Box Office"
                                     stat={this.state.boxofficeNow}
                                     statChange={this.state.boxofficeChange[0]}
@@ -845,14 +849,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     arrow={this.state.cafeChange[1]}
                                     comparedTo={this.state.cafeThen} />
                                 <AccordionItem
-                                    className="gift-store"
+                                    className="gift"
                                     label="Gift Store"
                                     stat={this.state.giftstoreNow}
                                     statChange={this.state.giftstoreChange[0]}
                                     arrow={this.state.giftstoreChange[1]}
                                     comparedTo={this.state.giftstoreThen} />
                                 <AccordionItem
-                                    className="membership"
+                                    className="mem"
                                     label="Membership"
                                     stat={this.state.membershipNow}
                                     statChange={this.state.membershipChange[0]}

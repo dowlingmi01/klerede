@@ -13,9 +13,7 @@ var Attendance = React.createClass({
         };
     },
     callAPI: function(filter) {
-        console.log('API FILTER = '+filter);
         var period = (filter === 'lastyear') ? wnt.yesterdaylastyear : wnt.yesterday;
-        console.log('PERIOD = ' + period);
         var self = this;
         $.post(
             wnt.apiMain,

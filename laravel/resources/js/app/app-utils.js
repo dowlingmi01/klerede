@@ -50,7 +50,6 @@ var wnt = {
         return month;
     },
     getDateRange: function(dateStr, period) {
-        console.log('PERIOD!!!', period);
         // period = [
         //              'this week', 'this month', 'this quarter',
         //              'last week', 'last month', 'last quarter',
