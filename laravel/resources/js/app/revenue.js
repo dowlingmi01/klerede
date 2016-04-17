@@ -214,6 +214,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                     visitors: { specs: { type: 'visits' },
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
+                    visitors_sum: { specs: { type: 'visits' },
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
+
                     // Accordion data ...
                     box_sum: { specs: { type: 'sales', channel: 'gate' },
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
@@ -300,19 +303,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         // NEW FOR ACCORDION ...
                         boxofficeNow: result.box_sum.amount,
                         boxofficeThen: result.box_sum_prior.amount,
-                        boxofficeChange: self.calcChange(result.box_sum.amount, result.box_sum_prior.amount),
+                        boxofficeChange: self.calcChange(wnt.revenue.box_sum.amount, wnt.revenue.box_sum_prior.amount),
 
                         cafeNow: result.cafe_sum.amount,
                         cafeThen: result.cafe_sum_prior.amount,
-                        cafeChange: self.calcChange(result.cafe_sum.amount, result.cafe_sum_prior.amount),
+                        cafeChange: self.calcChange(wnt.revenue.cafe_sum.amount, wnt.revenue.cafe_sum_prior.amount),
 
                         giftstoreNow: result.gift_sum.amount,
                         giftstoreThen: result.gift_sum_prior.amount,
-                        giftstoreChange: self.calcChange(result.gift_sum.amount, result.gift_sum_prior.amount),
+                        giftstoreChange: self.calcChange(wnt.revenue.gift_sum.amount, wnt.revenue.gift_sum_prior.amount),
 
                         membershipNow: result.mem_sum.amount,
                         membershipThen: result.mem_sum_prior.amount,
-                        membershipChange: self.calcChange(result.mem_sum.amount, result.mem_sum_prior.amount),
+                        membershipChange: self.calcChange(wnt.revenue.mem_sum.amount, wnt.revenue.mem_sum_prior.amount),
 
                         weather: weather
                     });
@@ -446,6 +449,18 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     calcPerCap: function(){
         if(wnt.filterUnits === 'percap'){
+            // Accordion
+            if(wnt.revenue.visitors_sum !== undefined){
+                wnt.revenue.box_sum.amount = parseInt(wnt.revenue.box_sum.amount) / parseInt(wnt.revenue.visitors_sum.units);
+                wnt.revenue.box_sum_prior.amount = parseInt(wnt.revenue.box_sum_prior.amount) / parseInt(wnt.revenue.visitors_sum.units);
+                wnt.revenue.cafe_sum.amount = parseInt(wnt.revenue.cafe_sum.amount) / parseInt(wnt.revenue.visitors_sum.units);
+                wnt.revenue.cafe_sum_prior.amount = parseInt(wnt.revenue.cafe_sum_prior.amount) / parseInt(wnt.revenue.visitors_sum.units);
+                wnt.revenue.gift_sum.amount = parseInt(wnt.revenue.gift_sum.amount) / parseInt(wnt.revenue.visitors_sum.units);
+                wnt.revenue.gift_sum_prior.amount = parseInt(wnt.revenue.gift_sum_prior.amount) / parseInt(wnt.revenue.visitors_sum.units);
+                wnt.revenue.mem_sum.amount = parseInt(wnt.revenue.mem_sum.amount) / parseInt(wnt.revenue.visitors_sum.units);
+                wnt.revenue.mem_sum_prior.amount = parseInt(wnt.revenue.mem_sum_prior.amount) / parseInt(wnt.revenue.visitors_sum.units);
+            }
+            // Bars
             $.each(wnt.revenue.box_bars, function(index, item){
                 if(wnt.revenue.visitors[index] !== undefined){
                     wnt.revenue.box_bars[index].amount = wnt.revenue.box_bars[index].amount / parseInt(wnt.revenue.visitors[index].units);
@@ -598,16 +613,17 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $('.bar-set').popover({ container: 'body' });
     },
     formatNumbers: function(){
+        var format = wnt.filterUnits === 'percap' ? '$#,##0.00' : '$#,###';
         $.each($('#revenue-accordion .accordion-stat'), function(index, item){
             if($(this).html() !== '-'){
-                $(this).parseNumber({format:"$#,###", locale:"us"});
-                $(this).formatNumber({format:"$#,###", locale:"us"});
+                $(this).parseNumber({format:format, locale:"us"});
+                $(this).formatNumber({format:format, locale:"us"});
             }
         });
         $.each($('#revenue-accordion .accordion-compared-to'), function(index, item){
             if($(this).html() !== '-'){
-                $(this).parseNumber({format:"$#,###", locale:"us"});
-                $(this).formatNumber({format:"$#,###", locale:"us"});
+                $(this).parseNumber({format:format, locale:"us"});
+                $(this).formatNumber({format:format, locale:"us"});
             }
         });
     },
