@@ -73,7 +73,7 @@ class WeatherDaily extends Model {
 				$day->hours->keyBy('hour');
 			}
 		}
-		if(isset($query->from))
+		if(!isset($query->from))
 			$result = $result[0];
 		return $result;
 	}
