@@ -630,7 +630,6 @@ var SalesGoals = React.createClass({
                 <div className="col-xs-6 col-md-6 arrow-connector-right">
                     <div className="widget" id="total-sales-goals">
                         <h2>Total Sales Goals</h2>
-                        <ActionMenu />
                         <form>
                             <select className="form-control" onChange={this.handleChange}>
                                 <option value="year">Current Year ({wnt.thisYear})</option>
@@ -657,7 +656,6 @@ var SalesGoals = React.createClass({
                 <div className="col-xs-6 col-md-6">
                     <div className="widget" id="earned-revenue-channels">
                         <h2>Earned Revenue Channels</h2>
-                        <ActionMenu />
                         <form>
                             <select className="form-control">
                                 <option value="dollars">Dollars</option>
