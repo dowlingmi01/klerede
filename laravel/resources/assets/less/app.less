@@ -564,6 +564,10 @@ header {
         margin: 10px 0 0 0;
         text-transform: uppercase;
     }
+    h3 {
+        font-size: 120%;
+        text-transform: uppercase;
+    }
     .form-control {
         appearance: none;
             -moz-appearance: none;
@@ -816,7 +820,9 @@ header {
 .selected .filter-highlight {
     display: block;
 }
-#bg-units {
+#bg-units,
+#sg-units,
+#mg-units {
     clear: both;
     display: inline-block;
     float: left;
@@ -839,6 +845,12 @@ header {
         right: 9px;
         top: 14px;
         width: 11px;
+    }
+}
+#sg-units,
+#mg-units {
+    .filter-units[data-value='dollars']{
+        margin-left: 0;
     }
 }
 #filter-revenue-week {
@@ -1931,6 +1943,9 @@ LG = Large devices Desktops (≥1200px)
         stroke-weight: 0.1;
         fill: @boxoffice;
     }
+    .arc2 {
+        fill: @boxoffice;
+    }
     line {
         stroke: @boxoffice;
     }
@@ -1939,6 +1954,9 @@ LG = Large devices Desktops (≥1200px)
 #div2 {
     .arc {
         stroke-weight: 0.1;
+        fill: @cafe;
+    }
+    .arc2 {
         fill: @cafe;
     }
     line {
@@ -1951,6 +1969,9 @@ LG = Large devices Desktops (≥1200px)
         stroke-weight: 0.1;
         fill: @giftstore;
     }
+    .arc2 {
+        fill: @giftstore;
+    }
     line {
         stroke: @giftstore;
     }
@@ -1959,6 +1980,9 @@ LG = Large devices Desktops (≥1200px)
 #div4 {
     .arc {
         stroke-weight: 0.1;
+        fill: @membership;
+    }
+    .arc2 {
         fill: @membership;
     }
     line {
@@ -1971,6 +1995,9 @@ LG = Large devices Desktops (≥1200px)
         stroke-weight: 0.1;
         fill: @mediumpurple;
     }
+    .arc2 {
+        fill: @mediumpurple;
+    }
     line {
         stroke: @mediumpurple;
     }
@@ -1981,6 +2008,9 @@ LG = Large devices Desktops (≥1200px)
         stroke-weight: 0.1;
         fill: @lightpurple;
     }
+    .arc2 {
+        fill: @lightpurple;
+    }
     line {
         stroke: @lightpurple;
     }
@@ -1989,6 +2019,9 @@ LG = Large devices Desktops (≥1200px)
 #div7 {
     .arc {
         stroke-weight: 0.1;
+        fill: @darkpurple2;
+    }
+    .arc2 {
         fill: @darkpurple2;
     }
     line {

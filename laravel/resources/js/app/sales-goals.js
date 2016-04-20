@@ -89,7 +89,6 @@ var SalesGoals = React.createClass({
             band = Math.round((current / 9) * 2);
             return 'Red, Orange, Yellow, YellowGreen, Green '+(expected)+'%';
         }
-        
     },
     dialStatus: function(expected, current, type) {   // type = return CLASS or LABEL
         var diff = (current / expected) * 100;
@@ -257,6 +256,7 @@ var SalesGoals = React.createClass({
         window.addEventListener("resize", this.drawDials);
     },
     componentWillUnmount: function() {
+        //
         window.removeEventListener("resize", this.drawDials);
     },
     handleChange: function(event) {
@@ -626,64 +626,60 @@ var SalesGoals = React.createClass({
             background: 'linear-gradient(to right, '+this.state.barGradient+')'
         };
         return (
-            <div className="row">
-                <div className="col-xs-6 col-md-6 arrow-connector-right">
-                    <div className="widget" id="total-sales-goals">
-                        <h2>Total Sales Goals</h2>
-                        <form>
-                            <select className="form-control" onChange={this.handleChange}>
-                                <option value="year">Current Year ({wnt.thisYear})</option>
-                                <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
-                                <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
-                                <option value="custom">Custom</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
-                        <div className="clear goal">Goal: <span className="goalAmount">{this.state.goal}</span></div>
-                        <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
-                        <div className="bar-meter clear" style={gradient}>
-                            <div className="bar-meter-marker">{this.state.sales}</div>
-                            <table className="bar-meter-segments">
-                                <tr>
-                                    { this.state.barSegments.map(function(segment) {
-                                        return <Segment key={segment} label={segment} />;
-                                    }) }
-                                </tr>
-                            </table>
+            <div>
+                <div className="widget" id="total-sales-goals">
+                    <h2>Sales Goals</h2>
+                    <form>
+                        <select className="form-control" onChange={this.handleChange}>
+                            <option value="year">Current Year ({wnt.thisYear})</option>
+                            <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
+                            <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <Caret className="filter-caret" />
+                    </form>
+                    <div id="sg-units">
+                        <div data-value="dollars" className="filter-units selected">
+                            Dollars
+                            <div className="filter-highlight"></div>
                         </div>
                     </div>
+                    <div className="clear goal">Goal: <span className="goalAmount">{this.state.goal}</span></div>
+                    <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
+                    <div className="bar-meter clear" style={gradient}>
+                        <div className="bar-meter-marker">{this.state.sales}</div>
+                        <table className="bar-meter-segments">
+                            <tr>
+                                { this.state.barSegments.map(function(segment) {
+                                    return <Segment key={segment} label={segment} />;
+                                }) }
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-                <div className="col-xs-6 col-md-6">
-                    <div className="widget" id="earned-revenue-channels">
-                        <h2>Earned Revenue Channels</h2>
-                        <form>
-                            <select className="form-control">
-                                <option value="dollars">Dollars</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
-                        <div className="dial-wrapper">
-                            <Dial divID="div1" label="Box Office"
-                                amount={this.state.boxoffice}
-                                goal={this.state.goalBoxoffice}
-                                status={this.state.statusBoxoffice}
-                                statusClass={this.state.statusClassBoxoffice} />
-                            <Dial divID="div2" label="Cafe"
-                                amount={this.state.cafe}
-                                goal={this.state.goalCafe}
-                                status={this.state.statusCafe}
-                                statusClass={this.state.statusClassCafe} />
-                            <Dial divID="div3" label="Gift Store"
-                                amount={this.state.giftstore}
-                                goal={this.state.goalGiftstore}
-                                status={this.state.statusGiftstore}
-                                statusClass={this.state.statusClassGiftstore} />
-                            <Dial divID="div4" label="Membership"
-                                amount={this.state.membership}
-                                goal={this.state.goalMembership}
-                                status={this.state.statusMembership}
-                                statusClass={this.state.statusClassMembership} />
-                        </div>
+                <div className="widget" id="earned-revenue-channels">
+                    <h3>By Channel</h3>
+                    <div className="dial-wrapper">
+                        <Dial divID="div1" label="Box Office"
+                            amount={this.state.boxoffice}
+                            goal={this.state.goalBoxoffice}
+                            status={this.state.statusBoxoffice}
+                            statusClass={this.state.statusClassBoxoffice} />
+                        <Dial divID="div2" label="Cafe"
+                            amount={this.state.cafe}
+                            goal={this.state.goalCafe}
+                            status={this.state.statusCafe}
+                            statusClass={this.state.statusClassCafe} />
+                        <Dial divID="div3" label="Gift Store"
+                            amount={this.state.giftstore}
+                            goal={this.state.goalGiftstore}
+                            status={this.state.statusGiftstore}
+                            statusClass={this.state.statusClassGiftstore} />
+                        <Dial divID="div4" label="Membership"
+                            amount={this.state.membership}
+                            goal={this.state.goalMembership}
+                            status={this.state.statusMembership}
+                            statusClass={this.state.statusClassMembership} />
                     </div>
                 </div>
             </div>

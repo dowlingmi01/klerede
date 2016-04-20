@@ -6,9 +6,11 @@
 
     <div id="visits-blocks-widget"><!-- ReactJS component: VisitsBlocksSet --></div>
 
-    <div id="sales-goals-widget"><!-- ReactJS component: SalesGoals --></div>
-
-    <div id="membership-goals-widget"><!-- ReactJS component: MembershipGoals --></div>
+    <div class="row">
+        <div id="sales-goals-widget" class="col-xs-6 col-md-6"><!-- ReactJS component: SalesGoals --></div>
+        <div id="membership-goals-widget" class="col-xs-6 col-md-6"><!-- ReactJS component: MembershipGoals --></div>
+    </div>
+    
 
     <div id="revenue-row-widget"><!-- ReactJS component: Revenue --></div>
 

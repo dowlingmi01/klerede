@@ -85,7 +85,6 @@ var MembershipGoals = React.createClass({
             band = Math.round((current / 9) * 2);
             return 'Red, Orange, Yellow, YellowGreen, Green '+(expected)+'%';
         }
-        
     },
     dialStatus: function(expected, current, type) {   // type = return CLASS or LABEL
         var diff = (current / expected) * 100;
@@ -223,6 +222,7 @@ var MembershipGoals = React.createClass({
         window.addEventListener("resize", this.drawDials);
     },
     componentWillUnmount: function() {
+        //
         window.removeEventListener("resize", this.drawDials);
     },
     handleChange: function(event) {
@@ -534,7 +534,11 @@ var MembershipGoals = React.createClass({
         this.drawDials();
     },
     filterNumType: function(event){
-        var numType = event.target.value;
+        // var numType = event.target.value;
+        var numType = $(event.target).closest('.filter-units').data('value') === 'dolaars' ? 'amount' : 'units';
+        $.each($('#mg-units .filter-units'), function(index, item){
+            $(item).toggleClass('selected');
+        });
         console.log(numType);
         // Initialize goal totals
         var goalFamily = 0;
@@ -616,60 +620,60 @@ var MembershipGoals = React.createClass({
             background: 'linear-gradient(to right, '+this.state.barGradient+')'
         };
         return (
-            <div className="row">
-                <div className="col-xs-6 col-md-6 arrow-connector-right">
-                    <div className="widget" id="total-membership-goals">
-                        <h2>Total Membership Goals</h2>
-                        <form>
-                            <select className="form-control" onChange={this.handleChange}>
-                                <option value="year">Current Year ({wnt.thisYear})</option>
-                                <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
-                                <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
-                                <option value="custom">Custom</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
-                        <div className="clear goal">Membership Goal: <span className="goalAmount">{this.state.goal}</span></div>
-                        <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
-                        <div className="bar-meter clear" style={gradient}>
-                            <div className="bar-meter-marker">{this.state.memberships}</div>
-                            <table className="bar-meter-segments">
-                                <tr>
-                                    { this.state.barSegments.map(function(segment) {
-                                        return <Segment key={segment} label={segment} />;
-                                    }) }
-                                </tr>
-                            </table>
+            <div>
+                <div className="widget" id="total-membership-goals">
+                    <h2>Membership Goals</h2>
+                    <form>
+                        <select className="form-control" onChange={this.handleChange}>
+                            <option value="year">Current Year ({wnt.thisYear})</option>
+                            <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
+                            <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <Caret className="filter-caret" />
+                    </form>
+                    <div id="mg-units" onClick={this.filterNumType}>
+                        <div data-value="dollars" className="filter-units selected">
+                            Dollars
+                            <div className="filter-highlight"></div>
+                        </div>
+                        <div data-value="units" className="filter-units">
+                            Units
+                            <div className="filter-highlight"></div>
                         </div>
                     </div>
+                    <div className="clear goal">Membership Goal: <span className="goalAmount">{this.state.goal}</span></div>
+                    <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
+                    
+                    <div className="bar-meter clear" style={gradient}>
+                        <div className="bar-meter-marker">{this.state.memberships}</div>
+                        <table className="bar-meter-segments">
+                            <tr>
+                                { this.state.barSegments.map(function(segment) {
+                                    return <Segment key={segment} label={segment} />;
+                                }) }
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-                <div className="col-xs-6 col-md-6">
-                    <div className="widget" id="membership">
-                        <h2>Membership / Donors</h2>
-                        <form>
-                            <select className="form-control" onChange={this.filterNumType}>
-                                <option value="units">Units</option>
-                                <option value="amount">Dollars</option>
-                            </select>
-                            <Caret className="filter-caret" />
-                        </form>
-                        <div className="dial-wrapper">
-                            <Dial divID="div5" label="Individual"
-                                amount={this.state.individual}
-                                goal={this.state.goalIndividual}
-                                status={this.state.statusIndividual}
-                                statusClass={this.state.statusClassIndividual} />
-                            <Dial divID="div6" label="Family"
-                                amount={this.state.family}
-                                goal={this.state.goalFamily}
-                                status={this.state.statusFamily}
-                                statusClass={this.state.statusClassFamily} />
-                            <Dial divID="div7" label="Donor"
-                                amount={this.state.donor}
-                                goal={this.state.goalDonor}
-                                status={this.state.statusDonor}
-                                statusClass={this.state.statusClassDonor} />
-                        </div>
+                <div className="widget" id="membership">
+                    <h3>By Membership Type</h3>
+                    <div className="dial-wrapper">
+                        <Dial divID="div5" label="Individual"
+                            amount={this.state.individual}
+                            goal={this.state.goalIndividual}
+                            status={this.state.statusIndividual}
+                            statusClass={this.state.statusClassIndividual} />
+                        <Dial divID="div6" label="Family"
+                            amount={this.state.family}
+                            goal={this.state.goalFamily}
+                            status={this.state.statusFamily}
+                            statusClass={this.state.statusClassFamily} />
+                        <Dial divID="div7" label="Donor"
+                            amount={this.state.donor}
+                            goal={this.state.goalDonor}
+                            status={this.state.statusDonor}
+                            statusClass={this.state.statusClassDonor} />
                     </div>
                 </div>
             </div>
