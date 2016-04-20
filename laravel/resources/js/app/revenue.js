@@ -265,7 +265,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 }
                 wnt.barDates.push(dateStr);
             });
-            console.log('DATES FOR WEATHER API CALL =', wnt.barDates[0], wnt.barDates[wnt.barDates.length-1]);
             $.get(
                 wnt.apiWeather,
                 {
@@ -426,17 +425,57 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.revenue.total_bars_amount = wnt.revenue.total_bars.map(function(entry){
             return parseInt(entry.amount);
         });
-        wnt.revenue.box_bars_amount = wnt.revenue.box_bars.map(function(entry){
-            return parseInt(entry.amount);
+        // Create array of dates
+        wnt.revenue.box_bars_dates = wnt.revenue.box_bars.map(function(entry){
+            return entry.period;
         });
-        wnt.revenue.cafe_bars_amount = wnt.revenue.cafe_bars.map(function(entry){
-            return parseInt(entry.amount);
+        // Construct array of amounts, filling in zero for missing dates 
+        wnt.revenue.box_bars_amount = wnt.barDates.map(function(barDate){
+            var position = $.inArray(barDate, wnt.revenue.box_bars_dates);
+            if(position > -1){
+                return parseInt(wnt.revenue.box_bars[position].amount);
+            } else {
+                return 0;
+            }
         });
-        wnt.revenue.gift_bars_amount = wnt.revenue.gift_bars.map(function(entry){
-            return parseInt(entry.amount);
+        // Create array of dates
+        wnt.revenue.cafe_bars_dates = wnt.revenue.cafe_bars.map(function(entry){
+            return entry.period;
         });
-        wnt.revenue.mem_bars_amount = wnt.revenue.mem_bars.map(function(entry){
-            return parseInt(entry.amount);
+        // Construct array of amounts, filling in zero for missing dates 
+        wnt.revenue.cafe_bars_amount = wnt.barDates.map(function(barDate){
+            var position = $.inArray(barDate, wnt.revenue.cafe_bars_dates);
+            if(position > -1){
+                return parseInt(wnt.revenue.cafe_bars[position].amount);
+            } else {
+                return 0;
+            }
+        });
+        // Create array of dates
+        wnt.revenue.gift_bars_dates = wnt.revenue.gift_bars.map(function(entry){
+            return entry.period;
+        });
+        // Construct array of amounts, filling in zero for missing dates 
+        wnt.revenue.gift_bars_amount = wnt.barDates.map(function(barDate){
+            var position = $.inArray(barDate, wnt.revenue.gift_bars_dates);
+            if(position > -1){
+                return parseInt(wnt.revenue.gift_bars[position].amount);
+            } else {
+                return 0;
+            }
+        });
+        // Create array of dates
+        wnt.revenue.mem_bars_dates = wnt.revenue.mem_bars.map(function(entry){
+            return entry.period;
+        });
+        // Construct array of amounts, filling in zero for missing dates 
+        wnt.revenue.mem_bars_amount = wnt.barDates.map(function(barDate){
+            var position = $.inArray(barDate, wnt.revenue.mem_bars_dates);
+            if(position > -1){
+                return parseInt(wnt.revenue.mem_bars[position].amount);
+            } else {
+                return 0;
+            }
         });
         $.each(wnt.filterChannels, function(channel, value){
             // If the channel is off, subtract it from the total_bars_amount...
@@ -655,6 +694,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     filterVisitors: function(event) {
         wnt.filterVisitors = event.target.value;
+        // Set the global channels variable for proper processng before callAPI, and ...
+        // ...turn off the active class on the proper channel
+        if(wnt.filterVisitors === 'members'){
+            wnt.filterChannels = {box: 0, cafe: 1, gift: 1, mem: 1};
+            $('.bar-graph-legend-item .legend-check-circle').addClass('active');
+            $('.accordion-item').addClass('active');
+            $('.bar-graph-legend-item[data-channel="box"]').find('.legend-check-circle').removeClass('active');
+            $('.accordion-item.box').removeClass('active');
+        } else if(wnt.filterVisitors === 'nonmembers'){
+            wnt.filterChannels = {box: 1, cafe: 1, gift: 1, mem: 0};
+            $('.bar-graph-legend-item .legend-check-circle').addClass('active');
+            $('.accordion-item').addClass('active');
+            $('.bar-graph-legend-item[data-channel="mem"]').find('.legend-check-circle').removeClass('active');
+            $('.accordion-item.mem').removeClass('active');
+        } else {
+            wnt.filterChannels = {box: 1, cafe: 1, gift: 1, mem: 1};
+            $('.bar-graph-legend-item .legend-check-circle').addClass('active');
+            $('.accordion-item').addClass('active');
+        }
         this.callAPI();
         event.target.blur();
     },
