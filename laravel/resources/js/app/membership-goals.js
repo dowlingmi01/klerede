@@ -59,6 +59,9 @@ var MembershipGoals = React.createClass({
         var diff = (current / expected) * 100;
         var band;
 
+        // LEFT OFF HERE: TEMP:
+        //return 'darkgrey 78%, lightgrey 78%';
+
         if(diff < 50) {
             // Behind: Marker (expected) should be in the 'middle' of red
             this.setState({ status: 'Behind', statusClass: 'behind' });
@@ -422,15 +425,15 @@ var MembershipGoals = React.createClass({
     formatNumbers: function(){
         var numType = $('#membership select').val();
         var symbol = numType === 'amount' ? '$' : '';
-        $('#total-membership-goals .goalAmount').parseNumber({format:symbol+"#,###", locale:"us"});
-        $('#total-membership-goals .goalAmount').formatNumber({format:symbol+"#,###", locale:"us"});
-        $('#total-membership-goals .bar-meter-marker').parseNumber({format:symbol+"#,###", locale:"us"});
-        $('#total-membership-goals .bar-meter-marker').formatNumber({format:symbol+"#,###", locale:"us"});
-        if($('#total-membership-goals .bar-meter-marker').html() === '$'){
-            $('#total-membership-goals .bar-meter-marker').html('$0');
+        $('#total-membership-goals .goal-amount').parseNumber({format:symbol+"#,###", locale:"us"});
+        $('#total-membership-goals .goal-amount').formatNumber({format:symbol+"#,###", locale:"us"});
+        $('#total-membership-goals .current-amount').parseNumber({format:symbol+"#,###", locale:"us"});
+        $('#total-membership-goals .current-amount').formatNumber({format:symbol+"#,###", locale:"us"});
+        if($('#total-membership-goals .current-amount').html() === '$'){
+            $('#total-membership-goals .current-amount').html('$0');
         }
-        if($('#total-membership-goals .bar-meter-marker').html() === ''){
-            $('#total-membership-goals .bar-meter-marker').html('0');
+        if($('#total-membership-goals .current-amount').html() === ''){
+            $('#total-membership-goals .current-amount').html('0');
         }
         $.each($('#membership .channel-amount'), function(index, item){
             if($(this).html() !== '-'){
@@ -498,7 +501,7 @@ var MembershipGoals = React.createClass({
         );
 
         // Equalize the row height
-        $('#total-membership-goals').height($('#membership').height())
+        // $('#total-membership-goals').height($('#membership').height())
 
         // Set the goal dots
 
@@ -642,19 +645,23 @@ var MembershipGoals = React.createClass({
                             <div className="filter-highlight"></div>
                         </div>
                     </div>
-                    <div className="clear goal">Membership Goal: <span className="goalAmount">{this.state.goal}</span></div>
-                    <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
-                    
-                    <div className="bar-meter clear" style={gradient}>
-                        <div className="bar-meter-marker">{this.state.memberships}</div>
-                        <table className="bar-meter-segments">
-                            <tr>
-                                { this.state.barSegments.map(function(segment) {
-                                    return <Segment key={segment} label={segment} />;
-                                }) }
-                            </tr>
-                        </table>
+
+
+
+                    <div className="meter-group clear">
+                        <div className="meter-label">Total Membership Sales</div>
+                        <div className="meter-status">{this.state.status}</div>
+                        <div className="bar-meter clear">
+                            <div className="bar-meter-marker"></div>
+                        </div>
+                        <div className="meter-reading">
+                            (<span className="current-amount">{this.state.memberships}</span> of <span className="goal-amount">{this.state.goal}</span>)
+                        </div>
                     </div>
+
+
+
+
                 </div>
                 <div className="widget" id="membership">
                     <h3>By Membership Type</h3>

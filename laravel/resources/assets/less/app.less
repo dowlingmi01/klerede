@@ -638,6 +638,8 @@ header {
 }
 #total-sales-goals,
 #total-membership-goals {
+    height: 185px;
+    min-height: 185px;
     .goal {
         float: left;
         margin: 30px 0 40px 0;
@@ -716,12 +718,12 @@ header {
     }
 }
 .bar-meter {
-    background: linear-gradient(to right, Red, Orange, Yellow, YellowGreen);
+    background: @mediumgrey;
     border: 1px solid @mediumgrey;
-    border-radius: 3px;
-    height: 27px;
+    border-radius: 21px;
+    height: 42px;
+    margin: 5px 0;
     position: relative;
-    top: 20px;
     width: 100%;
     /*div {
         border-left: 1px solid #000;
@@ -752,9 +754,8 @@ header {
         border-radius: 3px;
         color: @white;
         left: 0;
-        padding: 5px 10px;
         position: absolute;
-        top: -34px;
+        top: -5px;
         transform: translateX(-50%);
     }
     .bar-meter-marker:after {
@@ -770,6 +771,25 @@ header {
         right: 50%;
         transform: translateX(50%);
         width: 0;
+    }
+}
+.meter-group {
+    position: relative;
+    top: 20px;
+    .meter-label {
+        float: left;
+        font-size: 120%;
+    }
+    .meter-status {
+        float: right;
+        font-size: 100%;
+        font-weight: bold;
+    }
+    .meter-reading {
+        display: inline-block;
+        left: 50%;
+        position: relative;
+        transform: translateX(-50%);
     }
 }
 /******** REVENUE BAR GRAPH AND FILTERS ********/

@@ -57,11 +57,16 @@ var SalesGoals = React.createClass({
             (current / halfBlocksToMiddleOfCurrent) * 2HalvesEach 
             The % stops in the gradient are where to start the next color, not the color's width
 
-            Passing in marker position and % complete ... ((amount/goal) * 100)           
+            Passing in marker position and % complete ... ((amount/goal) * 100)
+
+            linear-gradient(to right, darkgrey 50%, lightgrey 50%)
         */
         var gradient = ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green'];
         var diff = (current / expected) * 100;
         var band;
+
+        // LEFT OFF HERE: TEMP:
+        //return 'darkgrey 78%, lightgrey 78%';
 
         if(diff < 50) {
             // Behind: Marker (expected) should be in the 'middle' of red
@@ -503,13 +508,13 @@ var SalesGoals = React.createClass({
         event.target.blur();
     },
     formatNumbers: function(){
-        $('#total-sales-goals .goalAmount').parseNumber({format:"$#,###", locale:"us"});
-        $('#total-sales-goals .goalAmount').formatNumber({format:"$#,###", locale:"us"});
-        $('#total-sales-goals .bar-meter-marker').parseNumber({format:"$#,###", locale:"us"});
-        $('#total-sales-goals .bar-meter-marker').formatNumber({format:"$#,###", locale:"us"});
+        $('#total-sales-goals .goal-amount').parseNumber({format:"$#,###", locale:"us"});
+        $('#total-sales-goals .goal-amount').formatNumber({format:"$#,###", locale:"us"});
+        $('#total-sales-goals .current-amount').parseNumber({format:"$#,###", locale:"us"});
+        $('#total-sales-goals .current-amount').formatNumber({format:"$#,###", locale:"us"});
         // Fix for 0 (null) values
-        if($('#total-sales-goals .bar-meter-marker').html() === '$'){
-            $('#total-sales-goals .bar-meter-marker').html('$0');
+        if($('#total-sales-goals .current-amount').html() === '$'){
+            $('#total-sales-goals .current-amount').html('$0');
         }
         $.each($('#earned-revenue-channels .channel-amount'), function(index, item){
             if($(this).html() !== '-'){
@@ -583,7 +588,7 @@ var SalesGoals = React.createClass({
         );
 
         // Equalize the row height
-        $('#total-sales-goals').height($('#earned-revenue-channels').height())
+        // $('#total-sales-goals').height($('#earned-revenue-channels').height())
 
         // Set the goal dots
         this.setDots();
@@ -644,18 +649,20 @@ var SalesGoals = React.createClass({
                             <div className="filter-highlight"></div>
                         </div>
                     </div>
-                    <div className="clear goal">Goal: <span className="goalAmount">{this.state.goal}</span></div>
-                    <div className="goalStatus">Status: <span className={"goalStatusText " + this.state.statusClass}>{this.state.status}</span></div>
-                    <div className="bar-meter clear" style={gradient}>
-                        <div className="bar-meter-marker">{this.state.sales}</div>
-                        <table className="bar-meter-segments">
-                            <tr>
-                                { this.state.barSegments.map(function(segment) {
-                                    return <Segment key={segment} label={segment} />;
-                                }) }
-                            </tr>
-                        </table>
+
+                    <div className="meter-group clear">
+                        <div className="meter-label">Total Sales</div>
+                        <div className="meter-status">{this.state.status}</div>
+                        <div className="bar-meter clear" style={gradient}>
+                            <div className="bar-meter-marker"></div>
+                        </div>
+                        <div className="meter-reading">
+                            (<span className="current-amount">{this.state.sales}</span> of <span className="goal-amount">{this.state.goal}</span>)
+                        </div>
                     </div>
+
+
+
                 </div>
                 <div className="widget" id="earned-revenue-channels">
                     <h3>By Channel</h3>
