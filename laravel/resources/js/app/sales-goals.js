@@ -633,7 +633,8 @@ var SalesGoals = React.createClass({
         return (
             <div>
                 <div className="widget" id="total-sales-goals">
-                    <h2>Sales Goals</h2>
+                    <h2>Sales Goals</h2>                    
+                    <ActionMenu />
                     <form>
                         <select className="form-control" onChange={this.handleChange}>
                             <option value="year">Current Year ({wnt.thisYear})</option>
