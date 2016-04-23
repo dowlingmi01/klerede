@@ -72,8 +72,14 @@ var Header = React.createClass({
                         <Caret className="utilities-caret" />
                     </div>
                     <h3>General</h3>
-                    <div className="utility" data-utility="knowledge" data-type="tbd">Knowledge Base</div>
-                    <div className="utility" data-utility="help" data-type="page">Help</div>
+                    <div className="utility" data-utility="knowledge" data-type="tbd">
+                        Knowledge Base
+                        <ChangeArrow className="utility-arrow" />
+                    </div>
+                    <div className="utility" data-utility="help" data-type="page">
+                        Help
+                        <ChangeArrow className="utility-arrow" />
+                    </div>
                     <div className="utility" data-utility="logout" data-type="tbd">Logout</div>
                 </div>
                 <div id="user-profile" className="utilities-set" onClick={this.activateField}>
