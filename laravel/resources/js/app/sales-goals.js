@@ -5,7 +5,7 @@
 var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
-            goal: 16000000,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
+            goal: 0,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
             goalBoxoffice: 4000000,
             goalCafe: 4000000,
             goalGiftstore: 4000000,
@@ -67,7 +67,19 @@ var SalesGoals = React.createClass({
 
         // LEFT OFF HERE: TEMP:
         //return 'darkgrey 78%, lightgrey 78%';
-
+        var actual = parseInt(wnt.sales.filterPeriod[wnt.sales.filterNumType]);
+        var target = parseInt(wnt.salesGoals.selected);
+        var completed = Math.round((actual/target)*10000)/100;
+        console.log('SALES PERCENTAGE', completed);   // Default  LEFT OFF HERE
+        if(completed < 100){
+            this.setState({ status: 'Behind', statusClass: 'behind' });
+            band = Math.round((current / 1) * 2);
+            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
+        } else {
+            return 'darkgrey';
+        }
+        
+        // TO DO:  MAY NEED TO LEVERAGE FOLLOWING CODE STILL FOR STATUS LABELS
         if(diff < 50) {
             // Behind: Marker (expected) should be in the 'middle' of red
             this.setState({ status: 'Behind', statusClass: 'behind' });
@@ -145,6 +157,8 @@ var SalesGoals = React.createClass({
         .done(function(result) {
             console.log('Sales Goals data loaded...');
             wnt.sales = result;
+            wnt.sales.filterNumType = 'amount';   // Assume default filter of dollars
+            wnt.sales.filterPeriod = wnt.sales.sales_year;   // Default
             wnt.gettingSalesGoalsData = $.Deferred();
             wnt.getGoals(wnt.thisYear, wnt.gettingSalesGoalsData);
             $.when(wnt.gettingSalesGoalsData).done(function(goals) {
@@ -166,6 +180,7 @@ var SalesGoals = React.createClass({
                 }
                 // Set globals for easy access
                 wnt.salesGoals.total = goalBoxoffice + goalCafe + goalGiftstore + goalMembership;
+                wnt.salesGoals.selected = wnt.salesGoals.total;
                 wnt.salesGoals.boxoffice = goalBoxoffice;
                 wnt.salesGoals.cafe = goalCafe;
                 wnt.salesGoals.store = goalGiftstore;
@@ -267,6 +282,8 @@ var SalesGoals = React.createClass({
     handleChange: function(event) {
         var filter = event.target.value;
         if(filter === 'year'){
+            wnt.sales.filterPeriod = wnt.sales.sales_year;
+            wnt.salesGoals.selected = wnt.salesGoals.total;
             this.setState({
                 barSegments: wnt.period(0, 12, true),
                 goal: wnt.salesGoals.total,
@@ -326,6 +343,8 @@ var SalesGoals = React.createClass({
                     )
             });
         } else if(filter === 'quarter'){
+            wnt.sales.filterPeriod = wnt.sales.sales_quarter;
+            wnt.salesGoals.selected = wnt.salesGoals.totalQuarter;
             this.setState({
                 barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
                 goal: wnt.salesGoals.totalQuarter,
@@ -385,6 +404,8 @@ var SalesGoals = React.createClass({
                     )
             });
         }  else if(filter === 'month'){
+            wnt.sales.filterPeriod = wnt.sales.sales_month;
+            wnt.salesGoals.selected = wnt.salesGoals.totalMonth;
             // TO DO: Allow for units too in membership goal
             var membershipMonth = wnt.salesGoals['membership/amount'].sub_channels.family.months[wnt.thisMonthNum + 1] + wnt.salesGoals['membership/amount'].sub_channels.individual.months[wnt.thisMonthNum + 1];
             this.setState({
@@ -446,6 +467,8 @@ var SalesGoals = React.createClass({
                     )
             });
         } else {
+            wnt.sales.filterPeriod = wnt.sales.sales_year;
+            wnt.salesGoals.selected = wnt.salesGoals.total;
             this.setState({
                 barSegments: wnt.period(0, 12, true),
                 goal: wnt.salesGoals.total,
