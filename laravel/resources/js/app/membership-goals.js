@@ -25,7 +25,7 @@ var MembershipGoals = React.createClass({
             statusClassDonor: 'on-track',
 
             markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-            barGradient: 'darkgrey',
+            barGradient: 'darkgrey, darkgrey',
             barSegments: wnt.period(0,12,true)
         };
     },
@@ -55,50 +55,32 @@ var MembershipGoals = React.createClass({
 
             Passing in marker position and % complete ... ((amount/goal) * 100)           
         */
-        var gradient = ['Red', 'Orange', 'Yellow', 'YellowGreen', 'Green'];
-        var diff = (current / expected) * 100;
-        var band;
-
-        // LEFT OFF HERE: TEMP:
-        // return 'darkgrey 78%, lightgrey 78%';
+        // LEFT OFF HERE:
         var actual = parseInt(wnt.membershipSales.filterPeriod[wnt.membershipSales.filterNumType]);
         var target = parseInt(wnt.membershipGoals.selected);
         var completed = Math.round((actual/target)*10000)/100;
         console.log('MEMBERSHIP PERCENTAGE', completed);   // Default  LEFT OFF HERE
-        if(completed < 100){
-            this.setState({ status: 'Behind', statusClass: 'behind' });
-            band = Math.round((current / 1) * 2);
-            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
-        } else {
-            return 'darkgrey';
-        }
-
         // TO DO:  MAY NEED TO LEVERAGE FOLLOWING CODE STILL FOR STATUS LABELS
-        if(diff < 50) {
+        if(completed < 50) {
             // Behind: Marker (expected) should be in the 'middle' of red
             this.setState({ status: 'Behind', statusClass: 'behind' });
-            band = Math.round((current / 1) * 2);
-            return 'Red '+(expected)+'%, Orange, Yellow, YellowGreen, Green';
-        } else if(diff < 75) {
+            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
+        } else if(completed < 75) {
             // Behind: Marker should be in the 'middle' of orange
             this.setState({ status: 'Behind', statusClass: 'behind' });
-            band = Math.round((current / 3) * 2);
-            return 'Red, Orange '+(expected)+'%, Yellow, YellowGreen, Green';
-        } else if(diff < 90) {
+            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
+        } else if(completed < 90) {
             // Slightly Behind: Marker should be in the 'middle' of yellow
             this.setState({ status: 'Slightly Behind', statusClass: 'slightly-behind' });
-            band = Math.round((current / 5) * 2);
-            return 'Red, Orange, Yellow '+(expected)+'%, YellowGreen, Green';
-        } else if(diff < 110) {
+            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
+        } else if(completed < 110) {
             // On Track: Marker should be in the 'middle' of Yellowish-green
             this.setState({ status: 'On Track', statusClass: 'on-track' });
-            band = Math.round((current / 7) * 2);
-            return 'Red, Orange, Yellow, YellowGreen '+(expected)+'%, Green';
+            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
         } else {
             // Ahead: Marker (expected) should be in the 'middle' of green (expected is % left position 0-100)
             this.setState({ status: 'Ahead', statusClass: 'ahead' });
-            band = Math.round((current / 9) * 2);
-            return 'Red, Orange, Yellow, YellowGreen, Green '+(expected)+'%';
+            return 'darkgrey, darkgrey';
         }
     },
     dialStatus: function(expected, current, type) {   // type = return CLASS or LABEL
