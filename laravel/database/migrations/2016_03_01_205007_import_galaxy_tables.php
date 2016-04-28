@@ -57,10 +57,28 @@ class ImportGalaxyTables extends Migration {
 			$table->timestamps();
 			$table->index(['query_id', 'source_id'], 'ig_botl_idx');
 		});
+		Schema::create('import_galaxy_visit', function(Blueprint $table)
+		{
+			$table->increments('id');
+			$table->integer('query_id');
+			$table->enum('status', ['pending', 'imported']);
+			$table->integer('venue_id');
+			$table->integer('source_id');
+			$table->integer('acp_id');
+			$table->integer('facility_id');
+			$table->string('box_office_product_code');
+			$table->string('ticket_code');
+			$table->enum('kind', ['ticket', 'pass', 'other']);
+			$table->integer('quantity');
+			$table->integer('use_no');
+			$table->dateTime('time');
+			$table->timestamps();
+		});
 		DB::table('import_query_class')->insert([
 			['id'=>10, 'name'=>'galaxy_box_office_product'],
 			['id'=>20, 'name'=>'galaxy_box_office_transaction'],
 			['id'=>30, 'name'=>'galaxy_box_office_transaction_line'],
+			['id'=>40, 'name'=>'galaxy_visit'],
 		]);
 	}
 
@@ -74,6 +92,7 @@ class ImportGalaxyTables extends Migration {
 		Schema::dropIfExists('import_galaxy_box_office_product');
 		Schema::dropIfExists('import_galaxy_box_office_transaction');
 		Schema::dropIfExists('import_galaxy_box_office_transaction_line');
+		Schema::dropIfExists('import_galaxy_visit');
 	}
 
 }
