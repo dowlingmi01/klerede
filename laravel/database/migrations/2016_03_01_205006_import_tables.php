@@ -32,7 +32,7 @@ class ImportTables extends Migration {
 			$table->increments('id');
 			$table->integer('import_query_class_id');
 			$table->integer('venue_id');
-			$table->string('query_text');
+			$table->string('query_text', 2000);
 			$table->enum('status', ['pending', 'executed', 'imported']);
 			$table->dateTime('time_created');
 			$table->dateTime('time_executed')->nullable();
