@@ -34,6 +34,7 @@ class ImportTables extends Migration {
 			$table->integer('venue_id');
 			$table->string('query_text', 2000);
 			$table->enum('status', ['pending', 'executed', 'imported']);
+			$table->dateTime('run_after');
 			$table->dateTime('time_created');
 			$table->dateTime('time_executed')->nullable();
 			$table->dateTime('time_imported')->nullable();
