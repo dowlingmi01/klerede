@@ -8,7 +8,7 @@ class VenueVariable extends Model {
 		$variables = VenueVariable::where('venue_id', $venue_id)->get();
 		$substs = [];
 		foreach($variables as $variable) {
-			$substs['%'.$variable->name.'%'] = $variable->value;
+			$substs['#'.$variable->name.'#'] = $variable->value;
 		}
 		return strtr($string, $substs);
 	}
