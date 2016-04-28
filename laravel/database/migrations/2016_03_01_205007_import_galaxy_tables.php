@@ -74,11 +74,23 @@ class ImportGalaxyTables extends Migration {
 			$table->dateTime('time');
 			$table->timestamps();
 		});
+		Schema::create('import_galaxy_cafe_product', function(Blueprint $table)
+		{
+			$table->increments('id');
+			$table->integer('query_id');
+			$table->enum('status', ['pending', 'imported']);
+			$table->integer('venue_id');
+			$table->string('code');
+			$table->string('description');
+			$table->string('account_code');
+			$table->timestamps();
+		});
 		DB::table('import_query_class')->insert([
 			['id'=>10, 'name'=>'galaxy_box_office_product'],
 			['id'=>20, 'name'=>'galaxy_box_office_transaction'],
 			['id'=>30, 'name'=>'galaxy_box_office_transaction_line'],
 			['id'=>40, 'name'=>'galaxy_visit'],
+			['id'=>50, 'name'=>'galaxy_cafe_product'],
 		]);
 	}
 
@@ -93,6 +105,7 @@ class ImportGalaxyTables extends Migration {
 		Schema::dropIfExists('import_galaxy_box_office_transaction');
 		Schema::dropIfExists('import_galaxy_box_office_transaction_line');
 		Schema::dropIfExists('import_galaxy_visit');
+		Schema::dropIfExists('import_galaxy_cafe_product');
 	}
 
 }
