@@ -1,6 +1,7 @@
 <?php namespace App;
 
 use App\Commands\ProcessImportQuery;
+use App\ImportQueryHandlers\ImportQueryHandler;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\DispatchesCommands;
@@ -30,8 +31,16 @@ class ImportQuery extends Model {
 		$cmd = 'gzip -fd ' . $this->getGZPath();
 		$process = new Process($cmd);
 		$process->run();
+		/** @var ImportQueryHandler $handler */
+		$handler = $this->query_class->getHandler($this);
+		$handler->handle();
 	}
 	public function query_class() {
 		return $this->belongsTo('App\ImportQueryClass', 'import_query_class_id');
+	}
+	public function processed() {
+		$this->status = 'imported';
+		$this->time_imported = Carbon::now();
+		$this->save();
 	}
 }
