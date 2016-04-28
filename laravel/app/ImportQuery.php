@@ -10,14 +10,17 @@ use Symfony\Component\Process\Process;
 class ImportQuery extends Model {
 	use DispatchesCommands;
 	protected $table = 'import_query';
-	static function getGZDir() {
-		return storage_path('app/import_query');
+	static function getDir() {
+		return str_replace('\\', '/', storage_path('app/import_query'));
 	}
 	function getGZPath() {
-		return self::getGZDir() . '/' . $this->id . '.gz';
+		return $this->getFilePath() . '.gz';
+	}
+	function getFilePath() {
+		return self::getDir() . '/' . $this->id;
 	}
 	function received(UploadedFile $file) {
-		$file->move(self::getGZDir(), $this->id . '.gz');
+		$file->move(self::getDir(), $this->id . '.gz');
 		$this->status = 'executed';
 		$this->time_executed = Carbon::now();
 		$this->save();
