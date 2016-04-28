@@ -27,7 +27,7 @@ class ImportQuery extends Model {
 		$this->dispatch(new ProcessImportQuery($this));
 	}
 	function process() {
-		$cmd = 'gzip -d ' . $this->getGZPath();
+		$cmd = 'gzip -fd ' . $this->getGZPath();
 		$process = new Process($cmd);
 		$process->run();
 	}
