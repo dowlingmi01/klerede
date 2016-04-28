@@ -21,9 +21,16 @@ class ImportTables extends Migration {
 			$table->timestamps();
 			$table->unique(['venue_id', 'name']);
 		});
+		Schema::create('import_query_class', function(Blueprint $table)
+		{
+			$table->integer('id');
+			$table->string('name');
+			$table->primary('id');
+		});
 		Schema::create('import_query', function(Blueprint $table)
 		{
 			$table->increments('id');
+			$table->integer('import_query_class_id');
 			$table->integer('venue_id');
 			$table->string('query_text');
 			$table->enum('status', ['pending', 'executed', 'imported']);
@@ -43,6 +50,7 @@ class ImportTables extends Migration {
 	public function down()
 	{
 		Schema::dropIfExists('venue_variable');
+		Schema::dropIfExists('import_query_class');
 		Schema::dropIfExists('import_query');
 	}
 

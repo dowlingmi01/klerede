@@ -28,4 +28,7 @@ class ImportQuery extends Model {
 		$process = new Process($cmd);
 		$process->run();
 	}
+	public function query_class() {
+		return $this->belongsTo('App\ImportQueryClass', 'import_query_class_id');
+	}
 }
