@@ -115,6 +115,18 @@ class ImportGalaxyTables extends Migration {
 			$table->timestamps();
 			$table->index(['query_id', 'source_id'], 'ig_ctl_idx');
 		});
+		Schema::create('import_galaxy_cafe_transaction_member_info', function(Blueprint $table)
+		{
+			$table->increments('id');
+			$table->integer('query_id');
+			$table->enum('status', ['pending', 'imported']);
+			$table->integer('venue_id');
+			$table->integer('source_id');
+			$table->integer('sequence');
+			$table->string('member_code');
+			$table->timestamps();
+			$table->index(['query_id', 'sequence'], 'ig_ctmi_idx');
+		});
 		DB::table('import_query_class')->insert([
 			['id'=>10, 'name'=>'galaxy_box_office_product'],
 			['id'=>20, 'name'=>'galaxy_box_office_transaction'],
@@ -123,6 +135,7 @@ class ImportGalaxyTables extends Migration {
 			['id'=>50, 'name'=>'galaxy_cafe_product'],
 			['id'=>60, 'name'=>'galaxy_cafe_transaction'],
 			['id'=>70, 'name'=>'galaxy_cafe_transaction_line'],
+			['id'=>80, 'name'=>'galaxy_cafe_transaction_member_info'],
 		]);
 	}
 
@@ -140,6 +153,7 @@ class ImportGalaxyTables extends Migration {
 		Schema::dropIfExists('import_galaxy_cafe_product');
 		Schema::dropIfExists('import_galaxy_cafe_transaction');
 		Schema::dropIfExists('import_galaxy_cafe_transaction_line');
+		Schema::dropIfExists('import_galaxy_cafe_transaction_member_info');
 	}
 
 }
