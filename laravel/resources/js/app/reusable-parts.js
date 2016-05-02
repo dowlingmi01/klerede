@@ -111,6 +111,24 @@ var Dial = React.createClass({
     }
 });
 
+var Meter = React.createClass({
+    render: function() {
+        return (
+            <div id={this.props.divID} className="meter-group">
+                <div className="meter-label">{this.props.label}</div>
+                <div className="meter-status"></div>
+                <div className="bar-meter-marker"></div>
+                <div className="bar-meter clear">
+                    <div className="bar-meter-fill"></div>
+                </div>
+                <div className="meter-reading">
+                    (<span className="current-amount">{this.props.amount}</span> of <span className="goal-amount">{this.props.goal}</span>)
+                </div>
+            </div>
+        );
+    }
+});
+
 console.log('Reusable parts loaded...');
 
 // Loading just time and date instead of full welcome message

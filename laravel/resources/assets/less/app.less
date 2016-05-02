@@ -52,6 +52,7 @@ body, p, td, label, .checkbox label {
 @cafe: rgba(90,163,163,1);
 @giftstore: rgba(178,202,19,1);
 @membership: rgba(76,27,97,1);
+@membership2: rgba(176,141,181,1);
 
 @grid-gutter-width: 15px;
 
@@ -400,8 +401,8 @@ header {
     right: 10px;
     top: 15px;
 }
-#total-sales-goals,
-#total-membership-goals {
+#sales-goals,
+#membership-goals {
     .filter-caret {
         right: 28px;
     }
@@ -558,9 +559,9 @@ header {
 /******************************************************/
 /******** SALES, MEMBERSHIPS, AND REVENUE ROWS ********/
 /******************************************************/
-#total-sales-goals,
+#sales-goals,
 #earned-revenue-channels,
-#total-membership-goals,
+#membership-goals,
 #membership,
 #revenue,
 #earned-revenue,
@@ -595,8 +596,8 @@ header {
         width: 240px;
     }
 }
-#total-sales-goals,
-#total-membership-goals {
+#sales-goals,
+#membership-goals {
     .form-control {
         padding-right: 30px;
     }
@@ -645,10 +646,14 @@ header {
         float: left;
     }
 }
-#total-sales-goals,
-#total-membership-goals {
-    height: 185px;
-    min-height: 185px;
+#sales-goals,
+#membership-goals {
+    overflow: hidden;
+    padding-bottom: 40px;
+    h3 {
+        margin-bottom: 0;
+        margin-top: 40px;
+    }
     .goal {
         float: left;
         margin: 30px 0 40px 0;
@@ -727,12 +732,13 @@ header {
     }
 }
 .bar-meter {
-    background: @mediumgrey;
-    border: 1px solid @mediumgrey;
+    background: @lightmediumgrey;
     border-radius: 21px;
     height: 42px;
     margin: 5px 0;
+    overflow: hidden;
     position: relative;
+    transition: 0.5s;
     width: 100%;
     /*div {
         border-left: 1px solid #000;
@@ -758,29 +764,101 @@ header {
             top: -12px;
         }
     }
-    .bar-meter-marker {
-        background-color: @darkgrey;
-        border-radius: 3px;
-        color: @white;
-        left: 0;
-        position: absolute;
-        top: -5px;
-        transform: translateX(-50%);
+}
+#membership-goals .bar-meter-fill {
+    background-color: @membership;
+}
+.bar-meter.active {
+    background: linear-gradient(to right, darkgrey 88.6%, lightgrey 88.6%) !important;
+}
+.bar-meter-fill {
+    background-color: @mediumgrey;
+    height: 100%;
+    width: 0;
+}
+/* LEFT OFF HERE: Redoing dials as bars */
+#meter-sales-total,
+#meter-membership-total {
+    clear: both;
+}
+#meter-sales-box {
+    float: left;
+    width: 48%;
+    .bar-meter {
+        height: 27px;
     }
-    .bar-meter-marker:after {
-        border: solid transparent;
-        border-color: rgba(21, 45, 65, 0);
-        border-top-color: @darkgrey;
-        border-width: 10px;
-        bottom: -20px;
-        content: " ";
-        height: 0;
-        pointer-events: none;
-        position: absolute;
-        right: 50%;
-        transform: translateX(50%);
-        width: 0;
+    .bar-meter-fill {
+        background-color: @boxoffice;
+        width: 10%;
     }
+}
+#meter-sales-cafe {
+    clear: both;
+    width: 48%;
+    .bar-meter {
+        height: 27px;
+    }
+    .bar-meter-fill {
+        background-color: @cafe;
+        width: 10%;
+    }
+}
+#meter-sales-gift {
+    float: right;
+    width: 48%;
+    .bar-meter {
+        height: 27px;
+    }
+    .bar-meter-fill {
+        background-color: @giftstore;
+        width: 10%;
+    }
+}
+#meter-membership-ind {
+    float: left;
+    width: 48%;
+    .bar-meter {
+        height: 27px;
+    }
+    .bar-meter-fill {
+        background-color: @membership2;
+        width: 10%;
+    }
+}
+#meter-membership-fam {
+    float: right;
+    width: 48%;
+    .bar-meter {
+        height: 27px;
+    }
+    .bar-meter-fill {
+        background-color: @membership2;
+        width: 10%;
+    }
+}
+.bar-meter-marker {
+    background-color: @darkgrey;
+    border-radius: 3px;
+    color: @white;
+    left: 0;
+    position: absolute;
+    top: 16px;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+.bar-meter-marker:after {
+    border: solid transparent;
+    border-color: rgba(21, 45, 65, 0);
+    border-top-color: @darkgrey;
+    border-width: 10px;
+    bottom: -20px;
+    content: " ";
+    height: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 50%;
+    transform: translateX(50%);
+    width: 0;
 }
 .meter-group {
     position: relative;

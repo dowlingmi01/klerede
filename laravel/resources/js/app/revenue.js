@@ -7,7 +7,7 @@ var BarSet = React.createClass({
         if(date !== undefined){
             var delimeter = date.indexOf('/') !== -1 ? '/' : '-';
             date = date.split(delimeter);
-            date = wnt.filterPeriod === 'month' ? date[2] : date[1]+'.'+date[2];
+            date = wnt.filter.bgPeriod === 'month' ? date[2] : date[1]+'.'+date[2];
             return date;
         }
     },
@@ -23,7 +23,7 @@ var BarSet = React.createClass({
             date2 = date.next().saturday();
             d2 = date2.getDate();
             m2 = Date.monthNames[date2.getMonth()];
-            if(wnt.filterPeriod === 'quarter'){
+            if(wnt.filter.bgPeriod === 'quarter'){
                 date = m.substring(0,3)+' '+d+' - '+m2.substring(0,3)+' '+d2+', '+y;
             } else {
                 date = dow+', '+m+' '+d+', '+y;
@@ -36,7 +36,7 @@ var BarSet = React.createClass({
         return html;
     },
     renderWeather: function(){
-        if(wnt.filterPeriod !== 'quarter'){
+        if(wnt.filter.bgPeriod !== 'quarter'){
             var weather = "<div class='popover-weather-10am'><img src='/img/"+this.props.icon1+".svg' class='popover-weather-icon'><div class='popover-time'>10 A.M.</div><div class='popover-weather-text'>"+this.props.summary1+"</div><div class='popover-temp'>"+this.props.temp1+"</div></div><div class='popover-weather-4pm'><img src='/img/"+this.props.icon2+".svg' class='popover-weather-icon'><div class='popover-time'>4 P.M.</div><div class='popover-weather-text'>"+this.props.summary2+"</div><div class='popover-temp'>"+this.props.temp2+"</div></div>";
             return weather;
         } else {
@@ -161,11 +161,11 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     callAPI: function() {
         var self = this;
-        var currentPeriod = wnt.getDateRange(wnt.filterDates, 'this '+wnt.filterPeriod);
-        var priorPeriod = wnt.getDateRange(wnt.filterDates, wnt.filterCompare+' '+wnt.filterPeriod);
+        var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
+        var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
         wnt.barScope = 'date';
         // Get week numbers for quarter data retrieval
-        if(wnt.filterPeriod === 'quarter'){
+        if(wnt.filter.bgPeriod === 'quarter'){
             currentPeriod[0] = wnt.getWeekNumber(currentPeriod[0], 'format');
             currentPeriod[1] = wnt.getWeekNumber(currentPeriod[1], 'format');
             priorPeriod[0] = wnt.getWeekNumber(priorPeriod[0], 'format');
@@ -173,9 +173,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.barScope = 'week';
         }
         var totalBars = { type: 'sales' };
-        if(wnt.filterVisitors === 'members'){
+        if(wnt.filter.bgVisitors === 'members'){
             totalBars = { type: 'sales', members: true };
-        } else if(wnt.filterVisitors === 'nonmembers'){
+        } else if(wnt.filter.bgVisitors === 'nonmembers'){
             totalBars = { type: 'sales', members: false };
         }
         $.post(
@@ -351,15 +351,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     componentDidMount: function() {
         // Set default for datepicker
-        $('#revenue #datepicker').val(wnt.filterDates);
+        $('#revenue #datepicker').val(wnt.filter.bgDates);
         // Set filter defaults as globals
         // Switch format for filterDates to be used in weather API
-        wnt.filterDates = wnt.formatDate(new Date(wnt.filterDates));
-        wnt.filterPeriod = $('#bg-period').val();
-        wnt.filterCompare = 'last';
-        wnt.filterVisitors = $('#bg-visitors').val();
-        wnt.filterUnits = $('#bg-units .selected').data('value');
-        wnt.filterChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
+        wnt.filter.bgDates = wnt.formatDate(new Date(wnt.filter.bgDates));
+        wnt.filter.bgPeriod = $('#bg-period').val();
+        wnt.filter.bgCompare = 'last';
+        wnt.filter.bgVisitors = $('#bg-visitors').val();
+        wnt.filter.bgUnits = $('#bg-units .selected').data('value');
+        wnt.filter.bgChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
         // Call method to load revenue and weather data
         this.callAPI();
     },
@@ -376,22 +376,22 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     calcBarHeight: function(amount) {
         var max = d3.max(wnt.revenue.total_bars_amount);
-        if(wnt.filterUnits === 'dollars'){ max = ((((d3.max(wnt.revenue.total_bars_amount)/4)/1000).toFixed(0))*4)*1000; }
+        if(wnt.filter.bgUnits === 'dollars'){ max = ((((d3.max(wnt.revenue.total_bars_amount)/4)/1000).toFixed(0))*4)*1000; }
         var barSectionHeight = (amount / max) * $('#bar-graph').height();
         return barSectionHeight+'px';
     },
     calcBarWidth: function() {
         // BAR SET PLACEMENT
         // wnt.barScope = ['date', 'week']
-        // wnt.filterPeriod = ['week', 'month', 'quarter']
+        // wnt.filter.bgPeriod = ['week', 'month', 'quarter']
         // Possible combos = date/week, date/month, week/quarter
         var self = this;
         var viewportWidth = $('#bar-graph-scroll-pane').width();
         var bars, dataSetWidth;
-        if(wnt.filterPeriod === 'quarter'){
+        if(wnt.filter.bgPeriod === 'quarter'){
             // Show 14 bar sets for quarter view
             bars = 14;
-        } else if (wnt.filterPeriod === 'month'){
+        } else if (wnt.filter.bgPeriod === 'month'){
             // Show all days for the given month view
             bars = wnt.barDates[0].split('-');
             bars = wnt.daysInMonth(bars[1], bars[0]);
@@ -412,11 +412,11 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     calcBarTotals: function(){
         // box_bars for non-members and mem_bars for members
-        if(wnt.filterVisitors === 'members'){
+        if(wnt.filter.bgVisitors === 'members'){
             wnt.revenue.box_bars = [];
             wnt.revenue.gift_bars = wnt.revenue.gift_bars_members;
             wnt.revenue.cafe_bars = wnt.revenue.cafe_bars_members;
-        } else if(wnt.filterVisitors === 'nonmembers'){
+        } else if(wnt.filter.bgVisitors === 'nonmembers'){
             wnt.revenue.gift_bars = wnt.revenue.gift_bars_nonmembers;
             wnt.revenue.cafe_bars = wnt.revenue.cafe_bars_nonmembers;
             wnt.revenue.mem_bars = [];
@@ -477,7 +477,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 return 0;
             }
         });
-        $.each(wnt.filterChannels, function(channel, value){
+        $.each(wnt.filter.bgChannels, function(channel, value){
             // If the channel is off, subtract it from the total_bars_amount...
             if(value === 0){
                 wnt.revenue.total_bars_amount = wnt.revenue.total_bars_amount.map(function(entry, index){
@@ -488,7 +488,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
     },
     calcPerCap: function(){
-        if(wnt.filterUnits === 'percap'){
+        if(wnt.filter.bgUnits === 'percap'){
             // Accordion
             if(wnt.revenue.visitors_sum !== undefined){
                 wnt.revenue.box_sum.amount = parseInt(wnt.revenue.box_sum.amount) / parseInt(wnt.revenue.visitors_sum.units);
@@ -540,14 +540,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
     },
     changeYMarkers: function(max) {
-        var segment = wnt.filterUnits === 'percap' ? Math.round((max/4)*100)/100 : Math.ceil(max/4);
+        var segment = wnt.filter.bgUnits === 'percap' ? Math.round((max/4)*100)/100 : Math.ceil(max/4);
         // Minify numbers (e.g. 1000 = 1) and change Y-axis main label
         segment = segment > 999 ? (segment/1000).toFixed(0) : segment;
         $('.y-marker').eq(0).attr('data-content', (segment * 4).toFixed(0));
         $('.y-marker').eq(1).attr('data-content', (segment * 3).toFixed(0));
         $('.y-marker').eq(2).attr('data-content', (segment * 2).toFixed(0));
         $('.y-marker').eq(3).attr('data-content', (segment * 1).toFixed(0));
-        if(wnt.filterUnits === 'percap'){
+        if(wnt.filter.bgUnits === 'percap'){
             var fourth = Math.round((segment*4)*100)/100;
             var third = Math.round((segment*3)*100)/100;
             var second = Math.round((segment*2)*100)/100;
@@ -653,7 +653,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $('.bar-set').popover({ container: 'body' });
     },
     formatNumbers: function(){
-        var format = wnt.filterUnits === 'percap' ? '$#,##0.00' : '$#,###';
+        var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
         $.each($('#revenue-accordion .accordion-stat'), function(index, item){
             if($(this).html() !== '-'){
                 $(this).parseNumber({format:format, locale:"us"});
@@ -669,7 +669,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     formatSingleNumber: function(number){   // Used in bar set rollovers
         number = number.toString();
-        if(wnt.filterUnits === 'percap'){
+        if(wnt.filter.bgUnits === 'percap'){
             number = $.parseNumber(number, {format:"$#,##0.00", locale:"us"});
             number = $.formatNumber(number, {format:"$#,##0.00", locale:"us"});
         } else {
@@ -680,36 +680,36 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     filterPeriod: function(event){
         // week, month, quarter
-        wnt.filterPeriod = event.target.value;
+        wnt.filter.bgPeriod = event.target.value;
         // Set comparison filter in details
         // Default to 'last' instead of 'lastyear'
-        wnt.filterCompare = 'last';
-        $('#bg-compare').val(wnt.filterCompare+'-'+wnt.filterPeriod);   // Does NOT trigger other event!  :D
+        wnt.filter.bgCompare = 'last';
+        $('#bg-compare').val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // Does NOT trigger other event!  :D
         this.callAPI();
         event.target.blur();
     },
     filterDates: function(event) {
-        wnt.filterDates = wnt.formatDate(new Date(event.target.value));
+        wnt.filter.bgDates = wnt.formatDate(new Date(event.target.value));
         this.callAPI();
     },
     filterVisitors: function(event) {
-        wnt.filterVisitors = event.target.value;
+        wnt.filter.bgVisitors = event.target.value;
         // Set the global channels variable for proper processng before callAPI, and ...
         // ...turn off the active class on the proper channel
-        if(wnt.filterVisitors === 'members'){
-            wnt.filterChannels = {box: 0, cafe: 1, gift: 1, mem: 1};
+        if(wnt.filter.bgVisitors === 'members'){
+            wnt.filter.bgChannels = {box: 0, cafe: 1, gift: 1, mem: 1};
             $('.bar-graph-legend-item .legend-check-circle').addClass('active');
             $('.accordion-item').addClass('active');
             $('.bar-graph-legend-item[data-channel="box"]').find('.legend-check-circle').removeClass('active');
             $('.accordion-item.box').removeClass('active');
-        } else if(wnt.filterVisitors === 'nonmembers'){
-            wnt.filterChannels = {box: 1, cafe: 1, gift: 1, mem: 0};
+        } else if(wnt.filter.bgVisitors === 'nonmembers'){
+            wnt.filter.bgChannels = {box: 1, cafe: 1, gift: 1, mem: 0};
             $('.bar-graph-legend-item .legend-check-circle').addClass('active');
             $('.accordion-item').addClass('active');
             $('.bar-graph-legend-item[data-channel="mem"]').find('.legend-check-circle').removeClass('active');
             $('.accordion-item.mem').removeClass('active');
         } else {
-            wnt.filterChannels = {box: 1, cafe: 1, gift: 1, mem: 1};
+            wnt.filter.bgChannels = {box: 1, cafe: 1, gift: 1, mem: 1};
             $('.bar-graph-legend-item .legend-check-circle').addClass('active');
             $('.accordion-item').addClass('active');
         }
@@ -717,7 +717,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterUnits: function(event) {
-        wnt.filterUnits = $(event.target).closest('.filter-units').data('value');
+        wnt.filter.bgUnits = $(event.target).closest('.filter-units').data('value');
         $.each($('#bg-units .filter-units'), function(index, item){
             $(item).toggleClass('selected');
         });
@@ -738,17 +738,17 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         var channel = $(event.target).closest('.bar-graph-legend-item').data('channel');
         $('.accordion-item.'+channel).toggleClass('active');
         // Set the global filter for processing in the API call
-        wnt.filterChannels = {};
+        wnt.filter.bgChannels = {};
         $('.bar-graph-legend-item').each(function(i, item){
-            wnt.filterChannels[$(item).data('channel')] = $(item).find('.active').length;
+            wnt.filter.bgChannels[$(item).data('channel')] = $(item).find('.active').length;
         });
         this.callAPI();   // Needed to get rollovers updated properly
     },
     filterCompare: function(event){
-        wnt.filterCompare = event.target.value;
-        wnt.filterPeriod = wnt.filterCompare.split('-')[1];
-        wnt.filterCompare = wnt.filterCompare.split('-')[0];
-        $('#bg-period').val(wnt.filterPeriod);
+        wnt.filter.bgCompare = event.target.value;
+        wnt.filter.bgPeriod = wnt.filter.bgCompare.split('-')[1];
+        wnt.filter.bgCompare = wnt.filter.bgCompare.split('-')[0];
+        $('#bg-period').val(wnt.filter.bgPeriod);
         this.callAPI();
         event.target.blur();
     },

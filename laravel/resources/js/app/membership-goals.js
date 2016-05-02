@@ -5,7 +5,7 @@
 var MembershipGoals = React.createClass({
     getInitialState: function() {
         return {
-            goal: 0,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN HANDLECHANGE)
+            goal: 0,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN filterPeriod)
             goalIndividual: 10000,
             goalFamily: 10000,
             goalDonor: 10000,
@@ -25,102 +25,73 @@ var MembershipGoals = React.createClass({
             statusClassDonor: 'on-track',
 
             markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-            barGradient: 'darkgrey, darkgrey',
             barSegments: wnt.period(0,12,true)
         };
     },
-    markerPosition: function(startDate, endDate, periodLength) {
-        // Needed to switch date format for cross-browser parsing
-        startDate = startDate.split('-');
-        startDate = startDate[1]+'/'+startDate[2]+'/'+startDate[0];
-        endDate = endDate.split('-');
-        endDate = endDate[1]+'/'+endDate[2]+'/'+endDate[0];
-        // Now it can be parsed in Firefox and Safari too
-        var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
-        var percentage = (days / periodLength) * 100;
-        return percentage;
-    },
-    barGradient: function(expected, current) {
-        /*
-            <50         = Red               = Behind            = rgba(221,35,2,1)
-            >50 <75     = Orange            = Behind            = rgba(235,164,9,1)
-            >75 <90     = Yellow            = Slightly Behind   = rgba(255,254,19,1)
-            >90 <110    = Yellowish-green   = On Track          = rgba(170,202,55,1)
-            >110        = Green             = Ahead             = rgba(72,126,3,1)
-
-            halfBlocksToMiddleOfCurrent = [1, 3, 5, 7, 9]
-            Each block counts as 2 so the marker is centered in the color
-            (current / halfBlocksToMiddleOfCurrent) * 2HalvesEach 
-            The % stops in the gradient are where to start the next color, not the color's width
-
-            Passing in marker position and % complete ... ((amount/goal) * 100)           
-        */
-        // LEFT OFF HERE:
-        var actual = parseInt(wnt.membershipSales.filterPeriod[wnt.membershipSales.filterNumType]);
-        var target = parseInt(wnt.membershipGoals.selected);
-        var completed = Math.round((actual/target)*10000)/100;
-        console.log('MEMBERSHIP PERCENTAGE', completed);   // Default  LEFT OFF HERE
-        // TO DO:  MAY NEED TO LEVERAGE FOLLOWING CODE STILL FOR STATUS LABELS
-        if(completed < 50) {
-            // Behind: Marker (expected) should be in the 'middle' of red
-            this.setState({ status: 'Behind', statusClass: 'behind' });
-            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
-        } else if(completed < 75) {
-            // Behind: Marker should be in the 'middle' of orange
-            this.setState({ status: 'Behind', statusClass: 'behind' });
-            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
-        } else if(completed < 90) {
-            // Slightly Behind: Marker should be in the 'middle' of yellow
-            this.setState({ status: 'Slightly Behind', statusClass: 'slightly-behind' });
-            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
-        } else if(completed < 110) {
-            // On Track: Marker should be in the 'middle' of Yellowish-green
-            this.setState({ status: 'On Track', statusClass: 'on-track' });
-            return 'darkgrey '+completed+'%, lightgrey '+completed+'%';
-        } else {
-            // Ahead: Marker (expected) should be in the 'middle' of green (expected is % left position 0-100)
-            this.setState({ status: 'Ahead', statusClass: 'ahead' });
-            return 'darkgrey, darkgrey';
-        }
-    },
-    dialStatus: function(expected, current, type) {   // type = return CLASS or LABEL
-        var diff = (current / expected) * 100;
-        if(diff < 50) {
-            return type === 'label' ? 'Behind' : 'behind';
-        } else if(diff < 75) {
-            return type === 'label' ? 'Behind' : 'behind';
-        } else if(diff < 90) {
-            return type === 'label' ? 'Slightly Behind' : 'slightly-behind';
-        } else if(diff < 110) {
-            return type === 'label' ? 'On Track' : 'on-track';
-        } else {
-            return type === 'label' ? 'Ahead' : 'ahead';
-        }
-    },
-    componentDidMount: function() {
+    callAPI: function(){
         var self = this;
+        var periodStart = wnt.yearStart;
+        var periodEnd = wnt.yesterday;
+        if(wnt.filter.mgPeriod === 'quarter'){
+            periodStart = wnt.quarterStart;
+        } else if(wnt.filter.mgPeriod === 'month'){
+            periodStart = wnt.monthStart;
+        }
+        console.log('MEMBERSHIP PERIOD', periodStart, periodEnd);
+        /*
+        var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
+        var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
+        wnt.barScope = 'date';
+        // Get week numbers for quarter data retrieval
+        if(wnt.filter.bgPeriod === 'quarter'){
+            currentPeriod[0] = wnt.getWeekNumber(currentPeriod[0], 'format');
+            currentPeriod[1] = wnt.getWeekNumber(currentPeriod[1], 'format');
+            priorPeriod[0] = wnt.getWeekNumber(priorPeriod[0], 'format');
+            priorPeriod[1] = wnt.getWeekNumber(priorPeriod[1], 'format');
+            wnt.barScope = 'week';
+        }
+        var totalBars = { type: 'sales' };
+        if(wnt.filter.bgVisitors === 'members'){
+            totalBars = { type: 'sales', members: true };
+        } else if(wnt.filter.bgVisitors === 'nonmembers'){
+            totalBars = { type: 'sales', members: false };
+        }
         $.post(
             wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {
+                    // Bar graph data ...
+                    box_bars: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+        */
+        $.post(
+            wnt.apiMain,
+            {
+                venue_id: wnt.venueID,
+                queries: {
+                    memberships: { specs: { type: 'sales', channel: 'membership' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     memberships_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     memberships_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
                     memberships_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
 
+                    individual: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     individual_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     individual_quarter: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
                     individual_month: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
 
 
+                    family: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     family_year: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     family_quarter: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
                     family_month: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
 
+                    donor: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     donor_year: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     donor_quarter: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
                     donor_month: { specs: { type: 'sales', kinds: ['donation'] }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
 
+                    visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
                     visits_year: { specs: { type: 'visits' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
                     visits_quarter: { specs: { type: 'visits' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
                     visits_month: { specs: { type: 'visits' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } }
@@ -130,7 +101,7 @@ var MembershipGoals = React.createClass({
         .done(function(result) {
             console.log('Membership Goals data loaded...');
             wnt.membershipSales = result;
-            wnt.membershipSales.filterNumType = 'amount';   // Assume default filter of dollars
+            wnt.membershipSales.filterUnits = 'amount';   // Assume default filter of dollars
             wnt.membershipSales.filterPeriod = wnt.membershipSales.memberships_year;   // Default
             wnt.gettingMembershipGoalsData = $.Deferred();
             wnt.getGoals(wnt.thisYear, wnt.gettingMembershipGoalsData);
@@ -149,7 +120,8 @@ var MembershipGoals = React.createClass({
                 }
                 // Set globals for easy access
                 wnt.membershipGoals.totalMembership = goalFamily + goalIndividual;
-                wnt.membershipGoals.selected = wnt.membershipGoals.totalMembership;
+                wnt.filter.mgGoal = wnt.membershipGoals.totalMembership;
+                // LEFT OFF HERE: Create global for period to be used when unit filter changes?... wnt.filter.bgPeriod
                 wnt.membershipGoals.family = goalFamily;
                 wnt.membershipGoals.individual = goalIndividual;
                 // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
@@ -174,39 +146,35 @@ var MembershipGoals = React.createClass({
                         goalIndividual: wnt.membershipGoals.individual,
                         goalDonor: self.state.goalDonor,
                         memberships: result.memberships_year.amount,
-                        barGradient: self.barGradient(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                                (result.memberships_year.amount / wnt.membershipGoals.totalMembership) * 100
-                            ),
                         individual: result.individual_year.amount,
                         family: result.family_year.amount,
                         donor: result.donor_year.amount,
-                        statusIndividual: self.dialStatus(
+                        statusIndividual: self.meterStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                                 (wnt.membershipSales.individual_year.amount / wnt.membershipGoals.individual) * 100,
                                 'label'
                             ),
-                        statusClassIndividual: self.dialStatus(
+                        statusClassIndividual: self.meterStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                                 (wnt.membershipSales.individual_year.amount / wnt.membershipGoals.individual) * 100,
                                 'class'
                             ),
-                        statusFamily: self.dialStatus(
+                        statusFamily: self.meterStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                                 (wnt.membershipSales.family_year.amount / wnt.membershipGoals.family) * 100,
                                 'label'
                             ),
-                        statusClassFamily: self.dialStatus(
+                        statusClassFamily: self.meterStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                                 (wnt.membershipSales.family_year.amount / wnt.membershipGoals.family) * 100,
                                 'class'
                             ),
-                        statusDonor: self.dialStatus(
+                        statusDonor: self.meterStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                                 (wnt.membershipSales.donor_year.amount / 10000) * 100,
                                 'label'
                             ),
-                        statusClassDonor: self.dialStatus(
+                        statusClassDonor: self.meterStatus(
                                 self.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                                 (wnt.membershipSales.donor_year.amount / 10000) * 100,
                                 'class'
@@ -219,206 +187,221 @@ var MembershipGoals = React.createClass({
         .fail(function(result) {
             console.log('MEMBERSHIP GOALS DATA ERROR! ... ' + result.statusText);
         });
-        window.addEventListener("resize", this.drawDials);
+        console.log('MEMBERSHIP CALL API', wnt.filter.mgUnits, wnt.filter.mgPeriod);
     },
-    componentWillUnmount: function() {
-        //
-        window.removeEventListener("resize", this.drawDials);
+    markerPosition: function(startDate, endDate, periodLength) {
+        // Needed to switch date format for cross-browser parsing
+        startDate = startDate.split('-');
+        startDate = startDate[1]+'/'+startDate[2]+'/'+startDate[0];
+        endDate = endDate.split('-');
+        endDate = endDate[1]+'/'+endDate[2]+'/'+endDate[0];
+        // Now it can be parsed in Firefox and Safari too
+        var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
+        var percentage = (days / periodLength) * 100;
+        return percentage;
     },
-    handleChange: function(event) {
+    meterStatus: function(expected, current, type) {   // type = return CLASS or LABEL
+        var diff = (current / expected) * 100;
+        if(diff < 50) {
+            return type === 'label' ? 'Behind' : 'behind';
+        } else if(diff < 75) {
+            return type === 'label' ? 'Behind' : 'behind';
+        } else if(diff < 90) {
+            return type === 'label' ? 'Slightly Behind' : 'slightly-behind';
+        } else if(diff < 110) {
+            return type === 'label' ? 'On Track' : 'on-track';
+        } else {
+            return type === 'label' ? 'Ahead' : 'ahead';
+        }
+    },
+    componentDidMount: function() {
+        // Set filter defaults as globals
+        wnt.filter.mgUnits = 'amount';   // amount, units
+        wnt.filter.mgPeriod = 'year';   // year, month, quarter
+        this.callAPI();
+    },
+    filterPeriod: function(event) {
+        // week, month, quarter
+        wnt.filter.mgPeriod = event.target.value;
+
+
         var filter = event.target.value;
         var numType = $('#mg-units .selected').data('value') === 'dollars' ? 'amount' : 'units';
         if(filter === 'year'){
-            wnt.membershipGoals.selected = wnt.membershipGoals.totalMembership;
+            wnt.filter.mgGoal = wnt.membershipGoals.totalMembership;
             wnt.membershipSales.filterPeriod = wnt.membershipSales.memberships_year;
             this.setState({
                 barSegments: wnt.period(0, 12, true),
                 goal: wnt.membershipGoals.totalMembership,
                 memberships: wnt.membershipSales.memberships_year[numType],
                 markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                barGradient: this.barGradient(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membershipSales.memberships_year[numType] / wnt.membershipGoals.totalMembership) * 100
-                        ),
                 individual: wnt.membershipSales.individual_year[numType],
                 family: wnt.membershipSales.family_year[numType],
                 donor: wnt.membershipSales.donor_year[numType],
                 goalIndividual: wnt.membershipGoals.individual,
                 goalFamily: wnt.membershipGoals.family,
                 goalDonor: 10000,
-                statusIndividual: this.dialStatus(
+                statusIndividual: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.individual_year[numType] / wnt.membershipGoals.individual) * 100,
                         'label'
                     ),
-                statusClassIndividual: this.dialStatus(
+                statusClassIndividual: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.individual_year[numType] / wnt.membershipGoals.individual) * 100,
                         'class'
                     ),
-                statusFamily: this.dialStatus(
+                statusFamily: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.family_year[numType] / wnt.membershipGoals.family) * 100,
                         'label'
                     ),
-                statusClassFamily: this.dialStatus(
+                statusClassFamily: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.family_year[numType] / wnt.membershipGoals.family) * 100,
                         'class'
                     ),
-                statusDonor: this.dialStatus(
+                statusDonor: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.donor_year[numType] / 10000) * 100,
                         'label'
                     ),
-                statusClassDonor: this.dialStatus(
+                statusClassDonor: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.donor_year[numType] / 10000) * 100,
                         'class'
                     )
             });
         } else if(filter === 'quarter'){
-            wnt.membershipGoals.selected = wnt.membershipGoals.totalMembershipQuarter;
+            wnt.filter.mgGoal = wnt.membershipGoals.totalMembershipQuarter;
             wnt.membershipSales.filterPeriod = wnt.membershipSales.memberships_quarter;
             this.setState({
                 barSegments: wnt.period(wnt.thisQuarterNum[0], wnt.thisQuarterNum[1], true),
                 goal: wnt.membershipGoals.totalMembershipQuarter,
                 memberships: wnt.membershipSales.memberships_quarter[numType],
                 markerPosition: this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                barGradient: this.barGradient(
-                            this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
-                            (wnt.membershipSales.memberships_quarter[numType] / wnt.membershipGoals.totalMembershipQuarter) * 100
-                        ),
                 individual: wnt.membershipSales.individual_quarter[numType],
                 family: wnt.membershipSales.family_quarter[numType],
                 donor: wnt.membershipSales.donor_quarter[numType],
                 goalIndividual: wnt.membershipGoals.individualQuarter,
                 goalFamily: wnt.membershipGoals.familyQuarter,
                 goalDonor: 2500,
-                statusIndividual: this.dialStatus(
+                statusIndividual: this.meterStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                         (wnt.membershipSales.individual_quarter[numType] / wnt.membershipGoals.individualQuarter) * 100,
                         'label'
                     ),
-                statusClassIndividual: this.dialStatus(
+                statusClassIndividual: this.meterStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                         (wnt.membershipSales.individual_quarter[numType] / wnt.membershipGoals.individualQuarter) * 100,
                         'class'
                     ),
-                statusFamily: this.dialStatus(
+                statusFamily: this.meterStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                         (wnt.membershipSales.family_quarter[numType] / wnt.membershipGoals.familyQuarter) * 100,
                         'label'
                     ),
-                statusClassFamily: this.dialStatus(
+                statusClassFamily: this.meterStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                         (wnt.membershipSales.family_quarter[numType] / wnt.membershipGoals.familyQuarter) * 100,
                         'class'
                     ),
-                statusDonor: this.dialStatus(
+                statusDonor: this.meterStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                         (wnt.membershipSales.donor_quarter[numType] / 2500) * 100,
                         'label'
                     ),
-                statusClassDonor: this.dialStatus(
+                statusClassDonor: this.meterStatus(
                         this.markerPosition(wnt.quarterStart, wnt.yesterday, 91),
                         (wnt.membershipSales.donor_quarter[numType] / 2500) * 100,
                         'class'
                     )
             });
         }  else if(filter === 'month'){
-            wnt.membershipGoals.selected = wnt.membershipGoals.totalMembershipMonth;
+            wnt.filter.mgGoal = wnt.membershipGoals.totalMembershipMonth;
             wnt.membershipSales.filterPeriod = wnt.membershipSales.memberships_month;
             this.setState({
                 barSegments: wnt.period(wnt.thisMonthNum, wnt.thisMonthNum, true),
                 goal: wnt.membershipGoals.totalMembershipMonth,
                 memberships: wnt.membershipSales.memberships_month[numType],
                 markerPosition: this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                barGradient: this.barGradient(
-                            this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
-                            (wnt.membershipSales.memberships_month[numType] / wnt.membershipGoals.totalMembershipMonth) * 100
-                        ),
                 individual: wnt.membershipSales.individual_month[numType],
                 family: wnt.membershipSales.family_month[numType],
                 donor: wnt.membershipSales.donor_month[numType],
                 goalIndividual: wnt.membershipGoals['membership/units'].sub_channels.individual.months[wnt.thisMonthNum + 1],
                 goalFamily: wnt.membershipGoals['membership/units'].sub_channels.family.months[wnt.thisMonthNum + 1],
                 goalDonor: 875,
-                statusIndividual: this.dialStatus(
+                statusIndividual: this.meterStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                         (wnt.membershipSales.individual_month[numType] / wnt.membershipGoals['membership/units'].sub_channels.individual.months[wnt.thisMonthNum + 1]) * 100,
                         'label'
                     ),
-                statusClassIndividual: this.dialStatus(
+                statusClassIndividual: this.meterStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                         (wnt.membershipSales.individual_month[numType] / wnt.membershipGoals['membership/units'].sub_channels.individual.months[wnt.thisMonthNum + 1]) * 100,
                         'class'
                     ),
-                statusFamily: this.dialStatus(
+                statusFamily: this.meterStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                         (wnt.membershipSales.family_month[numType] / wnt.membershipGoals['membership/units'].sub_channels.family.months[wnt.thisMonthNum + 1]) * 100,
                         'label'
                     ),
-                statusClassFamily: this.dialStatus(
+                statusClassFamily: this.meterStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                         (wnt.membershipSales.family_month[numType] / wnt.membershipGoals['membership/units'].sub_channels.family.months[wnt.thisMonthNum + 1]) * 100,
                         'class'
                     ),
-                statusDonor: this.dialStatus(
+                statusDonor: this.meterStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                         (wnt.membershipSales.donor_month[numType] / 875) * 100,
                         'label'
                     ),
-                statusClassDonor: this.dialStatus(
+                statusClassDonor: this.meterStatus(
                         this.markerPosition(wnt.monthStart, wnt.yesterday, 30),
                         (wnt.membershipSales.donor_month[numType] / 875) * 100,
                         'class'
                     )
             });
         } else {
-            wnt.membershipGoals.selected = wnt.membershipGoals.totalMembership;
+            wnt.filter.mgGoal = wnt.membershipGoals.totalMembership;
             wnt.membershipSales.filterPeriod = wnt.membershipSales.memberships_year;
             this.setState({
                 barSegments: wnt.period(0, 12, true),
                 goal: wnt.membershipGoals.totalMembership,
                 memberships: wnt.membershipSales.memberships_year[numType],
                 markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                barGradient: this.barGradient(
-                            this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                            (wnt.membershipSales.memberships_year[numType] / wnt.membershipGoals.totalMembership) * 100
-                        ),
                 individual: wnt.membershipSales.individual_year[numType],
                 family: wnt.membershipSales.family_year[numType],
                 donor: wnt.membershipSales.donor_year[numType],
                 goalIndividual: wnt.membershipGoals.individual,
                 goalFamily: wnt.membershipGoals.family,
                 goalDonor: 10000,
-                statusIndividual: this.dialStatus(
+                statusIndividual: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.individual_year[numType] / wnt.membershipGoals.individual) * 100,
                         'label'
                     ),
-                statusClassIndividual: this.dialStatus(
+                statusClassIndividual: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.individual_year[numType] / wnt.membershipGoals.individual) * 100,
                         'class'
                     ),
-                statusFamily: this.dialStatus(
+                statusFamily: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.family_year[numType] / wnt.membershipGoals.family) * 100,
                         'label'
                     ),
-                statusClassFamily: this.dialStatus(
+                statusClassFamily: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.family_year[numType] / wnt.membershipGoals.family) * 100,
                         'class'
                     ),
-                statusDonor: this.dialStatus(
+                statusDonor: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.donor_year[numType] / 10000) * 100,
                         'label'
                     ),
-                statusClassDonor: this.dialStatus(
+                statusClassDonor: this.meterStatus(
                         this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                         (wnt.membershipSales.donor_year[numType] / 10000) * 100,
                         'class'
@@ -427,124 +410,19 @@ var MembershipGoals = React.createClass({
         }
         event.target.blur();
     },
-    formatNumbers: function(){
-        var numType = $('#mg-units .selected').data('value') === 'dollars' ? 'amount' : 'units';
-        var symbol = numType === 'amount' ? '$' : '';
-        $('#total-membership-goals .goal-amount').parseNumber({format:symbol+"#,###", locale:"us"});
-        $('#total-membership-goals .goal-amount').formatNumber({format:symbol+"#,###", locale:"us"});
-        $('#total-membership-goals .current-amount').parseNumber({format:symbol+"#,###", locale:"us"});
-        $('#total-membership-goals .current-amount').formatNumber({format:symbol+"#,###", locale:"us"});
-        if($('#total-membership-goals .current-amount').html() === '$'){
-            $('#total-membership-goals .current-amount').html('$0');
-        }
-        if($('#total-membership-goals .current-amount').html() === ''){
-            $('#total-membership-goals .current-amount').html('0');
-        }
-        $.each($('#membership .channel-amount'), function(index, item){
-            if($(this).html() !== '-'){
-                $(this).parseNumber({format:symbol+"#,###", locale:"us"});
-                $(this).formatNumber({format:symbol+"#,###", locale:"us"});
-                if($(this).html() === '$'){
-                    $(this).html('$0');
-                } else if($(this).html() === ''){
-                    $(this).html('0');
-                }
-            }
-        });
-        $.each($('#membership .amount'), function(index, item){
-            if($(this).html() !== '-'){
-                $(this).parseNumber({format:symbol+"#,###", locale:"us"});
-                $(this).formatNumber({format:symbol+"#,###", locale:"us"});
-                if($(this).html() === '$'){
-                    $(this).html('$0');
-                } else if($(this).html() === ''){
-                    $(this).html('0');
-                }
-            }
-        });
-    },
-    drawDials: function() {
-        var diameter = 145;
+    filterUnits: function(event){
+        // week, month, quarter
+        wnt.filter.mgUnits = $(event.target).closest('.filter-units').data('value');
 
-        d3.select('#membership .dial-wrapper').selectAll('svg').remove();
 
-        var rp5 = radialProgress(document.getElementById('div5'))
-            .label('')
-            .diameter(diameter)
-            .value((this.state.individual / this.state.goalIndividual) * 100)
-            .render();
-
-        var rp6 = radialProgress(document.getElementById('div6'))
-            .label('')
-            .diameter(diameter)
-            .value((this.state.family / this.state.goalFamily) * 100)
-            .render();
-
-        /*var rp7 = radialProgress(document.getElementById('div7'))
-            .label('')
-            .diameter(diameter)
-            .value((this.state.donor / this.state.goalDonor) * 100)
-            .render();*/
-
-        // Generate the starting point markers
-        for(i=5; i<8; i++){
-            var startMark = d3.select('#div'+i).selectAll('svg').append("line")
-                .attr("x1", 58)
-                .attr("y1", -2)
-                .attr("x2", 58)
-                .attr("y2", 11)
-                .attr("stroke-width", "3");
-        }
-
-        // Show the details
-        $('#membership .channel-info').css('opacity','0')
-            .animate({
-                opacity: '1'
-            },
-            1500,
-            'easeInSine'
-        );
-
-        // Equalize the row height
-        // $('#total-membership-goals').height($('#membership').height())
-
-        // Set the goal dots
-
-        this.setDots();
-    },
-    setDots: function(){
-        diameter = $('#div5').width() -2;   // Tweaked via console
-        radius = diameter / 2;
-        centerX = radius;
-        centerY = radius;
-        // Angle is calculated as % of 360 based on spot in timeframe
-        angle = Math.round((Math.round(this.state.markerPosition) / 100) * 360) - 90;   // -90 to match dial start/stop   
-        dotOffset = 0;   // Tweaked via console
-        radian = (angle) * (Math.PI/180);
-        dotX = (centerX + (radius * Math.cos(radian))) - dotOffset;
-        dotY = (centerY + (radius * Math.sin(radian))) - dotOffset;
-        d3.select('#membership').selectAll('circle').remove();
-        d3.select('#membership').selectAll('svg').append("circle")
-            .attr("r", 8)
-            .attr("cx", dotX)
-            .attr("cy", dotY)
-            .attr("fill", "rgba(66,66,66,1)");
-    },
-    componentDidUpdate: function(){
-        this.formatNumbers();
-        $('#total-membership-goals .bar-meter-marker')
-            .animate({
-                left: this.state.markerPosition+'%'
-            },
-            2000,
-            'easeOutElastic'
-        );
-        this.drawDials();
-    },
-    filterNumType: function(event){
         // var numType = event.target.value;
         var numType = $(event.target).closest('.filter-units').data('value') === 'dollars' ? 'amount' : 'units';
-        wnt.membershipSales.filterNumType = numType;
+        wnt.membershipSales.filterUnits = numType;
+        // LEFT OFF HERE
+        console.log('DEBUGGING UNITS', wnt.membershipGoals, wnt.membershipGoals.totalMembershipMonth);
+        console.log('DEBUGGING UNITS', wnt.membershipGoals.totalMembershipMonth);
+        // When it's units it's dollars and vice versa?
+        // How the hell is wnt.membershipGoals different from wnt.membershipGoals.totalMembershipMonth at the same time?!?!?!?!
         $.each($('#mg-units .filter-units'), function(index, item){
             $(item).toggleClass('selected');
         });
@@ -583,39 +461,35 @@ var MembershipGoals = React.createClass({
             goalIndividual: wnt.membershipGoals.individual,
             goalDonor: this.state.goalDonor,
             memberships: wnt.membershipSales.memberships_year[numType],
-            barGradient: this.barGradient(
-                    this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
-                    (wnt.membershipSales.memberships_year[numType] / wnt.membershipGoals.totalMembership) * 100
-                ),
             individual: wnt.membershipSales.individual_year[numType],
             family: wnt.membershipSales.family_year[numType],
             donor: wnt.membershipSales.donor_year[numType],
-            statusIndividual: this.dialStatus(
+            statusIndividual: this.meterStatus(
                     this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                     (wnt.membershipSales.individual_year[numType] / wnt.membershipGoals.individual) * 100,
                     'label'
                 ),
-            statusClassIndividual: this.dialStatus(
+            statusClassIndividual: this.meterStatus(
                     this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                     (wnt.membershipSales.individual_year[numType] / wnt.membershipGoals.individual) * 100,
                     'class'
                 ),
-            statusFamily: this.dialStatus(
+            statusFamily: this.meterStatus(
                     this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                     (wnt.membershipSales.family_year[numType] / wnt.membershipGoals.family) * 100,
                     'label'
                 ),
-            statusClassFamily: this.dialStatus(
+            statusClassFamily: this.meterStatus(
                     this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                     (wnt.membershipSales.family_year[numType] / wnt.membershipGoals.family) * 100,
                     'class'
                 ),
-            statusDonor: this.dialStatus(
+            statusDonor: this.meterStatus(
                     this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                     (wnt.membershipSales.donor_year[numType] / 10000) * 100,
                     'label'
                 ),
-            statusClassDonor: this.dialStatus(
+            statusClassDonor: this.meterStatus(
                     this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
                     (wnt.membershipSales.donor_year[numType] / 10000) * 100,
                     'class'
@@ -623,26 +497,98 @@ var MembershipGoals = React.createClass({
         });
         this.formatNumbers();
     },
+    formatNumbers: function(){
+        var symbol = $('#mg-units .selected').data('value') === 'amount' ? '$' : '';
+        $('#meter-membership-total .goal-amount').parseNumber({format:symbol+"#,###", locale:"us"});
+        $('#meter-membership-total .goal-amount').formatNumber({format:symbol+"#,###", locale:"us"});
+        $('#meter-membership-total .current-amount').parseNumber({format:symbol+"#,###", locale:"us"});
+        $('#meter-membership-total .current-amount').formatNumber({format:symbol+"#,###", locale:"us"});
+        if($('#meter-membership-total .current-amount').html() === '$'){
+            $('#meter-membership-total .current-amount').html('$0');
+        }
+        if($('#meter-membership-total .current-amount').html() === ''){
+            $('#meter-membership-total .current-amount').html('0');
+        }
+        $.each($('#membership-goals .channels .current-amount'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:symbol+"#,###", locale:"us"});
+                $(this).formatNumber({format:symbol+"#,###", locale:"us"});
+                if($(this).html() === '$'){
+                    $(this).html('$0');
+                } else if($(this).html() === ''){
+                    $(this).html('0');
+                }
+            }
+        });
+        $.each($('#membership-goals .channels .goal-amount'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:symbol+"#,###", locale:"us"});
+                $(this).formatNumber({format:symbol+"#,###", locale:"us"});
+                if($(this).html() === '$'){
+                    $(this).html('$0');
+                } else if($(this).html() === ''){
+                    $(this).html('0');
+                }
+            }
+        });
+    },
+    fillMeters: function(){
+        /*
+        wnt.filter.sgUnits = 'amount';   // amount
+        wnt.filter.sgPeriod = 'year';   // year, month, quarter
+        wnt.filter.sgGoal = '###$$$';   //
+        */
+        var actual = parseInt(wnt.membershipSales.memberships[wnt.filter.mgUnits]);
+        var target = parseInt(wnt.filter.mgGoal);
+        var completed = Math.round((actual/target)*10000)/100;
+        console.log('MEM PERCENTAGE (FILL)', actual, target, completed);   // Default  LEFT OFF HERE
+        if(completed < 50) {
+            $('#meter-membership-total .meter-status').text('Behind');
+        } else if(completed < 75) {
+            $('#meter-membership-total .meter-status').text('Behind');
+        } else if(completed < 90) {
+            $('#meter-membership-total .meter-status').text('Slightly Behind');
+        } else if(completed < 110) {
+            $('#meter-membership-total .meter-status').text('On Track');
+        } else {
+            $('#meter-membership-total .meter-status').text('Ahead');
+        }
+        $('#membership-goals .bar-meter-fill')
+            .animate({
+                width: completed+'%'
+            },
+            2000,
+            'easeOutElastic'   // easeOutSine
+        );
+    },
+    componentDidUpdate: function(){
+        this.formatNumbers();
+        $('#membership-goals .bar-meter-marker')
+            .animate({
+                left: this.state.markerPosition+'%'
+            },
+            2000,
+            'easeOutElastic'
+        );
+        this.fillMeters();
+        $('#membership-goals').height($('#sales-goals').height());
+    },
     render: function() {
-        var gradient = {
-            background: 'linear-gradient(to right, '+this.state.barGradient+')'
-        };
         return (
             <div>
-                <div className="widget" id="total-membership-goals">
+                <div className="widget" id="membership-goals">
                     <h2>Membership Goals</h2>
                     <ActionMenu />
                     <form>
-                        <select className="form-control" onChange={this.handleChange}>
+                        <select className="form-control" onChange={this.filterPeriod}>
                             <option value="year">Current Year ({wnt.thisYear})</option>
                             <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
                             <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
-                            <option value="custom">Custom</option>
                         </select>
                         <Caret className="filter-caret" />
                     </form>
-                    <div id="mg-units" onClick={this.filterNumType}>
-                        <div data-value="dollars" className="filter-units selected">
+                    <div id="mg-units" onClick={this.filterUnits}>
+                        <div data-value="amount" className="filter-units selected">
                             Dollars
                             <div className="filter-highlight"></div>
                         </div>
@@ -651,37 +597,11 @@ var MembershipGoals = React.createClass({
                             <div className="filter-highlight"></div>
                         </div>
                     </div>
-
-
-
-                    <div className="meter-group clear">
-                        <div className="meter-label">Total Membership Sales</div>
-                        <div className="meter-status">{this.state.status}</div>
-                        <div className="bar-meter clear" style={gradient}>
-                            <div className="bar-meter-marker"></div>
-                        </div>
-                        <div className="meter-reading">
-                            (<span className="current-amount">{this.state.memberships}</span> of <span className="goal-amount">{this.state.goal}</span>)
-                        </div>
-                    </div>
-
-
-
-
-                </div>
-                <div className="widget" id="membership">
+                    <Meter label="Total Membership Sales" divID="meter-membership-total" amount={this.state.memberships} goal={this.state.goal} />
                     <h3>By Membership Type</h3>
-                    <div className="dial-wrapper">
-                        <Dial divID="div5" label="Individual"
-                            amount={this.state.individual}
-                            goal={this.state.goalIndividual}
-                            status={this.state.statusIndividual}
-                            statusClass={this.state.statusClassIndividual} />
-                        <Dial divID="div6" label="Family"
-                            amount={this.state.family}
-                            goal={this.state.goalFamily}
-                            status={this.state.statusFamily}
-                            statusClass={this.state.statusClassFamily} />
+                    <div className="channels">
+                        <Meter label="Individual" divID="meter-membership-ind" amount={this.state.individual} goal={this.state.goalIndividual} />
+                        <Meter label="Family" divID="meter-membership-fam" amount={this.state.family} goal={this.state.goalFamily} />
                     </div>
                 </div>
             </div>

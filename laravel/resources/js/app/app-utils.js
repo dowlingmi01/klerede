@@ -363,7 +363,8 @@ var wnt = {
         var encodedUri = encodeURI(csvContent);
         $('.popover').hide();
         window.open(encodedUri);
-    }
+    },
+    filter: {}
 };
 
 /********************************************/
@@ -412,7 +413,7 @@ wnt.yearStart = wnt.thisYear+'-1-1';
 wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
 wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';   // e.g. 2015-12-1
 wnt.monthEnd = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear);
-wnt.filterDates = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
+wnt.filter.bgDates = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
 wnt.weekago = new Date(wnt.yesterday);
 wnt.weekago.setDate(wnt.weekago.getDate() - 6);
 wnt.weekago = wnt.formatDate(wnt.weekago, 'double');
