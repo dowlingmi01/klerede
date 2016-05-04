@@ -28,12 +28,19 @@ class ImportQuery extends Model {
 		$this->dispatch(new ProcessImportQuery($this));
 	}
 	function process() {
-		$cmd = 'gzip -fd ' . $this->getGZPath();
-		$process = new Process($cmd);
-		$process->run();
+		$fs = filesize($this->getGZPath());
 		/** @var ImportQueryHandler $handler */
 		$handler = $this->query_class->getHandler($this);
-		$handler->handle();
+		if($fs > 0) {
+			$cmd = 'gzip -fd ' . $this->getGZPath();
+			$process = new Process($cmd);
+			$process->run();
+
+			$handler->handle();
+		} else {
+			$handler->insertNextQuery();
+			$this->processed();
+		}
 	}
 	public function query_class() {
 		return $this->belongsTo('App\ImportQueryClass', 'import_query_class_id');
