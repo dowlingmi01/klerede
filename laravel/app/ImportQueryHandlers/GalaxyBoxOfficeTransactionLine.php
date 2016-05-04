@@ -11,7 +11,7 @@ class GalaxyBoxOfficeTransactionLine extends ImportQueryHandler {
 	function updateVariables() {
 		$lastId = DB::table($this->getTableName())->
 			where('query_id', $this->query->id)->max('sequence');
-		VenueVariable::setValue($this->query->venue_id, 'BOX_OFFICE_LAST_TRAN_LINE_ID', $lastId);
+		VenueVariable::setValue($this->query->venue_id, 'BOX_OFFICE_LAST_TRAN_DETAIL_ID', $lastId);
 	}
 	function process() {
 		$cols = ['l.id', 't.id as box_office_transaction_id', 'l.sequence', 'p.id as box_office_product_id'
