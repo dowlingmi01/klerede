@@ -39,6 +39,7 @@ class ImportQuery extends Model {
 			$handler->handle();
 		} else {
 			$handler->insertNextQuery();
+			$this->num_records = 0;
 			$this->processed();
 		}
 	}
