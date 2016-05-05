@@ -1,4 +1,4 @@
-SELECT PLU AS code
+SELECT RTRIM(PLU) AS code
      , i.Descr AS description
      , o.AccountID AS account_code
      , CASE WHEN i.PassKind > 0 THEN 'pass'

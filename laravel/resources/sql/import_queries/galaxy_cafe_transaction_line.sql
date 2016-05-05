@@ -1,6 +1,6 @@
 SELECT d.JnlTranID AS source_id
      , d.JnlDetailID AS sequence
-     , i.PLU AS cafe_product_code
+     , RTRIM(i.PLU) AS cafe_product_code
      , d.Amount AS sale_price
      , d.Qty AS quantity
   FROM JnlDetails d
