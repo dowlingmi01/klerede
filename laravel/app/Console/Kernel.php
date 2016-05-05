@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\PosLogImportDir',
 		'App\Console\Commands\WeatherImport',
 		'App\Console\Commands\StatsSalesCompute',
+		'App\Console\Commands\ImportQueryInit',
 	];
 
 	/**
