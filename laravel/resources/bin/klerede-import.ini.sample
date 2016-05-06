@@ -1,0 +1,7 @@
+venue_id=1588
+base_url=http://test.klerede.com
+sql_server=SERVERNAME
+sql_database=Galaxy1
+sql_auth=trusted|sqlsrv
+sql_user=user
+sql_password=pass
