@@ -114,7 +114,7 @@ var Dial = React.createClass({
 var Meter = React.createClass({
     render: function() {
         return (
-            <div id={this.props.divID} className="meter-group">
+            <div id={this.props.divID} className="meter-group" data-completed={this.props.completed}>
                 <div className="meter-label">{this.props.label}</div>
                 <div className="meter-status"></div>
                 <div className="bar-meter-marker"></div>

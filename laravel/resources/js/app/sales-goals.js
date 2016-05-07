@@ -5,32 +5,19 @@
 var SalesGoals = React.createClass({
     getInitialState: function() {
         return {
-            goal: 0,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN filterPeriod)
-            goalBoxoffice: 4000000,
-            goalCafe: 4000000,
-            goalGiftstore: 4000000,
-            goalMembership: 4000000,
+            goalTotal: 0,   // TEMP STATIC GOAL (OTHER GOALS ARE STATIC IN filterPeriod)
+            goalBox: 0,
+            goalCafe: 0,
+            goalGift: 0,
 
             boxoffice: 0,
             cafe: 0,
             giftstore: 0,
-            membership: 0,
 
-            statusBoxoffice: 'On Track',
-            statusCafe: 'On Track',
-            statusGiftstore: 'On Track',
-            statusMembership: 'On Track',
-
-            statusClassBoxoffice: 'on-track',
-            statusClassCafe: 'on-track',
-            statusClassGiftstore: 'on-track',
-            statusClassMembership: 'on-track',
-
-            markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365),
+            markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365)
         };
     },
     callAPI: function(){
-        // LEFT OFF HERE: TO DO: Remove membership calculations from totals
         var self = this;
         var periodStart = wnt.yearStart;
         var periodEnd = wnt.yesterday;
@@ -42,41 +29,16 @@ var SalesGoals = React.createClass({
             periodStart = wnt.monthStart;
             periodDays = 30;
         }
-        console.log('SALES PERIOD', periodStart, periodEnd);
         $.post(
             wnt.apiMain,
             {
                 venue_id: wnt.venueID,
                 queries: {
                     sales: { specs: { type: 'sales' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    sales_year: { specs: { type: 'sales' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
-                    sales_quarter: { specs: { type: 'sales' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
-                    sales_month: { specs: { type: 'sales' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
-
                     boxoffice: { specs: { type: 'sales', channel: 'gate' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    boxoffice_year: { specs: { type: 'sales', channel: 'gate' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
-                    boxoffice_quarter: { specs: { type: 'sales', channel: 'gate' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
-                    boxoffice_month: { specs: { type: 'sales', channel: 'gate' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
-                    
                     cafe: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    cafe_year: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
-                    cafe_quarter: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
-                    cafe_month: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
-                    
                     giftstore: { specs: { type: 'sales', channel: 'store' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    giftstore_year: { specs: { type: 'sales', channel: 'store' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
-                    giftstore_quarter: { specs: { type: 'sales', channel: 'store' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
-                    giftstore_month: { specs: { type: 'sales', channel: 'store' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
-                    
-                    membership: { specs: { type: 'sales', channel: 'membership' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    membership_year: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
-                    membership_quarter: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
-                    membership_month: { specs: { type: 'sales', channel: 'membership' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } },
-
-                    visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    visits_year: { specs: { type: 'visits' }, periods: { from: wnt.yearStart, to: wnt.yesterday, kind: 'sum' } },
-                    visits_quarter: { specs: { type: 'visits' }, periods: { from: wnt.quarterStart, to: wnt.yesterday, kind: 'sum' } },
-                    visits_month: { specs: { type: 'visits' }, periods: { from: wnt.monthStart, to: wnt.yesterday, kind: 'sum' } }
+                    visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } }
                 }
             }
         )
@@ -86,105 +48,71 @@ var SalesGoals = React.createClass({
             wnt.gettingSalesGoalsData = $.Deferred();
             wnt.getGoals(wnt.thisYear, wnt.gettingSalesGoalsData);
             $.when(wnt.gettingSalesGoalsData).done(function(goals) {
-                // Set global for easy reuse
-                wnt.salesGoals = goals;
-                // Initialize goal totals
-                var goalBoxoffice = 0;
-                var goalCafe = 0;
-                var goalGiftstore = 0;
-                var goalMembership = 0;
-                // Loop through months to calculate goal totals
-                for(i=1; i<13; i++){
-                    var key = i;
-                    goalBoxoffice += goals['gate/amount'].months[key.toString()];
-                    goalCafe += goals['cafe/amount'].months[key.toString()];
-                    goalGiftstore += goals['store/amount'].months[key.toString()];
-                    goalMembership += goals['membership/amount'].sub_channels.family.months[key.toString()];
-                    goalMembership += goals['membership/amount'].sub_channels.individual.months[key.toString()];
+                // Set globals for easy reuse
+                wnt.filter.sgGoalTotal = 0;
+                wnt.filter.sgGoalBox = 0;
+                wnt.filter.sgGoalCafe = 0;
+                wnt.filter.sgGoalGift = 0;
+                if(wnt.filter.sgPeriod === 'quarter'){
+                    // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
+                    goals.boxofficeQuarter = 0;
+                    goals.cafeQuarter = 0;
+                    goals.storeQuarter = 0;
+                    for(i=0; i<3; i++){
+                        var month = wnt.thisQuarterMonths[i];
+                        // Gate / Box Office
+                        var goalTotal = goals['gate/amount'].months[month];
+                        goals.boxofficeQuarter += goalTotal;
+                        // Cafe
+                        goalTotal = goals['cafe/amount'].months[month];
+                        goals.cafeQuarter += goalTotal;
+                        // Store
+                        goalTotal = goals['store/amount'].months[month];
+                        goals.storeQuarter += goalTotal;
+                    }
+                    wnt.filter.sgGoalTotal = goals.boxofficeQuarter + goals.cafeQuarter + goals.storeQuarter;
+                    wnt.filter.sgGoalBox = goals.boxofficeQuarter;
+                    wnt.filter.sgGoalCafe = goals.cafeQuarter;
+                    wnt.filter.sgGoalGift = goals.storeQuarter;
+                } else if(wnt.filter.sgPeriod === 'month'){
+                    var monthNum = wnt.thisMonthNum + 1;
+                    wnt.filter.sgGoalTotal = goals['gate/amount'].months[monthNum] + goals['cafe/amount'].months[monthNum] + goals['store/amount'].months[monthNum];
+                    wnt.filter.sgGoalBox = goals['gate/amount'].months[monthNum];
+                    wnt.filter.sgGoalCafe = goals['cafe/amount'].months[monthNum];
+                    wnt.filter.sgGoalGift = goals['store/amount'].months[monthNum];
+                } else {
+                    // ELSE: Set goals to year totals
+                    // Initialize goal totals
+                    var goalBox = 0;
+                    var goalCafe = 0;
+                    var goalGift = 0;
+                    // Loop through months to calculate goal totals
+                    for(i=1; i<13; i++){
+                        var key = i;
+                        goalBox += goals['gate/amount'].months[key.toString()];
+                        goalCafe += goals['cafe/amount'].months[key.toString()];
+                        goalGift += goals['store/amount'].months[key.toString()];
+                    }
+                    wnt.filter.sgGoalTotal = goalBox + goalCafe + goalGift;
+                    wnt.filter.sgGoalBox = goalBox;
+                    wnt.filter.sgGoalCafe = goalCafe;
+                    wnt.filter.sgGoalGift = goalGift;
                 }
-                // Set globals for easy access
-                wnt.salesGoals.total = goalBoxoffice + goalCafe + goalGiftstore + goalMembership;
-                wnt.filter.sgGoal = wnt.salesGoals.total;
-                wnt.salesGoals.boxoffice = goalBoxoffice;
-                wnt.salesGoals.cafe = goalCafe;
-                wnt.salesGoals.store = goalGiftstore;
-                wnt.salesGoals.membership = goalMembership;
-                // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
-                wnt.salesGoals.boxofficeQuarter = 0;
-                wnt.salesGoals.cafeQuarter = 0;
-                wnt.salesGoals.storeQuarter = 0;
-                wnt.salesGoals.membershipQuarter = 0;
-                for(i=0; i<3; i++){
-                    var month = wnt.thisQuarterMonths[i];
-                    // Gate / Box Office
-                    var goal = wnt.salesGoals['gate/amount'].months[month];
-                    wnt.salesGoals.boxofficeQuarter += goal;
-                    // Cafe
-                    goal = wnt.salesGoals['cafe/amount'].months[month];
-                    wnt.salesGoals.cafeQuarter += goal;
-                    // Store
-                    goal = wnt.salesGoals['store/amount'].months[month];
-                    wnt.salesGoals.storeQuarter += goal;
-                    // Membership
-                    goal = wnt.salesGoals['membership/amount'].sub_channels.family.months[month];
-                    goal += wnt.salesGoals['membership/amount'].sub_channels.individual.months[month];
-                    wnt.salesGoals.membershipQuarter += goal;
-                }
-                wnt.salesGoals.totalQuarter = wnt.salesGoals.boxofficeQuarter + wnt.salesGoals.cafeQuarter + wnt.salesGoals.storeQuarter + wnt.salesGoals.membershipQuarter;
-                var monthNum = wnt.thisMonthNum + 1;
-                wnt.salesGoals.totalMonth = wnt.salesGoals['gate/amount'].months[monthNum] + wnt.salesGoals['cafe/amount'].months[monthNum] + wnt.salesGoals['store/amount'].months[monthNum] + wnt.salesGoals['membership/amount'].sub_channels.family.months[monthNum] + wnt.salesGoals['membership/amount'].sub_channels.individual.months[monthNum];
+                wnt.filter.sgGoalTotalComplete = Math.round((result.sales.amount / wnt.filter.sgGoalTotal) * 100);
+                wnt.filter.sgGoalBoxComplete = Math.round((result.boxoffice.amount / wnt.filter.sgGoalBox) * 100);
+                wnt.filter.sgGoalCafeComplete = Math.round((result.cafe.amount / wnt.filter.sgGoalCafe) * 100);
+                wnt.filter.sgGoalGiftComplete = Math.round((result.giftstore.amount / wnt.filter.sgGoalGift) * 100);
                 if(self.isMounted()) {
                     self.setState({
-                        goal: wnt.salesGoals.total,
-                        goalBoxoffice: wnt.salesGoals.boxoffice,
-                        goalCafe: wnt.salesGoals.cafe,
-                        goalGiftstore: wnt.salesGoals.store,
-                        goalMembership: wnt.salesGoals.membership,
+                        goalTotal: wnt.filter.sgGoalTotal,
+                        goalBox: wnt.filter.sgGoalBox,
+                        goalCafe: wnt.filter.sgGoalCafe,
+                        goalGift: wnt.filter.sgGoalGift,
                         sales: result.sales.amount,
                         boxoffice: result.boxoffice.amount,
                         cafe: result.cafe.amount,
                         giftstore: result.giftstore.amount,
-                        membership: result.membership.amount,
-                        statusBoxoffice: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.boxoffice.amount / wnt.salesGoals.boxoffice) * 100,
-                                'label'
-                            ),
-                        statusClassBoxoffice: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.boxoffice.amount / wnt.salesGoals.boxoffice) * 100,
-                                'class'
-                            ),
-                        statusCafe: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.cafe.amount / wnt.salesGoals.cafe) * 100,
-                                'label'
-                            ),
-                        statusClassCafe: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.cafe.amount / wnt.salesGoals.cafe) * 100,
-                                'class'
-                            ),
-                        statusGiftstore: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.giftstore.amount / wnt.salesGoals.store) * 100,
-                                'label'
-                            ),
-                        statusClassGiftstore: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.giftstore.amount / wnt.salesGoals.store) * 100,
-                                'class'
-                            ),
-                        statusMembership: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.membership.amount / wnt.salesGoals.membership) * 100,
-                                'label'
-                            ),
-                        statusClassMembership: self.meterStatus(
-                                self.markerPosition(wnt.yearStart, wnt.yesterday, periodDays),
-                                (wnt.sales.membership.amount / wnt.salesGoals.membership) * 100,
-                                'class'
-                            )
+                        markerPosition: self.markerPosition(periodStart, wnt.yesterday, periodDays)
                     });
                     self.formatNumbers();
                 }
@@ -193,7 +121,6 @@ var SalesGoals = React.createClass({
         .fail(function(result) {
             console.log('SALES GOALS DATA ERROR! ... ' + result.statusText);
         });
-        console.log('SALES CALL API', wnt.filter.sgUnits, wnt.filter.sgPeriod);
     },
     markerPosition: function(startDate, endDate, periodLength) {
         // Needed to switch date format for cross-browser parsing
@@ -206,26 +133,12 @@ var SalesGoals = React.createClass({
         var percentage = (days / periodLength) * 100;
         return percentage;
     },
-    meterStatus: function(expected, current, type) {   // type = return CLASS or LABEL
-        var diff = (current / expected) * 100;
-        if(diff < 50) {
-            return type === 'label' ? 'Behind' : 'behind';
-        } else if(diff < 75) {
-            return type === 'label' ? 'Behind' : 'behind';
-        } else if(diff < 90) {
-            return type === 'label' ? 'Slightly Behind' : 'slightly-behind';
-        } else if(diff < 110) {
-            return type === 'label' ? 'On Track' : 'on-track';
-        } else {
-            return type === 'label' ? 'Ahead' : 'ahead';
-        }
-    },
     componentDidMount: function() {
         wnt.filter.sgUnits = 'amount';   // amount
         wnt.filter.sgPeriod = 'year';   // year, month, quarter
         this.callAPI();
     },
-    filterPeriod: function(event) {   // LEFT OFF HERE: changing method names and working on callAPI
+    filterPeriod: function(event) {
         // week, month, quarter
         wnt.filter.sgPeriod = event.target.value;
         this.callAPI();
@@ -260,33 +173,27 @@ var SalesGoals = React.createClass({
         });
     },
     fillMeters: function(){
-        /*
-        wnt.filter.sgUnits = 'amount';   // amount
-        wnt.filter.sgPeriod = 'year';   // year, month, quarter
-        wnt.filter.sgGoal = '###$$$';   //
-        */
-        var actual = parseInt(wnt.sales.sales[wnt.filter.sgUnits]);
-        var target = parseInt(wnt.filter.sgGoal);
-        var completed = Math.round((actual/target)*10000)/100;
-        console.log('SALES PERCENTAGE (FILL)', completed);   // Default  LEFT OFF HERE
-        if(completed < 50) {
-            $('#meter-sales-total .meter-status').text('Behind');
-        } else if(completed < 75) {
-            $('#meter-sales-total .meter-status').text('Behind');
-        } else if(completed < 90) {
-            $('#meter-sales-total .meter-status').text('Slightly Behind');
-        } else if(completed < 110) {
-            $('#meter-sales-total .meter-status').text('On Track');
-        } else {
-            $('#meter-sales-total .meter-status').text('Ahead');
-        }
-        $('#sales-goals .bar-meter-fill')
-            .animate({
-                width: completed+'%'
-            },
-            2000,
-            'easeOutElastic'   // easeOutSine
-        );
+        $.each($('#sales-goals .meter-group'), function(index, item){
+            var completed = wnt.filter[$(item).data('completed')];
+            if(completed < 50) {
+                $(item).find('.meter-status').text('Behind');
+            } else if(completed < 75) {
+                $(item).find('.meter-status').text('Behind');
+            } else if(completed < 90) {
+                $(item).find('.meter-status').text('Slightly Behind');
+            } else if(completed < 110) {
+                $(item).find('.meter-status').text('On Track');
+            } else {
+                $(item).find('.meter-status').text('Ahead');
+            }
+            $(item).find('.bar-meter-fill').css('width','0')
+                .animate({
+                    width: completed+'%'
+                },
+                2000,
+                'easeOutElastic'   // easeOutSine
+            );
+        });
     },
     componentDidUpdate: function(){
         this.formatNumbers();
@@ -319,12 +226,12 @@ var SalesGoals = React.createClass({
                             <div className="filter-highlight"></div>
                         </div>
                     </div>
-                    <Meter label="Total Sales" divID="meter-sales-total" amount={this.state.sales} goal={this.state.goal} />
+                    <Meter label="Total Sales" divID="meter-sales-total" amount={this.state.sales} goal={this.state.goalTotal} completed='sgGoalTotalComplete' />
                     <h3>By Channel</h3>
                     <div className="channels">
-                        <Meter label="Box Office" divID="meter-sales-box" amount={this.state.boxoffice} goal={this.state.goalBoxoffice} />
-                        <Meter label="Gift Store" divID="meter-sales-gift" amount={this.state.giftstore} goal={this.state.goalGiftstore} />
-                        <Meter label="Cafe" divID="meter-sales-cafe" amount={this.state.cafe} goal={this.state.goalCafe} />
+                        <Meter label="Box Office" divID="meter-sales-box" amount={this.state.boxoffice} goal={this.state.goalBox} completed='sgGoalBoxComplete' />
+                        <Meter label="Gift Store" divID="meter-sales-gift" amount={this.state.giftstore} goal={this.state.goalGift} completed='sgGoalGiftComplete' />
+                        <Meter label="Cafe" divID="meter-sales-cafe" amount={this.state.cafe} goal={this.state.goalCafe} completed='sgGoalCafeComplete' />
                     </div>
                 </div>
             </div>
