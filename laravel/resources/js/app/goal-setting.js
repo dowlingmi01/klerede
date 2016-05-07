@@ -347,13 +347,6 @@ var GoalSetting = React.createClass({
                             <GoalsMonths id="months-membership-uni-ind" placeholder="0" num="units" channel="membership" subchannel="individual" />
                         </div>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="goal-membership-uni-don" className="col-sm-3 control-label">Donor #:</label>
-                        <div className="col-sm-3 goal-section">
-                            <input type="text" id="goal-membership-uni-don" data-channel="membership" data-subchannel="donor" placeholder="000,000" className="form-control total units" onBlur={this.totalChange} /><ButtonExpand target="#months-membership-uni-don" />
-                            <GoalsMonths id="months-membership-uni-don" placeholder="0" num="units" channel="membership" subchannel="donor" />
-                        </div>
-                    </div>
                 </div>
 
 
@@ -376,13 +369,6 @@ var GoalSetting = React.createClass({
                         <div className="col-sm-3 goal-section">
                             <input type="text" id="goal-membership-dol-ind" data-channel="membership" data-subchannel="individual" placeholder="000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-membership-dol-ind" />
                             <GoalsMonths id="months-membership-dol-ind" placeholder="$0" num="dollars" channel="membership" subchannel="individual" />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="goal-membership-dol-don" className="col-sm-3 control-label">Donor $:</label>
-                        <div className="col-sm-3 goal-section">
-                            <input type="text" id="goal-membership-dol-don" data-channel="membership" data-subchannel="donor" placeholder="000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-membership-dol-don" />
-                            <GoalsMonths id="months-membership-dol-don" placeholder="$0" num="dollars" channel="membership" subchannel="donor" />
                         </div>
                     </div>
                 </div>

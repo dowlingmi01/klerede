@@ -10,7 +10,10 @@ var Header = React.createClass({
             userName: 'mdowling',
             email: 'michael@klerede.com',
             accountType: 'Owner',
-            plan: 'Professional'
+            plan: 'Professional',
+            pwdCurrent: '',
+            pwdNew: '',
+            pwdMatch: ''
         };
     },
     toggleSettings: function() {
@@ -37,6 +40,29 @@ var Header = React.createClass({
     activateField: function(event){
         $(event.target).closest('.utilities-set').find('.active').removeClass('active');
         $(event.target).closest('.form-group').addClass('active');
+    },
+    changeField: function(event){
+        // Change state attributes when user types changes
+        var field = $(event.target).data('field');
+        var stateObject = function() {
+            var returnObj = {};
+            returnObj[field] = event.target.value;
+            return returnObj;
+        }.bind(event)();   // Second set of parentheses is needed to call the function expression 
+        this.setState(stateObject);
+        // Check password
+        if(field === 'pwdCurrent'){
+            console.log('PWD VALID?!');
+        }
+        // Match new password
+        if(field === 'pwdMatch'){
+            console.log('PWD MATCH?!');
+        }
+    },
+    saveChanges: function(event){
+        event.preventDefault();
+        // TO DO: Send changed data to the API
+        console.log('SAVE!!!', this.state);
     },
     render: function() {
         return (
@@ -87,34 +113,34 @@ var Header = React.createClass({
                     <form className="settings">
                         <div className="form-group">
                             <label htmlFor="up-name">Full Name:</label>
-                            <input type="text" id="up-name" value={this.state.fullName} />
+                            <input type="text" id="up-name" value={this.state.fullName} data-field="fullName" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-username">Username:</label>
-                            <input type="text" id="up-username" value={this.state.userName} />
+                            <input type="text" id="up-username" value={this.state.userName} data-field="userName" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-email">Email:</label>
-                            <input type="text" id="up-email" value={this.state.email} />
+                            <input type="text" id="up-email" value={this.state.email} data-field="email" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-pwd-current">Current Password:</label>
-                            <input type="password" id="up-pwd-current" />
+                            <input type="password" id="up-pwd-current" data-field="pwdCurrent" onBlur={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-pwd-new">New Password:</label>
-                            <input type="password" id="up-pwd-new" />
+                            <input type="password" id="up-pwd-new" data-field="pwdNew" onBlur={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-pwd-confirm">Confirm Password:</label>
-                            <input type="password" id="up-pwd-confirm" />
+                            <input type="password" id="up-pwd-confirm" data-field="pwdMatch" onBlur={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-type">Account Type:</label>
                             <input type="text" id="up-type" value={this.state.accountType} />
                         </div>
                         <div className="form-group">
-                            <input type="submit" value="Save" className="btn" />
+                            <input type="submit" value="Save" className="btn" onClick={this.saveChanges} />
                         </div>
                     </form>
                 </div>
