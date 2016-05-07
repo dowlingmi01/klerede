@@ -10,7 +10,7 @@ class GalaxyCafeTransactionLine extends ImportQueryHandler {
 	function updateVariables() {
 		$lastId = DB::table($this->getTableName())->
 			where('query_id', $this->query->id)->max('sequence');
-		VenueVariable::setValue($this->query->venue_id, 'CAFE_LAST_TRAN_LINE_ID', $lastId);
+		VenueVariable::setValue($this->query->venue_id, 'CAFE_LAST_TRAN_DETAIL_ID', $lastId);
 	}
 	function process() {
 		$cols = ['l.id', 't.id as cafe_transaction_id', 'l.sequence', 'p.id as cafe_product_id'

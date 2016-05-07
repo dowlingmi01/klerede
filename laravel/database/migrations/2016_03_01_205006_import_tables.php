@@ -38,6 +38,7 @@ class ImportTables extends Migration {
 			$table->dateTime('time_created');
 			$table->dateTime('time_executed')->nullable();
 			$table->dateTime('time_imported')->nullable();
+			$table->integer('num_records')->nullable();
 			$table->timestamps();
 			$table->index(['venue_id', 'status', 'id']);
 		});

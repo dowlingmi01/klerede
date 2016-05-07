@@ -12,7 +12,7 @@ class GalaxyVisit extends ImportQueryHandler {
 	function updateVariables() {
 		$lastId = DB::table($this->getTableName())->
 			where('query_id', $this->query->id)->max('source_id');
-		VenueVariable::setValue($this->query->venue_id, 'LAST_VISIT_ID', $lastId);
+		VenueVariable::setValue($this->query->venue_id, 'LAST_USAGE_ID', $lastId);
 	}
 	function process() {
 		$cols = ['v.id', 'source_id', 'v.venue_id', 'acp_id', 'facility_id', 'p.id as box_office_product_id', 'ticket_code'

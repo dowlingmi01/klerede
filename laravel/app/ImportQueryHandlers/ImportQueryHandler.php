@@ -17,6 +17,7 @@ abstract class ImportQueryHandler {
 	}
 	public function handle() {
 		$this->load();
+		$this->setNumRecords();
 		$this->updateVariables();
 		$this->insertNextQuery();
 		$this->process();
@@ -34,6 +35,11 @@ LINES TERMINATED BY '\\r\\n'
 ($columns)
 SET query_id = $query_id, status = 'pending', venue_id = $venue_id, created_at = CURRENT_TIMESTAMP";
 		DB::unprepared($sql);
+	}
+	function setNumRecords() {
+		$num_records = DB::table($this->getTableName())->
+			where('query_id', $this->query->id)->count();
+		$this->query->num_records = $num_records;
 	}
 	function getQueryText() {
 		$path = base_path('resources/sql/import_queries/' . $this->query->query_class->name . '.sql');
