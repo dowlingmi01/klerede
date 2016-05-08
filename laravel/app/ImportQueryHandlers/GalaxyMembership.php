@@ -6,7 +6,7 @@ use App\VenueVariable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class GalaxyMemberShip extends ImportQueryHandler {
+class GalaxyMembership extends ImportQueryHandler {
 	protected $columns = ['member_code', 'code', 'sequence', 'box_office_product_code', 'date_from', 'date_to', 'dob', 'adult_qty', 'child_qty', 'city', 'state', 'zip', 'country', 'last_changed'];
 	function updateVariables() {
 		$lastChanged = DB::table($this->getTableName())->
