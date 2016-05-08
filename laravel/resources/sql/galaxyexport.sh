@@ -11,4 +11,4 @@ bcp 'SELECT * FROM export..cafe_item ORDER BY code' queryout cafeitem.txt -cT -d
 bcp 'SELECT * FROM export..store_transaction_header ORDER BY time' queryout storetranheader.txt -cT -d export
 bcp 'SELECT * FROM export..store_transaction_line ORDER BY sequence' queryout storetranline.txt -cT -d export
 bcp 'SELECT * FROM export..store_item ORDER BY code' queryout storeitem.txt -cT -d export
-bcp 'SELECT * FROM export..transaction_member_info WHERE company_id = 2' queryout storetranmemberinfo.txt -cT -d export
+bcp 'SELECT * FROM export..transaction_member_info WHERE company_id = 2 ORDER BY source_id' queryout storetranmemberinfo.txt -cT -d export
