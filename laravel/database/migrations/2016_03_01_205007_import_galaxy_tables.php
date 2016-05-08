@@ -26,6 +26,45 @@ class ImportGalaxyTables extends Migration {
 			$table->integer('delivery_method_id');
 			$table->timestamps();
 		});
+		Schema::create('import_galaxy_member', function(Blueprint $table)
+		{
+			$table->increments('id');
+			$table->integer('query_id');
+			$table->enum('status', ['pending', 'imported']);
+			$table->integer('venue_id');
+			$table->string('code');
+			$table->tinyInteger('gender');
+			$table->tinyInteger('age_group');
+			$table->date('dob')->nullable();
+			$table->string('city');
+			$table->string('state');
+			$table->string('zip');
+			$table->string('country');
+			$table->dateTime('last_changed');
+			$table->timestamps();
+		});
+		Schema::create('import_galaxy_membership', function(Blueprint $table)
+		{
+			$table->increments('id');
+			$table->integer('query_id');
+			$table->enum('status', ['pending', 'imported']);
+			$table->integer('venue_id');
+			$table->string('member_code');
+			$table->string('code');
+			$table->integer('sequence');
+			$table->string('box_office_product_code');
+			$table->date('date_from');
+			$table->date('date_to');
+			$table->date('dob')->nullable();
+			$table->integer('adult_qty');
+			$table->integer('child_qty');
+			$table->string('city');
+			$table->string('state');
+			$table->string('zip');
+			$table->string('country');
+			$table->dateTime('last_changed');
+			$table->timestamps();
+		});
 		Schema::create('import_galaxy_box_office_transaction', function(Blueprint $table)
 		{
 			$table->increments('id');
@@ -128,14 +167,16 @@ class ImportGalaxyTables extends Migration {
 			$table->index(['query_id', 'sequence'], 'ig_ctmi_idx');
 		});
 		DB::table('import_query_class')->insert([
-			['id'=>10, 'name'=>'galaxy_box_office_product'],
-			['id'=>20, 'name'=>'galaxy_box_office_transaction'],
-			['id'=>30, 'name'=>'galaxy_box_office_transaction_line'],
-			['id'=>40, 'name'=>'galaxy_visit'],
-			['id'=>50, 'name'=>'galaxy_cafe_product'],
-			['id'=>60, 'name'=>'galaxy_cafe_transaction'],
-			['id'=>70, 'name'=>'galaxy_cafe_transaction_line'],
-			['id'=>80, 'name'=>'galaxy_cafe_transaction_member_info'],
+			['id'=>100, 'name'=>'galaxy_box_office_product'],
+			['id'=>200, 'name'=>'galaxy_member'],
+			['id'=>300, 'name'=>'galaxy_membership'],
+			['id'=>400, 'name'=>'galaxy_box_office_transaction'],
+			['id'=>500, 'name'=>'galaxy_box_office_transaction_line'],
+			['id'=>600, 'name'=>'galaxy_visit'],
+			['id'=>700, 'name'=>'galaxy_cafe_product'],
+			['id'=>800, 'name'=>'galaxy_cafe_transaction'],
+			['id'=>900, 'name'=>'galaxy_cafe_transaction_line'],
+			['id'=>1000, 'name'=>'galaxy_cafe_transaction_member_info'],
 		]);
 	}
 
@@ -147,6 +188,8 @@ class ImportGalaxyTables extends Migration {
 	public function down()
 	{
 		Schema::dropIfExists('import_galaxy_box_office_product');
+		Schema::dropIfExists('import_galaxy_member');
+		Schema::dropIfExists('import_galaxy_membership');
 		Schema::dropIfExists('import_galaxy_box_office_transaction');
 		Schema::dropIfExists('import_galaxy_box_office_transaction_line');
 		Schema::dropIfExists('import_galaxy_visit');

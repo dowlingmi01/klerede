@@ -5,6 +5,13 @@ use Illuminate\Database\Eloquent\Model;
 class BoxOfficeProduct extends Model {
 	protected $table = 'box_office_product';
 	protected $guarded = [];
+	static public function getFor($venue_id, $code) {
+		$result = self::firstOrNew(['venue_id'=>$venue_id, 'code'=>$code]);
+		if(!$result->exists)
+			return false;
+		else
+			return $result;
+	}
 	static public function import($data) {
 		if($data->kind == 'pass') {
 			$membership_kind_code = preg_match('/family/i', $data->description) ? 'family' : 'individual';
