@@ -126,7 +126,7 @@ SELECT 1588 AS venue_id
             THEN ValidFrom
             ELSE DateOpened
        END as date_from
-     , ValidUntil as date_to
+     , cast(ValidUntil as date) as date_to
      , DOB as dob
      , AdultQty as adult_qty
      , ChildQty as child_qty

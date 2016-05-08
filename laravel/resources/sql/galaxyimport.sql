@@ -163,7 +163,7 @@ LOAD DATA INFILE 'galaxyimport/storetranheader.txt'
 INTO TABLE store_transaction
 LINES TERMINATED BY '\r\n'
 (store_id, register_id, sequence, business_day, time_end, operator_id)
-SET currency = 'USD'
+SET currency = 'USD', batch_id = 0
 ;
 
 LOAD DATA INFILE 'galaxyimport/storetranline.txt'
