@@ -100,16 +100,11 @@ SELECT 1588 AS venue_id
      , c.Gender as gender
      , c.AgeGroup as age_group
      , c.DOB as dob
-     , c.FirstName as first
-     , c.MiddleName as middle
-     , c.LastName as last
-     , a.Street1 as street_1
-     , a.Street2 as street_2
      , a.City as city
      , a.State as state
      , a.Postal as zip
      , 'US' as country
-     , c.Phone as phone
+     , c.LastUpdate as last_changed
   FROM Galaxy1..CustContacts c
   JOIN ( SELECT DISTINCT ContactID FROM Galaxy1..Passes
           UNION
@@ -135,16 +130,11 @@ SELECT 1588 AS venue_id
      , DOB as dob
      , AdultQty as adult_qty
      , ChildQty as child_qty
-     , First as first
-     , Middle as middle
-     , Last as last
-     , Street1 as street_1
-     , Street2 as street_2
      , City as city
      , State as state
      , Zip as zip
      , 'US' as country
-     , Phone as phone
+     , LastUpdate as last_changed
   FROM Galaxy1..Passes
  WHERE VisualID != ''
    AND ValidUntil IS NOT NULL
