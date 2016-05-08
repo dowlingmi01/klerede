@@ -2,7 +2,6 @@
 namespace App\ImportQueryHandlers;
 
 use App\CafeProduct;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class GalaxyCafeProduct extends ImportQueryHandler {
