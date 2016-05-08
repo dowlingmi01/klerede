@@ -24,7 +24,8 @@ class GalaxyCafeTransactionLine extends ImportQueryHandler {
 			})->join('cafe_product as p', function(JoinClause $join) {
 				$join->on('cafe_product_code', '=', 'p.code')
 					->on('l.venue_id', '=', 'p.venue_id');
-			})->select($cols);
+			})->select($cols)
+			->orderBy('l.id');
 		$sel->chunk(1000, function($lines) {
 			$inserts = [];
 			$ids = [];
