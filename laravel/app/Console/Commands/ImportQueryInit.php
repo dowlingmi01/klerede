@@ -39,7 +39,7 @@ class ImportQueryInit extends Command {
 	 */
 	public function fire()
 	{
-		foreach ([10, 20, 30, 40, 50, 60, 70, 80] as $iqcId) {
+		foreach ([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000] as $iqcId) {
 			/** @var ImportQueryClass $iqc */
 			$iqc = ImportQueryClass::find($iqcId);
 			$q = new ImportQuery();

@@ -1,7 +1,7 @@
 SELECT u.UsageID AS source_id
      , u.ACP AS acp_id
      , a.FacilityID as facility_id
-     , ISNULL(MAX(p.PLU), MAX(t.PLU)) AS box_office_product_code
+     , RTRIM(ISNULL(MAX(p.PLU), MAX(t.PLU))) AS box_office_product_code
      , u.VisualID AS ticket_code
      , CASE WHEN MAX(p.PLU) IS NOT NULL THEN 'pass'
             WHEN MAX(t.PLU) IS NOT NULL THEN 'ticket'

@@ -2,8 +2,6 @@
 namespace App\ImportQueryHandlers;
 
 use App\BoxOfficeProduct;
-use App\VenueVariable;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class GalaxyBoxOfficeProduct extends ImportQueryHandler {

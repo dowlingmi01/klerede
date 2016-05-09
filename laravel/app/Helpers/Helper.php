@@ -21,4 +21,10 @@ class Helper {
 		$m->quarter = $m->year * 100 + ceil(((int) $date->format("m")) / 3);
 		$m->week = $m->year * 100 + (int) $date->format("W");
 	}
+	public static function array_subkeys($array, $keys) {
+		return array_intersect_key($array, array_flip($keys));
+	}
+	public static function array_remove_keys($array, $keys) {
+		return array_diff_key($array, array_flip($keys));
+	}
 }

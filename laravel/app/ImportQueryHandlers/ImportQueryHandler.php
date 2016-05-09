@@ -46,7 +46,7 @@ SET query_id = $query_id, status = 'pending', venue_id = $venue_id, created_at =
 		$text = file_get_contents($path);
 		return VenueVariable::substituteFor($this->query->venue_id, $text);
 	}
-	public function insertNextQuery($delay = 5) {
+	public function insertNextQuery($delay = 60) {
 		$query = new ImportQuery();
 		$query->query_class()->associate($this->query->query_class);
 		$query->venue_id = $this->query->venue_id;

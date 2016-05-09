@@ -1,37 +1,77 @@
 . "$PSScriptRoot\util.ps1"
 
-$database = 'Galaxy1'
-$venue_id = 1588
-$baseUrl = 'http://local.kl/api/v1'
-$queryUrl = '?XDEBUG_SESSION_START=session_name'
-$urlQuery = "$baseUrl/import/query$queryUrl"
-$urlUpload = "$baseUrl/import/query-result$queryUrl"
+function Write-Message($message) {
+	Write-Host "$(Get-Date -Format 'yyyy-MM-dd hh:mm:ss') $message"
+}
 
+function Fail($message, $error) {
+	$message = $message + "`r`n" + $(Out-String -InputObject $error)
+	Write-Message $message
+    exit 1
+}
 function Get-Query($venue_id, $last_query_id) {
-    Invoke-RestMethod -Uri $urlQuery -Body @{"venue_id"=$venue_id; "last_query_id"=$last_query_id} -Verbose
+	Try {
+		Invoke-RestMethod -Uri $url_query -Body @{"venue_id"=$venue_id; "last_query_id"=$last_query_id} -Verbose
+	} Catch {
+		Fail "Unable to get url $url_query" $_
+	}
 }
 function Run-Query($query_text, $file_name) {
-    & bcp $query_text queryout $file_name -cT -d $database
+    if($cfg_sql_auth -eq 'trusted') {
+        & bcp $query_text queryout $file_name -c -d $cfg_sql_database -S $cfg_sql_server -T
+    } else {
+        & bcp $query_text queryout $file_name -c -d $cfg_sql_database -S $cfg_sql_server -U $cfg_sql_user -P $cfg_sql_password
+    }
 }
 function Upload-Result($url, $file_name) {
-    $wc = new-object System.Net.WebClient
-    [System.Text.Encoding]::ASCII.GetString($wc.UploadFile( $url, $file_name )) | ConvertFrom-Json
+	Try {
+		$wc = new-object System.Net.WebClient
+		[System.Text.Encoding]::ASCII.GetString($wc.UploadFile( $url, $file_name )) | ConvertFrom-Json
+	} Catch {
+		Fail "Unable to upload result to url $url" $_
+	}
 }
 
-$last_query_id = 0
-$resultQ = Get-Query $venue_id $last_query_id
+$conf_file = 'klerede-import.ini'
 
-while($resultQ.query_id -gt 0) {
-    $fileName = [System.IO.Path]::GetTempFileName()
-    Run-Query $resultQ.query_text $fileName
+# Read the contents of the configuration file into the variables.
+Try {
+	Get-Content $conf_file -ErrorAction Stop | Foreach-Object {
+		$var = $_.Split('=')
+		Set-Variable -Name cfg_$($var[0]) -Value $var[1]
+	}
+} Catch {
+	Fail "Could not read configuration file $conf_file" $_
+}
 
-    $fileNameComp = [System.IO.Path]::GetTempFileName()
-    Compress-GZip $fileName $fileNameComp
-    Remove-Item $fileName
+Try {
+	$url_query = "$cfg_base_url/api/v1/import/query"
+	$url_upload = "$cfg_base_url/api/v1/import/query-result"
 
-    Upload-Result "$urlUpload&query_id=$($resultQ.query_id)" $fileNameComp
-    Remove-Item $fileNameComp
+	$last_query_id = 0
+	$resultQ = Get-Query $cfg_venue_id $last_query_id
 
-    $last_query_id = $resultQ.query_id
-    $resultQ = Get-Query $venue_id $last_query_id
+	while($resultQ.query_id -gt 0) {
+		Write-Host "--------------------------------------------------"
+		Write-Message "Got query $($resultQ.query_id)"
+
+		$fileName = [System.IO.Path]::GetTempFileName()
+		Run-Query $resultQ.query_text $fileName
+
+		Write-Host ""
+
+		$fileNameComp = [System.IO.Path]::GetTempFileName()
+		Compress-GZip $fileName $fileNameComp
+		Remove-Item $fileName
+
+		Write-Message "Uploading results"
+		$result = Upload-Result "${url_upload}?query_id=$($resultQ.query_id)" $fileNameComp
+		Remove-Item $fileNameComp
+
+		Write-Host "--------------------------------------------------"
+		$last_query_id = $resultQ.query_id
+		$resultQ = Get-Query $cfg_venue_id $last_query_id
+	}
+} Catch {
+	Fail "Error" $_
 }

@@ -31,75 +31,63 @@ SELECT t.id, l.sequence, p.id, l.ticket_code, l.sale_price, l.quantity
 
 
 LOAD DATA INFILE 'galaxyimport/member.txt'
-INTO TABLE member_galaxy
+INTO TABLE import_galaxy_member
 FIELDS ESCAPED BY ''
 LINES TERMINATED BY '\r\n'
 (venue_id, code, gender, age_group, @dob
-     , first, middle, last, street_1, street_2, city, state, zip, country, phone)
-SET dob = if(@dob > '1900-01-02', @dob, NULL)
+     , city, state, zip, country, last_changed)
+SET dob = if(@dob > '1900-01-02', @dob, NULL), query_id = -1, status = 'pending', created_at = now()
 ;
 
 LOAD DATA INFILE 'galaxyimport/membership.txt'
 REPLACE
-INTO TABLE membership_galaxy
+INTO TABLE import_galaxy_membership
 FIELDS ESCAPED BY ''
 LINES TERMINATED BY '\r\n'
 (venue_id, member_code, code, sequence, box_office_product_code, date_from, date_to, @dob, adult_qty, child_qty
-, first, middle, last, street_1, street_2, city, state, zip, country, phone)
-SET dob = if(@dob > '1900-01-02', @dob, NULL)
+, city, state, zip, country, last_changed)
+SET dob = if(@dob > '1900-01-02', @dob, NULL), query_id = -1, status = 'pending', created_at = now()
 ;
 
-INSERT member_address
-     ( street_1, street_2, city, state, zip, country, phone )
-SELECT DISTINCT m.street_1, m.street_2, m.city, m.state, m.zip, m.country, m.phone
-  FROM member_galaxy m
-  LEFT JOIN member_address a
-    ON m.street_1 = a.street_1 AND m.street_2 = a.street_2
-   AND m.city = a.city AND m.state = a.state AND m.zip = a.zip
-   AND m.country = a.country AND m.phone = a.phone
+INSERT member_location
+     ( city, state, zip, country )
+SELECT DISTINCT m.city, m.state, m.zip, m.country
+  FROM import_galaxy_member m
+  LEFT JOIN member_location a
+    ON m.city = a.city AND m.state = a.state AND m.zip = a.zip
+   AND m.country = a.country
  WHERE a.id IS NULL
 ;
-INSERT member_address
-     ( street_1, street_2, city, state, zip, country, phone )
-SELECT DISTINCT m.street_1, m.street_2, m.city, m.state, m.zip, m.country, m.phone
-  FROM membership_galaxy m
-  LEFT JOIN member_address a
-    ON m.street_1 = a.street_1 AND m.street_2 = a.street_2
-   AND m.city = a.city AND m.state = a.state AND m.zip = a.zip
-   AND m.country = a.country AND m.phone = a.phone
+INSERT member_location
+     ( city, state, zip, country )
+SELECT DISTINCT m.city, m.state, m.zip, m.country
+  FROM import_galaxy_membership m
+  LEFT JOIN member_location a
+    ON m.city = a.city AND m.state = a.state AND m.zip = a.zip
+   AND m.country = a.country
  WHERE a.id IS NULL
-;
-INSERT member_name
-( first, middle, last )
-SELECT DISTINCT first, middle, last
-  FROM member_galaxy
-ON DUPLICATE KEY UPDATE id = id
-;
-INSERT member_name
-     ( first, middle, last )
-SELECT DISTINCT first, middle, last
-  FROM membership_galaxy
-ON DUPLICATE KEY UPDATE id = id
 ;
 INSERT member
-     ( venue_id, code, member_name_id, member_address_id, gender, age_group, dob)
-SELECT venue_id, code, n.id, a.id, gender, age_group, dob
-  FROM member_galaxy g
-  JOIN member_address a ON g.street_1 = a.street_1 AND g.street_2 = a.street_2 AND g.city = a.city
-       AND g.state = a.state AND g.zip = a.zip AND g.country = a.country AND g.phone = a.phone
-  JOIN member_name n ON g.first = n.first AND g.middle = n.middle AND g.last = n.last
+     ( venue_id, code, member_location_id, gender, age_group, dob)
+SELECT venue_id, code, a.id, gender, age_group, dob
+  FROM import_galaxy_member g
+  JOIN member_location a ON g.city = a.city
+       AND g.state = a.state AND g.zip = a.zip AND g.country = a.country
 ;
 INSERT membership
-     ( venue_id, member_id, member_address_id, member_name_id, code, sequence, box_office_product_id
+     ( venue_id, member_id, member_location_id, code, sequence, box_office_product_id
      , date_from, date_to, dob, adult_qty, child_qty )
-SELECT g.venue_id, m.id, a.id, n.id, g.code, g.sequence, p.id
+SELECT g.venue_id, m.id, a.id, g.code, g.sequence, p.id
      , date_from, date_to, g.dob, adult_qty, child_qty
-  FROM membership_galaxy g
+  FROM import_galaxy_membership g
   STRAIGHT_JOIN member m ON g.venue_id = m.venue_id AND g.member_code = m.code
   STRAIGHT_JOIN box_office_product p ON g.venue_id = p.venue_id AND g.box_office_product_code = p.code
-  JOIN member_address a ON g.street_1 = a.street_1 AND g.street_2 = a.street_2 AND g.city = a.city
-       AND g.state = a.state AND g.zip = a.zip AND g.country = a.country AND g.phone = a.phone
-  JOIN member_name n ON g.first = n.first AND g.middle = n.middle AND g.last = n.last
+  JOIN member_location a ON g.city = a.city
+       AND g.state = a.state AND g.zip = a.zip AND g.country = a.country
+ON DUPLICATE KEY UPDATE member_id = values(member_id), member_location_id = values(member_location_id)
+, code = values(code), sequence = values(sequence), box_office_product_id = values(box_office_product_id)
+, date_from = values(date_from), date_to = values(date_to), dob = values(dob), adult_qty = values(adult_qty)
+, child_qty = values(child_qty)
 ;
 UPDATE member, (SELECT member_id, max(id) as maxid FROM membership GROUP BY member_id) x
    SET member.last_membership_id = x.maxid
@@ -175,7 +163,7 @@ LOAD DATA INFILE 'galaxyimport/storetranheader.txt'
 INTO TABLE store_transaction
 LINES TERMINATED BY '\r\n'
 (store_id, register_id, sequence, business_day, time_end, operator_id)
-SET currency = 'USD'
+SET currency = 'USD', batch_id = 0
 ;
 
 LOAD DATA INFILE 'galaxyimport/storetranline.txt'

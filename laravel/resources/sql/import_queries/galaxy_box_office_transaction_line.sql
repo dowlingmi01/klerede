@@ -1,6 +1,6 @@
 SELECT d.JnlTranID AS source_id
      , d.JnlDetailID AS sequence
-     , ISNULL(t.PLU, i.PLU) AS box_office_product_code
+     , RTRIM(ISNULL(t.PLU, i.PLU)) AS box_office_product_code
      , t.VisualID AS ticket_code
      , d.Amount AS sale_price
      , d.Qty AS quantity
