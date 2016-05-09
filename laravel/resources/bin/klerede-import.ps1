@@ -1,8 +1,12 @@
 . "$PSScriptRoot\util.ps1"
 
+function Write-Message($message) {
+	Write-Host "$(Get-Date -Format 'yyyy-MM-dd hh:mm:ss') $message"
+}
+
 function Fail($message, $error) {
 	$message = $message + "`r`n" + $(Out-String -InputObject $error)
-	Write-Error $message
+	Write-Message $message
     exit 1
 }
 function Get-Query($venue_id, $last_query_id) {
@@ -48,16 +52,23 @@ Try {
 	$resultQ = Get-Query $cfg_venue_id $last_query_id
 
 	while($resultQ.query_id -gt 0) {
+		Write-Host "--------------------------------------------------"
+		Write-Message "Got query $($resultQ.query_id)"
+
 		$fileName = [System.IO.Path]::GetTempFileName()
 		Run-Query $resultQ.query_text $fileName
+
+		Write-Host ""
 
 		$fileNameComp = [System.IO.Path]::GetTempFileName()
 		Compress-GZip $fileName $fileNameComp
 		Remove-Item $fileName
 
+		Write-Message "Uploading results"
 		$result = Upload-Result "${url_upload}?query_id=$($resultQ.query_id)" $fileNameComp
 		Remove-Item $fileNameComp
 
+		Write-Host "--------------------------------------------------"
 		$last_query_id = $resultQ.query_id
 		$resultQ = Get-Query $cfg_venue_id $last_query_id
 	}
