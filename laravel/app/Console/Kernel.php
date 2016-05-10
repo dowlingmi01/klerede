@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\WeatherImport',
 		'App\Console\Commands\StatsSalesCompute',
 		'App\Console\Commands\ImportQueryInit',
+		'App\Console\Commands\ImportQueryProcess',
 	];
 
 	/**
