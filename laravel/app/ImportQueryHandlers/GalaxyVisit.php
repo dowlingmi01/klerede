@@ -17,8 +17,7 @@ class GalaxyVisit extends ImportQueryHandler {
 	function process() {
 		$cols = ['v.id', 'source_id', 'v.venue_id', 'acp_id', 'facility_id', 'p.id as box_office_product_id', 'ticket_code'
 			, 'm.id as membership_id', 'v.kind', 'quantity', 'use_no', 'time', 'v.created_at'];
-		$colsIns = ['source_id', 'venue_id', 'acp_id', 'facility_id', 'box_office_product_id', 'ticket_code'
-			, 'membership_id', 'kind', 'quantity', 'use_no', 'time', 'created_at'];
+/*
 		$sel = DB::table('import_galaxy_visit as v')
 			->where('query_id', $this->query->id)
 			->join('box_office_product as p', function(JoinClause $join) {
