@@ -16,7 +16,7 @@ class GalaxyBoxOfficeTransactionLine extends ImportQueryHandler {
 	function process() {
 		$cols = ['l.id', 't.id as box_office_transaction_id', 'l.sequence', 'p.id as box_office_product_id'
 			, 'l.ticket_code', 'l.sale_price', 'l.quantity', 'l.created_at'];
-
+/*
 		$sel = DB::table('import_galaxy_box_office_transaction_line as l')
 			->where('query_id', $this->query->id)
 			->join('box_office_transaction as t', function(JoinClause $join) {
@@ -26,6 +26,13 @@ class GalaxyBoxOfficeTransactionLine extends ImportQueryHandler {
 				$join->on('box_office_product_code', '=', 'p.code')
 					->on('l.venue_id', '=', 'p.venue_id');
 			})->select($cols)
+			->orderBy('l.id');
+*/
+		$sel = DB::table(DB::raw('import_galaxy_box_office_transaction_line as l
+		straight_join box_office_transaction as t on l.source_id = t.source_id and l.venue_id = t.venue_id
+		straight_join box_office_product as p on box_office_product_code = p.code and l.venue_id = p.venue_id') )
+			->where('query_id', $this->query->id)
+			->select($cols)
 			->orderBy('l.id');
 		$sel->chunk(1000, function($lines) {
 			$inserts = [];

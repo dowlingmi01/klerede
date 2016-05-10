@@ -28,6 +28,15 @@ class GalaxyVisit extends ImportQueryHandler {
 					->on('v.venue_id', '=', 'm.venue_id')
 					->where('v.kind', '=', 'pass');
 			})->select($cols);
+*/
+		$sel = DB::table(DB::raw('import_galaxy_visit as v
+		straight_join box_office_product as p on box_office_product_code = p.code and v.venue_id = p.venue_id'))
+			->where('query_id', $this->query->id)
+			->leftJoin('membership as m', function(JoinClause $join) {
+				$join->on('ticket_code', '=', 'm.code')
+					->on('v.venue_id', '=', 'm.venue_id')
+					->where('v.kind', '=', 'pass');
+			})->select($cols);
 		$dates = [];
 		$sel->chunk(1000, function($visits) use ($dates) {
 			$inserts = [];
