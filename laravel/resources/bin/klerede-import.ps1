@@ -1,7 +1,7 @@
 . "$PSScriptRoot\util.ps1"
 
 function Write-Message($message) {
-	Write-Host "$(Get-Date -Format 'yyyy-MM-dd hh:mm:ss') $message"
+	Write-Host "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') $message"
 }
 
 function Fail($message, $error) {
@@ -32,7 +32,7 @@ function Upload-Result($url, $file_name) {
 	}
 }
 
-$conf_file = 'klerede-import.ini'
+$conf_file = "$PSScriptRoot\klerede-import.ini"
 
 # Read the contents of the configuration file into the variables.
 Try {
