@@ -9,17 +9,23 @@ var Header = React.createClass({
             fullName: 'Michael Dowling',
             userName: 'mdowling',
             email: 'michael@klerede.com',
-            accountType: 'Owner',
-            plan: 'Professional',
             pwdCurrent: '',
             pwdNew: '',
-            pwdMatch: ''
+            pwdMatch: '',
+            accountType: 'Owner',
+            planTitle: 'Professional',
+            planDescription: 'Unlimited Accounts',
+            cardName: 'Dan Tribec',
+            cardNumber: '**** **** **** 1234'
         };
     },
     toggleSettings: function() {
         // Hide or show the settings modal
         $('.user-name').toggleClass('active');
         $('#utilities').toggleClass('active');
+        if($('#utilities.active').length === 0){
+            $('.utilities-set').removeClass('active');
+        }
     },
     toggleUtility: function(event) {
         var linkType = $(event.target).closest('.utility').data('type');
@@ -62,7 +68,32 @@ var Header = React.createClass({
     saveChanges: function(event){
         event.preventDefault();
         // TO DO: Send changed data to the API
-        console.log('SAVE!!!', this.state);
+        console.log('SAVE', this.state);
+        event.target.blur();
+    },
+    changePlan: function(event){
+        event.preventDefault();
+        // TO DO: Write plan change code
+        console.log('CHANGE PLAN', this.state);
+        event.target.blur();
+    },
+    cancelPlan: function(event){
+        event.preventDefault();
+        // TO DO: Write plan cancel code
+        console.log('CANCEL PLAN', this.state);
+        event.target.blur();
+    },
+    changeCard: function(event){
+        event.preventDefault();
+        // TO DO: Card change code
+        console.log('CHANGE CARD', this.state);
+        event.target.blur();
+    },
+    openInvoice: function(event){
+        event.preventDefault();
+        // TO DO: Open invoice code
+        console.log('OPEN INVOICE', this.state);
+        event.target.blur();
     },
     render: function() {
         return (
@@ -158,15 +189,26 @@ var Header = React.createClass({
                 </div>
                 <div id="account-settings" className="utilities-set" onClick={this.activateField}>
                     <h3>Account Settings <div className="glyphicon glyphicon-remove close" id="close-accountsettings" aria-hidden="true" onClick={this.closeUtility}></div></h3>
-                    <form className="settings">
-                        <div className="form-group">
-                            <label htmlFor="as-plan">Your Plan:</label>
-                            <input type="text" id="as-plan" value={this.state.plan} />
-                        </div>
-                        <div className="form-group">
-                            <input type="submit" value="Upgrade Plan" className="btn" />
-                        </div>
-                    </form>
+                    <div className="utility-group">
+                        <h4>Your Plan</h4>
+                        <div className="plan-title">{this.state.planTitle}</div>
+                        <div className="plan-description">{this.state.planDescription}</div>
+                        <button className="btn" onClick={this.changePlan}>Upgrade Plan</button>
+                        <a className="plan-cancel" onClick={this.cancelPlan}>Cancel Plan</a>
+                    </div>
+                    <div className="utility-group">
+                        <h4>Card Info</h4>
+                        <div className="card-name">{this.state.cardName}</div>
+                        <div className="card-number">{this.state.cardNumber}</div>
+                        <button className="btn" onClick={this.changeCard}>Change Card</button>
+                    </div>
+                    <div className="utility-group">
+                        <h4>Invoice History</h4>
+                        <div className="invoice-period">Monthly</div>
+                        <a href="#" className="invoice" onClick={this.openInvoice}>April 3, 2016 <span className="amount">$540.00</span></a>
+                        <a href="#" className="invoice" onClick={this.openInvoice}>March 3, 2016 <span className="amount">$540.00</span></a>
+                        <a href="#" className="invoice" onClick={this.openInvoice}>February 3, 2016 <span className="amount">$540.00</span></a>
+                    </div>
                 </div>
             </header>
         );

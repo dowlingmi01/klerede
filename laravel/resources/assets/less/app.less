@@ -230,7 +230,7 @@ header {
 .utilities-set {
     background-color: @black;
     display: block;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     position: absolute;
     right: -250px;
@@ -240,10 +240,10 @@ header {
     z-index: 2000;
     h3 {
         color: @white;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 300;
         margin: 0;
-        padding: 0 30px 20px 30px;
+        padding: 10px 30px 15px;
         text-transform: uppercase;
         .close {
             color: @white;
@@ -253,6 +253,42 @@ header {
             font-weight: 300;
             opacity: 1;
             text-shadow: none;
+        }
+    }
+    h4 {
+        color: @black;
+        font-size: 12px;
+        font-weight: 400;
+        text-transform: uppercase;
+    }
+    .utility-group {
+        margin: 30px 30px;
+        div {
+            color: @black;
+            font-size: 85%;
+        }
+        .plan-title {
+            font-size: 150%;
+            font-weight: 500;
+        }
+        .plan-cancel {
+            font-size: 75%;
+        }
+        .card-name {
+            padding-bottom: 10px;
+        }
+        .invoice {
+            display: block;
+            font-size: 85%;
+            padding-top: 5px;
+            .amount {
+                float: right;
+            }
+        }
+        .btn {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
         }
     }
     .utility {
