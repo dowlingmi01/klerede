@@ -57,7 +57,7 @@ class PosLogImport extends Command {
 			}
 			$batch->finish();
 		} catch(Exception $e) {
-			$batch->error(sprintf("[%s] %s", get_class($e),  $e->getMessage()));
+			$batch->errorExc($e);
 			throw($e);
 		}
 	}
