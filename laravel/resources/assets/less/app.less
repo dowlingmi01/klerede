@@ -272,6 +272,7 @@ header {
             font-weight: 500;
         }
         .plan-cancel {
+            cursor: pointer;
             font-size: 75%;
         }
         .card-name {
@@ -289,6 +290,81 @@ header {
             display: block;
             margin: 10px 0;
             width: 100%;
+        }
+        .btn.disabled {
+            background-color: @mediumgrey;
+        }
+        .user,
+        .sub-item {
+            border-top: 1px solid @lightgrey;
+            cursor: pointer;
+            padding: 8px 0 6px 0;
+            text-transform: uppercase;
+            .utilities-caret {
+                float: right;
+                height: 6px;
+                position: relative;
+                top: 2px;
+                transform: rotate(-90deg);
+                transition: .5s;
+                width: 10px;
+                path {
+                    fill: @black;
+                }
+            }
+        }
+        .user {
+            overflow: hidden;
+            .quick-edit {
+                display: none;
+                .form-control {
+                    clear: both;
+                    float: left;
+                    font-size: 11px;
+                    height: 20px;
+                    width: 50px;
+                }
+                .email {
+                    display: block;
+                    font-size: 11px;
+                    text-transform: lowercase;
+                    margin: 10px 0 5px 0;
+                }
+                a {
+                    margin-left: 6px;
+                    position: relative;
+                    text-transform: capitalize;
+                    top: 7px;
+                }
+                .message {
+                    clear: both;
+                    display: block;
+                    font-size: 9px;
+                    text-transform: initial;
+                }
+            }
+        }
+        .active {
+            .utilities-caret {
+                transform: rotate(0deg);
+            }
+            .quick-edit {
+                display: block;
+            }
+        }
+        .sub-item {
+            text-transform: capitalize;
+        }
+        .user:last-child,
+        .sub-item:last-child {
+            border-bottom: 1px solid @lightgrey;
+        }
+        .form-control {
+            background-color: @white;
+            border: 1px solid @lightmediumgrey;
+            font-size: 11px;
+            height: 25px;
+            margin-bottom: 5px;
         }
     }
     .utility {
@@ -322,6 +398,25 @@ header {
     }
     .utility.last {
         margin-bottom: 30px;
+    }
+    .utility.sub-item {
+        margin: 0;
+    }
+}
+#user-types,
+#change-plan {
+    .sub-item:first-child {
+        border-top: none;
+        padding-top: 0;
+    }
+    .sub-item:last-child {
+        border-bottom: none;
+    }
+    h4 {
+        font-weight: 500;
+    }
+    p {
+        font-size: 10px;
     }
 }
 .utilities-set {
@@ -1862,7 +1957,7 @@ body > .popover.top>.arrow:after {
 
 .settings {
     .form-group {
-        border-bottom: 1px solid @lightmediumgrey;
+        border-bottom: 1px solid @lightgrey;
         margin: 0 30px;
         padding: 10px 0;
         position: relative;
