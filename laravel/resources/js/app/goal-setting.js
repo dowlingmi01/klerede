@@ -127,6 +127,7 @@ var GoalsMonths = React.createClass({
 
 var GoalSetting = React.createClass({
     componentDidMount: function(){
+        var self = this;
         wnt.gettingGoalsData = $.Deferred();
         wnt.getGoals(wnt.thisYear, wnt.gettingGoalsData);
         // Set fields with goals data from server
@@ -183,6 +184,7 @@ var GoalSetting = React.createClass({
             $('#goal-membership-uni').val(goalMemUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             $('#goal-membership-dol').val(goalMemDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             // Set individual months ... $('#goal-gate').parent().find('input').length
+            self.formatNumbers();
         });
         // When 'Enter' key is pressed ...
         $('form').keypress(function(e) {
@@ -294,6 +296,15 @@ var GoalSetting = React.createClass({
         } else {
             $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
         }
+    },
+    componentDidUpdate: function(){
+        this.formatNumbers();
+    },
+    formatNumbers: function(){
+        $('.dollars').parseNumber({format:"$#,###", locale:"us"});
+        $('.dollars').formatNumber({format:"$#,###", locale:"us"});
+        $('.units').parseNumber({format:"#,###", locale:"us"});
+        $('.units').formatNumber({format:"#,###", locale:"us"});
     },
     render: function() {
         return (
