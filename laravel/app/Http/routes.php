@@ -39,6 +39,8 @@ Route::group(['prefix'=>'api/v1'], function() {
 		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
 		return Response::json($result);
 	});
+	Route::resource('venue', 'VenueController',
+		['only' => ['show']]);
 	Route::get('weather/query', function() {
 		$input = (object) Request::all();
 		if(isset($input->hourly))

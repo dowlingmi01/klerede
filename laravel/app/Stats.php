@@ -152,4 +152,10 @@ class Stats {
 
 		StatStatus::computed($channel_id, $business_day);
 	}
+	static function lastDate($venue_id) {
+		$last_date = DB::Table('stat_sales')->where('venue_id', $venue_id)->groupBy('date')
+			->select(['date', DB::raw('count(distinct channel_id) as num_channels')])
+			->orderBy('num_channels', 'desc')->orderBy('date', 'desc')->first()->date;
+		return $last_date;
+	}
 }
