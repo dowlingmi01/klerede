@@ -32,7 +32,7 @@ var BarSet = React.createClass({
         }
     },
     processLineItem: function(value, classExt, label) {
-        var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+"</td><td>"+value+"</td></tr>" : '';
+        var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+"</td><td class='"+classExt+"'>"+value+"</td></tr>" : '';
         return html;
     },
     renderWeather: function(){
@@ -43,6 +43,13 @@ var BarSet = React.createClass({
             return '';
         }
     },
+    updateDetails: function(){
+        $('#earned-revenue .weather-period-title').text($('.popover-date').text());
+        $('#earned-revenue .box .accordion-stat').text($('.popover td.bo').text());
+        $('#earned-revenue .cafe .accordion-stat').text($('.popover td.c').text());
+        $('#earned-revenue .gift .accordion-stat').text($('.popover td.gs').text());
+        $('#earned-revenue .mem .accordion-stat').text($('.popover td.m').text());
+    },
     render: function() {
         return (
             <div className="bar-set" 
@@ -50,7 +57,7 @@ var BarSet = React.createClass({
                 data-html="true" 
                 data-content={"<div class='popover-weather-bar'><div class='popover-date'>"+this.rolloverDate(this.props.date)+"</div>"+this.renderWeather()+"</div><table class='popover-data'>"+this.processLineItem(this.props.box, 'bo', 'Box Office')+this.processLineItem(this.props.cafe, 'c', 'Cafe')+this.processLineItem(this.props.gift, 'gs', 'Gift Store')+this.processLineItem(this.props.mem, 'm', 'Membership')+"</table>"} 
                 data-placement="auto"
-                data-trigger="click hover">
+                data-trigger="click hover" onClick={this.updateDetails}>
                 <div className="bar-section bar-section-boxoffice"></div>
                 <div className="bar-section bar-section-cafe"></div>
                 <div className="bar-section bar-section-giftstore"></div>
@@ -646,11 +653,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $(handle).hasClass('active') ? $(label).text('Hide Details') : $(label).text('Show Details');
     },
     componentDidUpdate: function(){
+        $('.bar-set').popover('destroy');
         this.calcBarWidth();
         this.animateBars();
         this.formatNumbers();
         this.setDateHeader();
         $('.bar-set').popover({ container: 'body' });
+        $('.bar-set').on('show.bs.popover', function () {
+            if($('.popover').length > 0){
+                // Hide popovers if an additional one is triggered
+                $('.bar-set').popover('hide');
+            }
+        });
+        $('.bar-set').on('hidden.bs.popover', function () {
+            if($('.popover').length === 0){
+                // Reset accordion data if popovers are hidden
+                $('#earned-revenue').html(wnt.filter.bgAccordionState);
+            }
+        });
+        wnt.filter.bgAccordionState = $('#earned-revenue').html();
     },
     formatNumbers: function(){
         var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
@@ -679,6 +700,11 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return number;
     },
     filterPeriod: function(event){
+        // TO DO: Change accordion filters when this one changes
+        // day = same day last year, 13 week average
+        // week = last week, 13 week average
+        // month = last month, same month last year
+        // quarter = last quarter, same quarter last year
         // week, month, quarter
         wnt.filter.bgPeriod = event.target.value;
         // Set comparison filter in details
