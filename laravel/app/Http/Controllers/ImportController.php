@@ -14,6 +14,8 @@ class ImportController extends Controller {
 		$import_query = ImportQuery::where('venue_id', $venue_id)->where('status', 'pending')
 			->where('id', '>', $last_query_id)->where('run_after', '<', Carbon::now())->first();
 		if($import_query) {
+			$import_query->time_requested = Carbon::now();
+			$import_query->save();
 			$result = ['query_id' => $import_query->id, 'query_text' => $import_query->query_text];
 		} else {
 			$result = ['query_id' => 0];

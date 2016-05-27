@@ -21,6 +21,7 @@ abstract class ImportQueryHandler {
 		$this->updateVariables();
 		$this->insertNextQuery();
 		$this->process();
+		$this->setNumRecordsImported();
 		$this->query->processed();
 	}
 	function load() {
@@ -40,6 +41,13 @@ SET query_id = $query_id, status = 'pending', venue_id = $venue_id, created_at =
 		$num_records = DB::table($this->getTableName())->
 			where('query_id', $this->query->id)->count();
 		$this->query->num_records = $num_records;
+	}
+	function setNumRecordsImported() {
+		$num_records = DB::table($this->getTableName())
+			->where('query_id', $this->query->id)
+			->where('status', 'imported')
+			->count();
+		$this->query->num_records_imported = $num_records;
 	}
 	function getQueryText() {
 		$path = base_path('resources/sql/import_queries/' . $this->query->query_class->name . '.sql');
