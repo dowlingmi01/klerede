@@ -1,3 +1,5 @@
+param([switch]$test = $false)
+
 . "$PSScriptRoot\util.ps1"
 
 function Write-Message($message) {
@@ -5,7 +7,7 @@ function Write-Message($message) {
 }
 
 function Fail($message, $error) {
-	$message = $message + "`r`n" + $(Out-String -InputObject $error)
+	$message = 'ERROR: ' + $message + "`r`n" + $(Out-String -InputObject $error)
 	Write-Message $message
     exit 1
 }
@@ -45,6 +47,17 @@ Try {
 }
 
 Try {
+	if($test) {
+		$testFN = [System.IO.Path]::GetTempFileName()
+		Run-Query 'SELECT 12345' $testFN
+		$testRes = Get-Content $testFN
+		Remove-Item $testFN
+		if($testRes -ne '12345') {
+			Fail "Database test failed"
+		}
+		Write-Message "Database test OK"
+		exit 0
+	}
 	$url_query = "$cfg_base_url/api/v1/import/query"
 	$url_upload = "$cfg_base_url/api/v1/import/query-result"
 
@@ -73,5 +86,5 @@ Try {
 		$resultQ = Get-Query $cfg_venue_id $last_query_id
 	}
 } Catch {
-	Fail "Error" $_
+	Fail "" $_
 }
