@@ -13,13 +13,24 @@ var User = React.createClass({
             editUserIndex: $('.user').index($(event.target).closest('.user'))
         });
     },
-    deleteUser: function(){
+    deleteUser: function(event){
         event.preventDefault();
         // TO DO: Delete user code
         console.log('DELETE USER', this.state);
+        $(event.target).closest('.user').find('.confirm').show();
         event.target.blur();
     },
-    passwordReset: function(){
+    deleteConfirmed: function(event){
+        event.preventDefault();
+        console.log('DELETE USER CONFIRMED', this.state);
+        $(event.target).closest('.confirm').hide();
+    },
+    deleteAborted: function(event){
+        event.preventDefault();
+        console.log('DELETE USER ABORTED', this.state);
+        $(event.target).closest('.confirm').hide();
+    },
+    passwordReset: function(event){
         event.preventDefault();
         // TO DO: Change password code
         this.setState({ message: 'An email has been sent to the user to reset their password.' });
@@ -40,6 +51,11 @@ var User = React.createClass({
                     <a className="stop" onClick={this.deleteUser}>Delete User</a>
                     <a className="stop" onClick={this.passwordReset}>Password Reset</a>
                     <div className="message">{this.state.message}</div>
+                    <div className="confirm">
+                        <span className="message">Are you sure you want to delete this user?</span>
+                        <button className="btn" onClick={this.deleteConfirmed}>Yes</button>
+                        <button className="btn btn-default" onClick={this.deleteAborted}>No</button>
+                    </div>
                 </div>
             </div>
         );
@@ -72,7 +88,8 @@ var Header = React.createClass({
             accountType: 'Owner',
             planTitle: 'Professional',
             planDescription: 'Unlimited Accounts',
-            cardName: 'Dan Tribec',
+            cardFirstName: 'Dan',
+            cardLastName: 'Tribec',
             cardNumber: '**** **** **** 1234',
             users: ['Michael Dowling', 'Matt Pelletier', 'Heather Finney', 'Sergio Daicz', 'Taylor Johnson', 'Elizabeth Johnson'],
             usersEmail: ['michael@klerede.com', 'matt@klerede.com', 'hfinney@klerede.com', 'sdaicz@klerede.com', 'webninjataylor@gmail.com', 'libbykjohsnon@gmail.com']
@@ -161,9 +178,27 @@ var Header = React.createClass({
     },
     changeCard: function(event){
         event.preventDefault();
+        wnt.filter.usCardOpen = wnt.filter.usCardOpen === false ? true : false;
+        var modal = $(event.target).closest('.utility-group');
         // TO DO: Card change code
         console.log('CHANGE CARD', this.state);
+        $(modal).find('.credit-card').show();
+        $(modal).find('.card-name').hide();
+        $(modal).find('.card-number').hide();
+        $(modal).find('.btn').addClass('disabled');
+        $(modal).find('.card-cancel').show();
         event.target.blur();
+    },
+    cancelCardChange: function(event){
+        event.preventDefault();
+        wnt.filter.usCardOpen = wnt.filter.usCardOpen === false ? true : false;
+        var modal = $(event.target).closest('.utility-group');
+        $(modal).find('.credit-card').hide();
+        $(modal).find('.card-name').show();
+        $(modal).find('.card-number').show();
+        $(modal).find('.btn').removeClass('disabled');
+        $(modal).find('.card-cancel').hide();
+        console.log('CHANGE CARD CANCELLED', this.state);
     },
     openInvoice: function(event){
         event.preventDefault();
@@ -287,9 +322,60 @@ var Header = React.createClass({
                     </div>
                     <div className="utility-group">
                         <h4>Card Info</h4>
-                        <div className="card-name">{this.state.cardName}</div>
+                        <div className="card-name">{this.state.cardFirstName} {this.state.cardLastName}</div>
                         <div className="card-number">{this.state.cardNumber}</div>
+                        <form className="credit-card">
+                            <div className="form-group">
+                                <label htmlFor="card-firstname">First Name</label>
+                                <input type="text" id="card-firstname" value={this.state.cardFirstName} data-field="cardFirstName" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-lastname">Last Name</label>
+                                <input type="text" id="card-lastname" value={this.state.cardLastName} data-field="cardLastName" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-billingaddress1">Billing Address</label>
+                                <input type="text" id="card-billingaddress1" data-field="cardBillingAddress1" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-billingaddress2">Address (cont.)</label>
+                                <input type="text" id="card-billingaddress2" data-field="cardBillingAddress2" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-city">City</label>
+                                <input type="text" id="card-city" data-field="cardCity" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-state">State</label>
+                                <input type="text" id="card-state" data-field="cardState" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-zip">Zip</label>
+                                <input type="text" id="card-zip" data-field="cardZip" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-company">Company</label>
+                                <input type="text" id="card-company" data-field="cardCompany" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-number">Card Number</label>
+                                <input type="text" id="card-number" value={this.state.cardNumber} data-field="cardNumber" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-cvv">CVV</label>
+                                <input type="text" id="card-cvv" data-field="cardCVV" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-mm">MM</label>
+                                <input type="text" id="card-mm" data-field="cardMM" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="card-yy">YY</label>
+                                <input type="text" id="card-yy" data-field="cardYY" onChange={this.changeField} />
+                            </div>
+                        </form>
                         <button className="btn" onClick={this.changeCard}>Change Card</button>
+                        <a className="card-cancel" onClick={this.cancelCardChange}>Cancel</a>
                     </div>
                     <div className="utility-group">
                         <h4>Invoice History</h4>
@@ -323,17 +409,33 @@ var Header = React.createClass({
                 <div id="change-plan" className="utilities-set">
                     <h3>Time for an upgrade! <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
                     <div className="utility-group">
-                        <div className="sub-item">
+                        <div className="sub-item plan">
                             <h4>Professional</h4>
-                            <p>Unlimited Accounts <div className="pricing">$540/yr $50/mo</div> <div className="plan-action">Current Plan</div></p>
+                            <div className="features">Unlimited Accounts</div>
+                            <div className="pricing">
+                                <div className="per-year">$540/yr</div>
+                                <div className="per-month">$50/mo</div>
+                            </div>
+                            <div className="plan-action"><button className="btn disabled" onClick={this.choosePlan}>Current Plan</button></div>
                         </div>
-                        <div className="sub-item">
+                        <div className="sub-item plan recommended-plan">
+                            <div className="recommended-tag">Recommended</div>
                             <h4>Individual</h4>
-                            <p>Advanced Features <div className="pricing">$440/yr $40/mo</div> <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div></p>
+                            <div className="features">Advanced Features</div>
+                            <div className="pricing">
+                                <div className="per-year">$440/yr</div>
+                                <div className="per-month">$40/mo</div>
+                            </div>
+                            <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div>
                         </div>
-                        <div className="sub-item">
+                        <div className="sub-item plan">
                             <h4>Enterprise</h4>
-                            <p>Advanced Features <div className="pricing">$640/yr $60/mo</div> <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div></p>
+                            <div className="features">Advanced Features</div>
+                            <div className="pricing">
+                                <div className="per-year">$640/yr</div>
+                                <div className="per-month">$60/mo</div>
+                            </div>
+                            <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div>
                         </div>
                     </div>
                 </div>

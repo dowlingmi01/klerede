@@ -29,6 +29,7 @@ body, p, td, label, .checkbox label {
 @white: rgba(255,255,255,1);
 
 @aqua: rgba(88,167,226,1);
+@aqualight: rgba(88,167,226,0.5);
 @aquadarker: rgba(40,101,135,1);
 @gold: rgba(220,179,53,1);
 @darkpurple1: rgba(67,56,92,1);
@@ -271,12 +272,23 @@ header {
             font-size: 150%;
             font-weight: 500;
         }
-        .plan-cancel {
+        .plan-cancel,
+        .card-cancel {
             cursor: pointer;
             font-size: 75%;
         }
         .card-name {
             padding-bottom: 10px;
+        }
+        .credit-card {
+            display: none;
+            .form-group {
+                border-bottom: 1px solid @lightgrey;
+                input {
+                    border: none;
+                    width: 100%;
+                }
+            }
         }
         .invoice {
             display: block;
@@ -342,6 +354,21 @@ header {
                     font-size: 9px;
                     text-transform: initial;
                 }
+                .confirm {
+                    display: none;
+                    .message {
+                        float: left;
+                        text-transform: initial;
+                        width: 50%;
+                    }
+                    .btn {
+                        float: right;
+                        font-size: 130%;
+                        margin: 0 0 0 5px;
+                        text-transform: capitalize;
+                        width: auto;
+                    }
+                }
             }
         }
         .active {
@@ -403,20 +430,48 @@ header {
         margin: 0;
     }
 }
+#change-plan.utilities-set .utility-group {
+    margin: 15px;
+}
 #user-types,
 #change-plan {
-    .sub-item:first-child {
-        border-top: none;
-        padding-top: 0;
-    }
-    .sub-item:last-child {
-        border-bottom: none;
-    }
     h4 {
         font-weight: 500;
+        margin: 0 0 5px;
     }
-    p {
-        font-size: 10px;
+    .plan {
+        background-color: @lightgrey;
+        border-radius: 3px;
+        margin-bottom: 10px;
+        padding: 15px;
+        position: relative;
+        .features {
+            float: left;
+            font-size: 100%;
+        }
+        .recommended-tag {
+            background-color: @aqua;
+            border-radius: 5px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            color: @white;
+            display: inline-block;
+            font-size: 75%;
+            padding: 5px 9px 1px;
+            position: absolute;
+            text-transform: uppercase;
+            top: -16px;
+        }
+        .pricing {
+            float: right;
+            font-size: 120%;
+            margin-bottom: 10px;
+            text-align: right;
+            text-transform: lowercase;
+        }
+    }
+    .recommended-plan {
+        background-color: @aqualight;
     }
 }
 .utilities-set {
@@ -604,16 +659,17 @@ header {
 /******** TOP VISITS STAT BLOCKS ********/
 /****************************************/
 .stat-block {
-    background-color: @aqua;
+    background-color: @mediumgrey;
     color: @white;
-    height: 140px;
+    height: 115px;
     overflow: hidden;
-    padding: 10px;
+    padding: 15px 10px;
     text-align: center;
     text-transform: uppercase;
     .label {
-        font-size: 1.2vw;   /* 160% */
-        font-weight: 400;
+        font-size: 14px;   /* 160% */
+        font-weight: 300;
+        letter-spacing: .1em;
         padding: 0;
         white-space: normal;
         @media (max-width: 1199px) {
@@ -624,16 +680,16 @@ header {
         }
     }
     .change {
-        font-size: 160%;
-        font-weight: 400;
+        font-size: 16px;
+        font-weight: 300;
         left: 50%;
         padding: 0;
         position: absolute;
-        bottom: 10px;
+        bottom: 15px;
         transform: translateX(-50%);
         white-space: nowrap;
         .down {
-            margin: 0 5px 0 0;
+            margin: 0 0 0 0;
             opacity: 0.5;
             position: relative;
             transform: rotate(180deg);
@@ -642,7 +698,7 @@ header {
             }
         }
         .up {
-            margin: 0 5px 0 0;
+            margin: 0 0 0 0;
             opacity: 0.5;
             position: relative;
             path {
@@ -651,8 +707,8 @@ header {
         }
     }
     .stat {
-        font-size: 2.5vw;
-        font-weight: 500;
+        font-size: 28px;
+        font-weight: 400;
         left: 50%;
         position: absolute;
         top: 46%;
@@ -668,12 +724,14 @@ header {
 .clear {
     clear: both;
 }
+/*
 #visits-total .stat-block {background-color: @cobalt;}
 #visits-ga .stat-block {background-color: @teal;}
 #visits-groups .stat-block {background-color: @darkgrey;}
 #visits-members .stat-block {background-color: @darkpurple1;}
 #visits-nonmembers .stat-block {background-color: @gold;}
 #sales-gate .stat-block {background-color: @aqua;}
+*/
 #visits-blocks-widget,
 #members-blocks-widget {
     .form-control {
@@ -2005,6 +2063,10 @@ body > .popover.top>.arrow:after {
     background-color: @aqua;
     color: @white;
     text-transform: uppercase;
+}
+.btn-default {
+    background-color: @white;
+    color: @aqua;
 }
 .btn:hover {
     background-color: @aquadarker;
