@@ -207,7 +207,7 @@ var Header = React.createClass({
         event.target.blur();
     },
     render: function() {
-        // LOOP FOR BAR SETS
+        // LOOP FOR USERS
         var users = [];
         for (var i = 0; i < this.state.users.length; i++) {
             users.push(<User name={this.state.users[i]} email={this.state.usersEmail[i]} />);

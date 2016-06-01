@@ -411,7 +411,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         dataSetWidth = ((wnt.revenue.total_bars.length * 2) + 1) * barWidth;
         $('.bar-set').css('width', barWidth+'px');   // Set width of bars
         var barPlacement = barWidth;   // Initialize increment for first placement from the left
-        $('#bar-graph').css('width', dataSetWidth+'px');   // Set width of data holder under viewport
+        // Not sure this is needed since the removal fixes the issue when there's not a full set of data ... $('#bar-graph').css('width', dataSetWidth+'px');   // Set width of data holder under viewport
         $.each($('.bar-set'), function(index, item){
             $(item).css('left', barPlacement+'px')
             barPlacement = barPlacement + (barWidth * 2);
@@ -669,9 +669,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             if($('.popover').length === 0){
                 // Reset accordion data if popovers are hidden
                 $('#earned-revenue').html(wnt.filter.bgAccordionState);
+                // Also need to reset the right filter
+                $('.bg-compare').hide();
+                $('#bg-compare-'+wnt.filter.bgPeriod).show();
             }
         });
         wnt.filter.bgAccordionState = $('#earned-revenue').html();
+        $('.bg-compare').hide();
+        $('#bg-compare-'+wnt.filter.bgPeriod).show();
     },
     formatNumbers: function(){
         var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
@@ -771,6 +776,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         this.callAPI();   // Needed to get rollovers updated properly
     },
     filterCompare: function(event){
+        console.log('TESTing!');
         wnt.filter.bgCompare = event.target.value;
         wnt.filter.bgPeriod = wnt.filter.bgCompare.split('-')[1];
         wnt.filter.bgCompare = wnt.filter.bgCompare.split('-')[0];
@@ -907,12 +913,17 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                             <div className="weather-bar">
                                 <div className="weather-period-title"></div>
                                 <form id="filter-comparison">
-                                    <select id="bg-compare" className="form-control" onChange={this.filterCompare}>
-                                        <option value="last-week">Compared to last week</option>
-                                        <option value="last-month">Compared to last month</option>
-                                        <option value="lastyear-month">Compared to same month last year</option>
-                                        <option value="last-quarter">Compared to last quarter</option>
-                                        <option value="lastyear-quarter">Compared to same quarter last year</option>
+                                    <select id="bg-compare-week" className="form-control bg-compare" onChange={this.filterCompare}>
+                                        <option value="last-week">Last Week</option>
+                                        <option value="average13-week">13 Week Average</option>
+                                    </select>
+                                    <select id="bg-compare-month" className="form-control bg-compare" onChange={this.filterCompare}>
+                                        <option value="last-month">Last Month</option>
+                                        <option value="lastyear-month">Same Month Last Year</option>
+                                    </select>
+                                    <select id="bg-compare-quarter" className="form-control bg-compare" onChange={this.filterCompare}>
+                                        <option value="last-quarter">Last Quarter</option>
+                                        <option value="lastyear-quarter">Same Quarter Last Year</option>
                                     </select>
                                     <Caret className="filter-caret" />
                                 </form>
