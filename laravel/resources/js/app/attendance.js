@@ -103,6 +103,9 @@ var Attendance = React.createClass({
         d3.select('#graph').selectAll('svg').remove();
         var self = this;
         // define dimensions of graph
+        console.log('Width for hourly attendance =', $('#attendance').width());   // Get width to use in calculation (need to rerun on resize)
+        var base = $('#attendance').width();
+        console.log('WIDTH', base, base - 160);
         var m = [20, 80, 60, 80]; // margins
         var w = 1000 - m[1] - m[3]; // width
         var h = 400 - m[0] - m[2]; // height

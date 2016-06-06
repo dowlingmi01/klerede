@@ -32,7 +32,7 @@ var BarSet = React.createClass({
         }
     },
     processLineItem: function(value, classExt, label) {
-        var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+"</td><td class='"+classExt+"'>"+value+"</td></tr>" : '';
+        var html = value !== 0 ? "<tr><td><div class='legend-circle-"+classExt+"'></div></td><td>"+label+"</td><td class='data "+classExt+"'>"+value+"</td></tr>" : '';
         return html;
     },
     renderWeather: function(){
@@ -43,19 +43,129 @@ var BarSet = React.createClass({
             return '';
         }
     },
+    formatNumbers: function(){
+        var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
+        $.each($('.popover-data .data'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:format, locale:"us"});
+                $(this).formatNumber({format:format, locale:"us"});
+            }
+        });
+        $.each($('#revenue-accordion .accordion-stat'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:format, locale:"us"});
+                $(this).formatNumber({format:format, locale:"us"});
+            }
+        });
+        $.each($('#revenue-accordion .accordion-compared-to'), function(index, item){
+            if($(this).html() !== '-'){
+                $(this).parseNumber({format:format, locale:"us"});
+                $(this).formatNumber({format:format, locale:"us"});
+            }
+        });
+    },
     updateDetails: function(){
-        $('#earned-revenue .weather-period-title').text($('.popover-date').text());
-        $('#earned-revenue .box .accordion-stat').text($('.popover td.bo').text());
-        $('#earned-revenue .cafe .accordion-stat').text($('.popover td.c').text());
-        $('#earned-revenue .gift .accordion-stat').text($('.popover td.gs').text());
-        $('#earned-revenue .mem .accordion-stat').text($('.popover td.m').text());
+        // Updates accordion details when bar set is clicked
+        // week, month = day (date)   ...   quarter = week
+        // TO DO: Logic for dates based on filters
+        // TO DO: Visitors to calculate percap
+        var self = this;
+        if($('.popover-date').text() !== ''){   // Fix for popover glitch when clicking doesn't open one, but this would wipe out the data.
+            var type;
+            var date = $('.popover-date').data('date');   //$(event.target).find('.bar-set-date').data('date');
+            var dates; 
+            if(wnt.filter.bgPeriod === 'quarter'){
+                type = 'week';
+                dates = wnt.getDateRange(date, 'last week');
+            } else {
+                type = 'date';
+                date = date.split('-');
+                date = new Date(date[0], date[1]-1, date[2]);
+                date = date.last().week();
+                date = date.getFullYear() + '-' + wnt.doubleDigits(date.getMonth()+1) + '-' + wnt.doubleDigits(date.getDate());
+                dates = [date, date];
+            }
+            wnt.gettingComparisonData = $.Deferred();
+            wnt.getComparison(type, dates, wnt.gettingComparisonData);
+            $.when(wnt.gettingComparisonData).done(function(data) {
+                var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
+                // if(wnt.filter.bgUnits === 'percap'){ ... CALC PER CAP ... }
+                var currentBO = $('.popover .bo').parseNumber({format:format, locale:"us"});
+                var currentC = $('.popover .c').parseNumber({format:format, locale:"us"});
+                var currentGS = $('.popover .gs').parseNumber({format:format, locale:"us"});
+                var currentM = $('.popover .m').parseNumber({format:format, locale:"us"});
+                currentBO = parseInt($('.popover .bo').text());
+                currentC = parseInt($('.popover .c').text());
+                currentGS = parseInt($('.popover .gs').text());
+                currentM = parseInt($('.popover .m').text());
+                console.log(currentBO, currentC, currentGS, currentM);
+                var bo = wnt.calcChange(currentBO, parseInt(data.bo.amount));
+                var c = wnt.calcChange(currentC, parseInt(data.c.amount));
+                var gs = wnt.calcChange(currentGS, parseInt(data.gs.amount));
+                var m = wnt.calcChange(currentM, parseInt(data.m.amount));
+                // 1) Set current values in accordion to match popover
+                $('#earned-revenue .weather-period-title').text($('.popover-date').text());
+                $('#earned-revenue .box .accordion-stat').text($('.popover td.bo').text());
+                $('#earned-revenue .cafe .accordion-stat').text($('.popover td.c').text());
+                $('#earned-revenue .gift .accordion-stat').text($('.popover td.gs').text());
+                $('#earned-revenue .mem .accordion-stat').text($('.popover td.m').text());
+                // 2) Set percentage values in accordion
+                $('#earned-revenue .box .accordion-stat-change').text(bo[0]+'%');
+                $('#earned-revenue .cafe .accordion-stat-change').text(c[0]+'%');
+                $('#earned-revenue .gift .accordion-stat-change').text(gs[0]+'%');
+                $('#earned-revenue .mem .accordion-stat-change').text(m[0]+'%');
+                // 3) Set previous values in accordion
+                $('#earned-revenue .box .accordion-compared-to').text(data.bo.amount);
+                $('#earned-revenue .cafe .accordion-compared-to').text(data.c.amount);
+                $('#earned-revenue .gift .accordion-compared-to').text(data.gs.amount);
+                $('#earned-revenue .mem .accordion-compared-to').text(data.m.amount);
+                // 4) Set change arrows in accordion
+                console.log(data);
+                console.log(bo, c, gs, m);
+                console.log(currentBO, currentC, currentGS, currentM);
+                // TO DO: Pull into own method (NOTE: Have to manipulate CSS since ReactJS won't let me change classes)
+                if($('.box .accordion-change .change').attr('class').indexOf(bo[1]) === -1){
+                    // Change arrow differs, so rotate it
+                    if($('.box .accordion-change .change').attr('class').indexOf('down') > -1){
+                        // Change arrow was down, so rotate it up
+                        $('.box .accordion-change .change').css('transform','rotate(0deg)');
+                    } else {
+                        // Change arrow was up, so rotate it down
+                        $('.box .accordion-change .change').css('transform','rotate(180deg)');
+                    }
+                }
+                if($('.cafe .accordion-change .change').attr('class').indexOf(c[1]) === -1){
+                    if($('.cafe .accordion-change .change').attr('class').indexOf('down') > -1){
+                        $('.cafe .accordion-change .change').css('transform','rotate(0deg)');
+                    } else {
+                        $('.cafe .accordion-change .change').css('transform','rotate(180deg)');
+                    }
+                }
+                if($('.gift .accordion-change .change').attr('class').indexOf(gs[1]) === -1){
+                    if($('.gift .accordion-change .change').attr('class').indexOf('down') > -1){
+                        $('.gift .accordion-change .change').css('transform','rotate(0deg)');
+                    } else {
+                        $('.gift .accordion-change .change').css('transform','rotate(180deg)');
+                    }
+                }
+                if($('.mem .accordion-change .change').attr('class').indexOf(m[1]) === -1){
+                    if($('.mem .accordion-change .change').attr('class').indexOf('down') > -1){
+                        $('.mem .accordion-change .change').css('transform','rotate(0deg)');
+                    } else {
+                        $('.mem .accordion-change .change').css('transform','rotate(180deg)');
+                    }
+                }
+                // Run number cleanup after processing...
+                self.formatNumbers();
+            });
+        }
     },
     render: function() {
         return (
             <div className="bar-set" 
                 data-toggle="popover" 
                 data-html="true" 
-                data-content={"<div class='popover-weather-bar'><div class='popover-date'>"+this.rolloverDate(this.props.date)+"</div>"+this.renderWeather()+"</div><table class='popover-data'>"+this.processLineItem(this.props.box, 'bo', 'Box Office')+this.processLineItem(this.props.cafe, 'c', 'Cafe')+this.processLineItem(this.props.gift, 'gs', 'Gift Store')+this.processLineItem(this.props.mem, 'm', 'Membership')+"</table>"} 
+                data-content={"<div class='popover-weather-bar'><div class='popover-date' data-date='"+this.props.date+"'>"+this.rolloverDate(this.props.date)+"</div>"+this.renderWeather()+"</div><table class='popover-data'>"+this.processLineItem(this.props.box, 'bo', 'Box Office')+this.processLineItem(this.props.cafe, 'c', 'Cafe')+this.processLineItem(this.props.gift, 'gs', 'Gift Store')+this.processLineItem(this.props.mem, 'm', 'Membership')+"</table>"} 
                 data-placement="auto"
                 data-trigger="click hover" onClick={this.updateDetails}>
                 <div className="bar-section bar-section-boxoffice"></div>
@@ -90,56 +200,6 @@ var AccordionItem = React.createClass({
                         <span className="accordion-stat">{this.props.stat}</span>
                     </div>
                 </div>
-            </div>
-        );
-    }
-});
-
-var AccordionItemPlus = React.createClass({
-    toggleAccordion: function(event){
-        // Turn caret and hide/show content
-        if($(event.target).closest('.accordion-sub-item').length === 0){
-            $(event.target).closest('.accordion-item').toggleClass('open').find('ul').eq(0).toggle().find('ul').eq(0).toggle();
-        }
-    },
-    render: function() {
-        return (
-            <div className={this.props.className+" accordion-item col-md-6"} onClick={this.toggleAccordion}>{this.props.label} <Caret className="accordion-caret" />
-                <ul className="accordion">
-                    <li>
-                        <ChangeArrow className={"change " + this.props.arrow} />
-                        <span className="accordion-stat-change">{this.props.statChange}%</span>
-                        <span className="accordion-stat">{this.props.stat}</span>
-                        <LongArrow className="long-arrow" />
-                        <span className="accordion-compared-to">{this.props.comparedTo}</span>
-                        <ul>
-                            <li className="breakdown accordion-sub-item">
-                                Online <Caret className="accordion-caret" />
-                                <ul>
-                                    <li>
-                                        <ChangeArrow className={"change " + this.props.arrowON} />
-                                        <span className="accordion-stat-change">{this.props.statChangeON}%</span>
-                                        <span className="accordion-stat">{this.props.statON}</span>
-                                        <LongArrow className="long-arrow" />
-                                        <span className="accordion-compared-to">{this.props.comparedToON}</span>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="breakdown accordion-sub-item">
-                                Offline <Caret className="accordion-caret" />
-                                <ul>
-                                    <li>
-                                        <ChangeArrow className={"change " + this.props.arrowOFF} />
-                                        <span className="accordion-stat-change">{this.props.statChangeOFF}%</span>
-                                        <span className="accordion-stat">{this.props.statOFF}</span>
-                                        <LongArrow className="long-arrow" />
-                                        <span className="accordion-compared-to">{this.props.comparedToOFF}</span>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
             </div>
         );
     }
@@ -310,19 +370,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         // NEW FOR ACCORDION ...
                         boxofficeNow: result.box_sum.amount,
                         boxofficeThen: result.box_sum_prior.amount,
-                        boxofficeChange: self.calcChange(wnt.revenue.box_sum.amount, wnt.revenue.box_sum_prior.amount),
+                        boxofficeChange: wnt.calcChange(wnt.revenue.box_sum.amount, wnt.revenue.box_sum_prior.amount),
 
                         cafeNow: result.cafe_sum.amount,
                         cafeThen: result.cafe_sum_prior.amount,
-                        cafeChange: self.calcChange(wnt.revenue.cafe_sum.amount, wnt.revenue.cafe_sum_prior.amount),
+                        cafeChange: wnt.calcChange(wnt.revenue.cafe_sum.amount, wnt.revenue.cafe_sum_prior.amount),
 
                         giftstoreNow: result.gift_sum.amount,
                         giftstoreThen: result.gift_sum_prior.amount,
-                        giftstoreChange: self.calcChange(wnt.revenue.gift_sum.amount, wnt.revenue.gift_sum_prior.amount),
+                        giftstoreChange: wnt.calcChange(wnt.revenue.gift_sum.amount, wnt.revenue.gift_sum_prior.amount),
 
                         membershipNow: result.mem_sum.amount,
                         membershipThen: result.mem_sum_prior.amount,
-                        membershipChange: self.calcChange(wnt.revenue.mem_sum.amount, wnt.revenue.mem_sum_prior.amount),
+                        membershipChange: wnt.calcChange(wnt.revenue.mem_sum.amount, wnt.revenue.mem_sum_prior.amount),
 
                         weather: weather
                     });
@@ -570,7 +630,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         }
     },
     setSliderPosition: function(){
-        // TO DO: Set slider position?
         // $("#bar-graph-slider").slider('value', (selectedDay / wnt.selectedMonthDays) * 100);   // Set slider location
         // $("#bar-graph-slider").slider('value',50);
         // This works ... 0-100 ... SET POSITION OF SLIDER BASED ON DATE
@@ -595,15 +654,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             displayDate = m1.substring(0,3)+' '+d1+', '+y1+' - '+m2.substring(0,3)+' '+d2+', '+y2;
         }
         $('.weather-period-title').html(displayDate);
-    },
-    calcChange: function(newstat, oldstat) {
-        var change = parseFloat(newstat) - parseFloat(oldstat);   // Calculate difference
-        change = (change / newstat) * 100;   // Calculate percentage
-        var direction = change < 0 ? "down" : "up";   // Test for negative or positive and set arrow direction
-        change = Math.abs(change);   // Convert to positive number
-        change = Math.round(100*change)/100;   // Round to hundredths
-        change = [change, direction]
-        return change;
     },
     animateBars: function(){
         var self = this;
@@ -653,13 +703,16 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $(handle).hasClass('active') ? $(label).text('Hide Details') : $(label).text('Show Details');
     },
     componentDidUpdate: function(){
-        $('.bar-set').popover('destroy');
+        var self = this;
         this.calcBarWidth();
         this.animateBars();
         this.formatNumbers();
         this.setDateHeader();
+        // Capture accordion state for resetting after popover manipulation
+        wnt.filter.bgAccordionState = $('#earned-revenue').html();
+        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         $('.bar-set').popover({ container: 'body' });
-        $('.bar-set').on('show.bs.popover', function () {
+        $('.bar-set').on('show.bs.popover', function (event) {
             if($('.popover').length > 0){
                 // Hide popovers if an additional one is triggered
                 $('.bar-set').popover('hide');
@@ -668,15 +721,14 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $('.bar-set').on('hidden.bs.popover', function () {
             if($('.popover').length === 0){
                 // Reset accordion data if popovers are hidden
-                $('#earned-revenue').html(wnt.filter.bgAccordionState);
-                // Also need to reset the right filter
+                $('#earned-revenue').html(wnt.filter.bgAccordionState);   // This caused the data to not update, but working now
+                // TO DO: Also need to reset the right filter
                 $('.bg-compare').hide();
                 $('#bg-compare-'+wnt.filter.bgPeriod).show();
             }
         });
-        wnt.filter.bgAccordionState = $('#earned-revenue').html();
         $('.bg-compare').hide();
-        $('#bg-compare-'+wnt.filter.bgPeriod).show();
+        $('#bg-compare-'+wnt.filter.bgPeriod).show();   // TO DO: Can wnt.filter.bgPeriod ever be set to 'day'?  No... need localized conditional
     },
     formatNumbers: function(){
         var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
@@ -705,6 +757,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         return number;
     },
     filterPeriod: function(event){
+        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         // TO DO: Change accordion filters when this one changes
         // day = same day last year, 13 week average
         // week = last week, 13 week average
@@ -715,15 +768,17 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // Set comparison filter in details
         // Default to 'last' instead of 'lastyear'
         wnt.filter.bgCompare = 'last';
-        $('#bg-compare').val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // Does NOT trigger other event!  :D
+        //$('#bg-compare').val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // Does NOT trigger other event!  :D
         this.callAPI();
         event.target.blur();
     },
     filterDates: function(event) {
+        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         wnt.filter.bgDates = wnt.formatDate(new Date(event.target.value));
         this.callAPI();
     },
     filterVisitors: function(event) {
+        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         wnt.filter.bgVisitors = event.target.value;
         // Set the global channels variable for proper processng before callAPI, and ...
         // ...turn off the active class on the proper channel
@@ -748,6 +803,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterUnits: function(event) {
+        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         wnt.filter.bgUnits = $(event.target).closest('.filter-units').data('value');
         $.each($('#bg-units .filter-units'), function(index, item){
             $(item).toggleClass('selected');
@@ -759,6 +815,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterChannels: function(event){
+        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         // Change bars first...
         // Toggle the legend/filter checkmark
         $(event.target).closest('.bar-graph-legend-item').find('.legend-check-circle').toggleClass('active');
@@ -773,16 +830,18 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $('.bar-graph-legend-item').each(function(i, item){
             wnt.filter.bgChannels[$(item).data('channel')] = $(item).find('.active').length;
         });
+        wnt.filter.bgAccordionState = $('#earned-revenue').html();   // Needed to fix bug related to popovers
         this.callAPI();   // Needed to get rollovers updated properly
     },
     filterCompare: function(event){
-        console.log('TESTing!');
-        wnt.filter.bgCompare = event.target.value;
+        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
+        console.log('Temporarily disabling comparsion filter.');   // TO DO: Set global filter when comparison is changed, to use with details clicks
+        /*wnt.filter.bgCompare = event.target.value;
         wnt.filter.bgPeriod = wnt.filter.bgCompare.split('-')[1];
         wnt.filter.bgCompare = wnt.filter.bgCompare.split('-')[0];
         $('#bg-period').val(wnt.filter.bgPeriod);
         this.callAPI();
-        event.target.blur();
+        event.target.blur();*/
     },
     render: function(){
         // LOOP FOR BAR SETS
@@ -913,6 +972,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                             <div className="weather-bar">
                                 <div className="weather-period-title"></div>
                                 <form id="filter-comparison">
+                                    <select id="bg-compare-day" className="form-control bg-compare" onChange={this.filterCompare}>
+                                        <option value="lastyear-day">Same Day Last Year</option>
+                                        <option value="average13-day">13 Week Average</option>
+                                    </select>
                                     <select id="bg-compare-week" className="form-control bg-compare" onChange={this.filterCompare}>
                                         <option value="last-week">Last Week</option>
                                         <option value="average13-week">13 Week Average</option>

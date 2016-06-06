@@ -15,6 +15,20 @@ ga('send', 'pageview');
 /********************************/
 
 var wnt = {
+    getVenue: function(deferredObj){    
+        $.get('/api/v1/venue/'+wnt.venueID)
+        .done(function(result){
+            console.log('Venue data loaded...', result);
+        })
+        .fail(function(result){
+            console.log('VENUE DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+            // If there's a deferred set for the data call, resolve it
+            if(deferredObj !== undefined){
+                deferredObj.resolve(result);
+            }
+        });
+    },
     // NOTE: To just change dates with slashes to dates with dashes (or vice versa) use   ...   str.replace(/\//g,'-')
     formatDate: function(dateObj, digits) {   // Pass in 'double' as second paramter for yyyy-mm-dd, default is yyyy-m-d
         var mm = dateObj.getMonth()+1;
@@ -265,6 +279,41 @@ var wnt = {
             console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
         });
     },
+    getComparison: function(type, priorPeriod, deferredObj){    
+        // type = 'date' or 'week'
+        // priorPeriod = ['yyyy-mm-dd','yyyy-mm-dd']
+        $.post(
+            wnt.apiMain,
+            {
+                venue_id: wnt.venueID,
+                queries: {
+                    bo: { specs: { type: 'sales', channel: 'gate' }, 
+                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                    c: { specs: { type: 'sales', channel: 'cafe' }, 
+                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
+                    gs: { specs: { type: 'sales', channel: 'store' }, 
+                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                    m: { specs: { type: 'sales', channel: 'membership' }, 
+                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
+                }
+            }
+        )
+        .done(function(result){
+            // If there's a deferred set for the data call, resolve it
+            if(deferredObj !== undefined){
+                deferredObj.resolve(result);
+            }
+            console.log('Comparison data loaded...');
+        })
+        .fail(function(result){
+            console.log('COMPARISON DATA ERROR! ... ' + result.statusText);
+            console.log(result);
+            // If there's a deferred set for the data call, resolve it
+            if(deferredObj !== undefined){
+                deferredObj.resolve(result);
+            }
+        });
+    },
     getGoals: function(year, deferredObj){        
         $.get(wnt.apiGoals+'/'+wnt.venueID+'/'+year)
         .done(function(result){
@@ -376,13 +425,29 @@ var wnt = {
         $('.popover').hide();
         window.open(encodedUri);
     },
+    calcChange: function(newstat, oldstat) {
+        var change = parseFloat(newstat) - parseFloat(oldstat);   // Calculate difference
+        change = (change / newstat) * 100;   // Calculate percentage
+        var direction = change < 0 ? "down" : "up";   // Test for negative or positive and set arrow direction
+        change = Math.abs(change);   // Convert to positive number
+        change = Math.round(100*change)/100;   // Round to hundredths
+        change = [change, direction]
+        return change;
+    },
     filter: {}
 };
 
 /********************************************/
 /******** GLOBAL API-FORMATTED DATES ********/
 /********************************************/
-
+// TO DO: Initialize data with API call at time of login...
+/*  // Need to run this at login
+wnt.gettingVenueData = $.Deferred();
+wnt.getVenue(wnt.gettingVenueData);
+$.when(wnt.gettingVenueData).done(function(venue) {
+    console.log('VENUE', venue);
+});
+*/
 /************************************************************************************************************/
 wnt.today = new Date(2016,4,8);   // 5/8/2016 ... TEMPORARY OVERRIDE ... REMOVE STRING TO GET CURRENT DAY FOR ALL CALCULATIONS
 /************************************************************************************************************/
