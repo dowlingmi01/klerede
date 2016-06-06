@@ -72,16 +72,18 @@ var BarSet = React.createClass({
         var self = this;
         if($('.popover-date').text() !== ''){   // Fix for popover glitch when clicking doesn't open one, but this would wipe out the data.
             var type;
-            var date = $('.popover-date').data('date');   //$(event.target).find('.bar-set-date').data('date');
+            var date = $('.popover-date').data('date');
+            date = date.split('-');
+            date = new Date(date[0], date[1]-1, date[2]);
             var dates; 
             if(wnt.filter.bgPeriod === 'quarter'){
                 type = 'week';
-                dates = wnt.getDateRange(date, 'last week');
+                date = date.add({ weeks: -13 });   // Match to 13 weeks ago
+                date = date.getFullYear() + '-' + wnt.doubleDigits(date.getMonth()+1) + '-' + wnt.doubleDigits(date.getDate());
+                dates = wnt.getDateRange(date, 'this week');
             } else {
                 type = 'date';
-                date = date.split('-');
-                date = new Date(date[0], date[1]-1, date[2]);
-                date = date.last().week();
+                date = wnt.filter.bgPeriod === 'month' ? date.last().month() : date.last().week();
                 date = date.getFullYear() + '-' + wnt.doubleDigits(date.getMonth()+1) + '-' + wnt.doubleDigits(date.getDate());
                 dates = [date, date];
             }
@@ -98,7 +100,6 @@ var BarSet = React.createClass({
                 currentC = parseInt($('.popover .c').text());
                 currentGS = parseInt($('.popover .gs').text());
                 currentM = parseInt($('.popover .m').text());
-                console.log(currentBO, currentC, currentGS, currentM);
                 var bo = wnt.calcChange(currentBO, parseInt(data.bo.amount));
                 var c = wnt.calcChange(currentC, parseInt(data.c.amount));
                 var gs = wnt.calcChange(currentGS, parseInt(data.gs.amount));
@@ -120,9 +121,6 @@ var BarSet = React.createClass({
                 $('#earned-revenue .gift .accordion-compared-to').text(data.gs.amount);
                 $('#earned-revenue .mem .accordion-compared-to').text(data.m.amount);
                 // 4) Set change arrows in accordion
-                console.log(data);
-                console.log(bo, c, gs, m);
-                console.log(currentBO, currentC, currentGS, currentM);
                 // TO DO: Pull into own method (NOTE: Have to manipulate CSS since ReactJS won't let me change classes)
                 if($('.box .accordion-change .change').attr('class').indexOf(bo[1]) === -1){
                     // Change arrow differs, so rotate it

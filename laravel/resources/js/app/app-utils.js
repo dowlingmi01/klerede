@@ -279,7 +279,8 @@ var wnt = {
             console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
         });
     },
-    getComparison: function(type, priorPeriod, deferredObj){    
+    getComparison: function(type, priorPeriod, deferredObj){
+        console.log('REQUEST =', type, priorPeriod);
         // type = 'date' or 'week'
         // priorPeriod = ['yyyy-mm-dd','yyyy-mm-dd']
         $.post(
