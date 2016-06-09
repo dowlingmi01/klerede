@@ -1,4 +1,7 @@
-param([switch]$test = $false)
+param(
+	[switch]$test = $false,
+	[string]$logFile
+)
 
 . "$PSScriptRoot\util.ps1"
 
@@ -30,7 +33,7 @@ function Upload-Result($url, $file_name) {
 		$wc = new-object System.Net.WebClient
 		[System.Text.Encoding]::ASCII.GetString($wc.UploadFile( $url, $file_name )) | ConvertFrom-Json
 	} Catch {
-		Fail "Unable to upload result to url $url" $_
+		Fail "Unable to upload file to url $url" $_
 	}
 }
 
@@ -56,6 +59,12 @@ Try {
 			Fail "Database test failed"
 		}
 		Write-Message "Database test OK"
+		exit 0
+	}
+	if($logFile) {
+		$url_upload = "$cfg_base_url/api/v1/import/session-log"
+		Write-Message "Uploading log"
+		$result = Upload-Result "${url_upload}?venue_id=$cfg_venue_id" $logFile
 		exit 0
 	}
 	$url_query = "$cfg_base_url/api/v1/import/query"

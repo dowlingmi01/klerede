@@ -28,4 +28,10 @@ class ImportController extends Controller {
 		$import_query->received($file);
 		return Response::json(['status' => 0]);
 	}
-} 
+	public function postSessionLog() {
+		$venue_id = Request::input('venue_id');
+		$file = Request::file('file');
+		$file->move(ImportQuery::getDir() . '/logs/' . $venue_id, Carbon::now()->format('Y-m-d\THis') . '.log');
+		return Response::json(['status' => 0]);
+	}
+}
