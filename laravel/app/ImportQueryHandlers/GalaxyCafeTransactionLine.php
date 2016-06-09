@@ -16,15 +16,11 @@ class GalaxyCafeTransactionLine extends ImportQueryHandler {
 		$cols = ['l.id', 't.id as cafe_transaction_id', 'l.sequence', 'p.id as cafe_product_id'
 			, 'l.sale_price', 'l.quantity', 'l.created_at'];
 
-		$sel = DB::table('import_galaxy_cafe_transaction_line as l')
+		$sel = DB::table(DB::raw('import_galaxy_cafe_transaction_line as l
+		straight_join cafe_transaction as t on l.source_id = t.source_id and l.venue_id = t.venue_id
+		straight_join cafe_product as p on cafe_product_code = p.code and l.venue_id = p.venue_id') )
 			->where('query_id', $this->query->id)
-			->join('cafe_transaction as t', function(JoinClause $join) {
-				$join->on('l.source_id', '=', 't.source_id')
-					->on('l.venue_id', '=', 't.venue_id');
-			})->join('cafe_product as p', function(JoinClause $join) {
-				$join->on('cafe_product_code', '=', 'p.code')
-					->on('l.venue_id', '=', 'p.venue_id');
-			})->select($cols)
+			->select($cols)
 			->orderBy('l.id');
 		$sel->chunk(1000, function($lines) {
 			$inserts = [];
