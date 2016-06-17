@@ -184,7 +184,7 @@ var GoalSetting = React.createClass({
             $('#goal-membership-uni').val(goalMemUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             $('#goal-membership-dol').val(goalMemDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             // Set individual months ... $('#goal-gate').parent().find('input').length
-            self.formatNumbers();
+            // self.formatNumbers();   // Turning off Safari decimal fix since it's breaking goals #261
         });
         // When 'Enter' key is pressed ...
         $('form').keypress(function(e) {
@@ -298,7 +298,7 @@ var GoalSetting = React.createClass({
         }
     },
     componentDidUpdate: function(){
-        this.formatNumbers();
+        // this.formatNumbers();   // Turning off Safari decimal fix since it's breaking goals #261
     },
     formatNumbers: function(){
         $('.dollars').parseNumber({format:"$#,###", locale:"us"});

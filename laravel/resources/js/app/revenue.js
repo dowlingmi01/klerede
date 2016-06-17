@@ -832,6 +832,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         this.callAPI();   // Needed to get rollovers updated properly
     },
     filterCompare: function(event){
+        // LEFT OFF HERE: Need to handle new filters
         $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         console.log('Temporarily disabling comparsion filter.');   // TO DO: Set global filter when comparison is changed, to use with details clicks
         /*wnt.filter.bgCompare = event.target.value;

@@ -76,11 +76,16 @@ var wnt = {
         return month;
     },
     getDateRange: function(dateStr, period) {
-        // period = [
-        //              'this week', 'this month', 'this quarter',
-        //              'last week', 'last month', 'last quarter',
-        //              'lastyear month', 'lastyear quarter'
-        //          ]
+        /*
+            period = [
+                    'this week', 'this month', 'this quarter',
+                    'last week', 'last month', 'last quarter',
+                    'lastyear month', 'lastyear quarter'
+
+                    NEW ... lastyear-day, average13-day, average13-week   // LEFT OFF HERE: Need to handle new filters
+                    ALREADY HAVE ... last-week, last-month, lastyear-month, last-quarter, lastyear-quarter
+                ]
+        */
         // Returns array with two values, one for the start date and one for the end date ... ['yyyy-mm-dd','yyyy-mm-dd']
         var dateArray = wnt.dateArray(dateStr);   // Break dateStr into correct array of integers
         var dateRange = [];
