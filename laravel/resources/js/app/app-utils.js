@@ -82,8 +82,8 @@ var wnt = {
                     'last week', 'last month', 'last quarter',
                     'lastyear month', 'lastyear quarter'
 
-                    NEW ... lastyear-day, average13-day, average13-week   // LEFT OFF HERE: Need to handle new filters
-                    ALREADY HAVE ... last-week, last-month, lastyear-month, last-quarter, lastyear-quarter
+                    NEW ... lastyear-day, average13-day    // LEFT OFF HERE: Need to handle new DAY filters
+                    ALREADY HAVE ... last-week, last-month, lastyear-month, last-quarter, lastyear-quarter ... average13-week
                 ]
         */
         // Returns array with two values, one for the start date and one for the end date ... ['yyyy-mm-dd','yyyy-mm-dd']
@@ -93,7 +93,11 @@ var wnt = {
         period = period.split(' ');
         if(period[1] === 'week'){
             dateObj = dateObj.getDay() !== 0 ? dateObj.previous().sunday() : dateObj;
-            dateObj = period[0] === 'last' ? dateObj.previous().sunday() : dateObj;
+            if(period[0] === 'last'){
+                dateObj = dateObj.previous().sunday();
+            } else if(period[0] === 'average13'){
+                dateObj = dateObj.addWeeks(-13);
+            }
             dateRange.push(wnt.formatDate(dateObj));
             dateObj.next().saturday();
             //dateObj.next().saturday();   // Testing grabbing 2 weeks worth of data for slider

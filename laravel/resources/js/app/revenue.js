@@ -229,6 +229,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
         var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
         wnt.barScope = 'date';
+        wnt.priorScope = 'date';
+        wnt.priorKind = 'sum';
         // Get week numbers for quarter data retrieval
         if(wnt.filter.bgPeriod === 'quarter'){
             currentPeriod[0] = wnt.getWeekNumber(currentPeriod[0], 'format');
@@ -237,12 +239,23 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             priorPeriod[1] = wnt.getWeekNumber(priorPeriod[1], 'format');
             wnt.barScope = 'week';
         }
+        if(wnt.filter.bgCompare === 'average13'){
+            wnt.priorScope = 'week';
+            wnt.priorKind = 'average';
+            var pp1 = priorPeriod[0].split('-');
+            var pp2 = currentPeriod[0].split('-');
+            pp1 = new Date(pp1[0], pp1[1]-1, pp1[2]);
+            pp2 = new Date(pp2[0], pp2[1]-1, pp2[2]);
+            priorPeriod[0] = pp1.getFullYear() + '-' + pp1.getWeek();
+            priorPeriod[1] = pp2.getFullYear() + '-' + pp2.getWeek();
+        }
         var totalBars = { type: 'sales' };
         if(wnt.filter.bgVisitors === 'members'){
             totalBars = { type: 'sales', members: true };
         } else if(wnt.filter.bgVisitors === 'nonmembers'){
             totalBars = { type: 'sales', members: false };
         }
+        console.log('PRIOR PERIOD', priorPeriod);
         $.post(
             wnt.apiMain,
             {
@@ -287,25 +300,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
                         box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
-                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },
 
                     cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
                         cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
-                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
+                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },                    
                     
                     gift_sum: { specs: { type: 'sales', channel: 'store' }, 
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                     
                         gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
-                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
+                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },
                     
                     mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
                         periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
                         
                         mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
-                            periods: { type: wnt.barScope, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
+                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } }
                 }
             }
         )
@@ -425,6 +438,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.filter.bgVisitors = $('#bg-visitors').val();
         wnt.filter.bgUnits = $('#bg-units .selected').data('value');
         wnt.filter.bgChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
+        wnt.filter.bgCompareActive = 'bg-compare-week';
         // Call method to load revenue and weather data
         this.callAPI();
     },
@@ -692,6 +706,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 'easeOutElastic'
             );
         });
+        $('#'+wnt.filter.bgCompareActive).val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // LEFT OFF HERE: Reset compare filter state ... moving to here TO HOPEFULLY fix the stickiness problem
     },
     toggleDetails: function(event){
         var handle = $(event.target).closest('.chart-handle');
@@ -727,6 +742,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         });
         $('.bg-compare').hide();
         $('#bg-compare-'+wnt.filter.bgPeriod).show();   // TO DO: Can wnt.filter.bgPeriod ever be set to 'day'?  No... need localized conditional
+        $('#'+wnt.filter.bgCompareActive).val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // Reset compare filter state ... moving to here fixed the stickiness problem
     },
     formatNumbers: function(){
         var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
@@ -756,8 +772,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
     },
     filterPeriod: function(event){
         $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
-        // TO DO: Change accordion filters when this one changes
-        // day = same day last year, 13 week average
+        // day = same day last year, 13 week average (only used when bar is clicked for day view)
         // week = last week, 13 week average
         // month = last month, same month last year
         // quarter = last quarter, same quarter last year
@@ -766,6 +781,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // Set comparison filter in details
         // Default to 'last' instead of 'lastyear'
         wnt.filter.bgCompare = 'last';
+        // NOTE: Comparison filter is chosen in the componentDidUpdate method.
         //$('#bg-compare').val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // Does NOT trigger other event!  :D
         this.callAPI();
         event.target.blur();
@@ -832,15 +848,33 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         this.callAPI();   // Needed to get rollovers updated properly
     },
     filterCompare: function(event){
-        // LEFT OFF HERE: Need to handle new filters
-        $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
-        console.log('Temporarily disabling comparsion filter.');   // TO DO: Set global filter when comparison is changed, to use with details clicks
-        /*wnt.filter.bgCompare = event.target.value;
+        //$('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers   // NOTE: THIS CAUSES THE OPTION BOX TO GET STUCK THE FIRST TIME
+        wnt.filter.bgCompare = event.target.value;
         wnt.filter.bgPeriod = wnt.filter.bgCompare.split('-')[1];
         wnt.filter.bgCompare = wnt.filter.bgCompare.split('-')[0];
-        $('#bg-period').val(wnt.filter.bgPeriod);
+        wnt.filter.bgCompareActive = $(event.target).attr('id');
+        console.log('COMPARE =', wnt.filter.bgCompare, 'PERIOD =', wnt.filter.bgPeriod, 'ACTIVE =', wnt.filter.bgCompareActive);
+        // LEFT OFF HERE: Splitting value of filter properly, but why is it reverting when week is changed now?!
         this.callAPI();
-        event.target.blur();*/
+        event.target.blur();
+        /*
+            <select id="bg-compare-day" className="form-control bg-compare" onChange={this.filterCompare}>
+                <option value="lastyear-day">Same Day Last Year</option>
+                <option value="average13-day">13 Week Average</option>
+            </select>
+            <select id="bg-compare-week" className="form-control bg-compare" onChange={this.filterCompare}>
+                <option value="last-week">Last Week</option>
+                <option value="average13-week">13 Week Average</option>
+            </select>
+            <select id="bg-compare-month" className="form-control bg-compare" onChange={this.filterCompare}>
+                <option value="last-month">Last Month</option>
+                <option value="lastyear-month">Same Month Last Year</option>
+            </select>
+            <select id="bg-compare-quarter" className="form-control bg-compare" onChange={this.filterCompare}>
+                <option value="last-quarter">Last Quarter</option>
+                <option value="lastyear-quarter">Same Quarter Last Year</option>
+            </select>
+        */
     },
     render: function(){
         // LOOP FOR BAR SETS
