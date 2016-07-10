@@ -238,6 +238,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             priorPeriod[0] = wnt.getWeekNumber(priorPeriod[0], 'format');
             priorPeriod[1] = wnt.getWeekNumber(priorPeriod[1], 'format');
             wnt.barScope = 'week';
+            wnt.priorScope = 'week';
         }
         if(wnt.filter.bgCompare === 'average13'){
             wnt.priorScope = 'week';
@@ -255,7 +256,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         } else if(wnt.filter.bgVisitors === 'nonmembers'){
             totalBars = { type: 'sales', members: false };
         }
-        console.log('PRIOR PERIOD', priorPeriod);
+        console.log('PRIOR PERIOD!!!', priorPeriod);
         $.post(
             wnt.apiMain,
             {
@@ -325,6 +326,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         .done(function(result) {
             console.log('Revenue data loaded...');
             wnt.revenue = result;
+            console.log('LEFT OFF HERE ... BOX SUM PRIOR...', wnt.revenue.box_sum_prior, wnt.revenue.gift_sum_prior, wnt.revenue.cafe_sum_prior, wnt.revenue.mem_sum_prior, wnt.priorKind, wnt.priorScope);
+            // LEFT OFF HERE... Problem is wnt.priorKind and wnt.priorScope aren't being set properly
             // Set max values for y-axis by grabbing amounts into new array and finding the max in that array
             self.calcBarTotals();
             // Calc per cap before getting max for y-axis
@@ -508,7 +511,10 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.revenue.box_bars_dates = wnt.revenue.box_bars.map(function(entry){
             return entry.period;
         });
+        // wnt.revenue.box_bars_dates returning week numbers
+        console.log('LEFT OFF HERE... BAR DATES', wnt.barDates, wnt.revenue.box_bars_dates);
         // Construct array of amounts, filling in zero for missing dates 
+        // NOTE: Can't map barDates to box_bars_dates because the later is week numbers (e.g. 2016-10)
         wnt.revenue.box_bars_amount = wnt.barDates.map(function(barDate){
             var position = $.inArray(barDate, wnt.revenue.box_bars_dates);
             if(position > -1){
