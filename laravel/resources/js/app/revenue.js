@@ -243,12 +243,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         if(wnt.filter.bgCompare === 'average13'){
             wnt.priorScope = 'week';
             wnt.priorKind = 'average';
-            var pp1 = priorPeriod[0].split('-');
-            var pp2 = currentPeriod[0].split('-');
-            pp1 = new Date(pp1[0], pp1[1]-1, pp1[2]);
-            pp2 = new Date(pp2[0], pp2[1]-1, pp2[2]);
-            priorPeriod[0] = pp1.getFullYear() + '-' + pp1.getWeek();
-            priorPeriod[1] = pp2.getFullYear() + '-' + pp2.getWeek();
+            priorPeriod[0] = wnt.getWeekNumber(priorPeriod[0], 'format');
+            priorPeriod[1] = wnt.getWeekNumber(currentPeriod[0], 'format');
         }
         var totalBars = { type: 'sales' };
         if(wnt.filter.bgVisitors === 'members'){
@@ -256,7 +252,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         } else if(wnt.filter.bgVisitors === 'nonmembers'){
             totalBars = { type: 'sales', members: false };
         }
-        console.log('PRIOR PERIOD!!!', priorPeriod);
         $.post(
             wnt.apiMain,
             {
@@ -326,7 +321,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         .done(function(result) {
             console.log('Revenue data loaded...');
             wnt.revenue = result;
-            console.log('LEFT OFF HERE ... BOX SUM PRIOR...', wnt.revenue.box_sum_prior, wnt.revenue.gift_sum_prior, wnt.revenue.cafe_sum_prior, wnt.revenue.mem_sum_prior, wnt.priorKind, wnt.priorScope);
+            console.log('LEFT OFF HERE ... BOX SUM PRIOR...', wnt.revenue.box_sum_prior, wnt.priorScope, wnt.priorKind);
             // LEFT OFF HERE... Problem is wnt.priorKind and wnt.priorScope aren't being set properly
             // Set max values for y-axis by grabbing amounts into new array and finding the max in that array
             self.calcBarTotals();
@@ -511,10 +506,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.revenue.box_bars_dates = wnt.revenue.box_bars.map(function(entry){
             return entry.period;
         });
-        // wnt.revenue.box_bars_dates returning week numbers
-        console.log('LEFT OFF HERE... BAR DATES', wnt.barDates, wnt.revenue.box_bars_dates);
         // Construct array of amounts, filling in zero for missing dates 
-        // NOTE: Can't map barDates to box_bars_dates because the later is week numbers (e.g. 2016-10)
         wnt.revenue.box_bars_amount = wnt.barDates.map(function(barDate){
             var position = $.inArray(barDate, wnt.revenue.box_bars_dates);
             if(position > -1){
