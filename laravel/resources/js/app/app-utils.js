@@ -115,15 +115,19 @@ var wnt = {
             dateRange.push(wnt.formatDate(dateObj));
             return dateRange;
         } else if(period[1] === 'quarter'){
+            wnt.testDate = dateObj;
+            console.log('DATE OBJECT IS ...', dateObj, dateObj.getMonth());
             var year = dateObj.getFullYear();
             var q1 = [new Date(year, 0, 1), new Date(year, 2, 31)];
             var q2 = [new Date(year, 3, 1), new Date(year, 5, 30)];
             var q3 = [new Date(year, 6, 1), new Date(year, 8, 30)];
             var q4 = [new Date(year, 9, 1), new Date(year, 11, 31)];
             if(dateObj.between(q1[0], q1[1])){
+                console.log('NaN bug should get here...', q1);
                 // dateRange = period[0] === 'last' ? [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])] : [wnt.formatDate(q1[0]), wnt.formatDate(q1[1])];
                 if(period[0] === 'last'){
-                    dateRange = [wnt.formatDate(q4[0]), wnt.formatDate(q4[1])];
+                    // NaN bug fix part 3 ... added .previous().year()
+                    dateRange = [wnt.formatDate(q4[0].previous().year()), wnt.formatDate(q4[1].previous().year())];
                 } else if(period[0] === 'lastyear'){
                     dateRange = [wnt.formatDate(q1[0].previous().year()), wnt.formatDate(q1[1].previous().year())];
                 } else {

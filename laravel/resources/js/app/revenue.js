@@ -228,6 +228,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         var self = this;
         var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
         var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
+        // wnt.filter.bgDates   ...   "2016-3-27"
         wnt.barScope = 'date';
         wnt.priorScope = 'date';
         wnt.priorKind = 'sum';
@@ -321,8 +322,6 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         .done(function(result) {
             console.log('Revenue data loaded...');
             wnt.revenue = result;
-            console.log('LEFT OFF HERE ... BOX SUM PRIOR...', wnt.revenue.box_sum_prior, wnt.priorScope, wnt.priorKind);
-            // LEFT OFF HERE... Problem is wnt.priorKind and wnt.priorScope aren't being set properly
             // Set max values for y-axis by grabbing amounts into new array and finding the max in that array
             self.calcBarTotals();
             // Calc per cap before getting max for y-axis
