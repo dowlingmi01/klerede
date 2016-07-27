@@ -703,7 +703,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 'easeOutElastic'
             );
         });
-        $('#'+wnt.filter.bgCompareActive).val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // LEFT OFF HERE: Reset compare filter state ... moving to here TO HOPEFULLY fix the stickiness problem
+        //$('#'+wnt.filter.bgCompareActive).val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // LEFT OFF HERE: Reset compare filter state ... moving to here TO HOPEFULLY fix the stickiness problem
+        console.log('END OF ANIMATE-BARS METHOD (not here)', wnt.filter.bgCompare, wnt.filter.bgPeriod);
     },
     toggleDetails: function(event){
         var handle = $(event.target).closest('.chart-handle');
@@ -740,6 +741,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         $('.bg-compare').hide();
         $('#bg-compare-'+wnt.filter.bgPeriod).show();   // TO DO: Can wnt.filter.bgPeriod ever be set to 'day'?  No... need localized conditional
         $('#'+wnt.filter.bgCompareActive).val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // Reset compare filter state ... moving to here fixed the stickiness problem
+        // wnt.filter.bgCompare+’-’+wnt.filter.bgPeriod
+        console.log('END OF COMPONENT UPDATE METHOD (but here)', wnt.filter.bgCompare, wnt.filter.bgPeriod);
     },
     formatNumbers: function(){
         var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
@@ -854,6 +857,8 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // LEFT OFF HERE: Splitting value of filter properly, but why is it reverting when week is changed now?!
         this.callAPI();
         event.target.blur();
+        console.log('END OF FILTER-COMPARE METHOD', wnt.filter.bgCompare, wnt.filter.bgPeriod);
+
         /*
             <select id="bg-compare-day" className="form-control bg-compare" onChange={this.filterCompare}>
                 <option value="lastyear-day">Same Day Last Year</option>
