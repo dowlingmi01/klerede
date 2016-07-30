@@ -736,6 +736,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                 // TO DO: Also need to reset the right filter
                 $('.bg-compare').hide();
                 $('#bg-compare-'+wnt.filter.bgPeriod).show();
+                $('#'+wnt.filter.bgCompareActive).val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);
             }
         });
         $('.bg-compare').hide();
