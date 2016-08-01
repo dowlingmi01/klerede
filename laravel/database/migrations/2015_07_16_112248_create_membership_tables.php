@@ -54,7 +54,6 @@ class CreateMembershipTables extends Migration {
 			$table->string('middle');
 			$table->string('last');
 			$table->timestamps();
-			$table->unique(['first', 'middle', 'last']);
 		});
 		Schema::create('member_address', function(Blueprint $table)
 		{
@@ -67,7 +66,6 @@ class CreateMembershipTables extends Migration {
 			$table->string('country');
 			$table->string('phone');
 			$table->timestamps();
-			$table->index(['street_1', 'street_2', 'city']);
 		});
 		Schema::create('member_galaxy', function(Blueprint $table)
 		{

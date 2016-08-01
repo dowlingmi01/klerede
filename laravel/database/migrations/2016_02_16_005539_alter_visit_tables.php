@@ -31,16 +31,6 @@ class AlterVisitTables extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('visit', function(Blueprint $table)
-		{
-			$table->dropColumn('facility_id');
-			$table->integer('operation_id')->after('kind');
-		});
-		Schema::table('visit_galaxy', function(Blueprint $table)
-		{
-			$table->dropColumn('facility_id');
-			$table->integer('operation_id')->after('kind');
-		});
 	}
 
 }
