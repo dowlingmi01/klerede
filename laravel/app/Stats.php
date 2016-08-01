@@ -8,6 +8,8 @@ class Stats {
 		if($type != 'date') {
 			if(preg_match('/(\d{4})-(\d{1,2})/', $period, $match))
 				$period = (int)$match[1]*100 + (int)$match[2];
+		} else if(preg_match('/(\d{4})-(\d{1,2})-(\d{1,2})/', $period, $match)) {
+			$period = sprintf('%04d-%02d-%02d', (int)$match[1], (int)$match[2], (int)$match[3]);
 		}
 	}
 	static protected function formatPeriod(&$period, $type) {
