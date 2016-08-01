@@ -25,6 +25,7 @@ class ImportGalaxyTables extends Migration {
 			$table->boolean('is_ga');
 			$table->integer('delivery_method_id');
 			$table->timestamps();
+			$table->index(['query_id', 'id'], 'ig_bop_idx');
 		});
 		Schema::create('import_galaxy_member', function(Blueprint $table)
 		{
@@ -42,6 +43,7 @@ class ImportGalaxyTables extends Migration {
 			$table->string('country');
 			$table->dateTime('last_changed');
 			$table->timestamps();
+			$table->index(['query_id', 'id'], 'ig_m_idx');
 		});
 		Schema::create('import_galaxy_membership', function(Blueprint $table)
 		{
@@ -64,6 +66,7 @@ class ImportGalaxyTables extends Migration {
 			$table->string('country');
 			$table->dateTime('last_changed');
 			$table->timestamps();
+			$table->index(['query_id', 'id'], 'ig_mb_idx');
 		});
 		Schema::create('import_galaxy_box_office_transaction', function(Blueprint $table)
 		{
@@ -79,7 +82,7 @@ class ImportGalaxyTables extends Migration {
 			$table->integer('operator_id');
 			$table->integer('agency_id');
 			$table->timestamps();
-			$table->index(['query_id', 'source_id'], 'ig_bot_idx');
+			$table->index(['query_id', 'id'], 'ig_bot_idx');
 		});
 		Schema::create('import_galaxy_box_office_transaction_line', function(Blueprint $table)
 		{
@@ -94,7 +97,7 @@ class ImportGalaxyTables extends Migration {
 			$table->double('sale_price');
 			$table->integer('quantity');
 			$table->timestamps();
-			$table->index(['query_id', 'source_id'], 'ig_botl_idx');
+			$table->index(['query_id', 'id'], 'ig_botl_idx');
 		});
 		Schema::create('import_galaxy_visit', function(Blueprint $table)
 		{
@@ -112,6 +115,7 @@ class ImportGalaxyTables extends Migration {
 			$table->integer('use_no');
 			$table->dateTime('time');
 			$table->timestamps();
+			$table->index(['query_id', 'id'], 'ig_v_idx');
 		});
 		Schema::create('import_galaxy_cafe_product', function(Blueprint $table)
 		{
@@ -123,6 +127,7 @@ class ImportGalaxyTables extends Migration {
 			$table->string('description');
 			$table->string('account_code');
 			$table->timestamps();
+			$table->index(['query_id', 'id'], 'ig_cp_idx');
 		});
 		Schema::create('import_galaxy_cafe_transaction', function(Blueprint $table)
 		{
@@ -138,7 +143,7 @@ class ImportGalaxyTables extends Migration {
 			$table->integer('operator_id');
 			$table->integer('agency_id');
 			$table->timestamps();
-			$table->index(['query_id', 'source_id'], 'ig_ct_idx');
+			$table->index(['query_id', 'id'], 'ig_ct_idx');
 		});
 		Schema::create('import_galaxy_cafe_transaction_line', function(Blueprint $table)
 		{
@@ -152,7 +157,7 @@ class ImportGalaxyTables extends Migration {
 			$table->double('sale_price');
 			$table->integer('quantity');
 			$table->timestamps();
-			$table->index(['query_id', 'source_id'], 'ig_ctl_idx');
+			$table->index(['query_id', 'id'], 'ig_ctl_idx');
 		});
 		Schema::create('import_galaxy_cafe_transaction_member_info', function(Blueprint $table)
 		{
@@ -164,7 +169,7 @@ class ImportGalaxyTables extends Migration {
 			$table->integer('sequence');
 			$table->string('member_code');
 			$table->timestamps();
-			$table->index(['query_id', 'sequence'], 'ig_ctmi_idx');
+			$table->index(['query_id', 'id'], 'ig_ctmi_idx');
 		});
 		DB::table('import_query_class')->insert([
 			['id'=>100, 'name'=>'galaxy_box_office_product'],
