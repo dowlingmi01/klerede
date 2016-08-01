@@ -36,6 +36,10 @@ class SiriuswareChanges extends Migration {
 			$table->timestamps();
 			$table->unique(['venue_id', 'code']);
 		});
+		Schema::table('membership', function(Blueprint $table) {
+			$table->dropUnique('membership_venue_id_sequence_unique');
+		});
+
 	}
 
 	/**
