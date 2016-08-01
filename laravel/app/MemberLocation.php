@@ -8,6 +8,10 @@ class MemberLocation extends Model {
 	protected $guarded = [];
 	static $cols = ['city', 'state', 'zip', 'country'];
 	static function getFor($data) {
-		return self::firstOrCreate(Helper::array_subkeys($data, self::$cols));
+		if(isset($data['city'])) {
+			return self::firstOrCreate(Helper::array_subkeys($data, self::$cols));
+		} else {
+			return new self();
+		}
 	}
 }

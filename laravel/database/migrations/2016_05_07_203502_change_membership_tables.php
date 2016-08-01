@@ -46,7 +46,7 @@ class ChangeMembershipTables extends Migration {
 			$table->increments('id');
 			$table->integer('venue_id');
 			$table->integer('member_id');
-			$table->integer('member_location_id');
+			$table->integer('member_location_id')->nullable();
 			$table->string('code');
 			$table->integer('sequence');
 			$table->integer('box_office_product_id');
