@@ -15,7 +15,7 @@ class Membership extends Model {
 		if(!$product)
 			return false;
 		$membership = self::firstOrNew(['venue_id'=>$data->venue_id, 'code'=>$data->code]);
-		if(! (new Carbon($data->dob))->gt(Carbon::create(1900, 01, 02)) )
+		if(!isset($data->dob) || ! (new Carbon($data->dob))->gt(Carbon::create(1900, 01, 02)) )
 			$data->dob = null;
 		$data = (array) $data;
 		$location = MemberLocation::getFor($data);
