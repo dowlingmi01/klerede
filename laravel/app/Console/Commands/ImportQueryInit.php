@@ -39,15 +39,20 @@ class ImportQueryInit extends Command {
 	 */
 	public function fire()
 	{
-		foreach ([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000] as $iqcId) {
-			/** @var ImportQueryClass $iqc */
-			$iqc = ImportQueryClass::find($iqcId);
-			$q = new ImportQuery();
-			$q->venue_id = 1588;
-			$q->query_class()->associate($iqc);
-			$h = $iqc->getHandler($q);
-			$h->insertNextQuery(0);
-		}
+		$venues = [
+			1588 => [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+			1518 => [1100, 1200, 1300, 1400, 1500, 1600, 1700],
+		];
+		foreach($venues as $venue_id=>$iqcIds)
+			foreach ($iqcIds as $iqcId) {
+				/** @var ImportQueryClass $iqc */
+				$iqc = ImportQueryClass::find($iqcId);
+				$q = new ImportQuery();
+				$q->venue_id = $venue_id;
+				$q->query_class()->associate($iqc);
+				$h = $iqc->getHandler($q);
+				$h->insertNextQuery(0);
+			}
 	}
 
 	/**
