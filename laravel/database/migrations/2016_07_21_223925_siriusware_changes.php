@@ -40,6 +40,8 @@ class SiriuswareChanges extends Migration {
 			$table->dropUnique('membership_venue_id_sequence_unique');
 		});
 
+		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_naq.csv'));
+		DB::table('box_office_product_kind_map')->insert($bopkm_data);
 	}
 
 	/**
