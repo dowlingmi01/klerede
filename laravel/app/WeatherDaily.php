@@ -15,8 +15,17 @@ class WeatherDaily extends Model {
 
 	static function getFor($venue_id, $date, $force = false, $reprocess = false) {
 		$weather_daily = WeatherDaily::firstOrNew(['venue_id'=>$venue_id, 'date'=>$date]);
+		if($weather_daily->exists && !$force) {
+			$key = self::getCacheKeyFor($venue_id, $date);
+			if(!Cache::has($key)) {
+				Cache::forever($key, $weather_daily->source);
+			}
+			$json = $weather_daily->source;
+		}
 		if($force || $reprocess || !$weather_daily->exists) {
-			$json = self::retrieveJSON($venue_id, $date, $force);
+			if(!$json) {
+				$json = self::retrieveJSON($venue_id, $date, $force);
+			}
 			$data = json_decode($json);
 			$hours = ['1'=>10, '2'=>16];
 			foreach($hours as $num => $index) {
@@ -48,10 +57,6 @@ class WeatherDaily extends Model {
 				$weather_daily->hours()->save($hourly);
 			}
 		} else {
-			$key = self::getCacheKeyFor($venue_id, $date);
-			if(!Cache::has($key)) {
-				Cache::forever($key, $weather_daily->source);
-			}
 		}
 		return $weather_daily;
 	}
