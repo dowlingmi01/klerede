@@ -18,7 +18,7 @@ class GalaxyCafeTransactionMemberInfo extends ImportQueryHandler {
 			->join('member as m', function(JoinClause $join) {
 				$join->on('m.code', '=', 'i.member_code')
 					->on('m.venue_id', '=', 'i.venue_id');
-			})->where('query_id', $this->query->id)->select($cols);
+			})->where('query_id', $this->query->id)->select($cols)->orderBy('i.id');
 
 		$sel->chunk(1000, function($lines) {
 			$ids = [];
