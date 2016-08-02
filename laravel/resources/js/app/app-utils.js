@@ -518,7 +518,7 @@ wnt.apiMain = '/api/v1/stats/query';
 wnt.apiWeather = '/api/v1/weather/query';
 wnt.apiGoals = '/api/v1/goals/sales';
 /************************************************************************************************************/
-wnt.venueID = '1588';   // TEMPORARY OVERRIDE
+wnt.venueID = '1518';   // TEMPORARY OVERRIDE   ...   1588 Living Planet  ...   1518 National Aquarium
 wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
 /************************************************************************************************************/
 wnt.gettingData;
