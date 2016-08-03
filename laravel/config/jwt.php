@@ -10,6 +10,15 @@
  */
 
 return [
+    
+    /*
+    |
+    | When activev = false JWT will not validate token. Logged user will be
+    | the one indicated in mock_user_id
+    */
+    'active' => false,
+    'mock_user_id' => 5,
+
 
     /*
     |--------------------------------------------------------------------------

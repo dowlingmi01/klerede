@@ -15,14 +15,19 @@ use App\GoalsSales;
 use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
 
+
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
 
+
+/*
 Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+*/
 
 Route::group(['prefix'=>'api/v1'], function() {
 	Route::resource('store-product-category-group', 'StoreProductCategoryGroupController');
@@ -59,8 +64,19 @@ Route::group(['prefix'=>'api/v1'], function() {
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
 	});
 
-	Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
-	Route::post('authenticate', 'AuthenticateController@authenticate');
+
+    //pruebas
+	//Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
+	Route::post('auth/login', 'AuthenticateController@authenticate');
+	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
+	//Route::get('auth/user', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
+	//Route::get('auth/user', 'UserController@index');	
+	Route::resource('auth/user', 'UserController');
+	Route::resource('auth/role', 'RoleController');//->middleware('jwt.auth');
+	
+
+
+	//Route::post('logout', 'AuthenticateController@logout');
 	Route::controller('import', 'ImportController');
 });
 
