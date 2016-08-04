@@ -77,7 +77,8 @@ gulp.task('app', function(){
             'resources/js/app/revenue.js',
             'resources/js/app/attendance.js',
             'resources/js/app/members-blocks.js',
-            'resources/js/app/goal-setting.js'
+            'resources/js/app/goal-setting.js',
+            'resources/js/app/login.js'
         ])
         .pipe(react())
         .pipe(concat('app.js'))

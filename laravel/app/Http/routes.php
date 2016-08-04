@@ -80,3 +80,8 @@ Route::get('help', function()
 {
     return View::make('help');
 });
+
+Route::get('login', function()
+{
+    return View::make('login');
+});
