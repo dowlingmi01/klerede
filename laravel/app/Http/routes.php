@@ -71,9 +71,10 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
 	//Route::get('auth/user', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
 	//Route::get('auth/user', 'UserController@index');	
-	Route::resource('auth/user', 'UserController');
-	Route::resource('auth/role', 'RoleController');//->middleware('jwt.auth');
-	
+	Route::resource('users', 'UserController', ['except' => ['create', 'edit', 'update']]);
+	Route::post('users/{user_id}', 'UserController@update');
+	Route::resource('roles', 'RoleController', ['only' => ['index']]);//->middleware('jwt.auth');
+	Route::post('users/role/{user_id}/{role_id}', 'UserController@changeRole');
 
 
 	//Route::post('logout', 'AuthenticateController@logout');
