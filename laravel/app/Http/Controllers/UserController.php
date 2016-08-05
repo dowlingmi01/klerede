@@ -14,24 +14,7 @@ use \Input;
 
 class UserController extends Controller
 {
-
-
-/*
-
-
-HTTP Verb   CRUD    Entire Collection (e.g. /customers) Specific Item (e.g. /customers/{id})
-POST    Create  201 (Created), 'Location' header with link to /customers/{id} containing new ID.    404 (Not Found), 409 (Conflict) if resource already exists..
-
-GET Read    200 (OK), list of customers. Use pagination, sorting and filtering to navigate big lists.   200 (OK), single customer. 404 (Not Found), if ID not found or invalid.
-
-PUT Update/Replace  404 (Not Found), unless you want to update/replace every resource in the entire collection. 200 (OK) or 204 (No Content). 404 (Not Found), if ID not found or invalid.
-
-PATCH   Update/Modify   404 (Not Found), unless you want to modify the collection itself.   200 (OK) or 204 (No Content). 404 (Not Found), if ID not found or invalid.
-
-DELETE  Delete  404 (Not Found), unless you want to delete the whole collection—not often desirable.    200 (OK). 404 (Not Found), if ID not found or invalid.
-
-*/
-
+ 
 
 public function __construct()
    {
@@ -74,10 +57,9 @@ public function __construct()
         );
         $validator = Validator::make(Input::all(), $rules);
         if ($validator->fails()) {
-            return ['result' => 'error'];
-            /*return Redirect::to('users/create')
-                ->withErrors($validator)
-                ->withInput(Input::except('password'));*/
+            $messages = $validator->messages();
+            $messages->add("result", "error");
+            return  $messages  ;
         } else {
             // store
             $user = new User;
@@ -128,6 +110,7 @@ public function __construct()
 
     /**
      * Update the specified resource in storage.
+     * Password is not updated
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -145,49 +128,45 @@ public function __construct()
         );
         $validator = Validator::make(Input::all(), $rules);
         if ($validator->fails()) {
-            return ['result' => 'error1'];
-            /*return Redirect::to('users/create')
-                ->withErrors($validator)
-                ->withInput(Input::except('password'));*/
+            $messages = $validator->messages();
+            $messages->add("result", "error");
+            return  $messages  ;
+         
         } else {
             // store
             $user = User::find($id);
+            if(!$user){
+                return ['result'=> 'error', 'message'=>'User not found'];
+            }
             $user->name       = $request->name;
             $user->email      = $request->email ;
-            
-            $origPassword = $user->password;
-            if(trim($request->password) !== ''){
-                $user->password = $origPassword;
-            } else {
-                $user->password = Hash::make($request->password);
-            }
-
             $user->role_id = $request->role_id ;
             $user->venue_id = $request->venue_id; 
             $user->save();
-
-            // redirect
-         
-            return ['result'=>'ok', 'id'=>$user->id, 'pass'=>'|'.$request->password.'|'.$user->password.'|'];
+            return ['result'=>'ok', 'id'=>$user->id];
         }
 
-
-       // $userUpdate=\Request::all();
-      //  return $request;
-
-        /*
-        $user=User::find($id);
-        $origPassword = $user->password;
-        if($userUpdate->password !== ''){
-            $userUpdate->password = $origPassword;
-        } else {
-            $userUpdate->password = Hash::make($userUpdate->password);
-        }
-        $result = $user->update($userUpdate);
-        return ['result' => $result];   
-    */
     }
 
+        /**
+     * Update password of the specified user in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::find($id);
+        if(!$user){
+            return ['result'=> 'error', 'message'=>'User not found'];
+         }
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return ['result'=>'ok', 'id'=>$user->id];
+    } 
+
+  
     /**
      * Remove the specified resource from storage.
      *

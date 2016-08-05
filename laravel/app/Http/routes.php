@@ -73,6 +73,9 @@ Route::group(['prefix'=>'api/v1'], function() {
 	//Route::get('auth/user', 'UserController@index');	
 	Route::resource('users', 'UserController', ['except' => ['create', 'edit', 'update']]);
 	Route::post('users/{user_id}', 'UserController@update');
+	Route::post('users/pass/{user_id}', 'UserController@updatePassword');
+
+	
 	Route::resource('roles', 'RoleController', ['only' => ['index']]);//->middleware('jwt.auth');
 	Route::post('users/role/{user_id}/{role_id}', 'UserController@changeRole');
 
