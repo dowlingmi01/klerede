@@ -24,12 +24,6 @@ public function __construct()
        $this->middleware('jwt.auth', ['except' => ['authenticate']]);
    }
 
-	public function index()
-	{
-	    // Retrieve all the users in the database and return them
-	    $users = User::all();
-	    return $users;
-	}
  
   
     public function authenticate(Request $request)
@@ -38,7 +32,8 @@ public function __construct()
 
         try {
             // verify the credentials and create a token for the user
-            if (!$user = JWTAuth::byCredentials($credentials)) {
+            
+            if (!$user = User::whereEmail($credentials['email'])->first()) {
                 return response()->json(['user_not_found'], 404);
             }
             
@@ -82,7 +77,7 @@ public function __construct()
 		    // the token is valid and we have found the user via the sub claim
 		    
 		} else {
-			if (!$user = JWTAuth::byId(config('jwt.mock_user_id'))) {
+			if (!$user = User::find(config('jwt.mock_user_id'))) {
 		        return response()->json(['user_not_found'], 404);
 		     }
 		}
