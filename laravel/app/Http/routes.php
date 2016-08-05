@@ -69,10 +69,10 @@ Route::group(['prefix'=>'api/v1'], function() {
 	//Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
 	Route::post('auth/login', 'AuthenticateController@authenticate');
 	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
-	Route::get('users/venue_id', 'UserController@getAuthenticatedVenueId');
+	 
 	//Route::get('auth/user', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
 	//Route::get('auth/user', 'UserController@index');	
-	Route::resource('users', 'UserController', ['except' => ['create', 'edit', 'update']]);
+	Route::resource('users', 'UserController', ['except' => ['create', 'edit' ]]);
 	Route::post('users/{user_id}', 'UserController@update');
 	Route::post('users/{user_id}/pass', 'UserController@updatePassword');
 

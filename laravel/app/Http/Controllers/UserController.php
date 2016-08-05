@@ -143,7 +143,7 @@ public function __construct()
             }
             $user->name       = trim($request->name) !== '' ? $request->name : $user->name;
             $user->email      = trim($request->email) !== '' ? $request->email : $user->email;
-            $user->password      = trim($request->password) !== '' ? Hash::make($request->password) : $user->password;
+          
             $user->role_id = $request->role_id != 0 ? $request->role_id : $user->role_id;
              
             $user->save();
