@@ -120,11 +120,10 @@ public function __construct()
     {
 
          $rules = array(
-            'name'       => 'required',
-            'email'      => 'required|email',
-          
-            'role_id' => 'required|numeric',
-            'venue_id' => 'required|numeric'
+             
+            'email'      => 'email',
+            'role_id' => 'numeric',
+            
         );
         $validator = Validator::make(Input::all(), $rules);
         if ($validator->fails()) {
@@ -138,35 +137,18 @@ public function __construct()
             if(!$user){
                 return ['result'=> 'error', 'message'=>'User not found'];
             }
-            $user->name       = $request->name;
-            $user->email      = $request->email ;
-            $user->role_id = $request->role_id ;
-            $user->venue_id = $request->venue_id; 
+            $user->name       = trim($request->name) !== '' ? $request->name : $user->name;
+            $user->email      = trim($request->email) !== '' ? $request->email : $user->email;
+            $user->password      = trim($request->password) !== '' ? Hash::make($request->password) : $user->password;
+            $user->role_id = $request->role_id != 0 ? $request->role_id : $user->role_id;
+             
             $user->save();
             return ['result'=>'ok', 'id'=>$user->id];
         }
 
     }
 
-        /**
-     * Update password of the specified user in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function updatePassword(Request $request, $id)
-    {
-        $user = User::find($id);
-        if(!$user){
-            return ['result'=> 'error', 'message'=>'User not found'];
-         }
-        $user->password = Hash::make($request->password);
-        $user->save();
-        return ['result'=>'ok', 'id'=>$user->id];
-    } 
-
-  
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -181,20 +163,5 @@ public function __construct()
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }
 
-     /**
-     * Change role of the specified user.
-     *
-     * @param  int  $id
-     * @param  int  $role_id
-     * @return \Illuminate\Http\Response
-     */
-    public function changeRole($id, $role_id)
-    {
-        //check $id distinct to logged user
-        //check venue_id
-        $user = User::findOrFail($id);
-        $user->role_id = $role_id;
-        $result = $user->save();
-        return ['result' => ($result == 1 ? "ok": "error:".$result)];
-    }
+    
 }
