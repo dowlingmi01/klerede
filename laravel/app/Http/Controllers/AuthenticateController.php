@@ -53,7 +53,7 @@ public function __construct()
     public function getAuthenticatedUser()
 	{
 
-		if(env('JWT_ACTIVE', true)){ 
+		if(config('jwt.active')){ 
 		    try {
 
 		        if (! $user = JWTAuth::parseToken()->authenticate()) {
@@ -77,7 +77,7 @@ public function __construct()
 		    // the token is valid and we have found the user via the sub claim
 		    
 		} else {
-			if (!$user = JWTAuth::byId(env('JWT_MOCK_USER_ID', -1))) {
+			if (!$user = JWTAuth::byId(config('jwt.mock_user_id'))) {
 		        return response()->json(['user_not_found'], 404);
 		     }
 		}
