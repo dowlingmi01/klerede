@@ -9,7 +9,7 @@ use App\User;
 use \Hash;
 use \Validator;
 use \Input;
-
+use JWTAuth;
 
 
 class UserController extends Controller
@@ -34,6 +34,10 @@ public function __construct()
     {
          
         $input = (object) $request->all();
+        $venue_id = JWTAuth::getAuthenticatedVenueId();
+        if($venue_id != $input->venue_id){
+            return "Invalid venue id";
+        }
         $users = User::where('venue_id', $input->venue_id)->get();
         return $users;
     }
@@ -148,7 +152,29 @@ public function __construct()
 
     }
 
-    
+        /**
+     * Update password of the specified user in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::find($id);
+        if(!$user){
+            return ['result'=> 'error', 'message'=>'User not found'];
+         }
+        $oldPassword = Hash::make($request->oldPassword);
+        if($oldPassword == $user->password){
+            $user->password = Hash::make($request->password);
+            $user->save();
+            return ['result'=>'ok', 'id'=>$user->id];
+        } else {
+            return ['result'=>'error', 'message'=>'Invalid password'];
+        }
+    } 
+
     /**
      * Remove the specified resource from storage.
      *
@@ -162,6 +188,5 @@ public function __construct()
         $result = User::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }
-
-    
+ 
 }

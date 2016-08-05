@@ -38,7 +38,12 @@ public function __construct()
 
         try {
             // verify the credentials and create a token for the user
-            if (! $token = JWTAuth::attempt($credentials)) {
+            if (!$user = JWTAuth::byCredentials($credentials)) {
+                return response()->json(['user_not_found'], 404);
+            }
+            
+            $claims = ['ven' =>$user->venue_id, 'rol' =>$user->role_id];
+            if (! $token = JWTAuth::attempt($credentials, $claims)) {
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
         } catch (JWTException $e) {
@@ -84,6 +89,8 @@ public function __construct()
 		return response()->json(compact('user'));
 	}
 
+
+	 
    /* public function recovery(Request $request)
     {
         $validator = Validator::make($request->only('email'), [
