@@ -16,6 +16,7 @@ use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
 
 
+
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -68,7 +69,10 @@ Route::group(['prefix'=>'api/v1'], function() {
     //pruebas
 	//Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
 	Route::post('auth/login', 'AuthenticateController@authenticate');
-	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
+	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser');
+	Route::post('auth/logout', 'AuthenticateController@invalidate');
+	Route::post('auth/recovery', 'AuthenticateController@recovery');
+	Route::post('auth/reset', 'AuthenticateController@reset');
 	 
 	//Route::get('auth/user', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
 	//Route::get('auth/user', 'UserController@index');	
@@ -80,7 +84,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::resource('roles', 'RoleController', ['only' => ['index']]); 
 	 
 
-	//Route::post('logout', 'AuthenticateController@logout');
+	 
 	Route::controller('import', 'ImportController');
 });
 

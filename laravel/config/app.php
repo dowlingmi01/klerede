@@ -153,8 +153,11 @@ return [
 		'App\Providers\ConfigServiceProvider',
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
+		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+		//'App\Providers\VenueGateServiceProvider',
+	//	App\Providers\JwtAuthGuardServiceProvider::class 
 
-		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class
+		
 
 	],
 

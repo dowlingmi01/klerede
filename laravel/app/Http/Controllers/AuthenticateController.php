@@ -9,8 +9,12 @@ use App\Http\Controllers\Controller;
 use JWTAuth;
 use Tymon\JWTAuthExceptions\JWTException;
 use App\User;
-
-
+use \Validator;
+use \Password;
+use \Input;
+use Illuminate\Mail\Message;
+use \Config;
+use \Hash;
 
 
 class AuthenticateController extends Controller
@@ -21,7 +25,7 @@ public function __construct()
        // Apply the jwt.auth middleware to all methods in this controller
        // except for the authenticate method. We don't want to prevent
        // the user from retrieving their token if they don't already have it
-       $this->middleware('jwt.auth', ['except' => ['authenticate']]);
+       $this->middleware('jwt.auth', ['except' => ['authenticate', 'recovery', 'reset']]);
    }
 
  
@@ -32,7 +36,6 @@ public function __construct()
 
         try {
             // verify the credentials and create a token for the user
-            
             if (!$user = User::whereEmail($credentials['email'])->first()) {
                 return response()->json(['user_not_found'], 404);
             }
@@ -85,8 +88,22 @@ public function __construct()
 	}
 
 
+
+    public function invalidate(Request $request)
+    {
+        
+        if(config('jwt.active')){ 
+            $response = JWTAuth::parseToken()->invalidate();
+            return response()->json($response);
+        } else {
+            return ['result'=>'ok'];
+        }
+    }
+
+
+
 	 
-   /* public function recovery(Request $request)
+    public function recovery(Request $request)
     {
         $validator = Validator::make($request->only('email'), [
             'email' => 'required'
@@ -99,39 +116,41 @@ public function __construct()
         });
         switch ($response) {
             case Password::RESET_LINK_SENT:
-                return $this->response->noContent();
+                return "sent";
             case Password::INVALID_USER:
-                return $this->response->errorNotFound();
+                return response()->json(['result'=>'error', 'message'=>'user_not_found'], 404);
         }
     }
 
     public function reset(Request $request)
     {
         $credentials = $request->only(
-            'email', 'password', 'password_confirmation', 'token'
+            'email', 'password', 'token'
         );
         $validator = Validator::make($credentials, [
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'required',
         ]);
         if($validator->fails()) {
             throw new ValidationHttpException($validator->errors()->all());
         }
-        
+        $credentials['password_confirmation'] = $credentials['password']; //Hack: PasswordBroker validates confirm password;
+
         $response = Password::reset($credentials, function ($user, $password) {
-            $user->password = $password;
+            $user->password = Hash::make($password);
             $user->save();
         });
+       
         switch ($response) {
             case Password::PASSWORD_RESET:
                 if(Config::get('boilerplate.reset_token_release')) {
                     return $this->authenticate($request);
                 }
-                return $this->response->noContent();
+                return ['result'=>'ok', 'message'=>'password_reseted'];
             default:
-                return $this->response->error('could_not_reset_password', 500);
+                return ['result'=>'error', 'message'=>'could_not_reset_password'] ;
         }
-    }*/
+    } 
 }
 
