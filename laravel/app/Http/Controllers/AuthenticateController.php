@@ -53,6 +53,10 @@ public function __construct()
         return response()->json(compact('token'));
     }
 
+    public function getVenueId(){
+        return JWTAuth::parseToken()->getPayload()->get('ven');
+    }
+
     public function getAuthenticatedUser()
 	{
 

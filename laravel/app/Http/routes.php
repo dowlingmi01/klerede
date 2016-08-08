@@ -73,11 +73,12 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::post('auth/logout', 'AuthenticateController@invalidate');
 	Route::post('auth/recovery', 'AuthenticateController@recovery');
 	Route::post('auth/reset', 'AuthenticateController@reset');
+	Route::get('auth/ven', 'AuthenticateController@getVenueId');
 	 
 	//Route::get('auth/user', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
 	//Route::get('auth/user', 'UserController@index');	
 	Route::resource('users', 'UserController', ['except' => ['create', 'edit' ]]);
-	Route::post('users/{user_id}', 'UserController@update');
+	//Route::post('users/{user_id}', 'UserController@update');  //Use PUT/PATCH
 	Route::post('users/{user_id}/pass', 'UserController@updatePassword');
 
  	

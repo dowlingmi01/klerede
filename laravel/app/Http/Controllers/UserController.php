@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use \App\Helpers\VenueHelper;
 use App\User;
 use \Hash;
 use \Validator;
 use \Input;
-//use JWTAuth;
+use JWTAuth;
 
 
 class UserController extends Controller
@@ -34,10 +35,10 @@ public function __construct()
     {
          
         $input = (object) $request->all();
-        /*$venue_id = JWTAuth::getAuthenticatedVenueId();
-        if($venue_id != $input->venue_id){
+        if(!VenueHelper::isValid($input->venue_id)){
             return "Invalid venue id";
-        }*/
+        }
+         
         $users = User::where('venue_id', $input->venue_id)->get();
         return $users;
     }
