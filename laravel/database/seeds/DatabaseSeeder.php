@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder {
 
 		//$this->call('StatsSeeder');
 		//$this->call('WeatherSeeder');
-        //$this->call('UserSeeder');
+        
 		
 		$roles = array(
                 ['id'=>1, 'name' => 'Owner'],
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder {
             Role::create($role);
         }
 
- 
+ 		$this->call('UserSeeder');
 
         Model::reguard();
 	}
