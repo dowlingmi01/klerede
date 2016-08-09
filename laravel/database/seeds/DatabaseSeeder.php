@@ -18,20 +18,7 @@ class DatabaseSeeder extends Seeder {
 
 		$this->call('StatsSeeder');
 		$this->call('WeatherSeeder');
-        
-		
-		$roles = array(
-                ['id'=>1, 'name' => 'Owner'],
-                ['id'=>2, 'name' => 'Admin'],
-                ['id'=>3, 'name' => 'Power'],
-                ['id'=>4, 'name' => 'Basic'],
-        );
-
-		foreach ($roles as $role)
-        {
-            Role::create($role);
-        }
-
+ 
  		$this->call('UserSeeder');
 
         Model::reguard();

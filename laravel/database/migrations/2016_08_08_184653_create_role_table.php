@@ -18,6 +18,18 @@ class CreateRoleTable extends Migration
             $table->string('name');
             $table->timestamps();
         });
+
+         $roles = array(
+                ['id'=>1, 'name' => 'Owner'],
+                ['id'=>2, 'name' => 'Admin'],
+                ['id'=>3, 'name' => 'Power'],
+                ['id'=>4, 'name' => 'Basic'],
+        );
+
+        foreach ($roles as $role)
+        {
+            Role::create($role);
+        }
     }
 
     /**
