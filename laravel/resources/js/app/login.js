@@ -57,7 +57,7 @@ var LoginComponent = React.createClass({
 				storeLocal("user", {email:"", password:"", remember:false});
 			}
 			
-			$.KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onSuccess);
+			KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onSuccess);
 			
 		}
 	},
@@ -122,11 +122,11 @@ if(document.getElementById('login-component')){
 /*******************************************************************/
 
 
+var global = Function('return this')();
 
-//creates anonymous function and calls it with the jQuery Object as argument
-(function ($) {
-	//verify if APICaller already exists
-	if(!$.KAPI) {
+(function (ajax) {
+	//verify if KAPI already exists
+	if(!global.KAPI) {
 		
 		//Private
 		
@@ -142,8 +142,8 @@ if(document.getElementById('login-component')){
 				cache: true,
 				// success: onSuccess,
 				success:function (data) {
-					console.log(data);
-					// onSuccess(data);
+					// console.log(data);
+					onSuccess(data);
 				},
 				error:function(request, status, error) {
 					console.log(request.responseText);
@@ -158,7 +158,7 @@ if(document.getElementById('login-component')){
 				arg[k] = options[k];
 			}
 			// console.log(arg);
-			$.ajax(arg);
+			ajax(arg);
 		}
 		function _postData(route, onSuccess, data, options) {
 			_srdata("POST", route, onSuccess, data, options);
@@ -169,7 +169,7 @@ if(document.getElementById('login-component')){
 		
 		
 		//Public
-		$.KAPI = {
+		global.KAPI = {
 			goals:{
 				sales: function (venueID, year, onSuccess) {
 					var route = "/goals/sales/"+venueID+"/"+year;
@@ -179,7 +179,7 @@ if(document.getElementById('login-component')){
 			}
 		};
 	}
-})(jQuery);
+})(jQuery.ajax);
 
 
 function isEmail(email) {
