@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder {
 	{
 		Model::unguard();
 
-		//$this->call('StatsSeeder');
-		//$this->call('WeatherSeeder');
+		$this->call('StatsSeeder');
+		$this->call('WeatherSeeder');
         
 		
 		$roles = array(
