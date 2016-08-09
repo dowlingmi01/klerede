@@ -46,14 +46,18 @@ var LoginComponent = React.createClass({
 		}
 		
 		if(errors.length) {
+			
 			alert(errors.join("\n"));
+
 		} else {
+			
 			if (this.refs["remember-checkmark"].isActive()) {
 				storeLocal("user", {email:email, password:password, remember:true});
 			} else {
 				storeLocal("user", {email:"", password:"", remember:false});
 			}
-			getData('apiGoals',[wnt.venueID,wnt.thisYear], this.onSuccess)
+			
+			$.KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onSuccess);
 			
 		}
 	},
@@ -112,11 +116,70 @@ if(document.getElementById('login-component')){
     );
 }
 
-
 /*******************************************************************/
 /************************* GLOBAL FUNCTIONS ************************/
 /******* temporary here, will be moved to a more global js *********/
 /*******************************************************************/
+
+
+
+//creates anonymous function and calls it with the jQuery Object as argument
+(function ($) {
+	//verify if APICaller already exists
+	if(!$.KAPI) {
+		
+		//Private
+		
+		var _prefix = "/api/v1";
+		
+		function _srdata(method, route, onSuccess, data, options) {
+			// console.log([route, data]);
+			// return;
+			var arg = {
+				type: method,
+				url: _prefix+route,
+				async: true,
+				cache: true,
+				// success: onSuccess,
+				success:function (data) {
+					console.log(data);
+					// onSuccess(data);
+				},
+				error:function(request, status, error) {
+					console.log(request.responseText);
+				}
+			};
+			
+			if (data) {
+				arg.data = data;
+			}
+			
+			for (var k in options) {
+				arg[k] = options[k];
+			}
+			// console.log(arg);
+			$.ajax(arg);
+		}
+		function _postData(route, onSuccess, data, options) {
+			_srdata("POST", route, onSuccess, data, options);
+		}
+		function _getData(route, onSuccess, data, options) {
+			_srdata("GET", route, onSuccess, data, options);
+		}
+		
+		
+		//Public
+		$.KAPI = {
+			goals:{
+				sales: function (venueID, year, onSuccess) {
+					var route = "/goals/sales/"+venueID+"/"+year;
+					_getData(route, onSuccess);
+					// console.log(route);
+				}
+			}
+		};
+	}
+})(jQuery);
 
 
 function isEmail(email) {
@@ -129,34 +192,6 @@ function isEmpty(field) {
 	return (field.length==0);
 }
 
-function srdata(method, route, data, onSuccess, options) {
-	// console.log([route, data]);
-	if(!wnt[route]) {
-		throw new Error('route not found: '+route);
-	}
-	var url = wnt[route] + (data.length ? "/"+ data.join("/") : ""); 
-	var arg = {
-		type: method,
-		url: url,
-		async: true,
-		cache: false,
-		success: onSuccess,
-		error:function(request, status, error) {
-			console.log(request.responseText);
-		}
-	};
-	for (var k in options) {
-		arg[k] = options[k];
-	}
-	// console.log(arg);
-	$.ajax(arg);
-}
-function postData(route, data, onSuccess, options) {
-	srdata("POST", route, data, onSuccess, options);
-}
-function getData(route, data, onSuccess) {
-	srdata("GET", route, data, onSuccess);
-}
 
 function storeLocal(key, data) {
 	localStorage.setItem(key, JSON.stringify(data));
@@ -175,3 +210,5 @@ function getLocal(key) {
 		return {};
 	}
 }
+
+
