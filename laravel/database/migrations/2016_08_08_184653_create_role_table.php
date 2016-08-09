@@ -19,17 +19,13 @@ class CreateRoleTable extends Migration
             $table->timestamps();
         });
 
-         $roles = array(
+        $roles = array(
                 ['id'=>1, 'name' => 'Owner'],
                 ['id'=>2, 'name' => 'Admin'],
                 ['id'=>3, 'name' => 'Power'],
                 ['id'=>4, 'name' => 'Basic'],
         );
-
-        foreach ($roles as $role)
-        {
-            Role::create($role);
-        }
+		DB::table('role')->insert($roles);
     }
 
     /**
