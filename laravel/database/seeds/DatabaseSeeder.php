@@ -14,14 +14,9 @@ class DatabaseSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		Model::unguard();
-
 		$this->call('StatsSeeder');
 		$this->call('WeatherSeeder');
- 
- 		$this->call('UserSeeder');
-
-        Model::reguard();
+		$this->call('UserSeeder');
 	}
 
 }

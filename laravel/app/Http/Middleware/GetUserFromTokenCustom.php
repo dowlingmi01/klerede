@@ -19,7 +19,7 @@ class GetUserFromTokenCustom extends GetUserFromToken
      */
     public function handle($request, Closure $next)
     {
-        if(config('jwt.active')){ 
+        if(config('jwt.active')){
             return parent::handle($request, $next);
         } else {
             //$user = $this->auth->byId(config('jwt.mock_user_id'));
@@ -27,6 +27,5 @@ class GetUserFromTokenCustom extends GetUserFromToken
             $this->events->fire('tymon.jwt.valid', $user);
             return $next($request);
         }
-      
     }
 }

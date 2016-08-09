@@ -15,20 +15,9 @@ use App\GoalsSales;
 use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
 
-
-
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
-
-
-/*
-Route::controllers([
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
-]);
-
-*/
 
 Route::group(['prefix'=>'api/v1'], function() {
 	Route::resource('store-product-category-group', 'StoreProductCategoryGroupController');
@@ -65,27 +54,18 @@ Route::group(['prefix'=>'api/v1'], function() {
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
 	});
 
-
-    //pruebas
-	//Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
 	Route::post('auth/login', 'AuthenticateController@authenticate');
 	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser');
 	Route::post('auth/logout', 'AuthenticateController@invalidate');
 	Route::post('auth/recovery', 'AuthenticateController@recovery');
 	Route::post('auth/reset', 'AuthenticateController@reset');
 	Route::get('auth/ven', 'AuthenticateController@getVenueId');
-	 
-	//Route::get('auth/user', 'AuthenticateController@getAuthenticatedUser')->middleware('jwt.auth');
-	//Route::get('auth/user', 'UserController@index');	
+
 	Route::resource('users', 'UserController', ['except' => ['create', 'edit' ]]);
-	//Route::post('users/{user_id}', 'UserController@update');  //Use PUT/PATCH
 	Route::post('users/{user_id}/pass', 'UserController@updatePassword');
 
- 	
-	Route::resource('roles', 'RoleController', ['only' => ['index']]); 
-	 
+	Route::resource('roles', 'RoleController', ['only' => ['index']]);
 
-	 
 	Route::controller('import', 'ImportController');
 });
 

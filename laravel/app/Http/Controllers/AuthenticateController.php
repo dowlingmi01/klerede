@@ -20,16 +20,14 @@ use \Hash;
 class AuthenticateController extends Controller
 {
 
-public function __construct()
-   {
+    public function __construct()
+    {
        // Apply the jwt.auth middleware to all methods in this controller
        // except for the authenticate method. We don't want to prevent
        // the user from retrieving their token if they don't already have it
        $this->middleware('jwt.auth', ['except' => ['authenticate', 'recovery', 'reset']]);
-   }
+    }
 
- 
-  
     public function authenticate(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -39,7 +37,7 @@ public function __construct()
             if (!$user = User::whereEmail($credentials['email'])->first()) {
                 return response()->json(['user_not_found'], 404);
             }
-            
+
             $claims = ['ven' =>$user->venue_id, 'rol' =>$user->role_id];
             if (! $token = JWTAuth::attempt($credentials, $claims)) {
                 return response()->json(['error' => 'invalid_credentials'], 401);
@@ -60,7 +58,7 @@ public function __construct()
     public function getAuthenticatedUser()
 	{
 
-		if(config('jwt.active')){ 
+		if(config('jwt.active')){
 		    try {
 
 		        if (! $user = JWTAuth::parseToken()->authenticate()) {
@@ -82,7 +80,7 @@ public function __construct()
 		    }
 
 		    // the token is valid and we have found the user via the sub claim
-		    
+
 		} else {
 			if (!$user = User::find(config('jwt.mock_user_id'))) {
 		        return response()->json(['user_not_found'], 404);
@@ -95,8 +93,7 @@ public function __construct()
 
     public function invalidate(Request $request)
     {
-        
-        if(config('jwt.active')){ 
+        if(config('jwt.active')){
             $response = JWTAuth::parseToken()->invalidate();
             return response()->json($response);
         } else {
@@ -104,9 +101,6 @@ public function __construct()
         }
     }
 
-
-
-	 
     public function recovery(Request $request)
     {
         $validator = Validator::make($request->only('email'), [
@@ -145,7 +139,7 @@ public function __construct()
             $user->password = Hash::make($password);
             $user->save();
         });
-       
+
         switch ($response) {
             case Password::PASSWORD_RESET:
                 if(Config::get('boilerplate.reset_token_release')) {
@@ -155,6 +149,6 @@ public function __construct()
             default:
                 return ['result'=>'error', 'message'=>'could_not_reset_password'] ;
         }
-    } 
+    }
 }
 

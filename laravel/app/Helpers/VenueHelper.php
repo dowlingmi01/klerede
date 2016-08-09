@@ -11,11 +11,10 @@ class VenueHelper {
 	}
 
 	public static function isValid($venue_id){
-		if(config('jwt.active')){ 
+		if(config('jwt.active')){
 			return $venue_id == JWTAuth::parseToken()->getPayload()->get('ven');
 		} else {
 			return true;
 		}
 	}
- 
 }

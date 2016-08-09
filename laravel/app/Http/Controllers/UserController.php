@@ -15,15 +15,13 @@ use JWTAuth;
 
 class UserController extends Controller
 {
- 
-
-public function __construct()
-   {
+    public function __construct()
+    {
        // Apply the jwt.auth middleware to all methods in this controller
        // except for the authenticate method. We don't want to prevent
        // the user from retrieving their token if they don't already have it
        $this->middleware('jwt.auth');
-   }
+    }
 
 
     /**
@@ -33,17 +31,15 @@ public function __construct()
      */
     public function index(Request $request)
     {
-         
         $input = (object) $request->all();
         if(!VenueHelper::isValid($input->venue_id)){
             return "Invalid venue id";
         }
-         
+
         $users = User::where('venue_id', $input->venue_id)->get();
         return $users;
     }
 
-    
     /**
      * Store a newly created resource in storage.
      *
@@ -56,7 +52,6 @@ public function __construct()
         $rules = array(
             'name'       => 'required',
             'email'      => 'required|email',
-          
             'role_id' => 'required|numeric',
             'venue_id' => 'required|numeric'
         );
@@ -68,25 +63,15 @@ public function __construct()
         } else {
             // store
             $user = new User;
-            
             $user->name       = $request->name;
             $user->email      = $request->email ;
             $user->password      = Hash::make($request->password);
-            $user->role_id = $request->role_id ;
-            $user->venue_id = $request->venue_id; 
+            $user->role_id = $request->role_id;
+            $user->venue_id = $request->venue_id;
             $user->save();
 
-            // redirect
-         
             return ['result'=>'ok', 'id'=>$user->id];
         }
-
-
-
-        //$input = (object) $request->all();
-       // $input->password = Hash::make($input->password);
-        //User::create($input);
-
     }
 
     /**
@@ -99,7 +84,6 @@ public function __construct()
     {
         //TODO: only autorized venue and user by role
         return User::find($id);
-
     }
 
     /**
@@ -123,19 +107,15 @@ public function __construct()
      */
     public function update(Request $request, $id)
     {
-
-         $rules = array(
-             
-            'email'      => 'email',
+        $rules = array(
+            'email'   => 'email',
             'role_id' => 'numeric',
-            
         );
         $validator = Validator::make(Input::all(), $rules);
         if ($validator->fails()) {
             $messages = $validator->messages();
             $messages->add("result", "error");
-            return  $messages  ;
-         
+            return  $messages;
         } else {
             // store
             $user = User::find($id);
@@ -144,16 +124,13 @@ public function __construct()
             }
             $user->name       = trim($request->name) !== '' ? $request->name : $user->name;
             $user->email      = trim($request->email) !== '' ? $request->email : $user->email;
-          
             $user->role_id = $request->role_id != 0 ? $request->role_id : $user->role_id;
-             
             $user->save();
             return ['result'=>'ok', 'id'=>$user->id];
         }
-
     }
 
-        /**
+    /**
      * Update password of the specified user in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -174,7 +151,7 @@ public function __construct()
         } else {
             return ['result'=>'error', 'message'=>'Invalid password'];
         }
-    } 
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -189,5 +166,4 @@ public function __construct()
         $result = User::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }
- 
 }

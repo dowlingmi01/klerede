@@ -10,7 +10,7 @@
  */
 
 return [
-    
+
     /*
     |
     | When activev = false JWT will not validate token. Logged user will be

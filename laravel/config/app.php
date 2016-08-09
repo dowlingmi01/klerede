@@ -120,12 +120,10 @@ return [
 		/*
 		 * Laravel Framework Service Providers...
 		 */
-		//'Illuminate\Foundation\Providers\ArtisanServiceProvider',
 		'Illuminate\Auth\AuthServiceProvider',
 		'Illuminate\Bus\BusServiceProvider',
 		'Illuminate\Cache\CacheServiceProvider',
 		'Illuminate\Foundation\Providers\ConsoleSupportServiceProvider',
-		//'Illuminate\Routing\ControllerServiceProvider',
 		'Illuminate\Cookie\CookieServiceProvider',
 		'Illuminate\Database\DatabaseServiceProvider',
 		'Illuminate\Encryption\EncryptionServiceProvider',
@@ -144,7 +142,6 @@ return [
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Broadcasting\BroadcastServiceProvider',
 
-
 		/*
 		 * Application Service Providers...
 		 */
@@ -152,9 +149,6 @@ return [
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
 		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
-		 
-
-		
 
 	],
 
@@ -204,7 +198,7 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
 		'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
-        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+		'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
 	],
 
