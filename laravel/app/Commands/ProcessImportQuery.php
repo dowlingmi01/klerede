@@ -5,10 +5,9 @@ use App\Commands\Command;
 use App\ImportQuery;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ProcessImportQuery extends Command implements SelfHandling, ShouldBeQueued {
+class ProcessImportQuery extends Command implements ShouldQueue {
 
 	use InteractsWithQueue, SerializesModels;
 	protected $query;
