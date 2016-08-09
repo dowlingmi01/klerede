@@ -38,11 +38,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | Specify the length of time (in minutes) that the token will be valid for.
-    | Defaults to 1 hour
+    | Defaults to 1 week
     |
     */
 
-    'ttl' => 60,
+    'ttl' => env('JWT_TTL', 10080),
 
     /*
     |--------------------------------------------------------------------------
