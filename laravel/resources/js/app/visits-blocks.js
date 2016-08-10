@@ -297,7 +297,6 @@ var VisitsBlocksSet = React.createClass({
         );
     }
 });
-
 if(document.getElementById('visits-blocks-widget')){
     $.when(wnt.gettingVenueData).done(function(data) {
         React.render(
