@@ -16,8 +16,8 @@ return [
     | When activev = false JWT will not validate token. Logged user will be
     | the one indicated in mock_user_id
     */
-    'active' => env('JWT_ACTIVE', true),
-    'mock_user_id' => env('JWT_MOCK_USER_ID', -1),
+    'active' => env('JWT_ACTIVE', false),
+    'mock_user_id' => env('JWT_MOCK_USER_ID', 1),
 
 
     /*
