@@ -282,9 +282,11 @@ var Attendance = React.createClass({
 });
 
 if(document.getElementById('attendance-row-widget')){
-    React.render(
-        <Attendance />,
-        document.getElementById('attendance-row-widget')
-    );
-    console.log('Attendance row loaded...');
+    $.when(wnt.gettingVenueData).done(function(data) {
+        React.render(
+            <Attendance />,
+            document.getElementById('attendance-row-widget')
+        );
+        console.log('2) Attendance row loaded...');
+    });
 }

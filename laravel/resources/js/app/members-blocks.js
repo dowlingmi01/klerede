@@ -293,9 +293,11 @@ var MembersBlocksSet = React.createClass({
 });
 
 if(document.getElementById('members-blocks-widget')){
-    React.render(
-        <MembersBlocksSet />,
-        document.getElementById('members-blocks-widget')
-    );
-    console.log('Members blocks loaded...');
+    $.when(wnt.gettingVenueData).done(function(data) {
+        React.render(
+            <MembersBlocksSet />,
+            document.getElementById('members-blocks-widget')
+        );
+        console.log('2) Members blocks loaded...');
+    });
 }

@@ -230,9 +230,11 @@ var SalesGoals = React.createClass({
 });
 
 if(document.getElementById('sales-goals-widget')){
-    React.render(
-        <SalesGoals />,
-        document.getElementById('sales-goals-widget')
-    );
-    console.log('Sales Goals row loaded...');
+    $.when(wnt.gettingVenueData).done(function(data) {
+        React.render(
+            <SalesGoals />,
+            document.getElementById('sales-goals-widget')
+        );
+        console.log('2) Sales Goals row loaded...');
+    });
 }

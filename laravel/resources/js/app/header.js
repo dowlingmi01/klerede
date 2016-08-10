@@ -78,7 +78,7 @@ var Roles = React.createClass({
 var Header = React.createClass({
     getInitialState: function() {
         return {
-            clientName: 'Your Institution Here',
+            clientName: wnt.venue.name,
             fullName: 'Michael Dowling',
             userName: 'mdowling',
             email: 'michael@klerede.com',
@@ -210,7 +210,7 @@ var Header = React.createClass({
         // LOOP FOR USERS
         var users = [];
         for (var i = 0; i < this.state.users.length; i++) {
-            users.push(<User name={this.state.users[i]} email={this.state.usersEmail[i]} />);
+            users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
         }
         return (
             <header className="container-fluid">
@@ -260,15 +260,15 @@ var Header = React.createClass({
                     <form className="settings">
                         <div className="form-group">
                             <label htmlFor="up-name">Full Name:</label>
-                            <input type="text" id="up-name" value={this.state.fullName} data-field="fullName" onChange={this.changeField} />
+                            <input type="text" id="up-name" defaultValue={this.state.fullName} data-field="fullName" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-username">Username:</label>
-                            <input type="text" id="up-username" value={this.state.userName} data-field="userName" onChange={this.changeField} />
+                            <input type="text" id="up-username" defaultValue={this.state.userName} data-field="userName" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-email">Email:</label>
-                            <input type="text" id="up-email" value={this.state.email} data-field="email" onChange={this.changeField} />
+                            <input type="text" id="up-email" defaultValue={this.state.email} data-field="email" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-pwd-current">Current Password:</label>
@@ -284,10 +284,10 @@ var Header = React.createClass({
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-type">Account Type:</label>
-                            <input type="text" id="up-type" value={this.state.accountType} />
+                            <input type="text" id="up-type" defaultValue={this.state.accountType} />
                         </div>
                         <div className="form-group">
-                            <input type="submit" value="Save" className="btn" onClick={this.saveChanges} />
+                            <input type="submit" defaultValue="Save" className="btn" onClick={this.saveChanges} />
                         </div>
                     </form>
                 </div>
@@ -298,11 +298,11 @@ var Header = React.createClass({
                     </div>
                     <form className="utility-group form-group">
                         <h4>Add a User</h4>
-                        <input type="text" id="fName" className="form-control" placeholder="First Name" value={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
-                        <input type="text" id="lName" className="form-control" placeholder="Last Name" value={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
-                        <input type="text" id="email" className="form-control" placeholder="Email Address" value={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
+                        <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
+                        <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
+                        <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
                         <Roles id="addUserRole" />
-                        <input type="submit" value="Save User" className="btn disabled" onClick={this.addUser} />
+                        <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                     </form>
                     <div className="utility-group" onClick={this.toggleUtility}>
                         <div className="utility sub-item" data-utility="user-types" data-type="modal">
@@ -327,11 +327,11 @@ var Header = React.createClass({
                         <form className="credit-card">
                             <div className="form-group">
                                 <label htmlFor="card-firstname">First Name</label>
-                                <input type="text" id="card-firstname" value={this.state.cardFirstName} data-field="cardFirstName" onChange={this.changeField} />
+                                <input type="text" id="card-firstname" defaultValue={this.state.cardFirstName} data-field="cardFirstName" onChange={this.changeField} />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="card-lastname">Last Name</label>
-                                <input type="text" id="card-lastname" value={this.state.cardLastName} data-field="cardLastName" onChange={this.changeField} />
+                                <input type="text" id="card-lastname" defaultValue={this.state.cardLastName} data-field="cardLastName" onChange={this.changeField} />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="card-billingaddress1">Billing Address</label>
@@ -359,7 +359,7 @@ var Header = React.createClass({
                             </div>
                             <div className="form-group">
                                 <label htmlFor="card-number">Card Number</label>
-                                <input type="text" id="card-number" value={this.state.cardNumber} data-field="cardNumber" onChange={this.changeField} />
+                                <input type="text" id="card-number" defaultValue={this.state.cardNumber} data-field="cardNumber" onChange={this.changeField} />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="card-cvv">CVV</label>
@@ -445,9 +445,11 @@ var Header = React.createClass({
 });
 
 if(document.getElementById('header')){
-    React.render(
-        <Header />,
-        document.getElementById('header')
-    );
-    console.log('Header loaded...');
+    $.when(wnt.gettingVenueData).done(function(data) {
+        React.render(
+            <Header />,
+            document.getElementById('header')
+        );
+        console.log('2) Header loaded...');
+    });
 }
