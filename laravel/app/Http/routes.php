@@ -42,6 +42,9 @@ Route::group(['prefix'=>'api/v1'], function() {
 		['only' => ['show']]);
 	Route::get('weather/query', function() {
 		$input = (object) Request::all();
+		if(!VenueHelper::isValid($input->venue_id)){
+            return "Invalid venue id";
+        }
 		if(isset($input->hourly))
 			$input->hourly = filter_var($input->hourly, FILTER_VALIDATE_BOOLEAN);
 		else
@@ -82,17 +85,17 @@ Route::group(['prefix'=>'api/v1'], function() {
 Route::get('dashboard', function()
 {
     return View::make('dashboard');
-})->middleware(['jwt.auth']);
+}) 
 
 Route::get('settings', function()
 {
     return View::make('settings');
-})->middleware(['jwt.auth']);;
+}) 
 
 Route::get('goals', function()
 {
     return View::make('goals');
-})->middleware(['jwt.auth']);;
+}) 
 
 Route::get('help', function()
 {
