@@ -21,6 +21,7 @@ ga('send', 'pageview');
 
 var wnt = {
     getVenue: function(deferredObj){
+		throw new Error('GLOBAL HELPER wnt.getVenue: please use KAPI call');
         // TO DO: Abstract venue ID for API call...
         $.get('/api/v1/venue/'+wnt.venueID)
         .done(function(result){
@@ -239,6 +240,7 @@ var wnt = {
         return selectedMonths;
     },
     getData: function(query, type, channel, from, to){
+		throw new Error('GLOBAL HELPER wnt.getData: please use KAPI call');
         $.post(
             wnt.apiMain,
             {
@@ -268,6 +270,7 @@ var wnt = {
         });
     },
     getWeather: function(dateFrom, dateTo){
+		throw new Error('GLOBAL HELPER wnt.getWeather: please use KAPI call');
         var query = {};
         if(!dateTo){
             query = $.extend({}, {
@@ -299,6 +302,7 @@ var wnt = {
         });
     },
     getComparison: function(type, priorPeriod, deferredObj){
+		throw new Error('GLOBAL HELPER wnt.getComparison: please use KAPI call');
         console.log('REQUEST =', type, priorPeriod);
         // type = 'date' or 'week'
         // priorPeriod = ['yyyy-mm-dd','yyyy-mm-dd']
@@ -335,6 +339,7 @@ var wnt = {
         });
     },
     getGoals: function(year, deferredObj){        
+		throw new Error('GLOBAL HELPER wnt.getGoals: use KAPI call');
         $.get(wnt.apiGoals+'/'+wnt.venueID+'/'+year)
         .done(function(result){
             // If there's a deferred set for the data call, resolve it
@@ -475,9 +480,18 @@ wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
 /************************************************************************************************************/
 //wnt.gettingData;
 
+
 // Set global deffered object for components to use.
+
 wnt.gettingVenueData = $.Deferred();
-wnt.getVenue(wnt.gettingVenueData);
+// wnt.getVenue(wnt.gettingVenueData);
+KAPI.venue(
+	wnt.venueID, 
+	function(result) {
+		wnt.gettingVenueData.resolve(result);
+	}
+);
+
 $.when(wnt.gettingVenueData).done(function(data) {
     console.log('1) Venue data loaded...', data);
     wnt.venue = data;

@@ -53,6 +53,9 @@ var global = Function('return this')();
 		
 		//Public
 		global.KAPI = {
+			// custom:function (method, route, onSuccess, data, options) {
+			// 	_srdata(method, route, onSuccess, data, options);
+			// },
 			goals:{
 				sales: function (venueID, year, onSuccess) {
 					var route = "/goals/sales/"+venueID+"/"+year;
@@ -85,6 +88,10 @@ var global = Function('return this')();
 					
 					_getData(route, onSuccess, data);
 				}
+			},
+			venue:function (venueID, onSuccess) {
+				var route = "/venue/"+venueID;
+				_getData(route, onSuccess);
 			}
 		};
 	}
