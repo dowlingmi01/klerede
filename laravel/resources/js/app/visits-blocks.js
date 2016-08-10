@@ -307,9 +307,11 @@ var VisitsBlocksSet = React.createClass({
 });
 
 if(document.getElementById('visits-blocks-widget')){
-    React.render(
-        <VisitsBlocksSet />,
-        document.getElementById('visits-blocks-widget')
-    );
-    console.log('Visits blocks loaded...');
+    $.when(wnt.gettingVenueData).done(function(data) {
+        React.render(
+            <VisitsBlocksSet />,
+            document.getElementById('visits-blocks-widget')
+        );
+        console.log('2) Visits blocks loaded...');
+    });
 }

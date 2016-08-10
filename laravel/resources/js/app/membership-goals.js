@@ -239,9 +239,11 @@ var MembershipGoals = React.createClass({
 });
 
 if(document.getElementById('membership-goals-widget')){
-    React.render(
-        <MembershipGoals />,
-        document.getElementById('membership-goals-widget')
-    );
-    console.log('Membership Goals row loaded...');
+    $.when(wnt.gettingVenueData).done(function(data) {    
+        React.render(
+            <MembershipGoals />,
+            document.getElementById('membership-goals-widget')
+        );
+        console.log('2) Membership Goals row loaded...');
+    });
 }
