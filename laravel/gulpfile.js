@@ -66,6 +66,7 @@ gulp.task('libs', function(){
 // Custom JavaScript
 gulp.task('app', function(){
     gulp.src([
+            'resources/js/app/global.js',
             'resources/js/app/app-utils.js',
             'resources/js/app/svg-icons.js',
             'resources/js/app/reusable-parts.js',
