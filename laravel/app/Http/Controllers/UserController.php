@@ -62,6 +62,9 @@ class UserController extends Controller
             return  $messages  ;
         } else {
             // store
+            if(!VenueHelper::isValid($request->venue_id)){
+                return "Invalid venue id";
+            }
             $user = new User;
             $user->name       = $request->name;
             $user->email      = $request->email ;
@@ -83,7 +86,14 @@ class UserController extends Controller
     public function show($id)
     {
         //TODO: only autorized venue and user by role
-        return User::find($id);
+        if($user = User::find($id)){
+            if(!VenueHelper::isValid($user->venue_id)){
+                return "Invalid venue id";
+            }
+            return $user;
+        }
+        return ['reuslt'=>'error', 'message'=>'user not found'];
+        
     }
 
     /**
@@ -122,6 +132,9 @@ class UserController extends Controller
             if(!$user){
                 return ['result'=> 'error', 'message'=>'User not found'];
             }
+            if(!VenueHelper::isValid($user->venue_id)){
+                return "Invalid venue id";
+            }
             $user->name       = trim($request->name) !== '' ? $request->name : $user->name;
             $user->email      = trim($request->email) !== '' ? $request->email : $user->email;
             $user->role_id = $request->role_id != 0 ? $request->role_id : $user->role_id;
@@ -143,6 +156,9 @@ class UserController extends Controller
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];
          }
+        if(!VenueHelper::isValid($user->venue_id)){
+            return "Invalid venue id";
+        }
         $oldPassword = Hash::make($request->oldPassword);
         if($oldPassword == $user->password){
             $user->password = Hash::make($request->password);
@@ -163,6 +179,13 @@ class UserController extends Controller
     {
         //check $id distinct to logged user
         //check venue_id
+        $user = User::find($id);
+        if(!$user){
+            return ['result'=> 'error', 'message'=>'User not found'];
+         }
+        if(!VenueHelper::isValid($user->venue_id)){
+            return "Invalid venue id";
+        }
         $result = User::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }

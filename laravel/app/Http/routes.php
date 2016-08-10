@@ -87,12 +87,12 @@ Route::get('dashboard', function()
 Route::get('settings', function()
 {
     return View::make('settings');
-});
+})->middleware(['jwt.auth']);;
 
 Route::get('goals', function()
 {
     return View::make('goals');
-});
+})->middleware(['jwt.auth']);;
 
 Route::get('help', function()
 {
