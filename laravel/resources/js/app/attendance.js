@@ -12,7 +12,63 @@ var Attendance = React.createClass({
             visitsHourlyMembership: []
         };
     },
-    callAPI: function(filter) {
+	onStatsResult:function(result) {
+        console.log('Attendance data loaded using KAPI...');
+        wnt.attendance = result;
+        if(this.isMounted()) {
+            // LOOP THROUGH DATA TO CREATE ARRAYS
+            // var self = this;
+            // SET STATE TO ARRAYS FOR RENDERING
+            this.setState({
+                visitsHourlyAll: result.visits_hourly_all,
+                visitsHourlyGA: result.visits_hourly_ga,
+                visitsHourlyGroup: result.visits_hourly_group,
+                visitsHourlyMembership: result.visits_hourly_membership
+            });
+			var currentState = this.state;
+			for (k in currentState) {
+				if (currentState[k] === null) {
+					currentState[k] = '-';
+				}
+			}
+			this.setState(currentState);
+        }
+    },
+	callAPI:function functionName(filter) {
+        var period = (filter === 'lastyear') ? wnt.yesterdaylastyear : wnt.yesterday;
+		var queries = {
+            visits_hourly_all: {
+                specs: { type: 'visits' },
+                periods: { 
+                    period: period,
+                    hourly: true
+                }
+            },
+            visits_hourly_ga: {
+                specs: { type: 'visits', kinds: ['ga'] },
+                periods: { 
+                    period: period,
+                    hourly: true
+                }
+            },
+            visits_hourly_group: {
+                specs: { type: 'visits', kinds: ['group'] },
+                periods: { 
+                    period: period,
+                    hourly: true
+                }
+            },
+            visits_hourly_membership: {
+                specs: { type: 'visits', kinds: ['membership'] },
+                periods: { 
+                    period: period,
+                    hourly: true
+                }
+            }
+        };
+		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
+	},
+    callAPIOLD: function(filter) {
         var period = (filter === 'lastyear') ? wnt.yesterdaylastyear : wnt.yesterday;
         var self = this;
         $.post(
