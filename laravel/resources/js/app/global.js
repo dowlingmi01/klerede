@@ -57,13 +57,33 @@ var global = Function('return this')();
 				sales: function (venueID, year, onSuccess) {
 					var route = "/goals/sales/"+venueID+"/"+year;
 					_getData(route, onSuccess);
-					// console.log(route);
 				}
 			},
 			stats:{
 				query:function(venueID, queries, onSuccess) {
 					var route = "/stats/query";
 					_postData(route, onSuccess, {venue_id:venueID, queries:queries});
+				}
+			},
+			weather:{
+				query:function(venueID, date, onSuccess, hourly){
+					var route = "/weather/query/",
+						data = {
+							venue_id:venueID
+						}
+					;
+					
+					if (typeof date == "object") {
+						data.from = date.from;
+						data.to = date.to;
+					}
+					
+					if (hourly === undefined) {
+						hourly = false;
+					}
+					data.hourly = hourly;
+					
+					_getData(route, onSuccess, data);
 				}
 			}
 		};
