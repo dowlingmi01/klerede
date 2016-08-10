@@ -14,6 +14,7 @@
 use App\GoalsSales;
 use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
+use \App\Helpers\VenueHelper;
 
 Route::get('/', 'WelcomeController@index');
 
@@ -31,9 +32,12 @@ Route::group(['prefix'=>'api/v1'], function() {
 	});
 	Route::post('stats/query', function() {
 		$input = Request::all();
+		if(!VenueHelper::isValid($input['venue_id'])){
+            return Response::json(["error"=>"Invalid venue id"]);
+        }
 		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
 		return Response::json($result);
-	});
+	})->middleware(['jwt.auth']);
 	Route::resource('venue', 'VenueController',
 		['only' => ['show']]);
 	Route::get('weather/query', function() {
@@ -44,15 +48,21 @@ Route::group(['prefix'=>'api/v1'], function() {
 			$input->hourly = false;
 		$result = WeatherDaily::queryD($input);
 		return Response::json($result);
-	});
+	})->middleware(['jwt.auth']);
 	Route::get('goals/sales/{venue_id}/{year}', function($venue_id, $year) {
+		if(!VenueHelper::isValid($venue_id)){
+            return Response::json(["error"=>"Invalid venue id"]);
+        }
 		return Response::json(GoalsSales::get($venue_id, $year));
-	});
+	})->middleware(['jwt.auth']);;
 	Route::put('goals/sales/{venue_id}/{year}/{channel}/{type}/{sub_channel?}',
 		function($venue_id, $year, $channel, $type, $sub_channel = null) {
+		if(!VenueHelper::isValid($venue_id)){
+            return Response::json(["error"=>"Invalid venue id"]);
+        }
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
-	});
+	})->middleware(['jwt.auth']);
 
 	Route::post('auth/login', 'AuthenticateController@authenticate');
 	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser');
@@ -72,7 +82,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 Route::get('dashboard', function()
 {
     return View::make('dashboard');
-});
+})->middleware(['jwt.auth']);
 
 Route::get('settings', function()
 {
