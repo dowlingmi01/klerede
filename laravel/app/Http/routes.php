@@ -19,11 +19,6 @@ Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
 
-Route::controllers([
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
-]);
-
 Route::group(['prefix'=>'api/v1'], function() {
 	Route::resource('store-product-category-group', 'StoreProductCategoryGroupController');
 	Route::get('query/store_transactions', function() {
@@ -58,6 +53,19 @@ Route::group(['prefix'=>'api/v1'], function() {
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
 	});
+
+	Route::post('auth/login', 'AuthenticateController@authenticate');
+	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser');
+	Route::post('auth/logout', 'AuthenticateController@invalidate');
+	Route::post('auth/recovery', 'AuthenticateController@recovery');
+	Route::post('auth/reset', 'AuthenticateController@reset');
+	Route::get('auth/ven', 'AuthenticateController@getVenueId');
+
+	Route::resource('users', 'UserController', ['except' => ['create', 'edit' ]]);
+	Route::post('users/{user_id}/pass', 'UserController@updatePassword');
+
+	Route::resource('roles', 'RoleController', ['only' => ['index']]);
+
 	Route::controller('import', 'ImportController');
 });
 

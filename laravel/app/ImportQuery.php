@@ -4,12 +4,12 @@ use App\Commands\ProcessImportQuery;
 use App\ImportQueryHandlers\ImportQueryHandler;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Bus\DispatchesCommands;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
 
 class ImportQuery extends Model {
-	use DispatchesCommands;
+	use DispatchesJobs;
 	protected $table = 'import_query';
 	static function getDir() {
 		return str_replace('\\', '/', storage_path('app/import_query'));
