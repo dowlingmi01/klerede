@@ -46,14 +46,18 @@ var LoginComponent = React.createClass({
 		}
 		
 		if(errors.length) {
+			
 			alert(errors.join("\n"));
+
 		} else {
+			
 			if (this.refs["remember-checkmark"].isActive()) {
 				storeLocal("user", {email:email, password:password, remember:true});
 			} else {
 				storeLocal("user", {email:"", password:"", remember:false});
 			}
-			getData('apiGoals',[wnt.venueID,wnt.thisYear], this.onSuccess)
+			
+			KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onSuccess);
 			
 		}
 	},
@@ -112,66 +116,3 @@ if(document.getElementById('login-component')){
     );
 }
 
-
-/*******************************************************************/
-/************************* GLOBAL FUNCTIONS ************************/
-/******* temporary here, will be moved to a more global js *********/
-/*******************************************************************/
-
-
-function isEmail(email) {
-  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-  return regex.test(email);
-}
-function isEmpty(field) {
-	if(!field) return true;
-	
-	return (field.length==0);
-}
-
-function srdata(method, route, data, onSuccess, options) {
-	// console.log([route, data]);
-	if(!wnt[route]) {
-		throw new Error('route not found: '+route);
-	}
-	var url = wnt[route] + (data.length ? "/"+ data.join("/") : ""); 
-	var arg = {
-		type: method,
-		url: url,
-		async: true,
-		cache: false,
-		success: onSuccess,
-		error:function(request, status, error) {
-			console.log(request.responseText);
-		}
-	};
-	for (var k in options) {
-		arg[k] = options[k];
-	}
-	// console.log(arg);
-	$.ajax(arg);
-}
-function postData(route, data, onSuccess, options) {
-	srdata("POST", route, data, onSuccess, options);
-}
-function getData(route, data, onSuccess) {
-	srdata("GET", route, data, onSuccess);
-}
-
-function storeLocal(key, data) {
-	localStorage.setItem(key, JSON.stringify(data));
-}
-function clearLocal(key) {
-	localStorage.removeItem(key);
-}
-function getLocal(key) {
-	var local = localStorage[key];
-	if (!local) return false;
-	try {
-	 	var data = JSON.parse(localStorage[key]);
-		return data;
-	} catch (e) {
-		console.log(e);
-		return {};
-	}
-}

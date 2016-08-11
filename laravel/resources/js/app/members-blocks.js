@@ -39,129 +39,124 @@ var MembersBlocksSet = React.createClass({
             membersPercapCompareTo: '...'
         };
     },
-    componentDidMount: function() {
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
+	onStatsResult:function(result) {
+        console.log('Members data loaded using KAPI...');
+        // Abbreviate numbers for total members block
+        result.members_total_frequency_recency.current_members = this.abbrNumber(result.members_total_frequency_recency.current_members);
+        result.members_total_frequency_recency_compareto_daybefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_daybefore.current_members);
+        result.members_total_frequency_recency_compareto_lastyear.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_lastyear.current_members);
+        result.members_total_frequency_recency_compareto_rolling.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_rolling.current_members);
 
-                    // Member Conversion = (Memberships Sold / Total Visitors) * 100
-                    membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterday},
-                    membership_sales_compareto_daybefore: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.daybeforeyesterday},
-                    membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterdaylastyear},
-                    membership_sales_compareto_rolling: { specs: { type: 'sales', channel: 'membership' },
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
+        wnt.members = result;
 
-                    // Capture Rate = (Transactions / Total Visitors) * 100
-                    // Per Cap = Store Sales / Total Visitors
-                    transactions: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterday},
-                    transactions_compareto_daybefore: { specs: { type: 'sales', channel: 'store' }, periods: wnt.daybeforeyesterday},
-                    transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterdaylastyear},
-                    transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store' },
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
+        // Calculate Member Conversion
+        wnt.members.members_conversion = (result.membership_sales.units / result.total_admissions.units) * 100;
+        wnt.members.members_conversion_compareto_daybefore = (result.membership_sales_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units) * 100;
+        wnt.members.members_conversion_compareto_lastyear = (result.membership_sales_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
+        wnt.members.members_conversion_compareto_rolling = (result.membership_sales_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
+        // Calculate Capture Rate
+        wnt.members.capture_rate = (result.transactions.units / result.total_admissions.units) * 100;
+        wnt.members.capture_rate_compareto_daybefore = (result.transactions_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units) * 100;
+        wnt.members.capture_rate_compareto_lastyear = (result.transactions_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
+        wnt.members.capture_rate_compareto_rolling = (result.transactions_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
+        // Calculate Per Cap
+        wnt.members.per_cap = result.transactions.amount / result.total_admissions.units;
+        wnt.members.per_cap_compareto_daybefore = result.transactions_compareto_daybefore.amount / result.total_admissions_compareto_daybefore.units;
+        wnt.members.per_cap_compareto_lastyear = result.transactions_compareto_lastyear.amount / result.total_admissions_compareto_lastyear.units;
+        wnt.members.per_cap_compareto_rolling = result.transactions_compareto_rolling.amount / result.total_admissions_compareto_rolling.units;
 
-                    total_admissions: { specs: { type: 'visits' }, periods: wnt.yesterday },
-                    total_admissions_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
-                    total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },
-                    total_admissions_compareto_rolling: { specs: { type: 'visits' },
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
+        if(this.isMounted()) {
+            this.setState({
 
-                    members_total_frequency_recency: { specs: { type: 'members' }, periods: wnt.yesterday },
-                    members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: wnt.daybeforeyesterday },
-                    members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: wnt.yesterdaylastyear },
-                    members_total_frequency_recency_compareto_rolling: { specs: { type: 'members'},
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    }
+                membersConversion: wnt.members.members_conversion,
+                membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore,
+
+                membersFrequency: result.members_total_frequency_recency.frequency,
+                membersFrequencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.frequency,
+
+                membersRecency: result.members_total_frequency_recency.recency,
+                membersRecencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.recency,
+
+                membersTotal: result.members_total_frequency_recency.current_members,
+                membersTotalCompareTo: result.members_total_frequency_recency_compareto_daybefore.current_members,
+
+                membersCaptured: wnt.members.capture_rate,
+                membersCapturedCompareTo: wnt.members.capture_rate_compareto_daybefore,
+
+                membersPercap: wnt.members.per_cap,
+                membersPercapCompareTo: wnt.members.per_cap_compareto_daybefore
+
+            });
+            // Set null data to '-'
+            var self = this;
+            $.each(this.state, function(stat, value){
+                if(value === null){
+                    var stateObject = function() {
+                        returnObj = {};
+                        returnObj[stat] = '-';
+                        return returnObj;
+                    };
+                    self.setState(stateObject);
+                }
+            });
+            this.formatNumbers;
+        }
+    },
+	componentDidMount:function () {
+		
+		var queries = {
+
+            // Member Conversion = (Memberships Sold / Total Visitors) * 100
+            membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterday},
+            membership_sales_compareto_daybefore: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.daybeforeyesterday},
+            membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterdaylastyear},
+            membership_sales_compareto_rolling: { specs: { type: 'sales', channel: 'membership' },
+                periods: {
+                    from: wnt.yesterdaylastyear,
+                    to: wnt.yesterday,
+                    kind: 'average'
+                }
+            },
+
+            // Capture Rate = (Transactions / Total Visitors) * 100
+            // Per Cap = Store Sales / Total Visitors
+            transactions: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterday},
+            transactions_compareto_daybefore: { specs: { type: 'sales', channel: 'store' }, periods: wnt.daybeforeyesterday},
+            transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterdaylastyear},
+            transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store' },
+                periods: {
+                    from: wnt.yesterdaylastyear,
+                    to: wnt.yesterday,
+                    kind: 'average'
+                }
+            },
+
+            total_admissions: { specs: { type: 'visits' }, periods: wnt.yesterday },
+            total_admissions_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
+            total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },
+            total_admissions_compareto_rolling: { specs: { type: 'visits' },
+                periods: {
+                    from: wnt.yesterdaylastyear,
+                    to: wnt.yesterday,
+                    kind: 'average'
+                }
+            },
+
+            members_total_frequency_recency: { specs: { type: 'members' }, periods: wnt.yesterday },
+            members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: wnt.daybeforeyesterday },
+            members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: wnt.yesterdaylastyear },
+            members_total_frequency_recency_compareto_rolling: { specs: { type: 'members'},
+                periods: {
+                    from: wnt.yesterdaylastyear,
+                    to: wnt.yesterday,
+                    kind: 'average'
                 }
             }
-        )
-        .done(function(result) {
-            console.log('Members data loaded...');
-            // Abbreviate numbers for total members block
-            result.members_total_frequency_recency.current_members = this.abbrNumber(result.members_total_frequency_recency.current_members);
-            result.members_total_frequency_recency_compareto_daybefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_daybefore.current_members);
-            result.members_total_frequency_recency_compareto_lastyear.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_lastyear.current_members);
-            result.members_total_frequency_recency_compareto_rolling.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_rolling.current_members);
-
-            wnt.members = result;
-
-            // Calculate Member Conversion
-            wnt.members.members_conversion = (result.membership_sales.units / result.total_admissions.units) * 100;
-            wnt.members.members_conversion_compareto_daybefore = (result.membership_sales_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units) * 100;
-            wnt.members.members_conversion_compareto_lastyear = (result.membership_sales_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
-            wnt.members.members_conversion_compareto_rolling = (result.membership_sales_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
-            // Calculate Capture Rate
-            wnt.members.capture_rate = (result.transactions.units / result.total_admissions.units) * 100;
-            wnt.members.capture_rate_compareto_daybefore = (result.transactions_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units) * 100;
-            wnt.members.capture_rate_compareto_lastyear = (result.transactions_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
-            wnt.members.capture_rate_compareto_rolling = (result.transactions_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
-            // Calculate Per Cap
-            wnt.members.per_cap = result.transactions.amount / result.total_admissions.units;
-            wnt.members.per_cap_compareto_daybefore = result.transactions_compareto_daybefore.amount / result.total_admissions_compareto_daybefore.units;
-            wnt.members.per_cap_compareto_lastyear = result.transactions_compareto_lastyear.amount / result.total_admissions_compareto_lastyear.units;
-            wnt.members.per_cap_compareto_rolling = result.transactions_compareto_rolling.amount / result.total_admissions_compareto_rolling.units;
-
-            if(this.isMounted()) {
-                this.setState({
-
-                    membersConversion: wnt.members.members_conversion,
-                    membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore,
-
-                    membersFrequency: result.members_total_frequency_recency.frequency,
-                    membersFrequencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.frequency,
-
-                    membersRecency: result.members_total_frequency_recency.recency,
-                    membersRecencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.recency,
-
-                    membersTotal: result.members_total_frequency_recency.current_members,
-                    membersTotalCompareTo: result.members_total_frequency_recency_compareto_daybefore.current_members,
-
-                    membersCaptured: wnt.members.capture_rate,
-                    membersCapturedCompareTo: wnt.members.capture_rate_compareto_daybefore,
-
-                    membersPercap: wnt.members.per_cap,
-                    membersPercapCompareTo: wnt.members.per_cap_compareto_daybefore
-
-                });
-                // Set null data to '-'
-                var self = this;
-                $.each(this.state, function(stat, value){
-                    if(value === null){
-                        var stateObject = function() {
-                            returnObj = {};
-                            returnObj[stat] = '-';
-                            return returnObj;
-                        };
-                        self.setState(stateObject);
-                    }
-                });
-                this.formatNumbers;
-            }
-        }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
-        .fail(function(result) {
-            console.log('MEMBERS DATA ERROR! ... ' + result.statusText);
-        });
-    },
+        };
+		
+		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
+		
+	},
     handleChange: function(event) {
         var filter = event.target.value;
         if(filter === 'lastYear'){

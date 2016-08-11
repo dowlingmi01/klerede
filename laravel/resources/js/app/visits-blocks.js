@@ -39,124 +39,116 @@ var VisitsBlocksSet = React.createClass({
             salesGateCompareTo: '...',
         };
     },
-    componentDidMount: function() {
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
+	onStatsResult:function (result) {
+        console.log('Visits data loaded using KAPI...');
+        wnt.visits = result;
+        if(this.isMounted()) {
+            this.setState({
+                visitsTotal: result.visits_total.units,
+                visitsTotalCompareTo: result.visits_total_compareto_daybefore.units,
 
-                    visits_total: { specs: { type: 'visits' }, periods: wnt.yesterday },
-                    visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
-                    visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },            
-                    visits_total_compareto_rolling: { specs: { type: 'visits'},
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
+                visitsGA: result.visits_ga.units,
+                visitsGACompareTo: result.visits_ga_compareto_daybefore.units,
 
-                    visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterday },
-                    visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.daybeforeyesterday },
-                    visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterdaylastyear },
-                    visits_ga_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] }, 
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
+                visitsGroups: result.visits_groups.units,
+                visitsGroupsCompareTo: result.visits_groups_compareto_daybefore.units,
 
-                    visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterday },
-                    visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.daybeforeyesterday },
-                    visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterdaylastyear },
-                    visits_groups_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] }, 
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
+                visitsMembers: result.visits_members.units,
+                visitsMembersCompareTo: result.visits_members_compareto_daybefore.units,
 
-                    visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterday },
-                    visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.daybeforeyesterday },
-                    visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterdaylastyear },
-                    visits_members_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
+                visitsNonmembers: result.visits_nonmembers.units,
+                visitsNonmembersCompareTo: result.visits_nonmembers_compareto_daybefore.units,
 
-                    visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterday },
-                    visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.daybeforeyesterday },
-                    visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterdaylastyear },
-                    visits_nonmembers_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] }, 
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    },
-
-                    sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterday },
-                    sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.daybeforeyesterday },
-                    sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterdaylastyear },
-                    sales_gate_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
-                        periods: {
-                            from: wnt.yesterdaylastyear,
-                            to: wnt.yesterday,
-                            kind: 'average'
-                        }
-                    }
-
+                salesGate: result.sales_gate.amount,
+                salesGateCompareTo: result.sales_gate_compareto_daybefore.amount
+            });
+            // Set null data to '-'
+            var self = this;
+            $.each(this.state, function(stat, value){
+                if(value === null){
+                    var stateObject = function() {
+                        returnObj = {};
+                        returnObj[stat] = '-';
+                        return returnObj;
+                    };
+                    self.setState(stateObject);
                 }
-            }
-        )
-        .done(function(result) {
-            console.log('Visits data loaded...');
-            wnt.visits = result;
-            if(this.isMounted()) {
-                this.setState({
-                    visitsTotal: result.visits_total.units,
-                    visitsTotalCompareTo: result.visits_total_compareto_daybefore.units,
-
-                    visitsGA: result.visits_ga.units,
-                    visitsGACompareTo: result.visits_ga_compareto_daybefore.units,
-
-                    visitsGroups: result.visits_groups.units,
-                    visitsGroupsCompareTo: result.visits_groups_compareto_daybefore.units,
-
-                    visitsMembers: result.visits_members.units,
-                    visitsMembersCompareTo: result.visits_members_compareto_daybefore.units,
-
-                    visitsNonmembers: result.visits_nonmembers.units,
-                    visitsNonmembersCompareTo: result.visits_nonmembers_compareto_daybefore.units,
-
-                    salesGate: result.sales_gate.amount,
-                    salesGateCompareTo: result.sales_gate_compareto_daybefore.amount
-                });
-                // Set null data to '-'
-                var self = this;
-                $.each(this.state, function(stat, value){
-                    if(value === null){
-                        var stateObject = function() {
-                            returnObj = {};
-                            returnObj[stat] = '-';
-                            return returnObj;
-                        };
-                        self.setState(stateObject);
+            });
+            this.formatNumbers;
+        }
+	},
+    componentDidMount: function() {
+		KAPI.stats.query(
+			wnt.venueID,
+			{
+                visits_total: { specs: { type: 'visits' }, periods: wnt.yesterday },
+                visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
+                visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },            
+                visits_total_compareto_rolling: { specs: { type: 'visits'},
+                    periods: {
+                        from: wnt.yesterdaylastyear,
+                        to: wnt.yesterday,
+                        kind: 'average'
                     }
-                });
-                this.formatNumbers;
-            }
-        }.bind(this))   // .bind() gives context to 'this' for this.isMounted to work since 'this' would have been the React component's 'this'
-        .fail(function(result) {
-            console.log('VISITS DATA ERROR! ... ' + result.statusText);
-            console.log(result);
-        });
+                },
+
+                visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterday },
+                visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.daybeforeyesterday },
+                visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterdaylastyear },
+                visits_ga_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] }, 
+                    periods: {
+                        from: wnt.yesterdaylastyear,
+                        to: wnt.yesterday,
+                        kind: 'average'
+                    }
+                },
+
+                visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterday },
+                visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.daybeforeyesterday },
+                visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterdaylastyear },
+                visits_groups_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] }, 
+                    periods: {
+                        from: wnt.yesterdaylastyear,
+                        to: wnt.yesterday,
+                        kind: 'average'
+                    }
+                },
+
+                visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterday },
+                visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.daybeforeyesterday },
+                visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterdaylastyear },
+                visits_members_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
+                    periods: {
+                        from: wnt.yesterdaylastyear,
+                        to: wnt.yesterday,
+                        kind: 'average'
+                    }
+                },
+
+                visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterday },
+                visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.daybeforeyesterday },
+                visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterdaylastyear },
+                visits_nonmembers_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] }, 
+                    periods: {
+                        from: wnt.yesterdaylastyear,
+                        to: wnt.yesterday,
+                        kind: 'average'
+                    }
+                },
+
+                sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterday },
+                sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.daybeforeyesterday },
+                sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterdaylastyear },
+                sales_gate_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
+                    periods: {
+                        from: wnt.yesterdaylastyear,
+                        to: wnt.yesterday,
+                        kind: 'average'
+                    }
+                }
+        	},
+			this.onStatsResult
+		);
     },
     handleChange: function(event) {
         var filter = event.target.value;
@@ -305,7 +297,6 @@ var VisitsBlocksSet = React.createClass({
         );
     }
 });
-
 if(document.getElementById('visits-blocks-widget')){
     $.when(wnt.gettingVenueData).done(function(data) {
         React.render(

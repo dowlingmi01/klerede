@@ -224,8 +224,111 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             membershipChange: [0, 'up']
         };
     },
-    callAPI: function() {
-        var self = this;
+	onWeatherResult:function(weather){
+        console.log('Weather data loaded using KAPI...');
+        wnt.weatherPeriod = weather;
+		
+		var result  = wnt.revenue;
+		
+        if(this.isMounted()) {
+			var calcBarHeight = this.calcBarHeight;
+            // LOOP THROUGH DATA TO CREATE ARRAYS
+            var boxoffice = this.dataArray(wnt.revenue.box_bars, 'amount', this.state.days);
+            $.each(boxoffice, function(index, item){
+                boxoffice[index] = calcBarHeight(item);
+            });
+            var cafe = this.dataArray(wnt.revenue.cafe_bars, 'amount', this.state.days);
+            $.each(cafe, function(index, item){
+                cafe[index] = calcBarHeight(item);
+            });
+            var giftstore = this.dataArray(wnt.revenue.gift_bars, 'amount', this.state.days);
+            $.each(giftstore, function(index, item){
+                giftstore[index] = calcBarHeight(item);
+            });
+            var membership = this.dataArray(wnt.revenue.mem_bars, 'amount', this.state.days);
+            $.each(membership, function(index, item){
+                membership[index] = calcBarHeight(item);
+            });
+            // SET STATE TO ARRAYS FOR RENDERING
+            this.setState({
+                boxofficeHeight: boxoffice,
+                cafeHeight: cafe,
+                giftstoreHeight: giftstore,
+                membershipHeight: membership,
+                // NEW FOR ACCORDION ...
+                boxofficeNow: result.box_sum.amount,
+                boxofficeThen: result.box_sum_prior.amount,
+                boxofficeChange: wnt.calcChange(wnt.revenue.box_sum.amount, wnt.revenue.box_sum_prior.amount),
+
+                cafeNow: result.cafe_sum.amount,
+                cafeThen: result.cafe_sum_prior.amount,
+                cafeChange: wnt.calcChange(wnt.revenue.cafe_sum.amount, wnt.revenue.cafe_sum_prior.amount),
+
+                giftstoreNow: result.gift_sum.amount,
+                giftstoreThen: result.gift_sum_prior.amount,
+                giftstoreChange: wnt.calcChange(wnt.revenue.gift_sum.amount, wnt.revenue.gift_sum_prior.amount),
+
+                membershipNow: result.mem_sum.amount,
+                membershipThen: result.mem_sum_prior.amount,
+                membershipChange: wnt.calcChange(wnt.revenue.mem_sum.amount, wnt.revenue.mem_sum_prior.amount),
+
+                weather: weather
+            });
+			
+			var currentState = this.state;
+			for (k in currentState) {
+				if (currentState[k] === null) {
+					currentState[k] = '-';
+				}
+			}
+			this.setState(currentState);
+            // $.each(this.state, function(stat, value){
+            //     if(value === null){
+            //         var stateObject = function() {
+            //             returnObj = {};
+            //             returnObj[stat] = '-';
+            //             return returnObj;
+            //         };
+            //         this.setState(stateObject);
+            //     }
+            // });
+            this.formatNumbers;
+        }
+    },
+	onStatsResult: function(result) {
+        console.log('Revenue data loaded using KAPI...');
+        wnt.revenue = result;
+        // Set max values for y-axis by grabbing amounts into new array and finding the max in that array
+        this.calcBarTotals();
+        // Calc per cap before getting max for y-axis
+        this.calcPerCap();
+        // Set Y-axis based on max value
+        this.changeYMarkers(d3.max(wnt.revenue.total_bars_amount));
+        // Set barDates (relies on length of totals array, so must be set after data is received)
+        wnt.barDates = [];
+        wnt.revenue.total_bars.forEach(function(entry){
+            var dateObj, dateStr;
+            if(wnt.barScope === 'week'){
+                dateObj = wnt.getWeekNumberDates(entry.period)[0];
+                dateStr = dateObj.getFullYear() + '-' + wnt.doubleDigits(dateObj.getMonth()+1) + '-' + wnt.doubleDigits(dateObj.getDate());
+            } else {
+                dateStr = entry.period;
+            }
+            wnt.barDates.push(dateStr);
+        });
+		
+		KAPI.weather.query(
+			wnt.venueID, 
+			{
+				from:wnt.barDates[0].replace(/\//g,'-'),
+				to: wnt.barDates[wnt.barDates.length-1].replace(/\//g,'-')
+			},
+			this.onWeatherResult
+		);
+		
+		
+    },
+	callAPI:function () {
         var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
         var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
         // wnt.filter.bgDates   ...   "2016-3-27"
@@ -253,177 +356,70 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         } else if(wnt.filter.bgVisitors === 'nonmembers'){
             totalBars = { type: 'sales', members: false };
         }
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
-                    // Bar graph data ...
-                    box_bars: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		var queries = {
+		    // Bar graph data ...
+		    box_bars: { specs: { type: 'sales', channel: 'gate' }, 
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                    cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		    cafe_bars: { specs: { type: 'sales', channel: 'cafe' }, 
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                        cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
-                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
-                        cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
-                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		        cafe_bars_members: { specs: { type: 'sales', channel: 'cafe', members: true }, 
+		            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		        cafe_bars_nonmembers: { specs: { type: 'sales', channel: 'cafe', members: false }, 
+		            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                    gift_bars: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		    gift_bars: { specs: { type: 'sales', channel: 'store' }, 
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                        gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
-                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
-                        gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
-                            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		        gift_bars_members: { specs: { type: 'sales', channel: 'store', members: true }, 
+		            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		        gift_bars_nonmembers: { specs: { type: 'sales', channel: 'store', members: false },
+		            periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                    mem_bars: { specs: { type: 'sales', channel: 'membership' },
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		    mem_bars: { specs: { type: 'sales', channel: 'membership' },
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                    // Bar graph totals used to calculate max graph height ...
-                    total_bars: { specs: totalBars, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		    // Bar graph totals used to calculate max graph height ...
+		    total_bars: { specs: totalBars, 
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                    // Bar graph visitors used to calculate Per Cap ...
-                    visitors: { specs: { type: 'visits' },
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
+		    // Bar graph visitors used to calculate Per Cap ...
+		    visitors: { specs: { type: 'visits' },
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1] } },
 
-                    visitors_sum: { specs: { type: 'visits' },
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
+		    visitors_sum: { specs: { type: 'visits' },
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
 
-                    // Accordion data ...
-                    box_sum: { specs: { type: 'sales', channel: 'gate' },
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
-                        
-                        box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
-                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },
+		    // Accordion data ...
+		    box_sum: { specs: { type: 'sales', channel: 'gate' },
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
+        
+		        box_sum_prior: { specs: { type: 'sales', channel: 'gate' }, 
+		            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },
 
-                    cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
-                        
-                        cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
-                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },                    
-                    
-                    gift_sum: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
-                    
-                        gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
-                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },
-                    
-                    mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
-                        
-                        mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
-                            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } }
-                }
-            }
-        )
-        .done(function(result) {
-            console.log('Revenue data loaded...');
-            wnt.revenue = result;
-            // Set max values for y-axis by grabbing amounts into new array and finding the max in that array
-            self.calcBarTotals();
-            // Calc per cap before getting max for y-axis
-            self.calcPerCap();
-            // Set Y-axis based on max value
-            self.changeYMarkers(d3.max(wnt.revenue.total_bars_amount));
-            // Set barDates (relies on length of totals array, so must be set after data is received)
-            wnt.barDates = [];
-            wnt.revenue.total_bars.forEach(function(entry){
-                var dateObj, dateStr;
-                if(wnt.barScope === 'week'){
-                    dateObj = wnt.getWeekNumberDates(entry.period)[0];
-                    dateStr = dateObj.getFullYear() + '-' + wnt.doubleDigits(dateObj.getMonth()+1) + '-' + wnt.doubleDigits(dateObj.getDate());
-                } else {
-                    dateStr = entry.period;
-                }
-                wnt.barDates.push(dateStr);
-            });
-            $.get(
-                wnt.apiWeather,
-                {
-                    venue_id: wnt.venueID,
-                    from: wnt.barDates[0].replace(/\//g,'-'),
-                    to: wnt.barDates[wnt.barDates.length-1].replace(/\//g,'-')
-                }
-            )
-            .done(function(weather){
-                console.log('Weather data loaded...');
-                wnt.weatherPeriod = weather;
-                if(self.isMounted()) {
-                    // LOOP THROUGH DATA TO CREATE ARRAYS
-                    var boxoffice = self.dataArray(wnt.revenue.box_bars, 'amount', self.state.days);
-                    $.each(boxoffice, function(index, item){
-                        boxoffice[index] = self.calcBarHeight(item);
-                    });
-                    var cafe = self.dataArray(wnt.revenue.cafe_bars, 'amount', self.state.days);
-                    $.each(cafe, function(index, item){
-                        cafe[index] = self.calcBarHeight(item);
-                    });
-                    var giftstore = self.dataArray(wnt.revenue.gift_bars, 'amount', self.state.days);
-                    $.each(giftstore, function(index, item){
-                        giftstore[index] = self.calcBarHeight(item);
-                    });
-                    var membership = self.dataArray(wnt.revenue.mem_bars, 'amount', self.state.days);
-                    $.each(membership, function(index, item){
-                        membership[index] = self.calcBarHeight(item);
-                    });
-                    // SET STATE TO ARRAYS FOR RENDERING
-                    self.setState({
-                        boxofficeHeight: boxoffice,
-                        cafeHeight: cafe,
-                        giftstoreHeight: giftstore,
-                        membershipHeight: membership,
-                        // NEW FOR ACCORDION ...
-                        boxofficeNow: result.box_sum.amount,
-                        boxofficeThen: result.box_sum_prior.amount,
-                        boxofficeChange: wnt.calcChange(wnt.revenue.box_sum.amount, wnt.revenue.box_sum_prior.amount),
+		    cafe_sum: { specs: { type: 'sales', channel: 'cafe' }, 
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
+        
+		        cafe_sum_prior: { specs: { type: 'sales', channel: 'cafe' }, 
+		            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },                    
+    
+		    gift_sum: { specs: { type: 'sales', channel: 'store' }, 
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
+    
+		        gift_sum_prior: { specs: { type: 'sales', channel: 'store' }, 
+		            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } },
+    
+		    mem_sum: { specs: { type: 'sales', channel: 'membership' }, 
+		        periods: { type: wnt.barScope, from: currentPeriod[0], to: currentPeriod[1], kind: 'sum' } },
+        
+		        mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
+		            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } }
+		};
 
-                        cafeNow: result.cafe_sum.amount,
-                        cafeThen: result.cafe_sum_prior.amount,
-                        cafeChange: wnt.calcChange(wnt.revenue.cafe_sum.amount, wnt.revenue.cafe_sum_prior.amount),
+		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
 
-                        giftstoreNow: result.gift_sum.amount,
-                        giftstoreThen: result.gift_sum_prior.amount,
-                        giftstoreChange: wnt.calcChange(wnt.revenue.gift_sum.amount, wnt.revenue.gift_sum_prior.amount),
-
-                        membershipNow: result.mem_sum.amount,
-                        membershipThen: result.mem_sum_prior.amount,
-                        membershipChange: wnt.calcChange(wnt.revenue.mem_sum.amount, wnt.revenue.mem_sum_prior.amount),
-
-                        weather: weather
-                    });
-                    // Set null data to '-'
-                    // var self = this;
-                    $.each(self.state, function(stat, value){
-                        if(value === null){
-                            var stateObject = function() {
-                                returnObj = {};
-                                returnObj[stat] = '-';
-                                return returnObj;
-                            };
-                            self.setState(stateObject);
-                        }
-                    });
-                    self.formatNumbers;
-                }
-            }.bind(this))   // .bind() gives context to 'this'
-            .fail(function(result) {
-                console.log('REVENUE DATA ERROR! ... ' + result.statusText);
-                console.log(result);
-            });
-        })
-        .fail(function(result){
-            var noData = {
-                icon_1: 'blank',
-                temp_1: '...',
-                summary_1: '...'
-            };
-            wnt.weatherPeriod = noData;
-            console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
-        });
-    },
+	},
     componentDidMount: function() {
         // Set default for datepicker
         $('#revenue #datepicker').val(wnt.filter.bgDates);

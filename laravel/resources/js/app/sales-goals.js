@@ -17,6 +17,83 @@ var SalesGoals = React.createClass({
             markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365)
         };
     },
+	onGoalsResult:function(goals) {
+        console.log('Sales Goals onGoalsResult using KAPI...');
+		
+        var periodStart = wnt.yearStart;
+        var periodEnd = wnt.yesterday;
+        var periodDays = 365;
+        if(wnt.filter.sgPeriod === 'quarter'){
+            periodStart = wnt.quarterStart;
+            periodDays = 91;
+        } else if(wnt.filter.sgPeriod === 'month'){
+            periodStart = wnt.monthStart;
+            periodDays = wnt.daysInMonth(wnt.monthStart.split('-')[1], wnt.monthStart.split('-')[0]);
+        }
+
+		var result = wnt.sales;
+        // Set globals for easy reuse
+        wnt.filter.sgGoalTotal = 0;
+        wnt.filter.sgGoalBox = 0;
+        wnt.filter.sgGoalCafe = 0;
+        wnt.filter.sgGoalGift = 0;
+        if(wnt.filter.sgPeriod === 'quarter'){
+            // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
+            for(i=0; i<3; i++){
+                var month = wnt.thisQuarterMonths[i];
+                var monthTotal;
+                // Gate / Box Office
+                monthTotal = goals['gate/amount'].months[month];
+                wnt.filter.sgGoalBox += monthTotal;
+                // Cafe
+                monthTotal = goals['cafe/amount'].months[month];
+                wnt.filter.sgGoalCafe += monthTotal;
+                // Store
+                monthTotal = goals['store/amount'].months[month];
+                wnt.filter.sgGoalGift += monthTotal;
+            }
+            wnt.filter.sgGoalTotal = wnt.filter.sgGoalBox + wnt.filter.sgGoalCafe + wnt.filter.sgGoalGift;
+        } else if(wnt.filter.sgPeriod === 'month'){
+            var month = wnt.thisMonthNum + 1;
+            wnt.filter.sgGoalTotal = goals['gate/amount'].months[month] + goals['cafe/amount'].months[month] + goals['store/amount'].months[month];
+            wnt.filter.sgGoalBox = goals['gate/amount'].months[month];
+            wnt.filter.sgGoalCafe = goals['cafe/amount'].months[month];
+            wnt.filter.sgGoalGift = goals['store/amount'].months[month];
+        } else {
+            // ELSE: Set goals to year totals
+            // Loop through months to calculate goal totals
+            for(i=1; i<13; i++){
+                var month = i;
+                wnt.filter.sgGoalBox += goals['gate/amount'].months[month];
+                wnt.filter.sgGoalCafe += goals['cafe/amount'].months[month];
+                wnt.filter.sgGoalGift += goals['store/amount'].months[month];
+            }
+            wnt.filter.sgGoalTotal = wnt.filter.sgGoalBox + wnt.filter.sgGoalCafe + wnt.filter.sgGoalGift;
+        }
+        wnt.filter.sgGoalTotalComplete = Math.round((result.sales.amount / wnt.filter.sgGoalTotal) * 100);
+        wnt.filter.sgGoalBoxComplete = Math.round((result.boxoffice.amount / wnt.filter.sgGoalBox) * 100);
+        wnt.filter.sgGoalCafeComplete = Math.round((result.cafe.amount / wnt.filter.sgGoalCafe) * 100);
+        wnt.filter.sgGoalGiftComplete = Math.round((result.giftstore.amount / wnt.filter.sgGoalGift) * 100);
+        if(this.isMounted()) {
+            this.setState({
+                goalTotal: wnt.filter.sgGoalTotal,
+                goalBox: wnt.filter.sgGoalBox,
+                goalCafe: wnt.filter.sgGoalCafe,
+                goalGift: wnt.filter.sgGoalGift,
+                sales: result.sales.amount,
+                boxoffice: result.boxoffice.amount,
+                cafe: result.cafe.amount,
+                giftstore: result.giftstore.amount,
+                markerPosition: this.markerPosition(periodStart, wnt.yesterday, periodDays)
+            });
+            this.formatNumbers();
+        }
+    },
+	onStatsResult:function (result) {
+        console.log('Sales Goals onStatsResult using KAPI...');
+        wnt.sales = result;
+		KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onGoalsResult);
+	},
     callAPI: function(){
         var self = this;
         var periodStart = wnt.yearStart;
@@ -29,86 +106,16 @@ var SalesGoals = React.createClass({
             periodStart = wnt.monthStart;
             periodDays = wnt.daysInMonth(wnt.monthStart.split('-')[1], wnt.monthStart.split('-')[0]);
         }
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
-                    sales: { specs: { type: 'sales' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    boxoffice: { specs: { type: 'sales', channel: 'gate' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    cafe: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    giftstore: { specs: { type: 'sales', channel: 'store' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } }
-                }
-            }
-        )
-        .done(function(result) {
-            console.log('Sales Goals data loaded...');
-            wnt.sales = result;
-            wnt.gettingSalesGoalsData = $.Deferred();
-            wnt.getGoals(wnt.thisYear, wnt.gettingSalesGoalsData);
-            $.when(wnt.gettingSalesGoalsData).done(function(goals) {
-                // Set globals for easy reuse
-                wnt.filter.sgGoalTotal = 0;
-                wnt.filter.sgGoalBox = 0;
-                wnt.filter.sgGoalCafe = 0;
-                wnt.filter.sgGoalGift = 0;
-                if(wnt.filter.sgPeriod === 'quarter'){
-                    // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
-                    for(i=0; i<3; i++){
-                        var month = wnt.thisQuarterMonths[i];
-                        var monthTotal;
-                        // Gate / Box Office
-                        monthTotal = goals['gate/amount'].months[month];
-                        wnt.filter.sgGoalBox += monthTotal;
-                        // Cafe
-                        monthTotal = goals['cafe/amount'].months[month];
-                        wnt.filter.sgGoalCafe += monthTotal;
-                        // Store
-                        monthTotal = goals['store/amount'].months[month];
-                        wnt.filter.sgGoalGift += monthTotal;
-                    }
-                    wnt.filter.sgGoalTotal = wnt.filter.sgGoalBox + wnt.filter.sgGoalCafe + wnt.filter.sgGoalGift;
-                } else if(wnt.filter.sgPeriod === 'month'){
-                    var month = wnt.thisMonthNum + 1;
-                    wnt.filter.sgGoalTotal = goals['gate/amount'].months[month] + goals['cafe/amount'].months[month] + goals['store/amount'].months[month];
-                    wnt.filter.sgGoalBox = goals['gate/amount'].months[month];
-                    wnt.filter.sgGoalCafe = goals['cafe/amount'].months[month];
-                    wnt.filter.sgGoalGift = goals['store/amount'].months[month];
-                } else {
-                    // ELSE: Set goals to year totals
-                    // Loop through months to calculate goal totals
-                    for(i=1; i<13; i++){
-                        var month = i;
-                        wnt.filter.sgGoalBox += goals['gate/amount'].months[month];
-                        wnt.filter.sgGoalCafe += goals['cafe/amount'].months[month];
-                        wnt.filter.sgGoalGift += goals['store/amount'].months[month];
-                    }
-                    wnt.filter.sgGoalTotal = wnt.filter.sgGoalBox + wnt.filter.sgGoalCafe + wnt.filter.sgGoalGift;
-                }
-                wnt.filter.sgGoalTotalComplete = Math.round((result.sales.amount / wnt.filter.sgGoalTotal) * 100);
-                wnt.filter.sgGoalBoxComplete = Math.round((result.boxoffice.amount / wnt.filter.sgGoalBox) * 100);
-                wnt.filter.sgGoalCafeComplete = Math.round((result.cafe.amount / wnt.filter.sgGoalCafe) * 100);
-                wnt.filter.sgGoalGiftComplete = Math.round((result.giftstore.amount / wnt.filter.sgGoalGift) * 100);
-                if(self.isMounted()) {
-                    self.setState({
-                        goalTotal: wnt.filter.sgGoalTotal,
-                        goalBox: wnt.filter.sgGoalBox,
-                        goalCafe: wnt.filter.sgGoalCafe,
-                        goalGift: wnt.filter.sgGoalGift,
-                        sales: result.sales.amount,
-                        boxoffice: result.boxoffice.amount,
-                        cafe: result.cafe.amount,
-                        giftstore: result.giftstore.amount,
-                        markerPosition: self.markerPosition(periodStart, wnt.yesterday, periodDays)
-                    });
-                    self.formatNumbers();
-                }
-            });
-        }.bind(this))   // .bind() gives context to 'this'
-        .fail(function(result) {
-            console.log('SALES GOALS DATA ERROR! ... ' + result.statusText);
-        });
+		var queries = {
+	        sales: { specs: { type: 'sales' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        boxoffice: { specs: { type: 'sales', channel: 'gate' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        cafe: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        giftstore: { specs: { type: 'sales', channel: 'store' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } }
+		};
+				
+		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
+		
     },
     markerPosition: function(startDate, endDate, periodLength) {
         // Needed to switch date format for cross-browser parsing

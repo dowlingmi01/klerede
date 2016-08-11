@@ -15,8 +15,77 @@ var MembershipGoals = React.createClass({
             markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365)
         };
     },
-    callAPI: function(){
-        var self = this;
+	onGoalsResult:function(goals) {
+   		console.log('Membership Goals onGoalsResult using KAPI...');
+		
+        var periodStart = wnt.yearStart;
+        var periodEnd = wnt.yesterday;
+        var periodDays = 365;
+        if(wnt.filter.sgPeriod === 'quarter'){
+            periodStart = wnt.quarterStart;
+            periodDays = 91;
+        } else if(wnt.filter.sgPeriod === 'month'){
+            periodStart = wnt.monthStart;
+            periodDays = wnt.daysInMonth(wnt.monthStart.split('-')[1], wnt.monthStart.split('-')[0]);
+        }
+
+		var result = wnt.membershipSales;
+		
+        // Set globals for easy reuse
+        wnt.filter.mgGoalTotal = 0;
+        wnt.filter.mgGoalIndividual = 0;
+        wnt.filter.mgGoalFamily = 0;
+        if(wnt.filter.mgPeriod === 'quarter'){
+            // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
+            for(i=0; i<3; i++){
+                var month = wnt.thisQuarterMonths[i];
+                var monthTotal;
+                // Individual
+                monthTotal = goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month];
+                wnt.filter.mgGoalIndividual += monthTotal;
+                // Family
+                monthTotal = goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
+                wnt.filter.mgGoalFamily += monthTotal;
+            }
+            wnt.filter.mgGoalTotal = wnt.filter.mgGoalIndividual + wnt.filter.mgGoalFamily;
+        } else if(wnt.filter.mgPeriod === 'month'){
+            var month = wnt.thisMonthNum + 1;
+            wnt.filter.mgGoalTotal = goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month] + goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
+            wnt.filter.mgGoalIndividual = goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month];
+            wnt.filter.mgGoalFamily = goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
+        } else {
+            // ELSE: Set goals to year totals
+            // Loop through months to calculate goal totals
+            for(i=1; i<13; i++){
+                var month = i;
+                wnt.filter.mgGoalIndividual += goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month];
+                wnt.filter.mgGoalFamily += goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
+            }
+            wnt.filter.mgGoalTotal = wnt.filter.mgGoalIndividual + wnt.filter.mgGoalFamily;
+        }
+		
+        wnt.filter.mgGoalTotalComplete = Math.round((parseInt(result.memberships[wnt.filter.mgUnits]) / wnt.filter.mgGoalTotal) * 100);
+        wnt.filter.mgGoalIndividualComplete = Math.round((parseInt(result.individual[wnt.filter.mgUnits]) / wnt.filter.mgGoalIndividual) * 100);
+        wnt.filter.mgGoalFamilyComplete = Math.round((parseInt(result.family[wnt.filter.mgUnits]) / wnt.filter.mgGoalFamily) * 100);
+        if(this.isMounted()) {
+            this.setState({
+                goalTotal: wnt.filter.mgGoalTotal,
+                goalIndividual: wnt.filter.mgGoalIndividual,
+                goalFamily: wnt.filter.mgGoalFamily,
+                memberships: result.memberships[wnt.filter.mgUnits],
+                individual: result.individual[wnt.filter.mgUnits],
+                family: result.family[wnt.filter.mgUnits],
+                markerPosition: this.markerPosition(periodStart, wnt.yesterday, periodDays)
+            });
+            this.formatNumbers();
+        }
+	},
+	onStatsResult:function(result) {
+        console.log('Membership Goals onStatsResult using KAPI...');
+        wnt.membershipSales = result;
+		KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onGoalsResult);
+    },
+	callAPI:function () {
         var periodStart = wnt.yearStart;
         var periodEnd = wnt.yesterday;
         var periodDays = 365;
@@ -27,77 +96,15 @@ var MembershipGoals = React.createClass({
             periodStart = wnt.monthStart;
             periodDays = wnt.daysInMonth(wnt.monthStart.split('-')[1], wnt.monthStart.split('-')[0]);
         }
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
-                    memberships: { specs: { type: 'sales', channel: 'membership' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    individual: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    family: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-                    visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } }
-                }
-            }
-        )
-        .done(function(result) {
-            console.log('Membership Goals data loaded...');
-            wnt.membershipSales = result;
-            wnt.gettingMembershipGoalsData = $.Deferred();
-            wnt.getGoals(wnt.thisYear, wnt.gettingMembershipGoalsData);
-            $.when(wnt.gettingMembershipGoalsData).done(function(goals) {
-                // Set globals for easy reuse
-                wnt.filter.mgGoalTotal = 0;
-                wnt.filter.mgGoalIndividual = 0;
-                wnt.filter.mgGoalFamily = 0;
-                if(wnt.filter.mgPeriod === 'quarter'){
-                    // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
-                    for(i=0; i<3; i++){
-                        var month = wnt.thisQuarterMonths[i];
-                        var monthTotal;
-                        // Individual
-                        monthTotal = goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month];
-                        wnt.filter.mgGoalIndividual += monthTotal;
-                        // Family
-                        monthTotal = goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
-                        wnt.filter.mgGoalFamily += monthTotal;
-                    }
-                    wnt.filter.mgGoalTotal = wnt.filter.mgGoalIndividual + wnt.filter.mgGoalFamily;
-                } else if(wnt.filter.mgPeriod === 'month'){
-                    var month = wnt.thisMonthNum + 1;
-                    wnt.filter.mgGoalTotal = goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month] + goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
-                    wnt.filter.mgGoalIndividual = goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month];
-                    wnt.filter.mgGoalFamily = goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
-                } else {
-                    // ELSE: Set goals to year totals
-                    // Loop through months to calculate goal totals
-                    for(i=1; i<13; i++){
-                        var month = i;
-                        wnt.filter.mgGoalIndividual += goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month];
-                        wnt.filter.mgGoalFamily += goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];
-                    }
-                    wnt.filter.mgGoalTotal = wnt.filter.mgGoalIndividual + wnt.filter.mgGoalFamily;
-                }
-                wnt.filter.mgGoalTotalComplete = Math.round((parseInt(result.memberships[wnt.filter.mgUnits]) / wnt.filter.mgGoalTotal) * 100);
-                wnt.filter.mgGoalIndividualComplete = Math.round((parseInt(result.individual[wnt.filter.mgUnits]) / wnt.filter.mgGoalIndividual) * 100);
-                wnt.filter.mgGoalFamilyComplete = Math.round((parseInt(result.family[wnt.filter.mgUnits]) / wnt.filter.mgGoalFamily) * 100);
-                if(self.isMounted()) {
-                    self.setState({
-                        goalTotal: wnt.filter.mgGoalTotal,
-                        goalIndividual: wnt.filter.mgGoalIndividual,
-                        goalFamily: wnt.filter.mgGoalFamily,
-                        memberships: result.memberships[wnt.filter.mgUnits],
-                        individual: result.individual[wnt.filter.mgUnits],
-                        family: result.family[wnt.filter.mgUnits],
-                        markerPosition: self.markerPosition(periodStart, wnt.yesterday, periodDays)
-                    });
-                    self.formatNumbers();
-                }
-            });
-        }.bind(this))   // .bind() gives context to 'this'
-        .fail(function(result) {
-            console.log('MEMBERSHIP GOALS DATA ERROR! ... ' + result.statusText);
-        });
-    },
+		var queries = {
+	        memberships: { specs: { type: 'sales', channel: 'membership' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        individual: { specs: { type: 'sales', channel: 'membership', membership_type: 'individual' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        family: { specs: { type: 'sales', channel: 'membership', membership_type: 'family' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } }
+	    };
+				
+		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
+	},
     markerPosition: function(startDate, endDate, periodLength) {
         // Needed to switch date format for cross-browser parsing
         startDate = startDate.split('-');
