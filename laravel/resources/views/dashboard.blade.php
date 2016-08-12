@@ -22,8 +22,15 @@
 
 @section('scripts')
 <script type="text/javascript">
-if (!KAPI.auth.isLogged()) {
+
+KAPI.auth.getLoggedUser(onUserGet, onUserError);
+
+function onUserGet (user) {
+	console.log(user);
+};
+function onUserError(error) {
 	window.location = 'login';
 }
+
 </script>
 @stop

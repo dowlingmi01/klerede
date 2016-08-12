@@ -133,13 +133,11 @@ var global = Function('return this')();
 					
 					_postData(route, clearTokenOnSuccess, undefined, {error:onError});
 				},
-				isLogged:function () {
+				getLoggedUser:function(onGetLoggedUser, onError) {
 
-					if(_token) {
-						return true;
-					}
+					var route = "/auth/logged";
+					_getData(route, onGetLoggedUser, undefined, {error:onError});
 					
-					return false;
 				}
 			}
 		};
