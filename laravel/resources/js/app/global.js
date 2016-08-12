@@ -19,6 +19,10 @@ var global = Function('return this')();
 			_token = token;
 			storeLocal('_token', token);
 		}
+		function _clearToken() {
+			clearLocal('_token');
+			_token = false;
+		}
 		function _srdata(method, route, onSuccess, data, options) {
 			// console.log([route, data]);
 			// return;
@@ -115,7 +119,19 @@ var global = Function('return this')();
 						_saveToken(data.token);
 						onSuccess(true);
 					}
+					
 					_postData(route, saveTokenOnSuccess, data, {error:onErrorMessageJSON});
+				},
+				logout:function (onSuccess, onError) {
+					var route = "/auth/logout";
+					
+					//save token on success
+					var clearTokenOnSuccess = function(data) {
+						_clearToken();
+						onSuccess(true);
+					}
+					
+					_getData(route, onSuccess, undefined, {error:clearTokenOnSuccess});
 				}
 			}
 		};
