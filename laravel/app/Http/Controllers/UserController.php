@@ -11,6 +11,7 @@ use \Hash;
 use \Validator;
 use \Input;
 use JWTAuth;
+use Gate;
 
 
 class UserController extends Controller
@@ -32,7 +33,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $input = (object) $request->all();
-        if(!VenueHelper::isValid($input->venue_id)){
+        if (Gate::denies('validate-venue', $input->venue_id)) {
             return "Invalid venue id";
         }
 
@@ -62,7 +63,7 @@ class UserController extends Controller
             return  $messages  ;
         } else {
             // store
-            if(!VenueHelper::isValid($request->venue_id)){
+            if (Gate::denies('validate-venue', $request->venue_id)) {
                 return "Invalid venue id";
             }
             $user = new User;

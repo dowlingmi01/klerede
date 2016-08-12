@@ -148,6 +148,7 @@ return [
 		'App\Providers\AppServiceProvider',
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
+		'App\Providers\AuthServiceProvider',
 		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
 	],
@@ -199,6 +200,7 @@ return [
 		'View'      => 'Illuminate\Support\Facades\View',
 		'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
 		'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+		'Gate' => Illuminate\Support\Facades\Gate::class,
 
 	],
 
