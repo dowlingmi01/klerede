@@ -50,7 +50,8 @@ class UserController extends Controller
     {
 
         $rules = array(
-            'name'       => 'required',
+            'first_name'       => 'required',
+            'last_name'       => 'required',
             'email'      => 'required|email',
             'role_id' => 'required|numeric',
             'venue_id' => 'required|numeric'
@@ -66,7 +67,8 @@ class UserController extends Controller
                 return "Invalid venue id";
             }
             $user = new User;
-            $user->name       = $request->name;
+            $user->first_name       = $request->first_name;
+            $user->last_name       = $request->last_name;
             $user->email      = $request->email ;
             $user->password      = Hash::make($request->password);
             $user->role_id = $request->role_id;
@@ -135,7 +137,8 @@ class UserController extends Controller
             if(!VenueHelper::isValid($user->venue_id)){
                 return "Invalid venue id";
             }
-            $user->name       = trim($request->name) !== '' ? $request->name : $user->name;
+            $user->first_name       = trim($request->first_name) !== '' ? $request->first_name : $user->first_name;
+            $user->last_name       = trim($request->last_name) !== '' ? $request->last_name : $user->last_name;
             $user->email      = trim($request->email) !== '' ? $request->email : $user->email;
             $user->role_id = $request->role_id != 0 ? $request->role_id : $user->role_id;
             $user->save();
