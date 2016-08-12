@@ -131,7 +131,7 @@ var global = Function('return this')();
 						onSuccess(true);
 					}
 					
-					_getData(route, onSuccess, undefined, {error:clearTokenOnSuccess});
+					_postData(route, clearTokenOnSuccess, undefined, {error:onError});
 				}
 			}
 		};
