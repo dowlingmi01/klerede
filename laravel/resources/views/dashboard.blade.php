@@ -19,3 +19,11 @@
     <div id="members-blocks-widget"><!-- ReactJS component: MembersBlocksSet --></div>
 
 @stop
+
+@section('scripts')
+<script type="text/javascript">
+if (!KAPI.auth.isLogged()) {
+	window.location = 'login';
+}
+</script>
+@stop

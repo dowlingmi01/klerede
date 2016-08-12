@@ -132,6 +132,14 @@ var global = Function('return this')();
 					}
 					
 					_postData(route, clearTokenOnSuccess, undefined, {error:onError});
+				},
+				isLogged:function () {
+
+					if(_token) {
+						return true;
+					}
+					
+					return false;
 				}
 			}
 		};
