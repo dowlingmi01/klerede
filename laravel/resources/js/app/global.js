@@ -13,12 +13,18 @@ var global = Function('return this')();
 		
 		var _prefix = "/api/v1";
 		
+		var _token = getLocal('_token');
+		
+		function _saveToken(token) {
+			_token = token;
+			storeLocal('_token', token);
+		}
 		function _srdata(method, route, onSuccess, data, options) {
 			// console.log([route, data]);
 			// return;
 			var arg = {
 				type: method,
-				url: _prefix+route,
+				url: _prefix+route+"?token="+_token,
 				async: true,
 				cache: true,
 				// success: onSuccess,
@@ -27,7 +33,8 @@ var global = Function('return this')();
 					onSuccess(data);
 				},
 				error:function(request, status, error) {
-					console.log(request.responseText);
+					console.log(request);
+					throw new Error(request.responseText);
 				}
 			};
 			
@@ -49,8 +56,7 @@ var global = Function('return this')();
 		function _getData(route, onSuccess, data, options) {
 			_srdata("GET", route, onSuccess, data, options);
 		}
-		
-		
+
 		//Public
 		global.KAPI = {
 			// custom:function (method, route, onSuccess, data, options) {
@@ -92,6 +98,25 @@ var global = Function('return this')();
 			venue:function (venueID, onSuccess) {
 				var route = "/venue/"+venueID;
 				_getData(route, onSuccess);
+			},
+			auth:{
+				login:function (email, password, onSuccess, onError) {
+					var route="/auth/login";
+					var data = {email:email, password:password};
+					
+					//call onError only with json message
+					var onErrorMessageJSON = function(request, status, error) {
+						onError(request.responseJSON);
+					}
+					
+					//save token on success
+					var saveTokenOnSuccess = function(data) {
+						console.log(data);
+						_saveToken(data.token);
+						onSuccess(true);
+					}
+					_postData(route, saveTokenOnSuccess, data, {error:onErrorMessageJSON});
+				}
 			}
 		};
 	}

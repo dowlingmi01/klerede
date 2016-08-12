@@ -2,6 +2,9 @@
 /************************* LOGIN COMPONENT *************************/
 /*******************************************************************/
 
+var lang = {};
+lang['user_not_found'] = "Error: user not found.";
+lang['invalid_credentials'] = "Invalid credentials.";
 
 var RememberCheckMark = React.createClass({
 	getInitialState:function() {
@@ -57,13 +60,33 @@ var LoginComponent = React.createClass({
 				storeLocal("user", {email:"", password:"", remember:false});
 			}
 			
-			KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onSuccess);
+			KAPI.auth.login(email, password,this.onSuccess, this.onError);
 			
 		}
 	},
-	onSuccess:function (data) {
-		//if ();
-		window.location = 'dashboard';
+	onError:function (errors) {
+		
+		var output = "";
+		
+		for (var i in errors) {
+			var e = errors[i];
+			
+			if (lang[e]) {
+				output += lang[e]+"\n";
+			} else {
+				output += e+"\n";
+			}
+		}
+		
+		alert(output);
+		
+	},
+	onSuccess:function (success) {
+		if (success) {
+			window.location = 'dashboard';
+		} else {
+			//alert("error imprevisto: " + success);
+		}
 	},
 	render:function () {
 		var user = getLocal("user");

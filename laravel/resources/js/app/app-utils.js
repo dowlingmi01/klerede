@@ -483,14 +483,17 @@ wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
 
 // Set global deffered object for components to use.
 
-wnt.gettingVenueData = $.Deferred();
-// wnt.getVenue(wnt.gettingVenueData);
-KAPI.venue(
-	wnt.venueID, 
-	function(result) {
-		wnt.gettingVenueData.resolve(result);
-	}
-);
+loadVenueData();
+function loadVenueData() {
+
+	wnt.gettingVenueData = $.Deferred();
+	
+	KAPI.venue(
+		wnt.venueID,
+		function(result) {
+			wnt.gettingVenueData.resolve(result);
+		}
+	);
 
 $.when(wnt.gettingVenueData).done(function(data) {
     console.log('1) Venue data loaded...', data);
@@ -547,6 +550,7 @@ $.when(wnt.gettingVenueData).done(function(data) {
     wnt.barDates = wnt.getMonth(wnt.today);
 });
 
+}
 
 
 
