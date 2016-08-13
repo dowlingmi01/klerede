@@ -29,7 +29,7 @@ class EventServiceProvider extends ServiceProvider {
 		parent::boot($events);
 
 		$events->listen('tymon.jwt.valid', function ($user) {
-        	Auth::login($user);
+        	Auth::onceUsingId($user->id);
    		});
 	}
 

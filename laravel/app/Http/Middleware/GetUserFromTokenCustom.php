@@ -21,9 +21,7 @@ class GetUserFromTokenCustom extends GetUserFromToken
     public function handle($request, Closure $next)
     {
         if(config('jwt.active')){
-       
-            
-            return $next($request);
+            return parent::handle($request, $next);
  
         } else {
             //$user = $this->auth->byId(config('jwt.mock_user_id'));
