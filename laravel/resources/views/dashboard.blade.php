@@ -23,14 +23,7 @@
 @section('scripts')
 <script type="text/javascript">
 
-KAPI.auth.getLoggedUser(onUserGet, onUserError);
-
-function onUserGet (user) {
-	console.log(user);
-};
-function onUserError(error) {
-	window.location = 'login';
-}
+loadUser();
 
 </script>
 @stop

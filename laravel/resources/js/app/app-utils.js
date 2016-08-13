@@ -480,22 +480,28 @@ wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
 /************************************************************************************************************/
 //wnt.gettingData;
 
-
 // Set global deffered object for components to use.
+wnt.gettingVenueData = $.Deferred();
 
-loadVenueData();
-function loadVenueData() {
+function loadUser() {
+	KAPI.auth.getLoggedUser(onUserGet, onUserError);
+}
 
-	wnt.gettingVenueData = $.Deferred();
-	
+function onUserGet (user) {
+	console.log(user);
+	wnt.venueID  = user.venue_id+"";
 	KAPI.venue(
 		wnt.venueID,
-		function(result) {
-			wnt.gettingVenueData.resolve(result);
-		}
+		onVenueDataGet
 	);
+};
 
-$.when(wnt.gettingVenueData).done(function(data) {
+function onUserError(error) {
+	// console.log(window.location);
+	window.location = 'login';
+}
+
+function onVenueDataGet(data) {
     console.log('1) Venue data loaded...', data);
     wnt.venue = data;
     wnt.venue.stats_last_date = wnt.dateArray(wnt.venue.stats_last_date);
@@ -548,9 +554,12 @@ $.when(wnt.gettingVenueData).done(function(data) {
     wnt.weekago = wnt.formatDate(wnt.weekago, 'double');
     wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
     wnt.barDates = wnt.getMonth(wnt.today);
-});
-
+	
+	// Resolve deffered object.
+    console.log('Resolve deferred wnt.gettingVenueData');
+	wnt.gettingVenueData.resolve(data);
 }
+
 
 
 

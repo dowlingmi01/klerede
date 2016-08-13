@@ -38,7 +38,7 @@ var global = Function('return this')();
 				},
 				error:function(request, status, error) {
 					console.log(request);
-					throw new Error(request.responseText);
+					throw new Error(route+" -> "+request.status+": "+request.statusText);
 				}
 			};
 			
@@ -73,9 +73,13 @@ var global = Function('return this')();
 				}
 			},
 			stats:{
-				query:function(venueID, queries, onSuccess) {
+				query:function(venueID, queries, onSuccess, onError) {
 					var route = "/stats/query";
-					_postData(route, onSuccess, {venue_id:venueID, queries:queries});
+					var options = {};
+					if(onError !== undefined) {
+						options.error = onError;
+					}
+					_postData(route, onSuccess, {venue_id:venueID, queries:queries}, options);
 				}
 			},
 			weather:{
@@ -136,7 +140,7 @@ var global = Function('return this')();
 				getLoggedUser:function(onGetLoggedUser, onError) {
 
 					var route = "/auth/logged";
-					_getData(route, onGetLoggedUser, undefined, {error:onError});
+					_getData(route, function(data){onGetLoggedUser(data.user)}, undefined, {error:onError});
 					
 				}
 			}
