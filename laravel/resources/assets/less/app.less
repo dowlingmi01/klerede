@@ -2196,34 +2196,42 @@ div#login header div#welcome {
 	margin-top:1.5em;
 	font-size:120%;
 }
+div#login section.active {
+	display:inherit;
+}
 div#login section {
 	margin-top:3em;
+	display:none;
 }
 div#login section div#title {
 	text-align:center;
 	font-size:120%;
 }
 
-div#login section div#login-form {
+div#login section div.klerede-form {
 	padding-top:1.5em;
 }
-div#login section div#login-form input {
+div#login section div.klerede-form#login-form input {
+	margin-bottom:1.5em;
+}
+div#login section div.klerede-form input {
 	width:100%;
 	padding: .7em .7em;
-	margin-bottom:1.5em;
 	border:none;
 }
 
-div#login section div#login-form button.btn {
+div#login section div.klerede-form button.btn {
 	margin-top:1.5em;
 	border-radius:0;
 }
-div#login section div#login-form div#options {
+div#login section div.klerede-form#login-form div#options {
 	margin-top:1.5em;
+}
+div#login section div.klerede-form div#options {
 	font-size:80%;
 	line-height:20px;
 }
-div#login section div#login-form div#options a:hover {
+div#login section div.klerede-form div#options a:hover {
 	color:@aquadarker;
 }
 .text-align-right {
