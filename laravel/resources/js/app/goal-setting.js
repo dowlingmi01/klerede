@@ -126,7 +126,84 @@ var GoalsMonths = React.createClass({
 });
 
 var GoalSetting = React.createClass({
+	
+	onGoalsGet:function (goals) {
+        // Set global for easy reuse
+        wnt.goals = goals;
+        var goalBoxoffice = 0;
+        var goalCafe = 0;
+        var goalGiftstore = 0;
+        var goalMemFamUni = 0;
+        var goalMemFamDol = 0;
+        var goalMemIndUni = 0;
+        var goalMemIndDol = 0;
+        // Add up months to get totals for display
+        for(i=1; i<13; i++){
+            var key = i;
+            // Grab single month amount...
+            var goalBoxofficeMonth = goals['gate/amount'].months[key.toString()];
+            var goalCafeMonth = goals['cafe/amount'].months[key.toString()];
+            var goalGiftstoreMonth = goals['store/amount'].months[key.toString()];
+            var famUni = goals['membership/units'].sub_channels.family.months[key.toString()];
+            var famDol = goals['membership/amount'].sub_channels.family.months[key.toString()];
+            var indUni = goals['membership/units'].sub_channels.individual.months[key.toString()];
+            var indDol = goals['membership/amount'].sub_channels.individual.months[key.toString()];
+           // Set corresponding month display...
+            $('#goal-gate').parent().find('#goal-'+i).val(goalBoxofficeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-cafe').parent().find('#goal-'+i).val(goalCafeMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-store').parent().find('#goal-'+i).val(goalGiftstoreMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-uni-fam').parent().find('#goal-'+i).val(famUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-uni-ind').parent().find('#goal-'+i).val(indUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-dol-fam').parent().find('#goal-'+i).val(famDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            $('#goal-membership-dol-ind').parent().find('#goal-'+i).val(indDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+            // Increment totals
+            goalBoxoffice += goalBoxofficeMonth;
+            goalCafe += goalCafeMonth;
+            goalGiftstore += goalGiftstoreMonth;
+            goalMemFamUni += famUni;
+            goalMemFamDol += famDol;
+            goalMemIndUni += indUni;
+            goalMemIndDol += indDol;
+        }
+        // Set totals
+        $('#goal-gate').val(goalBoxoffice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        $('#goal-cafe').val(goalCafe.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        $('#goal-store').val(goalGiftstore.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        // Set membership sub-totals
+        $('#goal-membership-uni-fam').val(goalMemFamUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        $('#goal-membership-uni-ind').val(goalMemIndUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        $('#goal-membership-dol-fam').val(goalMemFamDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        $('#goal-membership-dol-ind').val(goalMemIndDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        // Set Membership Super-totals
+        var goalMemUni = goalMemFamUni + goalMemIndUni;
+        var goalMemDol = goalMemFamDol + goalMemIndDol;
+        $('#goal-membership-uni').val(goalMemUni.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        $('#goal-membership-dol').val(goalMemDol.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+        // Set individual months ... $('#goal-gate').parent().find('input').length
+        // self.formatNumbers();   // Turning off Safari decimal fix since it's breaking goals #261
+		
+        // When 'Enter' key is pressed ...
+        $('form').keypress(function(e) {
+            if(e.which == 13) {
+                console.log('The enter key was pressed.');
+                $('input').blur();
+            }
+        });
+        // When input field is selected, convert string to number
+        $('input').on('focus', function() {
+            $(this).val(Number($(this).val().replace(/[^0-9\.]+/g,"")));
+            // If the value is 0, clear the field for input
+            if($(this).val() === '0'){ $(this).val(''); }
+        });
+        // Auto-expand months when total is clicked
+        $('.total').focus(function(){
+            $(this).parent().find('.collapsed').click();
+        });
+    },
     componentDidMount: function(){
+		KAPI.goals.sales(wnt.venueID, wnt.thisYear, this.onGoalsGet);
+	},
+    componentDidMountOLD: function(){
         var self = this;
         wnt.gettingGoalsData = $.Deferred();
         wnt.getGoals(wnt.thisYear, wnt.gettingGoalsData);

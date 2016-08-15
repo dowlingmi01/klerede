@@ -206,6 +206,17 @@ var Header = React.createClass({
         console.log('OPEN INVOICE', this.state);
         event.target.blur();
     },
+	logout:function (event) {
+		KAPI.auth.logout(this.onLogoutSuccess, this.onLogoutError);
+	},
+	onLogoutError:function (error) {
+		alert(error);
+	},
+	onLogoutSuccess:function (success) {
+		if (success) {
+			window.location = 'login';
+		}
+	},
     render: function() {
         // LOOP FOR USERS
         var users = [];
@@ -253,7 +264,7 @@ var Header = React.createClass({
                         Help
                         <ChangeArrow className="utility-arrow" />
                     </div>
-                    <div className="utility" data-utility="logout" data-type="tbd">Logout</div>
+                    <div className="utility" data-utility="logout" data-type="tbd" onClick={this.logout}>Logout</div>
                 </div>
                 <div id="user-profile" className="utilities-set" onClick={this.activateField}>
                     <h3>User Profile <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
