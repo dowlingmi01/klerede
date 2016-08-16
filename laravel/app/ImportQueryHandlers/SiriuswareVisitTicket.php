@@ -21,16 +21,8 @@ class SiriuswareVisitTicket extends ImportQueryHandler {
 		VenueVariable::setValue($this->query->venue_id, $this->variableName, $lastId);
 	}
 	function process() {
-		$sel = DB::table($this->getTableName())->where('query_id', $this->query->id)->select('acp_code')->distinct();
-		$workstations = $sel->get();
-		foreach($workstations as $workstation) {
-			Workstation::getFor($this->query->venue_id, $workstation->acp_code);
-		}
-		$sel = DB::table($this->getTableName())->where('query_id', $this->query->id)->select('facility_code')->distinct();
-		$facilities = $sel->get();
-		foreach($facilities as $facility) {
-			Facility::getFor($this->query->venue_id, $facility->facility_code);
-		}
+		$this->addCodes('acp_code', Workstation::class);
+		$this->addCodes('facility_code', Facility::class);
 
 		$cols = ['v.id', 'source_id', 'v.venue_id', 'w.id as acp_id', 'f.id as facility_id', 'p.id as box_office_product_id', 'ticket_code'
 			, 'm.id as membership_id', 'v.kind', DB::raw('1 as quantity'), DB::raw('0 as use_no'), 'time', 'v.created_at'];

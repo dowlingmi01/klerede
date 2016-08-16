@@ -16,11 +16,7 @@ class SiriuswareBoxOfficeTransaction extends ImportQueryHandler {
 		VenueVariable::setValue($this->query->venue_id, 'BOX_OFFICE_LAST_TRAN_ID', $lastId);
 	}
 	function process() {
-		$sel = DB::table($this->getTableName())->where('query_id', $this->query->id)->select('operator_code')->distinct();
-		$operators = $sel->get();
-		foreach($operators as $operator) {
-			Operator::getFor($this->query->venue_id, $operator->operator_code);
-		}
+		$this->addCodes('operator_code', Operator::class);
 		$cols1 = ['t.venue_id', 'source_id', 'register_id', 'sequence', 'time', 'o.id', 't.created_at', DB::raw('date(time)')];
 		$cols2 = ['venue_id', 'source_id', 'register_id', 'sequence', 'time', 'operator_id', 'created_at', 'business_day'];
 		$sel = DB::table('import_siriusware_box_office_transaction as t')->where('query_id', $this->query->id)->select($cols1);
