@@ -10,3 +10,4 @@ SELECT u.cluster AS source_id
   JOIN items i ON a.department = i.department AND a.category = i.category AND a.item = i.item
  WHERE u.activ_type = 110
    AND u.cluster > #LAST_TICKET_USAGE_ID#
+ ORDER BY source_id
