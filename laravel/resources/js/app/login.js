@@ -32,7 +32,10 @@ var LoginComponent = React.createClass({
 	getInitialState:function () {
 		return {
 			login:'active',
-			reset:'inactive'
+			reset:'inactive',
+			resetSent:'inactive',
+			newPassword:'inactive',
+			passwordSent:'inactive'
 		}
 	},
 	handleKeyPress:function (event) {
@@ -47,13 +50,13 @@ var LoginComponent = React.createClass({
 		var email = this.refs.email.getDOMNode().value;
 		var password = this.refs.password.getDOMNode().value;
 		var errors = [];
-		if (isEmpty(email)) {
+		if (KUtils.isEmpty(email)) {
 			errors.push("Please enter your email.")
-		} else if(!isEmail(email)) {
+		} else if(!KUtils.isEmail(email)) {
 			errors.push("Your email is not valid.")
 		}
 		
-		if (isEmpty(password)) {
+		if (KUtils.isEmpty(password)) {
 			errors.push("Please enter your password.")
 		}
 		
@@ -64,9 +67,9 @@ var LoginComponent = React.createClass({
 		} else {
 			
 			if (this.refs["remember-checkmark"].isActive()) {
-				storeLocal("user", {email:email, password:password, remember:true});
+				KUtils.storeLocal("user", {email:email, password:password, remember:true});
 			} else {
-				storeLocal("user", {email:"", password:"", remember:false});
+				KUtils.storeLocal("user", {email:"", password:"", remember:false});
 			}
 			
 			KAPI.auth.login(email, password,this.onSuccess, this.onError);
@@ -113,18 +116,64 @@ var LoginComponent = React.createClass({
 		event.preventDefault();
 		this.showSection('reset');
 	},
-	handleResetKeyPress:function (event) {
+	resetKeyPress:function (event) {
 		this.callIfEnter(event, this.resetSubmit);
 	},
 	resetSubmit:function () {
 		console.log('resetSubmit');
-		//
+
+		var email = this.refs.emailReset.getDOMNode().value;
+
+		if (KUtils.isEmpty(email)) {
+			alert("Please enter your email.");
+			return;
+		} else if(!KUtils.isEmail(email)) {
+			alert("Your email is not valid.");
+			return;
+		}
+		
+		this.showSection('resetSent');
 	},
-	resetCancel:function () {
+	gotoLogin:function (event) {
+		if (event) {
+			event.preventDefault();
+		}
+		
 		this.showSection('login');
 	},
+	dotMail:function (mail) {
+		var mail = "salsadesoja@gmail.com";
+		var a = mail.split("@");
+		return a[0].substring(0,2)+"...@"+a[1];
+	},
+	gotoNewPassword:function (event) {
+		event.preventDefault();
+		this.showSection("newPassword");
+	},
+	newPasswordKeyPress:function (event) {
+		this.callIfEnter(event, this.newPassword);
+	},
+	newPassword:function () {
+		
+		var new1 = this.refs.newPassword1.getDOMNode().value;
+		var new2 = this.refs.newPassword2.getDOMNode().value;
+		
+		var isValidResponse = KUtils.isValidPassword(new1, new2);
+		if(isValidResponse === true) {
+
+			this.gotoLogin();
+			var state = this.state;
+			state.passwordSent = 'active';
+			this.setState(state);
+
+			return;
+		}
+		
+		alert(isValidResponse);
+
+	},
 	render:function () {
-		var user = getLocal("user");
+		var user = KUtils.getLocal("user");
 		
 		if (!user) {
 			user = {email:"", password:"", remember:true};
@@ -141,6 +190,7 @@ var LoginComponent = React.createClass({
 						</div>
 					</header>
 					<section className={this.state.login}>
+						<div id="password-sent" className={this.state.passwordSent}>Congratulations!<br/>Your password has been reset</div>
 						<div id="title">Sign into your account</div>
 						<div id="login-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.handleKeyPress} >
 							
@@ -159,15 +209,33 @@ var LoginComponent = React.createClass({
 					</section>
 					<section className={this.state.reset}>
 						<div id="title">Reset Password</div>
-						<div id="reset-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.handleResetKeyPress} >
+						<div id="reset-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.resetKeyPress} >
 							
-							<input type="text" name="email" ref="email" id="email" placeholder="Email" defaultValue={user.email} />
+							<input type="text" name="email" ref="emailReset" id="email" placeholder="Email" defaultValue="" />
 							<div id="options" className="row">
 								<div className="col-xs-6 col-xs-offset-6 text-align-right">
-									<a href='#cancelReset' onClick={this.resetCancel}>Cancel</a>
+									<a href='#cancelReset' onClick={this.gotoLogin}>Cancel</a>
 								</div>
 							</div>
 							<button className="btn form-group col-xs-4 col-xs-offset-4" onClick={this.resetSubmit}>Reset</button>
+						</div>
+					</section>
+					<section className={this.state.resetSent}>
+						<div id="title">Reset Password</div>
+						<div id="reset-sent-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" >
+							<p>An email has been sent to {this.dotMail(user.email)}</p>
+							<button className="btn form-group col-xs-4 col-xs-offset-4" onClick={this.gotoNewPassword}>Continue</button>
+						</div>
+					</section>
+					<section className={this.state.newPassword}>
+						<div id="title">Reset Password</div>
+						<div className="col-xs-10 col-xs-offset-1 subtitle"> 
+							<p>Your password must be between <br />8 and 16 characters in length.</p>
+						</div>
+						<div id="new-password-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.newPasswordKeyPress} >
+							<input type="password" name="newPassword1" ref="newPassword1" id="newPassword1" placeholder="Create New Password" defaultValue="" />
+							<input type="password" name="newPassword2" ref="newPassword2" id="newPassword2" placeholder="Confirm New Password" defaultValue="" />
+							<button className="btn form-group col-xs-4 col-xs-offset-4" onClick={this.newPassword}>Submit</button>
 						</div>
 					</section>
 					<div className="clearfix">
