@@ -4,7 +4,6 @@ SELECT JnlTranID AS source_id
      , FiscalDate AS business_day
      , TranDate AS time
      , UserId AS operator_id
-     , n.Agency AS agency_id
   FROM JnlHeaders h
   JOIN Nodes n ON h.NodeNo = n.NodeNumber
  WHERE TranKind = 1

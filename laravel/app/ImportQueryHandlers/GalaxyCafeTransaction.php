@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class GalaxyCafeTransaction extends ImportQueryHandler {
 	protected $columns = ['source_id', 'register_id', 'sequence', 'business_day',
-		'time', 'operator_id', 'agency_id'];
+		'time', 'operator_id'];
 	function updateVariables() {
 		$lastId = DB::table($this->getTableName())->
 			where('query_id', $this->query->id)->max('source_id');

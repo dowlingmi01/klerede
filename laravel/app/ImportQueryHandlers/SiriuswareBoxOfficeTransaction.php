@@ -21,8 +21,8 @@ class SiriuswareBoxOfficeTransaction extends ImportQueryHandler {
 		foreach($operators as $operator) {
 			Operator::getFor($this->query->venue_id, $operator->operator_code);
 		}
-		$cols1 = ['t.venue_id', 'source_id', 'register_id', 'sequence', 'time', 'o.id', 't.created_at', DB::raw('date(time)'), DB::raw('IF(operator_code=\'WEBOP\', 2, 1)')];
-		$cols2 = ['venue_id', 'source_id', 'register_id', 'sequence', 'time', 'operator_id', 'created_at', 'business_day', 'agency_id'];
+		$cols1 = ['t.venue_id', 'source_id', 'register_id', 'sequence', 'time', 'o.id', 't.created_at', DB::raw('date(time)')];
+		$cols2 = ['venue_id', 'source_id', 'register_id', 'sequence', 'time', 'operator_id', 'created_at', 'business_day'];
 		$sel = DB::table('import_siriusware_box_office_transaction as t')->where('query_id', $this->query->id)->select($cols1);
 		$sel->join('operator as o', 'operator_code', '=', 'o.code');
 		$sel->where('o.venue_id', $this->query->venue_id);

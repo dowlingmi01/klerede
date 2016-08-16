@@ -80,7 +80,6 @@ class ImportGalaxyTables extends Migration {
 			$table->date('business_day');
 			$table->dateTime('time');
 			$table->integer('operator_id');
-			$table->integer('agency_id');
 			$table->timestamps();
 			$table->index(['query_id', 'id'], 'ig_bot_idx');
 		});
@@ -141,7 +140,6 @@ class ImportGalaxyTables extends Migration {
 			$table->date('business_day');
 			$table->dateTime('time');
 			$table->integer('operator_id');
-			$table->integer('agency_id');
 			$table->timestamps();
 			$table->index(['query_id', 'id'], 'ig_ct_idx');
 		});

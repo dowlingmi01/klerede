@@ -39,6 +39,12 @@ class SiriuswareChanges extends Migration {
 		Schema::table('membership', function(Blueprint $table) {
 			$table->dropUnique('membership_venue_id_sequence_unique');
 		});
+		Schema::table('box_office_transaction', function (Blueprint $table) {
+			$table->dropColumn('agency_id');
+		});
+		Schema::table('cafe_transaction', function (Blueprint $table) {
+			$table->dropColumn('agency_id');
+		});
 
 		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_naq.csv'));
 		DB::table('box_office_product_kind_map')->insert($bopkm_data);
