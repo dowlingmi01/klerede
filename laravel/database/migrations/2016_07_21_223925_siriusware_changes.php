@@ -17,6 +17,7 @@ class SiriuswareChanges extends Migration {
 			$table->increments('id');
 			$table->integer('venue_id');
 			$table->string('code');
+			$table->boolean('is_online');
 			$table->timestamps();
 			$table->unique(['venue_id', 'code']);
 		});
@@ -33,6 +34,7 @@ class SiriuswareChanges extends Migration {
 			$table->increments('id');
 			$table->integer('venue_id');
 			$table->string('code');
+			$table->boolean('is_ga');
 			$table->timestamps();
 			$table->unique(['venue_id', 'code']);
 		});
@@ -51,6 +53,19 @@ class SiriuswareChanges extends Migration {
 
 		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_naq.csv'));
 		DB::table('box_office_product_kind_map')->insert($bopkm_data);
+		DB::table('facility')->insert([
+			['venue_id'=>1588, 'code'=>'0',       'is_ga'=> true ],
+			['venue_id'=>1588, 'code'=>'1',       'is_ga'=> true ],
+			['venue_id'=>1588, 'code'=>'4',       'is_ga'=> false ],
+			['venue_id'=>1588, 'code'=>'5',       'is_ga'=> false ],
+			['venue_id'=>1518, 'code'=>'0/',      'is_ga'=> true ],
+			['venue_id'=>1518, 'code'=>'0/GA01',  'is_ga'=> true ],
+			['venue_id'=>1518, 'code'=>'0/MOV02', 'is_ga'=> false ],
+		]);
+		DB::table('operator')->insert([
+			['venue_id'=>1588, 'code'=>'88',    'is_online'=> true ],
+			['venue_id'=>1518, 'code'=>'WEBOP', 'is_online'=> true ],
+		]);
 	}
 
 	/**

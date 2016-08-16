@@ -7,6 +7,11 @@ class Operator extends Model {
 	protected $guarded = [];
 
 	static function getFor($venue_id, $code) {
-		return self::firstOrCreate(['venue_id'=>$venue_id, 'code'=>$code]);
+		$operator = self::firstOrNew(['venue_id'=>$venue_id, 'code'=>$code]);
+		if(!$operator->exists) {
+			$operator->is_online = false;
+			$operator->save();
+		}
+		return $operator;
 	}
 }

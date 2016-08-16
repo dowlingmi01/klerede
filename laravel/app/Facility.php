@@ -7,6 +7,11 @@ class Facility extends Model {
 	protected $guarded = [];
 
 	static function getFor($venue_id, $code) {
-		return self::firstOrCreate(['venue_id'=>$venue_id, 'code'=>$code]);
+		$facility = self::firstOrNew(['venue_id'=>$venue_id, 'code'=>$code]);
+		if(!$facility->exists) {
+			$facility->is_ga = false;
+			$facility->save();
+		}
+		return $facility;
 	}
 }
