@@ -20,7 +20,7 @@ class GalaxyVisit extends ImportQueryHandler {
 		$this->addCodes('facility_id', Facility::class);
 		$this->addCodes('acp_id', Workstation::class);
 
-		$cols = ['v.id', 'source_id', 'v.venue_id', 'w.id as acp_id', 'f.id as facility_id', 'p.id as box_office_product_id', 'ticket_code'
+		$cols = ['v.id', 'source_id', 'v.venue_id', 'w.id as workstation_id', 'f.id as facility_id', 'p.id as box_office_product_id', 'ticket_code'
 			, 'm.id as membership_id', 'v.kind', 'quantity', 'use_no', 'time', 'v.created_at'];
 /*
 		$sel = DB::table('import_galaxy_visit as v')

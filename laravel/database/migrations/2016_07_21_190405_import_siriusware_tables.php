@@ -92,7 +92,7 @@ class ImportSiriuswareTables extends Migration {
 			$table->enum('status', ['pending', 'imported']);
 			$table->integer('venue_id');
 			$table->integer('source_id');
-			$table->string('acp_code');
+			$table->string('workstation_code');
 			$table->string('facility_code');
 			$table->string('box_office_product_code');
 			$table->string('ticket_code');

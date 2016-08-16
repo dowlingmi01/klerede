@@ -9,7 +9,7 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 class SiriuswareVisitTicket extends ImportQueryHandler {
-	protected $columns = ['source_id', 'acp_code', 'facility_code', 'box_office_product_code',
+	protected $columns = ['source_id', 'workstation_code', 'facility_code', 'box_office_product_code',
 		'ticket_code', 'kind', 'time'];
 	protected $variableName = 'LAST_TICKET_USAGE_ID';
 	function getTableName() {
@@ -21,10 +21,10 @@ class SiriuswareVisitTicket extends ImportQueryHandler {
 		VenueVariable::setValue($this->query->venue_id, $this->variableName, $lastId);
 	}
 	function process() {
-		$this->addCodes('acp_code', Workstation::class);
+		$this->addCodes('workstation_code', Workstation::class);
 		$this->addCodes('facility_code', Facility::class);
 
-		$cols = ['v.id', 'source_id', 'v.venue_id', 'w.id as acp_id', 'f.id as facility_id', 'p.id as box_office_product_id', 'ticket_code'
+		$cols = ['v.id', 'source_id', 'v.venue_id', 'w.id as workstation_id', 'f.id as facility_id', 'p.id as box_office_product_id', 'ticket_code'
 			, 'm.id as membership_id', 'v.kind', DB::raw('1 as quantity'), DB::raw('0 as use_no'), 'time', 'v.created_at'];
 /*
 		$sel = DB::table('import_galaxy_visit as v')
@@ -40,7 +40,7 @@ class SiriuswareVisitTicket extends ImportQueryHandler {
 */
 		$sel = DB::table(DB::raw('import_siriusware_visit as v
 		straight_join box_office_product as p on box_office_product_code = p.code and v.venue_id = p.venue_id
-		straight_join workstation as w on acp_code = w.code and v.venue_id = w.venue_id
+		straight_join workstation as w on workstation_code = w.code and v.venue_id = w.venue_id
 		straight_join facility as f on facility_code = f.code and v.venue_id = f.venue_id
 		left join membership as m use index for join (membership_venue_id_code_unique) on ticket_code = m.code and v.venue_id = m.venue_id and v.kind = \'pass\''))
 			->where('query_id', $this->query->id)

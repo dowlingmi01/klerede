@@ -1,5 +1,5 @@
 SELECT u.cluster AS source_id
-     , u.location AS acp_code
+     , u.location AS workstation_code
      , u.location2 AS facility_code
      , i.item_id AS box_office_product_code
      , u.ref_no AS ticket_code
