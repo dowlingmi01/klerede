@@ -83,7 +83,7 @@ var MembershipGoals = React.createClass({
 	onStatsResult:function(result) {
         console.log('Membership Goals onStatsResult using KAPI...');
         wnt.membershipSales = result;
-		KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onGoalsResult);
+		KAPI.goals.sales.get(wnt.venueID,wnt.thisYear,this.onGoalsResult);
     },
 	callAPI:function () {
         var periodStart = wnt.yearStart;

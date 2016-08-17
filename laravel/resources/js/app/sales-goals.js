@@ -92,7 +92,7 @@ var SalesGoals = React.createClass({
 	onStatsResult:function (result) {
         console.log('Sales Goals onStatsResult using KAPI...');
         wnt.sales = result;
-		KAPI.goals.sales(wnt.venueID,wnt.thisYear,this.onGoalsResult);
+		KAPI.goals.sales.get(wnt.venueID,wnt.thisYear,this.onGoalsResult);
 	},
     callAPI: function(){
         var self = this;

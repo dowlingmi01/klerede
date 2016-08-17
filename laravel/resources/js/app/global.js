@@ -5,22 +5,84 @@
 
 var global = Function('return this')();
 
-(function (ajax) {
+//Kutils functions
+(function(scope) {
+	if (!scope.KUtils) {
+		scope.KUtils = {
+			isValidPassword:function(p1, p2) {
+				
+				if (scope.KUtils.isEmpty(p1)) {
+					return "Please enter a valid password."
+				};
+				
+				if (typeof p1 === "string") {
+					if (p1.length < 8) {
+						return "Password is too short."
+					}
+					if (p1.length > 16) {
+						return "Password is too long."
+					}
+				} else {
+					return "Password is not valid."
+				}
+				
+				if (p1 !== p2) {
+					return "Passwords don't match."
+				};
+				
+				return true;
+				
+			},
+			isEmail: function (email) {
+			  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+			  return regex.test(email);
+			},
+			isEmpty: function (field) {
+				if(!field) return true;
+	
+				return (field.length==0);
+			},
+			storeLocal: function (key, data) {
+				localStorage.setItem(key, JSON.stringify(data));
+			},
+			clearLocal: function (key) {
+				localStorage.removeItem(key);
+			},
+			getLocal: function (key) {
+				var local = localStorage[key];
+				if (!local) return false;
+				try {
+				 	var data = JSON.parse(localStorage[key]);
+					return data;
+				} catch (e) {
+					console.log(e);
+					return false;
+				}
+			}
+		};
+		
+	}
+})(global);
+
+//KAPI functions
+(function (ajax, scope) {
 	//verify if KAPI already exists
-	if(!global.KAPI) {
+	if(!scope.KAPI) {
 		
 		//Private
 		
+		var KUtils = scope.KUtils;
+		
 		var _prefix = "/api/v1";
 		
-		var _token = getLocal('_token');
+		var _token = KUtils.getLocal('_token');
 		
 		function _saveToken(token) {
 			_token = token;
-			storeLocal('_token', token);
+			KUtils.storeLocal('_token', token);
 		}
 		function _clearToken() {
-			clearLocal('_token');
+			KUtils.clearLocal('_token');
 			_token = false;
 		}
 		function _srdata(method, route, onSuccess, data, options) {
@@ -60,16 +122,28 @@ var global = Function('return this')();
 		function _getData(route, onSuccess, data, options) {
 			_srdata("GET", route, onSuccess, data, options);
 		}
+		function _putData(route, onSuccess, data, options) {
+			_srdata("PUT", route, onSuccess, data, options);
+		}
 
 		//Public
-		global.KAPI = {
+		scope.KAPI = {
 			// custom:function (method, route, onSuccess, data, options) {
 			// 	_srdata(method, route, onSuccess, data, options);
 			// },
 			goals:{
-				sales: function (venueID, year, onSuccess) {
-					var route = "/goals/sales/"+venueID+"/"+year;
-					_getData(route, onSuccess);
+				sales: {
+					get:function (venueID, year, onSuccess) {
+						var route = "/goals/sales/"+venueID+"/"+year;
+						_getData(route, onSuccess);
+					},
+					put:function (venueID, year, onSuccess, data, channel, type, subChannel) {
+						
+						subChannel = subChannel ? ("/"+subChannel) : "";
+						
+						var route = "/goals/sales/"+venueID+"/"+year+"/"+channel+"/"+type+subChannel;
+						_putData(route, onSuccess, data);
+					}
 				}
 			},
 			stats:{
@@ -108,6 +182,19 @@ var global = Function('return this')();
 				_getData(route, onSuccess);
 			},
 			auth:{
+				recovery:function (email, onSuccess, onError) {
+
+					var route="/auth/recovery";
+					var data = {email:email};
+
+					_postData(route, onSuccess, data, {error:onError});
+				},
+				reset:function (token, email, password, onSuccess, onError) {
+					var route="/auth/reset";
+					var data = {email:email, token:token, password:password};
+
+					_postData(route, onSuccess, data, {error:onError});
+				},
 				login:function (email, password, onSuccess, onError) {
 					var route="/auth/login";
 					var data = {email:email, password:password};
@@ -119,7 +206,7 @@ var global = Function('return this')();
 					
 					//save token on success
 					var saveTokenOnSuccess = function(data) {
-						console.log(data);
+						// console.log(data);
 						_saveToken(data.token);
 						onSuccess(true);
 					}
@@ -146,36 +233,24 @@ var global = Function('return this')();
 			}
 		};
 	}
-})(jQuery.ajax);
+})(jQuery.ajax, global);
+
 
 
 function isEmail(email) {
-  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-  return regex.test(email);
+	throw new Error("Must use KUtils.<your-function>");
 }
 function isEmpty(field) {
-	if(!field) return true;
-	
-	return (field.length==0);
+	throw new Error("Must use KUtils.<your-function>");
 }
-
-
 function storeLocal(key, data) {
-	localStorage.setItem(key, JSON.stringify(data));
+	throw new Error("Must use KUtils.<your-function>");
 }
 function clearLocal(key) {
-	localStorage.removeItem(key);
+	throw new Error("Must use KUtils.<your-function>");
 }
 function getLocal(key) {
-	var local = localStorage[key];
-	if (!local) return false;
-	try {
-	 	var data = JSON.parse(localStorage[key]);
-		return data;
-	} catch (e) {
-		console.log(e);
-		return false;
-	}
+	throw new Error("Must use KUtils.<your-function>");
 }
 
 
