@@ -5,6 +5,15 @@
 var lang = {};
 lang['user_not_found'] = "Error: user not found.";
 lang['invalid_credentials'] = "Invalid credentials.";
+lang['could_not_reset_password'] = "Could not reset your password.";
+
+function _l(k) {
+	if(lang[k]) {
+		return lang[k];
+	} else {
+		return k;
+	}
+}
 
 var RememberCheckMark = React.createClass({
 	getInitialState:function() {
@@ -30,13 +39,18 @@ var RememberCheckMark = React.createClass({
 
 var LoginComponent = React.createClass({
 	getInitialState:function () {
-		return {
+		var state = {
 			login:'active',
 			reset:'inactive',
 			resetSent:'inactive',
 			newPassword:'inactive',
 			passwordSent:'inactive'
-		}
+		};
+		if (this.props.token != "") {
+			state.login = 'inactive';
+			state.newPassword = 'active';
+		};
+		return state;
 	},
 	handleKeyPress:function (event) {
 		this.callIfEnter(event, this.submitForm);
@@ -131,8 +145,15 @@ var LoginComponent = React.createClass({
 			alert("Your email is not valid.");
 			return;
 		}
-		
+		KAPI.auth.recovery(email, this.onResetSuccess, this.onResetError);
+	},
+	onResetSuccess:function (response) {
+		console.log(response);
 		this.showSection('resetSent');
+	},
+	onResetError:function (response) {
+		console.log(response);
+		alert("Error recovering your password, please check your email address.");
 	},
 	gotoLogin:function (event) {
 		if (event) {
@@ -160,17 +181,31 @@ var LoginComponent = React.createClass({
 		
 		var isValidResponse = KUtils.isValidPassword(new1, new2);
 		if(isValidResponse === true) {
-
-			this.gotoLogin();
-			var state = this.state;
-			state.passwordSent = 'active';
-			this.setState(state);
-
+			KAPI.auth.reset(this.props.token, this.props.email, new1, this.onNewPasswordSet, this.onNewPasswordError);
 			return;
 		}
 		
 		alert(isValidResponse);
 
+	},
+	onNewPasswordSet:function (response) {
+		console.log(response);
+		if(response.result == 'ok') {
+			this.gotoLogin();
+			var state = this.state;
+			state.passwordSent = 'active';
+			this.setState(state);
+		} else {
+			alert(_l(response.message));
+			this.gotoLogin();
+		}
+		if(window.history.pushState) {
+			window.history.pushState({},'klerede/login','login');
+		}
+		
+	},
+	onNewPasswordError:function (response) {
+		console.log(response);
 	},
 	render:function () {
 		var user = KUtils.getLocal("user");
@@ -211,7 +246,7 @@ var LoginComponent = React.createClass({
 						<div id="title">Reset Password</div>
 						<div id="reset-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.resetKeyPress} >
 							
-							<input type="text" name="email" ref="emailReset" id="email" placeholder="Email" defaultValue="" />
+							<input type="text" name="email" ref="emailReset" id="email" placeholder="Enter Email" defaultValue="" />
 							<div id="options" className="row">
 								<div className="col-xs-6 col-xs-offset-6 text-align-right">
 									<a href='#cancelReset' onClick={this.gotoLogin}>Cancel</a>
@@ -224,7 +259,7 @@ var LoginComponent = React.createClass({
 						<div id="title">Reset Password</div>
 						<div id="reset-sent-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" >
 							<p>An email has been sent to {this.dotMail(user.email)}</p>
-							<button className="btn form-group col-xs-4 col-xs-offset-4" onClick={this.gotoNewPassword}>Continue</button>
+							<button className="btn form-group col-xs-4 col-xs-offset-4" onClick={this.gotoLogin}>Continue</button>
 						</div>
 					</section>
 					<section className={this.state.newPassword}>
@@ -250,7 +285,7 @@ var LoginComponent = React.createClass({
 
 if(document.getElementById('login-component')){
     React.render(
-		<LoginComponent />,
+		<LoginComponent token={resetToken} email={resetEmail} />,
         document.getElementById('login-component')
     );
 }

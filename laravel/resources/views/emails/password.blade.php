@@ -1,1 +1,1 @@
-Click here to reset your password: {{ url('api/v1/auth/reset/?token='.$token) }}
+Click here to reset your password: {{ url('login?reset='.$token.'|'.$user->email) }}

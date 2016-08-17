@@ -8,6 +8,16 @@
 
 	    <div id="login-component"><!-- ReactJS component: LoginComponent --></div>
         <script src="js/libs.js"></script>
+		<script type="text/javascript">
+			var reset = "<?php echo isSet($_GET['reset']) ? $_GET['reset'] : "";?>";
+			var resetToken = "",
+				resetEmail = "",
+				vars = reset.split("|");
+			if (vars.length) {
+				resetToken = vars[0];
+				resetEmail = vars[1];
+			}
+		</script>
         <script src="js/app.js"></script>
     </body>
 </html>

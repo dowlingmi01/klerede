@@ -170,6 +170,19 @@ var global = Function('return this')();
 				_getData(route, onSuccess);
 			},
 			auth:{
+				recovery:function (email, onSuccess, onError) {
+
+					var route="/auth/recovery";
+					var data = {email:email};
+
+					_postData(route, onSuccess, data, {error:onError});
+				},
+				reset:function (token, email, password, onSuccess, onError) {
+					var route="/auth/reset";
+					var data = {email:email, token:token, password:password};
+
+					_postData(route, onSuccess, data, {error:onError});
+				},
 				login:function (email, password, onSuccess, onError) {
 					var route="/auth/login";
 					var data = {email:email, password:password};
@@ -181,7 +194,7 @@ var global = Function('return this')();
 					
 					//save token on success
 					var saveTokenOnSuccess = function(data) {
-						console.log(data);
+						// console.log(data);
 						_saveToken(data.token);
 						onSuccess(true);
 					}
