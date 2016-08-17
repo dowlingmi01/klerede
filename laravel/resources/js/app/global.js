@@ -122,6 +122,9 @@ var global = Function('return this')();
 		function _getData(route, onSuccess, data, options) {
 			_srdata("GET", route, onSuccess, data, options);
 		}
+		function _putData(route, onSuccess, data, options) {
+			_srdata("PUT", route, onSuccess, data, options);
+		}
 
 		//Public
 		scope.KAPI = {
@@ -129,9 +132,18 @@ var global = Function('return this')();
 			// 	_srdata(method, route, onSuccess, data, options);
 			// },
 			goals:{
-				sales: function (venueID, year, onSuccess) {
-					var route = "/goals/sales/"+venueID+"/"+year;
-					_getData(route, onSuccess);
+				sales: {
+					get:function (venueID, year, onSuccess) {
+						var route = "/goals/sales/"+venueID+"/"+year;
+						_getData(route, onSuccess);
+					},
+					put:function (venueID, year, onSuccess, data, channel, type, subChannel) {
+						
+						subChannel = subChannel ? ("/"+subChannel) : "";
+						
+						var route = "/goals/sales/"+venueID+"/"+year+"/"+channel+"/"+type+subChannel;
+						_putData(route, onSuccess, data);
+					}
 				}
 			},
 			stats:{

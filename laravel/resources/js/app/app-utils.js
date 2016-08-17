@@ -358,6 +358,7 @@ var wnt = {
         });
     },
     setGoals: function(data, year, channel, type, subchannel){
+		throw new Error('GLOBAL HELPER wnt.setGoals: use KAPI call');
         // PUT api/v1/goals/sales     /{venue_id}/{year}/{channel}/{type}[/{sub_channel}]
         // e.g. 2015/cafe/amount ... or ... 2015/membership/units/family
         // request body = { "months": { 1: XXX, 2: XXX, 3: XXX, ... } }
