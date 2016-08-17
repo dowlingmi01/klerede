@@ -47,9 +47,7 @@ class SiriuswareChanges extends Migration {
 		Schema::table('cafe_transaction', function (Blueprint $table) {
 			$table->dropColumn('agency_id');
 		});
-		Schema::table('visit', function (Blueprint $table) {
-			$table->renameColumn('acp_id', 'workstation_id');
-		});
+		DB::unprepared('ALTER TABLE visit CHANGE acp_id workstation_id int NOT NULL');
 
 		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_naq.csv'));
 		DB::table('box_office_product_kind_map')->insert($bopkm_data);
