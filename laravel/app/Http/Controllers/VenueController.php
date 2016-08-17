@@ -7,7 +7,7 @@ use App\Stats;
 use App\Venue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
-use \App\Helpers\VenueHelper;
+use Gate;
 
 class VenueController extends Controller {
 
@@ -30,7 +30,7 @@ class VenueController extends Controller {
 	 */
 	public function show($id)
 	{
-		if(!VenueHelper::isValid($id)){
+        if (Gate::denies('validate-venue', $id)) {
             return Response::json(["error"=>"Invalid venue id"]);
         }
 		$venue = Venue::find($id);

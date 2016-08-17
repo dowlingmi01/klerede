@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use \App\Helpers\VenueHelper;
+ 
 use App\User;
 use \Hash;
 use \Validator;
@@ -88,7 +88,7 @@ class UserController extends Controller
     {
         //TODO: only autorized venue and user by role
         if($user = User::find($id)){
-            if(!VenueHelper::isValid($user->venue_id)){
+            if (Gate::denies('validate-venue', $user->venue_id)) {
                 return "Invalid venue id";
             }
             return $user;
@@ -133,7 +133,7 @@ class UserController extends Controller
             if(!$user){
                 return ['result'=> 'error', 'message'=>'User not found'];
             }
-            if(!VenueHelper::isValid($user->venue_id)){
+            if (Gate::denies('validate-venue', $user->venue_id)) {
                 return "Invalid venue id";
             }
             $user->name       = trim($request->name) !== '' ? $request->name : $user->name;
@@ -157,9 +157,10 @@ class UserController extends Controller
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];
          }
-        if(!VenueHelper::isValid($user->venue_id)){
+        if (Gate::denies('validate-venue', $user->venue_id)) {
             return "Invalid venue id";
         }
+   
         $oldPassword = Hash::make($request->oldPassword);
         if($oldPassword == $user->password){
             $user->password = Hash::make($request->password);
@@ -184,9 +185,9 @@ class UserController extends Controller
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];
          }
-        if(!VenueHelper::isValid($user->venue_id)){
-            return "Invalid venue id";
-        }
+        if (Gate::denies('validate-venue', $user->venue_id)) {
+                return "Invalid venue id";
+            }
         $result = User::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }
