@@ -16,3 +16,11 @@
     </div>
 
 @stop
+
+@section('scripts')
+<script type="text/javascript">
+
+loadUser();
+
+</script>
+@stop

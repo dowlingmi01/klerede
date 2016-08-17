@@ -466,9 +466,11 @@ var GoalSetting = React.createClass({
 });
 
 if(document.getElementById('goal-setting')){
-    React.render(
-        <GoalSetting />,
-        document.getElementById('goal-setting')
-    );
-    console.log('Goal setting loaded...');
+    $.when(wnt.gettingVenueData).done(function(data) {
+	    React.render(
+	        <GoalSetting />,
+	        document.getElementById('goal-setting')
+	    );
+	    console.log('Goal setting loaded...');
+    });
 }
