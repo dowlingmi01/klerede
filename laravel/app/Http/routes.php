@@ -14,8 +14,7 @@
 use App\GoalsSales;
 use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
-use Gate;
-
+ 
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
