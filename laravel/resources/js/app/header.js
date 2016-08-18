@@ -47,7 +47,7 @@ var User = React.createClass({
                 {this.props.name} <Caret className="utilities-caret" />
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
-                    <Roles />
+                    <Roles roleList={this.props.roleList} roleID={this.props.roleID}/>
                     <a className="stop" onClick={this.deleteUser}>Delete User</a>
                     <a className="stop" onClick={this.passwordReset}>Password Reset</a>
                     <div className="message">{this.state.message}</div>
@@ -64,12 +64,20 @@ var User = React.createClass({
 
 var Roles = React.createClass({
     render: function() {
+		console.log(this.props);
+		var roleList = this.props.roleList;
+		var roleID = this.props.roleID;
+		var roles = [];
+		
+		for(var k in roleList) {
+			var selected = (k == roleID);
+			
+			roles.push(<option selected={selected} value={k.toString()}>{roleList[k]}</option>);
+		}
+		
         return (
             <select className="form-control stop" id={this.props.id}>
-                <option value="basic">Basic</option>
-                <option value="power">Power</option>
-                <option value="admin">Admin</option>
-                <option value="owner">Owner</option>
+			{roles}
             </select>
         );
     }
@@ -77,24 +85,55 @@ var Roles = React.createClass({
 
 var Header = React.createClass({
     getInitialState: function() {
+		var user = KAPI.auth.getUser();
         return {
             clientName: wnt.venue.name,
-            fullName: 'Michael Dowling',
-            userName: 'mdowling',
-            email: 'michael@klerede.com',
+            userID: user.id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            name: user.name,
+            email: user.email,
             pwdCurrent: '',
             pwdNew: '',
             pwdMatch: '',
-            accountType: 'Owner',
+            roleID: user.role_id,
+            accountType: '',
             planTitle: 'Professional',
             planDescription: 'Unlimited Accounts',
             cardFirstName: 'Dan',
             cardLastName: 'Tribec',
             cardNumber: '**** **** **** 1234',
-            users: ['Michael Dowling', 'Matt Pelletier', 'Heather Finney', 'Sergio Daicz', 'Taylor Johnson', 'Elizabeth Johnson'],
-            usersEmail: ['michael@klerede.com', 'matt@klerede.com', 'hfinney@klerede.com', 'sdaicz@klerede.com', 'webninjataylor@gmail.com', 'libbykjohsnon@gmail.com']
+            users: [],
+            usersEmail: ['michael@klerede.com', 'matt@klerede.com', 'hfinney@klerede.com', 'sdaicz@klerede.com', 'webninjataylor@gmail.com', 'libbykjohsnon@gmail.com'],
+			roleNames:{}
         };
     },
+	componentDidMount:function () {
+		KAPI.roles(this.onRolesGet);
+		KAPI.users.get(wnt.venueID, this.onUsersGet);
+	},
+	onUsersGet:function (users) {
+		console.log(users);
+		var newState = this.state;
+		newState.users = users;
+		
+		this.setState(newState);
+	},
+	onRolesGet:function (roles) {
+		console.log(roles);
+
+		var newState = this.state;
+		newState.roleNames = {};
+
+		for (var i = 0; i < roles.length; i++) {
+			var rol = roles[i];
+			newState.roleNames[rol.id] = rol.name;
+		};
+		
+		newState.accountType = newState.roleNames[newState.roleID];
+		
+		this.setState(newState);
+	},
     toggleSettings: function() {
         // Hide or show the settings modal
         $('.user-name').toggleClass('active');
@@ -144,12 +183,31 @@ var Header = React.createClass({
             $('#manage-users').find('.disabled').removeClass('disabled');
         }
     },
-    saveChanges: function(event){
+    saveCurrentUserChanges: function(event){
         event.preventDefault();
-        // TO DO: Send changed data to the API
         console.log('SAVE', this.state);
+		//PUT/PATCH api/v1/users
+		
+		//Params: {name, email, role_id, venue_id}
+		KAPI.users.patch(
+			this.state.userID,
+			this.state.firstName, 
+			this.state.lastName, 
+			this.state.email, 
+			this.state.roleID, 
+			wnt.venueID, 
+			this.onCurrentUserSave, 
+			this.onCurrentUserSaveError
+		);
+		
         event.target.blur();
     },
+	onCurrentUserSave:function (response) {
+		console.log(response);
+	},
+	onCurrentUserSaveError:function (error) {
+		console.log(error);
+	},
     addUser: function(event){
         event.preventDefault();
         // TO DO: Send changed data to the API
@@ -218,11 +276,18 @@ var Header = React.createClass({
 		}
 	},
     render: function() {
+		console.log(this.state);
         // LOOP FOR USERS
         var users = [];
-        for (var i = 0; i < this.state.users.length; i++) {
-            users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
-        }
+		var usersData = this.state.users;
+		for (var i = 0; i < usersData.length; i++) {
+			console.log(usersData[i]);
+			var data = usersData[i];
+			users.push(<User key={data.id} name={data.name} email={data.email} roleID={data.role_id} roleList={this.state.roleNames} />)
+		}
+        // for (var i = 0; i < this.state.users.length; i++) {
+        //     users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
+        // }
         return (
             <header className="container-fluid">
                 <div className="row">
@@ -234,7 +299,7 @@ var Header = React.createClass({
                             <div className="utilities-wrapper">
                                 <div className="greeting">Welcome</div>
                                 <div className="user-name">
-                                    {this.state.fullName}
+                                    {this.state.name}
                                     <Caret className="utilities-caret" />
                                 </div>
                             </div>
@@ -270,16 +335,16 @@ var Header = React.createClass({
                     <h3>User Profile <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
                     <form className="settings">
                         <div className="form-group">
-                            <label htmlFor="up-name">Full Name:</label>
-                            <input type="text" id="up-name" defaultValue={this.state.fullName} data-field="fullName" onChange={this.changeField} />
+                            <label htmlFor="up-firstName">First Name:</label>
+                            <input type="text" id="up-firstName" defaultValue={this.state.firstName} data-field="firstName" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="up-username">Username:</label>
-                            <input type="text" id="up-username" defaultValue={this.state.userName} data-field="userName" onChange={this.changeField} />
+                            <label htmlFor="up-lastName">Last Name:</label>
+                            <input type="text" id="up-lastName" defaultValue={this.state.lastName} data-field="lastName" onChange={this.changeField} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-email">Email:</label>
-                            <input type="text" id="up-email" defaultValue={this.state.email} data-field="email" onChange={this.changeField} />
+                            <input type="text" id="up-email" defaultValue={this.state.email} value={this.state.email} data-field="email" disabled />
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-pwd-current">Current Password:</label>
@@ -295,10 +360,10 @@ var Header = React.createClass({
                         </div>
                         <div className="form-group">
                             <label htmlFor="up-type">Account Type:</label>
-                            <input type="text" id="up-type" defaultValue={this.state.accountType} />
+                            <input type="text" id="up-type" defaultValue={this.state.accountType} value={this.state.accountType} disabled/>
                         </div>
                         <div className="form-group">
-                            <input type="submit" defaultValue="Save" className="btn" onClick={this.saveChanges} />
+                            <input type="submit" defaultValue="Save" className="btn" onClick={this.saveCurrentUserChanges} />
                         </div>
                     </form>
                 </div>
@@ -312,7 +377,7 @@ var Header = React.createClass({
                         <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
                         <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
                         <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
-                        <Roles id="addUserRole" />
+						<Roles id="addUserRole" roleList={this.state.roleNames}/>
                         <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                     </form>
                     <div className="utility-group" onClick={this.toggleUtility}>

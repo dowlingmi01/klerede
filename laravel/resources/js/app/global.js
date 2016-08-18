@@ -8,6 +8,7 @@ var global = Function('return this')();
 //Kutils functions
 (function(scope) {
 	if (!scope.KUtils) {
+		var _temp = {};
 		scope.KUtils = {
 			isValidPassword:function(p1, p2) {
 				
@@ -77,6 +78,8 @@ var global = Function('return this')();
 		
 		var _token = KUtils.getLocal('_token');
 		
+		var _user;
+		
 		function _saveToken(token) {
 			_token = token;
 			KUtils.storeLocal('_token', token);
@@ -88,9 +91,14 @@ var global = Function('return this')();
 		function _srdata(method, route, onSuccess, data, options) {
 			// console.log([route, data]);
 			// return;
+			var token = "?token="+_token;
+			if (route.indexOf("?")>0) {
+				token = "&token="+_token;
+			}
+			
 			var arg = {
 				type: method,
-				url: _prefix+route+"?token="+_token,
+				url: _prefix+route+token,
 				async: true,
 				cache: true,
 				// success: onSuccess,
@@ -113,7 +121,7 @@ var global = Function('return this')();
 					arg[k] = options[k];
 				}
 			}
-			// console.log(arg);
+			console.log(arg);
 			ajax(arg);
 		}
 		function _postData(route, onSuccess, data, options) {
@@ -123,6 +131,10 @@ var global = Function('return this')();
 			_srdata("GET", route, onSuccess, data, options);
 		}
 		function _putData(route, onSuccess, data, options) {
+			_srdata("PUT", route, onSuccess, data, options);
+		}
+		function _patchData(route, onSuccess, data, options) {
+			console.log("My name is _patchData but I use PUT");
 			_srdata("PUT", route, onSuccess, data, options);
 		}
 
@@ -181,6 +193,23 @@ var global = Function('return this')();
 				var route = "/venue/"+venueID;
 				_getData(route, onSuccess);
 			},
+			roles:function (onSuccess) {
+				var route = "/roles";
+				_getData(route, onSuccess);
+			},
+			users:{
+				get:function (venueID, onSuccess) {
+					var route = "/users?venue_id="+venueID;
+					_getData(route, onSuccess);
+				},
+				patch:function (userID, firstName, lastName, email, roleID, venueID, onSuccess, onError) {
+					var route = "/users/"+userID;
+					var data = $.param({first_name:firstName, last_name:lastName, email:email, role_id:roleID, venue_id:venueID});
+
+					_patchData(route, onSuccess, data, {error:onError});
+
+				}
+			},
 			auth:{
 				recovery:function (email, onSuccess, onError) {
 
@@ -225,10 +254,22 @@ var global = Function('return this')();
 					_postData(route, clearTokenOnSuccess, undefined, {error:onError});
 				},
 				getLoggedUser:function(onGetLoggedUser, onError) {
-
-					var route = "/auth/logged";
-					_getData(route, function(data){onGetLoggedUser(data.user)}, undefined, {error:onError});
 					
+					var saveUserOnSucces = function(data) {
+						_user = data.user;
+						onGetLoggedUser(data.user);
+					};
+					
+					var route = "/auth/logged";
+					_getData(route, saveUserOnSucces, undefined, {error:onError});
+					
+				},
+				getUser:function () {
+					if(!_user) {
+						throw new Error("Please call first KAPI.auth.getLoggedUser() function.");
+					}
+					
+					return _user;
 				}
 			}
 		};
