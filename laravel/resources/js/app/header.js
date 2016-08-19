@@ -16,6 +16,7 @@ var User = React.createClass({
     deleteUser: function(event){
         event.preventDefault();
         // TO DO: Delete user code
+        this.setState({ message: '' });
         console.log('DELETE USER', this.state);
         $(event.target).closest('.user').find('.confirm').show();
         event.target.blur();
@@ -24,19 +25,65 @@ var User = React.createClass({
         event.preventDefault();
         console.log('DELETE USER CONFIRMED', this.state);
         $(event.target).closest('.confirm').hide();
+		
+		KAPI.users.delete(this.props.id, this.onDeleteSuccess, this.onDeleteError);
     },
+	onDeleteSuccess:function (response) {
+        this.setState({ message: 'User was deleted.'});
+		this.props.onDeleteSuccess();
+	},
+	onDeleteError:function (error) {
+		console.log(error);
+        this.setState({ message: 'Could not delete user.' });
+	},
     deleteAborted: function(event){
         event.preventDefault();
         console.log('DELETE USER ABORTED', this.state);
         $(event.target).closest('.confirm').hide();
     },
+	onRoleChange:function (event) {
+		// console.log(this.refs.roleSelect);
+		var addUserRoleID = this.refs.roleSelect.getDOMNode().value;
+		// console.log(addUserRoleID);
+		// patch:function (userID, firstName, lastName, email, roleID, venueID, onSuccess, onError) {
+		KAPI.users.patch(
+			this.props.id,
+			this.props.firstName, 
+			this.props.lastName, 
+			this.props.email, 
+			addUserRoleID, 
+			wnt.venueID, 
+			this.onRoleChangeSuccess, 
+			this.onRoleChangeError
+		);
+	},
+	onRoleChangeSuccess:function (response) {
+        this.setState({ message: 'User role updated.'});
+	},
+	onRoleChangeError:function (error) {
+		console.log(error);
+        this.setState({ message: 'Could not update user role.' });
+	},
     passwordReset: function(event){
         event.preventDefault();
         // TO DO: Change password code
-        this.setState({ message: 'An email has been sent to the user to reset their password.' });
+		//recovery:function (email, onSuccess, onError)
+		KAPI.auth.recovery(
+			this.props.email,
+			this.onResetPasswordSuccess, 
+			this.onResetPasswordError
+		);
         console.log('CHANGE PASSWORD', this.state);
         event.target.blur();
     },
+	onResetPasswordSuccess:function (response) {
+		console.log(response);
+		this.setState({ message: 'An email has been sent to the user to reset their password.' });
+	},
+	onResetPasswordError:function (error) {
+		console.log(error);
+        this.setState({ message: 'Could reset password.' });
+	},
     componentDidUpdate: function(){
         // jQuery can control classes after components update
         $('.user').eq(this.state.editUserIndex).toggleClass('active');
@@ -47,7 +94,7 @@ var User = React.createClass({
                 {this.props.name} <Caret className="utilities-caret" />
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
-                    <Roles roleList={this.props.roleList} roleID={this.props.roleID}/>
+                    <Roles ref="roleSelect" onChange={this.onRoleChange} roleList={this.props.roleList} roleID={this.props.roleID}/>
                     <a className="stop" onClick={this.deleteUser}>Delete User</a>
                     <a className="stop" onClick={this.passwordReset}>Password Reset</a>
                     <div className="message">{this.state.message}</div>
@@ -64,19 +111,20 @@ var User = React.createClass({
 
 var Roles = React.createClass({
     render: function() {
-		console.log(this.props);
+		// console.log(this.props);
 		var roleList = this.props.roleList;
 		var roleID = this.props.roleID;
 		var roles = [];
 		
 		for(var k in roleList) {
-			var selected = (k == roleID);
+			// var selected = (k == roleID);
 			
-			roles.push(<option selected={selected} value={k.toString()}>{roleList[k]}</option>);
+			roles.push(<option key={k.toString()} value={k.toString()}>{roleList[k]}</option>);
+			// roles.push(<option selected={selected} value={k.toString()}>{roleList[k]}</option>);
 		}
 		
         return (
-            <select className="form-control stop" id={this.props.id}>
+            <select defaultValue={roleID} className="form-control stop" id={this.props.id} onChange={this.props.onChange}>
 			{roles}
             </select>
         );
@@ -110,17 +158,20 @@ var Header = React.createClass({
     },
 	componentDidMount:function () {
 		KAPI.roles(this.onRolesGet);
+		this.getUsers();
+	},
+	getUsers:function () {
 		KAPI.users.get(wnt.venueID, this.onUsersGet);
 	},
 	onUsersGet:function (users) {
-		console.log(users);
+		// console.log(users);
 		var newState = this.state;
 		newState.users = users;
 		
 		this.setState(newState);
 	},
 	onRolesGet:function (roles) {
-		console.log(roles);
+		// console.log(roles);
 
 		var newState = this.state;
 		newState.roleNames = {};
@@ -131,6 +182,7 @@ var Header = React.createClass({
 		};
 		
 		newState.accountType = newState.roleNames[newState.roleID];
+		newState.addUserRoleID = roles[0].id;
 		
 		this.setState(newState);
 	},
@@ -186,9 +238,24 @@ var Header = React.createClass({
     saveCurrentUserChanges: function(event){
         event.preventDefault();
         console.log('SAVE', this.state);
-		//PUT/PATCH api/v1/users
+            // pwdCurrent: '',
+            // pwdNew: '',
+            // pwdMatch: '',
+		if ( !KUtils.isEmpty(this.state.pwdCurrent) ) {
+			var isValidResult = KUtils.isValidPassword(this.state.pwdNew, this.state.pwdMatch);
+			if( isValidResult === true ) {
+				
+				KAPI.users.pass(this.state.userID, this.state.pwdCurrent, this.state.pwdNew, this.onPasswordSave, this.onPasswordSaveError);
+				
+			} else {
+				alert("New Password: "+isValidResult);
+				return;
+			};
+		} else if( !KUtils.isEmpty(this.state.pwdNew) ) {
+			alert("New Password: Please enter your current password.");
+			return;
+		}
 		
-		//Params: {name, email, role_id, venue_id}
 		KAPI.users.patch(
 			this.state.userID,
 			this.state.firstName, 
@@ -202,19 +269,69 @@ var Header = React.createClass({
 		
         event.target.blur();
     },
+	onPasswordSave:function (response) {
+		console.log(response);
+		if (response.result == "ok") {
+			alert(_l("User password changed."))
+		} else {
+			alert(_l("Could not change password:")+" "+_l(response.message));
+		}
+	},
+	onPasswordSaveError:function (error) {
+		console.log(error);
+		alert(_l("Could not change password."));
+	},
 	onCurrentUserSave:function (response) {
 		console.log(response);
+		if (response.result == "ok") {
+			alert(_l("User profile saved."))
+		} else {
+			alert(_l("Could not save user profile:")+" "+_l(response.message));
+		}
 	},
 	onCurrentUserSaveError:function (error) {
 		console.log(error);
+		alert(_l("Could not save user profile."));
+	},
+	onAddUserChange:function (event) {
+		var addUserRoleID = this.refs.addUserRole.getDOMNode().value;
+		var state = this.state;
+		state.addUserRoleID = addUserRoleID;
+		this.setState(state);
 	},
     addUser: function(event){
         event.preventDefault();
         // TO DO: Send changed data to the API
-        this.setState({addUserRole: $('#addUserRole').val() });
+        // this.setState({addUserRole: $('#addUserRole').val() });
         console.log('ADD USER', this.state);
         event.target.blur();
+		//new:function (name, email, password, role_id, venue_id, onSuccess, onError)
+		KAPI.users.new(
+			this.state.addUserFirstName,
+			this.state.addUserLastName,
+			this.state.addUserEmail,
+			this.state.addUserPassword,
+			this.state.addUserRoleID,
+			wnt.venueID,
+			this.onAddUser,
+			this.onAddUserError
+		);
+
     },
+	onAddUser:function (response) {
+		console.log(response);
+		if (response.result == "ok") {
+			// alert(_l("New user added."));
+			this.refs.addUserForm.getDOMNode().reset();
+			this.getUsers();
+		} else {
+			alert(_l("Could not add new user:")+" "+_l(response.message));
+		}
+	},
+	onAddUserError:function (error) {
+		console.log(error);
+		alert(_l("Could not add new user."));
+	},
     changePlan: function(event){
         event.preventDefault();
         // TO DO: Write plan change code
@@ -276,14 +393,14 @@ var Header = React.createClass({
 		}
 	},
     render: function() {
-		console.log(this.state);
+		// console.log(this.state);
         // LOOP FOR USERS
         var users = [];
 		var usersData = this.state.users;
 		for (var i = 0; i < usersData.length; i++) {
-			console.log(usersData[i]);
+			// console.log(usersData[i]);
 			var data = usersData[i];
-			users.push(<User key={data.id} name={data.name} email={data.email} roleID={data.role_id} roleList={this.state.roleNames} />)
+			users.push(<User onDeleteSuccess={this.getUsers} key={data.id} id={data.id} name={data.name} firstName={data.first_name} lastName={data.last_name} email={data.email} roleID={data.role_id} roleList={this.state.roleNames} />)
 		}
         // for (var i = 0; i < this.state.users.length; i++) {
         //     users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
@@ -372,12 +489,13 @@ var Header = React.createClass({
                     <div className="utility-group">
                         {users}
                     </div>
-                    <form className="utility-group form-group">
+                    <form ref="addUserForm" className="utility-group form-group">
                         <h4>Add a User</h4>
                         <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
                         <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
                         <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
-						<Roles id="addUserRole" roleList={this.state.roleNames}/>
+                        <input type="text" id="password" className="form-control" placeholder="Password" defaultValue="" data-field="addUserPassword" onChange={this.changeField} />
+						<Roles id="addUserRole" ref="addUserRole" roleID={this.state.addUserRoleID} roleList={this.state.roleNames} onChange={this.onAddUserChange} />
                         <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                     </form>
                     <div className="utility-group" onClick={this.toggleUtility}>

@@ -2,18 +2,7 @@
 /************************* LOGIN COMPONENT *************************/
 /*******************************************************************/
 
-var lang = {};
-lang['user_not_found'] = "Error: user not found.";
-lang['invalid_credentials'] = "Invalid credentials.";
-lang['could_not_reset_password'] = "Could not reset your password.";
 
-function _l(k) {
-	if(lang[k]) {
-		return lang[k];
-	} else {
-		return k;
-	}
-}
 
 var RememberCheckMark = React.createClass({
 	getInitialState:function() {
@@ -97,11 +86,8 @@ var LoginComponent = React.createClass({
 		for (var i in errors) {
 			var e = errors[i];
 			
-			if (lang[e]) {
-				output += lang[e]+"\n";
-			} else {
-				output += e+"\n";
-			}
+			output += _l(e)+"\n";
+
 		}
 		
 		alert(output);
