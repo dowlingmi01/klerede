@@ -489,7 +489,7 @@ function loadUser() {
 }
 
 function onUserGet (user) {
-	console.log(user);
+	// console.log(user);
 	wnt.venueID  = user.venue_id+"";
 	KAPI.venue(
 		wnt.venueID,
