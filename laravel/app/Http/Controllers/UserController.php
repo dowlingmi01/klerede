@@ -162,8 +162,7 @@ class UserController extends Controller
         if(!VenueHelper::isValid($user->venue_id)){
             return "Invalid venue id";
         }
-        $oldPassword = Hash::make($request->oldPassword);
-        if($oldPassword == $user->password){
+        if(Hash::check($request->oldPassword, $user->password)) {
             $user->password = Hash::make($request->password);
             $user->save();
             return ['result'=>'ok', 'id'=>$user->id];
