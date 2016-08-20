@@ -2,6 +2,9 @@
 
 return [
 
+	'new_user_email.subject' => 'Welcome!',
+
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Debug Mode

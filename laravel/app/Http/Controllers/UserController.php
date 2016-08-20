@@ -11,15 +11,26 @@ use \Hash;
 use \Validator;
 use \Input;
 use JWTAuth;
+use \Password;
+use Mail;
 
 
 class UserController extends Controller
 {
-    public function __construct()
+
+     /**
+     * The mailer instance.
+     *
+     * @var \Illuminate\Contracts\Mail\Mailer
+     */
+    protected $mailer;
+
+    public function __construct( )
     {
        // Apply the jwt.auth middleware to all methods in this controller
        // except for the authenticate method. We don't want to prevent
        // the user from retrieving their token if they don't already have it
+    
        $this->middleware('jwt.auth');
     }
 
@@ -47,6 +58,75 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request  $request)
+    {
+
+            $rules = array(
+                'first_name'       => 'required',
+                'last_name'       => 'required',
+                'email'      => 'required|email',
+                'role_id' => 'required|numeric',
+                'venue_id' => 'required|numeric'
+            );
+            $validator = Validator::make(Input::all(), $rules);
+            if ($validator->fails()) {
+                $messages = $validator->messages();
+                $messages->add("result", "error");
+                return  $messages  ;
+            } else {
+                // store
+                if(!VenueHelper::isValid($request->venue_id)){
+                    return "Invalid venue id";
+            }
+            //$password = generateNewPassword(); //TODO: Generar la funcion
+
+            $user = new User;
+            $user->first_name       = $request->first_name;
+            $user->last_name       = $request->last_name;
+            $user->email      = $request->email ;
+            $user->password      = 'INVALID';
+            $user->role_id = $request->role_id;
+            $user->venue_id = $request->venue_id;
+            $user->save();
+
+
+            $view = "emails.newuser";
+            $this->sendResetLink($user, $view, function ($message) {
+                              $message->subject(config('app.new_user_email.subject'));
+                        });
+            
+     
+
+            return ['result'=>'ok', 'id'=>$user->id];
+        }
+    }
+
+
+private function sendResetLink($user, $view,  $callback = null)
+    {
+   
+      
+        $token = Password::createToken($user);
+ 
+        return Mail::send($view, compact('token', 'user'), function ($m) use ($user, $token, $callback) {
+            $m->to($user->email);
+
+            if (! is_null($callback)) {
+                call_user_func($callback, $m, $user, $token);
+            }
+        });
+
+        return static::RESET_LINK_SENT;
+    }
+
+     
+
+ /**
+     * Store a newly created resource in storage`with password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeRaw(Request  $request)
     {
 
         $rules = array(
@@ -78,6 +158,7 @@ class UserController extends Controller
             return ['result'=>'ok', 'id'=>$user->id];
         }
     }
+
 
     /**
      * Display the specified resource.
