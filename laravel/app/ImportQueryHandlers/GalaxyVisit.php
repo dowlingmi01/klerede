@@ -40,9 +40,10 @@ class GalaxyVisit extends ImportQueryHandler {
 		straight_join facility as f on facility_id = f.code and v.venue_id = f.venue_id
 		left join membership as m use index for join (membership_venue_id_code_unique) on ticket_code = m.code and v.venue_id = m.venue_id and v.kind = \'pass\''))
 			->where('query_id', $this->query->id)
-			->select($cols);
+			->select($cols)
+			->orderBy('v.id');
 		$dates = [];
-		$sel->chunk(1000, function($visits) use ($dates) {
+		$sel->chunk(5000, function($visits) use ($dates) {
 			$inserts = [];
 			$ids = [];
 			foreach($visits as $visit) {

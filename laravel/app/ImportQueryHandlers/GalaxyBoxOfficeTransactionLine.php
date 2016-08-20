@@ -34,7 +34,7 @@ class GalaxyBoxOfficeTransactionLine extends ImportQueryHandler {
 			->where('query_id', $this->query->id)
 			->select($cols)
 			->orderBy('l.id');
-		$sel->chunk(1000, function($lines) {
+		$sel->chunk(8000, function($lines) {
 			$inserts = [];
 			$ids = [];
 			foreach($lines as $line) {
