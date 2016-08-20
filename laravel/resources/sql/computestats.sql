@@ -11,7 +11,8 @@ SELECT p.venue_id, date(v.time), year(v.time)
         ON p.venue_id = m.venue_id
        AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
        AND box_office_product_kind_id < 4
- WHERE v.facility_id IN (0, 1)
+  JOIN facility f ON v.facility_id = f.id
+ WHERE f.is_ga = 1
  GROUP BY p.venue_id, date(v.time), m.box_office_product_kind_id
 ;
 INSERT stat_sales
@@ -24,7 +25,7 @@ SELECT t.venue_id, date(t.time), year(t.time)
      , year(t.time)*100 + month(t.time)
      , year(t.time)*100 + week(t.time)
      , IF(p.kind = 'pass', 2, 1) as channel_id, m.box_office_product_kind_id
-     , IFNULL(p.membership_kind_id, 0), IF(p.kind = 'pass', 1, 0) as members, IF(t.agency_id = 2, 1, 0) as online
+     , IFNULL(p.membership_kind_id, 0), IF(p.kind = 'pass', 1, 0) as members, o.is_online as online
      , sum(quantity), sum(sale_price)
   FROM box_office_transaction t
   JOIN box_office_transaction_line l ON l.box_office_transaction_id = t.id
@@ -32,6 +33,7 @@ SELECT t.venue_id, date(t.time), year(t.time)
   JOIN box_office_product_kind_map m
         ON p.venue_id = m.venue_id
        AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
+  JOIN operator o ON t.operator_id = o.id
  GROUP BY t.venue_id, date(t.time), channel_id, m.box_office_product_kind_id
      , p.membership_kind_id, members, online
 ;
