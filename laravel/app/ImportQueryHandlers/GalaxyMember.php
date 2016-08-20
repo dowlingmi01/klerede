@@ -14,17 +14,19 @@ class GalaxyMember extends ImportQueryHandler {
 		VenueVariable::setValue($this->query->venue_id, 'MEMBER_LAST_UPDATE', $lastChanged);
 	}
 	function process() {
-		$members = DB::table($this->getTableName())
+		$sel = DB::table($this->getTableName())
 			->where('query_id', $this->query->id)
-			->get();
-		foreach($members as $member) {
-			$id = $member->id;
-			$cols = ['id', 'query_id', 'status', 'last_changed', 'created_at', 'updated_at'];
-			foreach($cols as $col) {
-				unset($member->{$col});
+			->orderBy('id');
+		$sel->chunk(10000, function($members){
+			foreach($members as $member) {
+				$id = $member->id;
+				$cols = ['id', 'query_id', 'status', 'last_changed', 'created_at', 'updated_at'];
+				foreach($cols as $col) {
+					unset($member->{$col});
+				}
+				Member::import($member);
+				DB::table($this->getTableName())->where('id', $id)->update(['status'=>'imported']);
 			}
-			Member::import($member);
-			DB::table($this->getTableName())->where('id', $id)->update(['status'=>'imported']);
-		}
+		});
 	}
 }
