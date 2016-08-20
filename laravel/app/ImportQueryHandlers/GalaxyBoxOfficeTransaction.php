@@ -28,9 +28,11 @@ class GalaxyBoxOfficeTransaction extends ImportQueryHandler {
 		DB::table($this->getTableName())->where('query_id', $this->query->id)->update(['status'=>'imported']);
 		$dates = DB::table($this->getTableName())->where('query_id', $this->query->id)
 			->select('business_day')->distinct()->get();
+		$gate_channel_id = Channel::getFor('gate')->id;
+		$membership_channel_id = Channel::getFor('membership')->id;
 		foreach($dates as $date) {
-			StatStatus::newData(Channel::getFor('gate')->id, $date->business_day);
-			StatStatus::newData(Channel::getFor('membership')->id, $date->business_day);
+			StatStatus::newData($gate_channel_id, $date->business_day);
+			StatStatus::newData($membership_channel_id, $date->business_day);
 		}
 	}
 }
