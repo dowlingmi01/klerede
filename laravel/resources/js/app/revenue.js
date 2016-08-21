@@ -421,6 +421,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
 	},
     componentDidMount: function() {
+        // Initialize datepicker
+        Date.firstDayOfWeek = 0;
+        Date.format = 'mm/dd/yyyy';
+        $('#datepicker').datePicker({
+            selectWeek: true,
+            closeOnSelect: true,
+            startDate: '01/01/1996',
+            endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear
+        });
         // Set default for datepicker
         $('#revenue #datepicker').val(wnt.filter.bgDates);
         // Set filter defaults as globals

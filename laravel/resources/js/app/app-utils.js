@@ -626,19 +626,6 @@ $(function(){
           .attr("fill", "rgba(236,234,231,1)");
     */
 
-    /*********************************/
-    /******** TEST DATEPICKER ********/
-    /*********************************/
-    Date.firstDayOfWeek = 0;
-    Date.format = 'mm/dd/yyyy';
-    $('#datepicker').datePicker({
-        selectWeek: true,
-        closeOnSelect: true,
-        startDate: '01/01/1996',
-        endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear
-    });
-    //$('.date-pick').datePicker({selectWeek:true,closeOnSelect:false});
-
     /*****************************/
     /******** TEST SLIDER ********/
     /*****************************/
