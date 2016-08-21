@@ -571,7 +571,6 @@ function onVenueDataGet(data) {
 /*********************************************/
 
 $(function(){
-    $('.plus-sign-menu').popover();
     $('circle').popover();
     // $(event.target).closest('.accordion-sub-item').toggleClass('open').find('ul').eq(0).toggle();
     $('.accordion-sub-item').on('click', function(){

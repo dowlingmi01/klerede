@@ -67,6 +67,9 @@ var TimeDate = React.createClass({
 });
 
 var ActionMenu = React.createClass({
+    componentDidMount: function() {
+        $('.plus-sign-menu').popover();
+    },
     render: function() {
         return (
             <div className="plus-sign-menu" data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a>" data-placement="top">
