@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use \App\Helpers\VenueHelper;
+ 
 use App\User;
 use \Hash;
 use \Validator;
@@ -13,6 +13,7 @@ use \Input;
 use JWTAuth;
 use \Password;
 use Mail;
+use Gate;
 
 
 class UserController extends Controller
@@ -43,7 +44,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $input = (object) $request->all();
-        if(!VenueHelper::isValid($input->venue_id)){
+        if (Gate::denies('validate-venue', $input->venue_id)) {
             return "Invalid venue id";
         }
 
@@ -143,7 +144,7 @@ private function sendResetLink($user, $view,  $callback = null)
             return  $messages  ;
         } else {
             // store
-            if(!VenueHelper::isValid($request->venue_id)){
+            if (Gate::denies('validate-venue', $request->venue_id)) {
                 return "Invalid venue id";
             }
             $user = new User;
@@ -170,7 +171,7 @@ private function sendResetLink($user, $view,  $callback = null)
     {
         //TODO: only autorized venue and user by role
         if($user = User::find($id)){
-            if(!VenueHelper::isValid($user->venue_id)){
+            if (Gate::denies('validate-venue', $user->venue_id)) {
                 return "Invalid venue id";
             }
             return $user;
@@ -215,7 +216,7 @@ private function sendResetLink($user, $view,  $callback = null)
             if(!$user){
                 return ['result'=> 'error', 'message'=>'User not found'];
             }
-            if(!VenueHelper::isValid($user->venue_id)){
+            if (Gate::denies('validate-venue', $user->venue_id)) {
                 return "Invalid venue id";
             }
             $user->first_name       = trim($request->first_name) !== '' ? $request->first_name : $user->first_name;
@@ -240,10 +241,12 @@ private function sendResetLink($user, $view,  $callback = null)
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];
          }
-        if(!VenueHelper::isValid($user->venue_id)){
+        if (Gate::denies('validate-venue', $user->venue_id)) {
             return "Invalid venue id";
         }
+
         if(Hash::check($request->oldPassword, $user->password)) {
+ 
             $user->password = Hash::make($request->password);
             $user->save();
             return ['result'=>'ok', 'id'=>$user->id];
@@ -266,9 +269,9 @@ private function sendResetLink($user, $view,  $callback = null)
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];
          }
-        if(!VenueHelper::isValid($user->venue_id)){
-            return "Invalid venue id";
-        }
+        if (Gate::denies('validate-venue', $user->venue_id)) {
+                return "Invalid venue id";
+            }
         $result = User::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }

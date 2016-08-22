@@ -14,8 +14,7 @@
 use App\GoalsSales;
 use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
-use \App\Helpers\VenueHelper;
-
+ 
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -32,7 +31,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 	});
 	Route::post('stats/query', function() {
 		$input = Request::all();
-		if(!VenueHelper::isValid($input['venue_id'])){
+        if (Gate::denies('validate-venue', $input['venue_id'])) {
             return Response::json(["error"=>"Invalid venue id"]);
         }
 		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
@@ -41,9 +40,9 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::resource('venue', 'VenueController',
 		['only' => ['show']]);
 	Route::get('weather/query', function() {
-		$input = (object) Request::all();
-		if(!VenueHelper::isValid($input->venue_id)){
-            return "Invalid venue id";
+		$input = (object) Request::all(); 
+        if (Gate::denies('validate-venue', $input->venue_id)) {
+            return Response::json(["error"=>"Invalid venue id"]);
         }
 		if(isset($input->hourly))
 			$input->hourly = filter_var($input->hourly, FILTER_VALIDATE_BOOLEAN);
@@ -53,14 +52,14 @@ Route::group(['prefix'=>'api/v1'], function() {
 		return Response::json($result);
 	})->middleware(['jwt.auth']);
 	Route::get('goals/sales/{venue_id}/{year}', function($venue_id, $year) {
-		if(!VenueHelper::isValid($venue_id)){
+        if (Gate::denies('validate-venue', $venue_id)) {
             return Response::json(["error"=>"Invalid venue id"]);
         }
 		return Response::json(GoalsSales::get($venue_id, $year));
 	})->middleware(['jwt.auth']);;
 	Route::put('goals/sales/{venue_id}/{year}/{channel}/{type}/{sub_channel?}',
 		function($venue_id, $year, $channel, $type, $sub_channel = null) {
-		if(!VenueHelper::isValid($venue_id)){
+        if (Gate::denies('validate-venue', $venue_id)) {
             return Response::json(["error"=>"Invalid venue id"]);
         }
 		$months = Request::input('months');

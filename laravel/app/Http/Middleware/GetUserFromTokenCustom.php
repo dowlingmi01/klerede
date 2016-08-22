@@ -8,6 +8,7 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Middleware\GetUserFromToken;
 use App\User;
 
+
 class GetUserFromTokenCustom extends GetUserFromToken
 {
     /**
@@ -21,6 +22,7 @@ class GetUserFromTokenCustom extends GetUserFromToken
     {
         if(config('jwt.active')){
             return parent::handle($request, $next);
+ 
         } else {
             //$user = $this->auth->byId(config('jwt.mock_user_id'));
             $user = User::find(config('jwt.mock_user_id'));
