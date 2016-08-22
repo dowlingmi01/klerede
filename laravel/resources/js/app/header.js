@@ -7,12 +7,12 @@ var User = React.createClass({
         return {
         };
     },
-    userAccordion: function(event){
-        // Set index of user in list to use in jQuery addClass after component is updated
-        this.setState({
-            editUserIndex: $('.user').index($(event.target).closest('.user'))
-        });
-    },
+    // userAccordion: function(event){
+    //     // Set index of user in list to use in jQuery addClass after component is updated
+    //     this.setState({
+    //         editUserIndex: $('.user').index($(event.target).closest('.user'))
+    //     });
+    // },
     deleteUser: function(event){
         event.preventDefault();
         // TO DO: Delete user code
@@ -86,11 +86,11 @@ var User = React.createClass({
 	},
     componentDidUpdate: function(){
         // jQuery can control classes after components update
-        $('.user').eq(this.state.editUserIndex).toggleClass('active');
+        // $('.user').eq(this.state.editUserIndex).toggleClass('active');
     },
     render: function() {
         return (
-            <div className="user" onClick={this.userAccordion}>
+            <div className={this.props.className} onClick={this.props.onClick}>
                 {this.props.name} <Caret className="utilities-caret" />
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
@@ -153,7 +153,10 @@ var Header = React.createClass({
             cardNumber: '**** **** **** 1234',
             users: [],
             usersEmail: ['michael@klerede.com', 'matt@klerede.com', 'hfinney@klerede.com', 'sdaicz@klerede.com', 'webninjataylor@gmail.com', 'libbykjohsnon@gmail.com'],
-			roleNames:{}
+			roleNames:{},
+			currentUtilitiesSet:"",
+			currentUser:-1,
+			utilitiesClass:""
         };
     },
 	componentDidMount:function () {
@@ -187,16 +190,37 @@ var Header = React.createClass({
 		this.setState(newState);
 	},
     toggleSettings: function() {
+		var state = this.state;
+		state.currentUtilitiesSet = "";
+		if(state.utilitiesClass == "active") {
+			state.utilitiesClass = "";
+	        $('.user-name').removeClass('active');
+		} else {
+			state.utilitiesClass = "active";
+	        $('.user-name').addClass('active');
+		};
+		this.setState(state);
         // Hide or show the settings modal
-        $('.user-name').toggleClass('active');
-        $('#utilities').toggleClass('active');
-        if($('#utilities.active').length === 0){
-            $('.utilities-set').removeClass('active');
-        }
+        // $('.user-name').toggleClass('active');
+        // $('#utilities').toggleClass('active');
+        // if($('#utilities.active').length === 0){
+        //     $('.utilities-set').removeClass('active');
+        // }
     },
-    toggleUtility: function(event) {
-        var linkType = $(event.target).closest('.utility').data('type');
-        var utility = $(event.target).closest('.utility').data('utility');
+    toggleUtility: function(utility, linkType) {
+		
+        if(linkType === 'page'){
+            window.location.href = utility;
+			return;
+        }
+		if(linkType === 'modal'){
+			this.openUtility(utility);
+        }
+		
+		return;
+		//
+		//         var linkType = $(event.target).closest('.utility').data('type');
+		//         var utility = $(event.target).closest('.utility').data('utility');
         if(linkType === 'page'){
             window.location.href = utility;
         } else if(linkType === 'modal'){
@@ -206,13 +230,56 @@ var Header = React.createClass({
             $('#utilities').removeClass('active');
         }
     },
-    closeUtility: function(event) {
+    closeUtilities: function(event) {
+		console.log(event);
+		var state = this.state;
+		state.currentUtilitiesSet = "";
+		state.utilitiesClass = "";
+        $('.user-name').removeClass('active');
+		this.setState(state);
+		
         // Close utility
-        $(event.target).closest('.utilities-set').removeClass('active');
+        //$(event.target).closest('.utilities-set').removeClass('active');
     },
+    openUtility: function(utility) {
+		var state = this.state;
+		state.currentUtilitiesSet = utility;
+		this.setState(state);
+        // Close utility
+        //$(event.target).closest('.utilities-set').removeClass('active');
+    },
+    closeUtility: function(event) {
+		console.log(event);
+		var state = this.state;
+		state.currentUtilitiesSet = "";
+		this.setState(state);
+        // Close utility
+        //$(event.target).closest('.utilities-set').removeClass('active');
+    },
+	onUserClick:function(i) {
+		// console.log(event);
+		// console.log(this.refs);
+		var state = this.state;
+		if(state.currentUser===i) {
+			this.closeUser();
+		} else {
+			state.currentUser = i;
+		}
+		this.setState(state);
+		// console.log(state);
+	},
+	closeUser:function () {
+		var state = this.state;
+		state.currentUser = -1;
+		this.setState(state);
+	},
     activateField: function(event){
-        $(event.target).closest('.utilities-set').find('.active').removeClass('active');
-        $(event.target).closest('.form-group').addClass('active');
+		console.log(event);
+		// var state = this.state;
+		// state.currentUtilitiesSet = event.target;
+		
+        // $(event.target).closest('.utilities-set').find('.active').removeClass('active');
+        // $(event.target).closest('.form-group').addClass('active');
     },
     changeField: function(event){
         // Change state attributes when user types changes
@@ -333,11 +400,12 @@ var Header = React.createClass({
 		alert(_l("Could not add new user."));
 	},
     changePlan: function(event){
-        event.preventDefault();
+		this.openUtility('change-plan');
+        // event.preventDefault();
         // TO DO: Write plan change code
-        console.log('CHANGE PLAN', this.state);
-        $('#change-plan').addClass('active');
-        event.target.blur();
+        // console.log('CHANGE PLAN', this.state);
+        // $('#change-plan').addClass('active');
+        // event.target.blur();
     },
     choosePlan: function(event){
         event.preventDefault();
@@ -400,7 +468,19 @@ var Header = React.createClass({
 		for (var i = 0; i < usersData.length; i++) {
 			// console.log(usersData[i]);
 			var data = usersData[i];
-			users.push(<User onDeleteSuccess={this.getUsers} key={data.id} id={data.id} name={data.name} firstName={data.first_name} lastName={data.last_name} email={data.email} roleID={data.role_id} roleList={this.state.roleNames} />)
+			users.push(<User 
+				onClick={this.onUserClick.bind(this,i)}
+				className={"user" + (this.state.currentUser===i?" active":"")}
+				onDeleteSuccess={this.getUsers} 
+				key={data.id} 
+				id={data.id} 
+				name={data.name} 
+				firstName={data.first_name} 
+				lastName={data.last_name} 
+				email={data.email} 
+				roleID={data.role_id} 
+				roleList={this.state.roleNames} 
+			/>);
 		}
         // for (var i = 0; i < this.state.users.length; i++) {
         //     users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
@@ -423,32 +503,32 @@ var Header = React.createClass({
                         </div>
                     </div>
                 </div>
-                <div id="utilities" onClick={this.toggleUtility}>
-                    <h3>Settings <div className="glyphicon glyphicon-remove close" id="close-utilities" aria-hidden="true"></div></h3>
-                    <div className="utility" data-utility="user-profile" data-type="modal">
+                <div id="utilities" className={this.state.utilitiesClass}>
+                    <h3>Settings <div className="glyphicon glyphicon-remove close" id="close-utilities" aria-hidden="true" onClick={this.closeUtilities}></div></h3>
+                    <div className="utility" onClick={this.toggleUtility.bind(this,"user-profile","modal")}>
                         User Profile
                         <Caret className="utilities-caret" />
                     </div>
-                    <div className="utility" data-utility="manage-users" data-type="modal">
+                    <div className="utility" onClick={this.toggleUtility.bind(this,"manage-users","modal")}>
                         Manage Users
                         <Caret className="utilities-caret" />
                     </div>
-                    <div className="utility last" data-utility="account-settings" data-type="modal">
+                    <div className="utility last" onClick={this.toggleUtility.bind(this,"account-settings","modal")}>
                         Account Settings
                         <Caret className="utilities-caret" />
                     </div>
                     <h3>General</h3>
-                    <div className="utility" data-utility="knowledge" data-type="tbd">
+                    <div className="utility" data-utility="knowledge" data-type="tbd" onClick={this.toggleUtility.bind(this,"knowledge","tbd")}>
                         Knowledge Base
                         <ChangeArrow className="utility-arrow" />
                     </div>
-                    <div className="utility" data-utility="help" data-type="page">
+                    <div className="utility" data-utility="help" data-type="page" onClick={this.toggleUtility.bind(this,"help","page")}>
                         Help
                         <ChangeArrow className="utility-arrow" />
                     </div>
                     <div className="utility" data-utility="logout" data-type="tbd" onClick={this.logout}>Logout</div>
                 </div>
-                <div id="user-profile" className="utilities-set" onClick={this.activateField}>
+                <div id="user-profile" className={"utilities-set" + (this.state.currentUtilitiesSet=="user-profile"? " active" : "") } onClick={this.activateField}>
                     <h3>User Profile <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
                     <form className="settings">
                         <div className="form-group">
@@ -484,12 +564,12 @@ var Header = React.createClass({
                         </div>
                     </form>
                 </div>
-                <div id="manage-users" className="utilities-set" onClick={this.activateField}>
+                <div id="manage-users" className={"utilities-set" + (this.state.currentUtilitiesSet=="manage-users"? " active" : "") }  onClick={this.activateField}>
                     <h3>Manage Users <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
                     <div className="utility-group">
                         {users}
                     </div>
-                    <form ref="addUserForm" className="utility-group form-group">
+                    <form ref="addUserForm" className="utility-group form-group" onFocus={this.closeUser}>
                         <h4>Add a User</h4>
                         <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
                         <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
@@ -498,14 +578,14 @@ var Header = React.createClass({
 						<Roles id="addUserRole" ref="addUserRole" roleID={this.state.addUserRoleID} roleList={this.state.roleNames} onChange={this.onAddUserChange} />
                         <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                     </form>
-                    <div className="utility-group" onClick={this.toggleUtility}>
-                        <div className="utility sub-item" data-utility="user-types" data-type="modal">
+                    <div className="utility-group" onClick={this.toggleUtility.bind(this,"user-types","modal")}>
+                        <div className="utility sub-item">
                             Learn about user types
                             <Caret className="utilities-caret" />
                         </div>
                     </div>
                 </div>
-                <div id="account-settings" className="utilities-set" onClick={this.activateField}>
+                <div id="account-settings" className={"utilities-set" + (this.state.currentUtilitiesSet=="account-settings"? " active" : "") }  onClick={this.activateField}>
                     <h3>Account Settings <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
                     <div className="utility-group">
                         <h4>Your Plan</h4>
@@ -579,8 +659,8 @@ var Header = React.createClass({
                         <a href="#" className="invoice" onClick={this.openInvoice}>February 3, 2016 <span className="amount">$540.00</span></a>
                     </div>
                 </div>
-                <div id="user-types" className="utilities-set">
-                    <h3>User Types <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
+                <div id="user-types" className={"utilities-set" + (this.state.currentUtilitiesSet=="user-types"? " active" : "") } >
+                    <h3>User Types <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.openUtility.bind(this,"manage-users")}></div></h3>
                     <div className="utility-group">
                         <div className="sub-item">
                             <h4>Owner</h4>
@@ -600,8 +680,8 @@ var Header = React.createClass({
                         </div>
                     </div>
                 </div>
-                <div id="change-plan" className="utilities-set">
-                    <h3>Time for an upgrade! <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
+                <div id="change-plan" className={"utilities-set" + (this.state.currentUtilitiesSet=="change-plan"? " active" : "") } >
+                    <h3>Time for an upgrade! <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.openUtility.bind(this,"account-settings")}></div></h3>
                     <div className="utility-group">
                         <div className="sub-item plan">
                             <h4>Professional</h4>
