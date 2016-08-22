@@ -17,3 +17,4 @@ SELECT u.UsageID AS source_id
  WHERE code = 0 AND u.Status = 0
    AND u.UsageID > #LAST_USAGE_ID#
  GROUP BY u.UsageID, u.ACP, a.FacilityID, u.VisualID, u.OperationID, u.Qty, u.UseNo, u.UseTime
+ ORDER BY source_id

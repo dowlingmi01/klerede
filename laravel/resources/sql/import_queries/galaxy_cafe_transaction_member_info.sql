@@ -9,3 +9,4 @@ SELECT d.JnlTranID AS source_id
    AND d.JnlCodeID = 1014
    AND h.CompanyID = #CAFE_COMPANY_ID#
    AND d.JnlDetailID > #CAFE_LAST_TRAN_MEMBER_INFO_ID#
+ ORDER BY source_id, sequence
