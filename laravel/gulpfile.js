@@ -3,13 +3,10 @@
 /******************************/
 var elixir = require('laravel-elixir'),
     gulp = require('gulp'),
-    del = require('del'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
     jshint = require('gulp-jshint'),
-    react = require('gulp-react'),
-    browserify = require('browserify'),
-    source = require("vinyl-source-stream");
+    react = require('gulp-react');
 
 
 /************************/
@@ -25,8 +22,6 @@ elixir.config.sourcemaps = false;
 
 // GULP defaults ... 'gulp watch' will compile the less, minify, AND move it to the public folder
 elixir(function(mix) {
-    // Sergio's report task
-    mix.browserify('report.js', elixir.jsOutput, 'resources/js', {debug:true});
     // Compile LESS, compile JS libraries, and compile custom JS
     mix.less('app.less')
         .task('libs')
