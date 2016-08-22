@@ -42,7 +42,12 @@ var User = React.createClass({
         $(event.target).closest('.confirm').hide();
     },
 	onRoleChange:function (event) {
+		console.log(event);
+		// event.stopPropagation();
+		// event.nativeEvent.stopImmediatePropagation();
 		// console.log(this.refs.roleSelect);
+        this.setState({ message: '' });
+		
 		var addUserRoleID = this.refs.roleSelect.getDOMNode().value;
 		// console.log(addUserRoleID);
 		// patch:function (userID, firstName, lastName, email, roleID, venueID, onSuccess, onError) {
@@ -59,13 +64,17 @@ var User = React.createClass({
 	},
 	onRoleChangeSuccess:function (response) {
         this.setState({ message: 'User role updated.'});
+		$(this.refs.confirm.getDOMNode()).hide();
 	},
 	onRoleChangeError:function (error) {
 		console.log(error);
         this.setState({ message: 'Could not update user role.' });
+		$(this.refs.confirm.getDOMNode()).hide();
 	},
     passwordReset: function(event){
         event.preventDefault();
+		
+        this.setState({ message: '' });
         // TO DO: Change password code
 		//recovery:function (email, onSuccess, onError)
 		KAPI.auth.recovery(
@@ -90,15 +99,15 @@ var User = React.createClass({
     },
     render: function() {
         return (
-            <div className={this.props.className} onClick={this.props.onClick}>
-                {this.props.name} <Caret className="utilities-caret" />
+            <div className={this.props.className} >
+				<div className="name" onClick={this.props.onClose}>{this.props.name} <Caret className="utilities-caret" /></div>
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
                     <Roles ref="roleSelect" onChange={this.onRoleChange} roleList={this.props.roleList} roleID={this.props.roleID}/>
                     <a className="stop" onClick={this.deleteUser}>Delete User</a>
                     <a className="stop" onClick={this.passwordReset}>Password Reset</a>
                     <div className="message">{this.state.message}</div>
-                    <div className="confirm">
+                    <div className="confirm" ref='confirm'>
                         <span className="message">Are you sure you want to delete this user?</span>
                         <button className="btn" onClick={this.deleteConfirmed}>Yes</button>
                         <button className="btn btn-default" onClick={this.deleteAborted}>No</button>
@@ -256,8 +265,8 @@ var Header = React.createClass({
         // Close utility
         //$(event.target).closest('.utilities-set').removeClass('active');
     },
-	onUserClick:function(i) {
-		// console.log(event);
+	onUserClose:function(i) {
+		console.log(event);
 		// console.log(this.refs);
 		var state = this.state;
 		if(state.currentUser===i) {
@@ -269,12 +278,13 @@ var Header = React.createClass({
 		// console.log(state);
 	},
 	closeUser:function () {
+		console.log(event);
 		var state = this.state;
 		state.currentUser = -1;
 		this.setState(state);
 	},
     activateField: function(event){
-		console.log(event);
+		// console.log(event);
 		// var state = this.state;
 		// state.currentUtilitiesSet = event.target;
 		
@@ -469,7 +479,7 @@ var Header = React.createClass({
 			// console.log(usersData[i]);
 			var data = usersData[i];
 			users.push(<User 
-				onClick={this.onUserClick.bind(this,i)}
+				onClose={this.onUserClose.bind(this,i)}
 				className={"user" + (this.state.currentUser===i?" active":"")}
 				onDeleteSuccess={this.getUsers} 
 				key={data.id} 
@@ -482,6 +492,8 @@ var Header = React.createClass({
 				roleList={this.state.roleNames} 
 			/>);
 		}
+		// console.log(this.state.currentUser);
+		// console.log(users);
         // for (var i = 0; i < this.state.users.length; i++) {
         //     users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
         // }
