@@ -75,7 +75,7 @@ class UserController extends Controller
                 return  $messages  ;
             } else {
                 // store
-                if(!VenueHelper::isValid($request->venue_id)){
+                if(Gate::denies('validate-venue', $request->venue_id)){
                     return "Invalid venue id";
             }
             //$password = generateNewPassword(); //TODO: Generar la funcion
