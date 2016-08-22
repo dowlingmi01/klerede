@@ -478,6 +478,10 @@ var Header = React.createClass({
 		for (var i = 0; i < usersData.length; i++) {
 			// console.log(usersData[i]);
 			var data = usersData[i];
+			
+			if (data.id == this.state.userID) {
+				continue;
+			}
 			users.push(<User 
 				onClose={this.onUserClose.bind(this,i)}
 				className={"user" + (this.state.currentUser===i?" active":"")}
