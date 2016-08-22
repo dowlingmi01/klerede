@@ -7,11 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class GalaxyCafeTransactionLine extends ImportQueryHandler {
 	protected $columns = ['source_id', 'sequence', 'cafe_product_code', 'sale_price', 'quantity'];
-	function updateVariables() {
-		$lastId = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('sequence');
-		VenueVariable::setValue($this->query->venue_id, 'CAFE_LAST_TRAN_DETAIL_ID', $lastId);
-	}
+	protected $updateVarColumn = 'sequence';
+	protected $updateVarName = 'CAFE_LAST_TRAN_DETAIL_ID';
 	function process() {
 		$cols = ['l.id', 't.id as cafe_transaction_id', 'l.sequence', 'p.id as cafe_product_id'
 			, 'l.sale_price', 'l.quantity', 'l.created_at'];

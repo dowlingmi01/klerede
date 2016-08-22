@@ -8,11 +8,8 @@ use Illuminate\Support\Facades\DB;
 class GalaxyBoxOfficeTransactionLine extends ImportQueryHandler {
 	protected $columns = ['source_id', 'sequence', 'box_office_product_code',
 		'ticket_code', 'sale_price', 'quantity'];
-	function updateVariables() {
-		$lastId = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('sequence');
-		VenueVariable::setValue($this->query->venue_id, 'BOX_OFFICE_LAST_TRAN_DETAIL_ID', $lastId);
-	}
+	protected $updateVarColumn = 'sequence';
+	protected $updateVarName = 'BOX_OFFICE_LAST_TRAN_DETAIL_ID';
 	function process() {
 		$cols = ['l.id', 't.id as box_office_transaction_id', 'l.sequence', 'p.id as box_office_product_id'
 			, 'l.ticket_code', 'l.sale_price', 'l.quantity', 'l.created_at'];

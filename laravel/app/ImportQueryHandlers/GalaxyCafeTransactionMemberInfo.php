@@ -7,11 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class GalaxyCafeTransactionMemberInfo extends ImportQueryHandler {
 	protected $columns = ['source_id', 'sequence', 'member_code'];
-	function updateVariables() {
-		$lastId = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('sequence');
-		VenueVariable::setValue($this->query->venue_id, 'CAFE_LAST_TRAN_MEMBER_INFO_ID', $lastId);
-	}
+	protected $updateVarColumn = 'sequence';
+	protected $updateVarName = 'CAFE_LAST_TRAN_MEMBER_INFO_ID';
 	function process() {
 		$cols = ['i.id', 'i.venue_id', 'i.source_id', 'm.id as member_id'];
 		$sel = DB::table('import_galaxy_cafe_transaction_member_info as i')

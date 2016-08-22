@@ -8,11 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class SiriuswareMember extends ImportQueryHandler {
 	protected $columns = ['code', 'gender', 'dob', 'city', 'state', 'zip', 'country', 'last_mod'];
-	function updateVariables() {
-		$lastChanged = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('last_mod');
-		VenueVariable::setValue($this->query->venue_id, 'MEMBER_LAST_UPDATE', $lastChanged);
-	}
+	protected $updateVarColumn = 'last_mod';
+	protected $updateVarName = 'MEMBER_LAST_UPDATE';
 	function process() {
 		$sel = DB::table($this->getTableName())
 			->where('query_id', $this->query->id)

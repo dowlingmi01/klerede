@@ -11,11 +11,8 @@ use Illuminate\Support\Facades\DB;
 class GalaxyVisit extends ImportQueryHandler {
 	protected $columns = ['source_id', 'acp_id', 'facility_id', 'box_office_product_code',
 		'ticket_code', 'kind', 'quantity', 'use_no', 'time'];
-	function updateVariables() {
-		$lastId = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('source_id');
-		VenueVariable::setValue($this->query->venue_id, 'LAST_USAGE_ID', $lastId);
-	}
+	protected $updateVarColumn = 'source_id';
+	protected $updateVarName = 'LAST_USAGE_ID';
 	function process() {
 		$this->addCodes('facility_id', Facility::class);
 		$this->addCodes('acp_id', Workstation::class);

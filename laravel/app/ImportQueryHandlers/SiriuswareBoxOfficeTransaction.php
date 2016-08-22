@@ -10,11 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class SiriuswareBoxOfficeTransaction extends ImportQueryHandler {
 	protected $columns = ['source_id', 'register_id', 'sequence', 'time', 'operator_code'];
-	function updateVariables() {
-		$lastId = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('source_id');
-		VenueVariable::setValue($this->query->venue_id, 'BOX_OFFICE_LAST_TRAN_ID', $lastId);
-	}
+	protected $updateVarColumn = 'source_id';
+	protected $updateVarName = 'BOX_OFFICE_LAST_TRAN_ID';
 	function process() {
 		$this->addCodes('operator_code', Operator::class);
 		$cols1 = ['t.venue_id', 'source_id', 'register_id', 'sequence', 'time', 'o.id', 't.created_at', DB::raw('date(time)')];

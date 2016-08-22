@@ -11,14 +11,10 @@ use Illuminate\Support\Facades\DB;
 class SiriuswareVisitTicket extends ImportQueryHandler {
 	protected $columns = ['source_id', 'workstation_code', 'facility_code', 'box_office_product_code',
 		'ticket_code', 'kind', 'time'];
-	protected $variableName = 'LAST_TICKET_USAGE_ID';
+	protected $updateVarColumn = 'source_id';
+	protected $updateVarName = 'LAST_TICKET_USAGE_ID';
 	function getTableName() {
 		return 'import_siriusware_visit';
-	}
-	function updateVariables() {
-		$lastId = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('source_id');
-		VenueVariable::setValue($this->query->venue_id, $this->variableName, $lastId);
 	}
 	function process() {
 		$this->addCodes('workstation_code', Workstation::class);

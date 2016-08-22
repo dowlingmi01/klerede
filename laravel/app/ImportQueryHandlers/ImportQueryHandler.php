@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 abstract class ImportQueryHandler {
 	/** @var ImportQuery */
 	protected $query;
+	protected $updateVarColumn = null;
+	protected $updateVarName = null;
 	function __construct(ImportQuery $query) {
 		$this->query = $query;
 	}
@@ -64,7 +66,13 @@ SET query_id = $query_id, status = 'pending', venue_id = $venue_id, created_at =
 		$query->time_created = Carbon::now();
 		$query->save();
 	}
-	abstract function updateVariables();
+	function updateVariables() {
+		if(isset($this->updateVarColumn) && isset($this->updateVarName)) {
+			$maxVal = DB::table($this->getTableName())->
+				where('query_id', $this->query->id)->max($this->updateVarColumn);
+			VenueVariable::setValue($this->query->venue_id, $this->updateVarName, $maxVal);
+		}
+	}
 	abstract function process();
 	function addCodes($column, $class) {
 		$sel = DB::table($this->getTableName())->where('query_id', $this->query->id)->select($column)->distinct();

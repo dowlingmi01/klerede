@@ -8,11 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class GalaxyMembership extends ImportQueryHandler {
 	protected $columns = ['member_code', 'code', 'sequence', 'box_office_product_code', 'date_from', 'date_to', 'dob', 'adult_qty', 'child_qty', 'city', 'state', 'zip', 'country', 'last_changed'];
-	function updateVariables() {
-		$lastChanged = DB::table($this->getTableName())->
-			where('query_id', $this->query->id)->max('last_changed');
-		VenueVariable::setValue($this->query->venue_id, 'MEMBERSHIP_LAST_UPDATE', $lastChanged);
-	}
+	protected $updateVarColumn = 'last_changed';
+	protected $updateVarName = 'MEMBERSHIP_LAST_UPDATE';
 	function process() {
 		$sel = DB::table($this->getTableName())
 			->where('query_id', $this->query->id)
