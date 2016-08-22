@@ -50,6 +50,9 @@ Try {
 }
 
 Try {
+	$url_query = "$cfg_base_url/api/v1/import/query"
+	$url_upload = "$cfg_base_url/api/v1/import/query-result"
+
 	if($test) {
 		$testFN = [System.IO.Path]::GetTempFileName()
 		Run-Query 'SELECT 12345' $testFN
@@ -59,6 +62,8 @@ Try {
 			Fail "Database test failed"
 		}
 		Write-Message "Database test OK"
+		$resultQ = Get-Query $cfg_venue_id 0
+		Write-Message "Connectivity test OK"
 		exit 0
 	}
 	if($logFile) {
@@ -67,9 +72,6 @@ Try {
 		$result = Upload-Result "${url_upload}?venue_id=$cfg_venue_id" $logFile
 		exit 0
 	}
-	$url_query = "$cfg_base_url/api/v1/import/query"
-	$url_upload = "$cfg_base_url/api/v1/import/query-result"
-
 	$last_query_id = 0
 	$resultQ = Get-Query $cfg_venue_id $last_query_id
 
