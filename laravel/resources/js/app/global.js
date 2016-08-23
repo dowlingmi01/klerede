@@ -241,12 +241,12 @@ var global = Function('return this')();
 					var data = {oldPassword:oldPassword, password:password};
 					_postData(route, onSuccess, data, {error:onError});
 				},
-				new:function (first_name, last_name, email, password, role_id, venue_id, onSuccess, onError) {
+				new:function (first_name, last_name, email, role_id, venue_id, onSuccess, onError) {
 					// POST api/v1/users
 					// Params: {name, email, password, role_id, venue_id}
 					// Create new user
 					var route = "/users";
-					var data = {first_name:first_name, last_name:last_name, email:email, password:password, role_id:role_id, venue_id:venue_id};
+					var data = {first_name:first_name, last_name:last_name, email:email, role_id:role_id, venue_id:venue_id};
 					_postData(route, onSuccess, data, {error:onError});
 				},
 				delete:function (userID, onSuccess, onError) {

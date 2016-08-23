@@ -194,7 +194,7 @@ var Header = React.createClass({
 		};
 		
 		newState.accountType = newState.roleNames[newState.roleID];
-		newState.addUserRoleID = roles[0].id;
+		newState.addUserRoleID = 4;
 		
 		this.setState(newState);
 	},
@@ -278,7 +278,10 @@ var Header = React.createClass({
 		// console.log(state);
 	},
 	closeUser:function () {
-		console.log(event);
+		// console.log(event);
+		
+		if (this.state.currentUser === -1) return; //already closed
+		
 		var state = this.state;
 		state.currentUser = -1;
 		this.setState(state);
@@ -370,24 +373,45 @@ var Header = React.createClass({
 		console.log(error);
 		alert(_l("Could not save user profile."));
 	},
-	onAddUserChange:function (event) {
-		var addUserRoleID = this.refs.addUserRole.getDOMNode().value;
-		var state = this.state;
-		state.addUserRoleID = addUserRoleID;
-		this.setState(state);
-	},
+	// onAddUserChange:function (event) {
+	// 	var addUserRoleID = this.refs.addUserRole.getDOMNode().value;
+	// 	var state = this.state;
+	// 	state.addUserRoleID = addUserRoleID;
+	// 	this.setState(state);
+	// },
     addUser: function(event){
         event.preventDefault();
-        // TO DO: Send changed data to the API
-        // this.setState({addUserRole: $('#addUserRole').val() });
-        console.log('ADD USER', this.state);
+
+		var email = this.state.addUserEmail;
+		var firstName = this.state.addUserFirstName;
+		var lastName = this.state.addUserLastName;
+
+		var errors = [];
+		if (KUtils.isEmpty(email)) {
+			errors.push("Please enter your email.")
+		} else if(!KUtils.isEmail(email)) {
+			errors.push("Your email is not valid.")
+		}
+		
+		if (KUtils.isEmpty(firstName)) {
+			errors.push("Please enter first name.")
+		}
+		if (KUtils.isEmpty(lastName)) {
+			errors.push("Please enter last name.")
+		}
+		
+		if(errors.length) {
+			
+			alert(errors.join("\n"));
+			return;
+		}
+		
         event.target.blur();
 		//new:function (name, email, password, role_id, venue_id, onSuccess, onError)
 		KAPI.users.new(
 			this.state.addUserFirstName,
 			this.state.addUserLastName,
 			this.state.addUserEmail,
-			this.state.addUserPassword,
 			this.state.addUserRoleID,
 			wnt.venueID,
 			this.onAddUser,
@@ -590,8 +614,6 @@ var Header = React.createClass({
                         <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
                         <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
                         <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
-                        <input type="text" id="password" className="form-control" placeholder="Password" defaultValue="" data-field="addUserPassword" onChange={this.changeField} />
-						<Roles id="addUserRole" ref="addUserRole" roleID={this.state.addUserRoleID} roleList={this.state.roleNames} onChange={this.onAddUserChange} />
                         <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                     </form>
                     <div className="utility-group" onClick={this.toggleUtility.bind(this,"user-types","modal")}>

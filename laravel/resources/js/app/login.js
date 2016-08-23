@@ -33,11 +33,19 @@ var LoginComponent = React.createClass({
 			reset:'inactive',
 			resetSent:'inactive',
 			newPassword:'inactive',
-			passwordSent:'inactive'
+			passwordSent:'inactive',
+			welcomeMessage:_l('Welcome Back to Klerede!'),
+			resetTitle:_l('Reset Password'),
+			passwordSetMessage: _l('Your password has been reset')
 		};
-		if (this.props.token != "") {
+		if (this.props.action != "") {
 			state.login = 'inactive';
 			state.newPassword = 'active';
+			if(action=="set") {
+				state.resetTitle = _l('Set Your Password');
+				state.welcomeMessage= _l('Welcome to Klerede!');
+				state.passwordSetMessage = _l('Your password has been set');
+			}
 		};
 		return state;
 	},
@@ -105,7 +113,7 @@ var LoginComponent = React.createClass({
 		for (var k in state) {
 			if (k == section) {
 				state[k] = 'active';
-			} else {
+			} else if(state[k]==='active'){
 				state[k] = 'inactive';
 			}
 		}
@@ -149,7 +157,6 @@ var LoginComponent = React.createClass({
 		this.showSection('login');
 	},
 	dotMail:function (mail) {
-		var mail = "salsadesoja@gmail.com";
 		var a = mail.split("@");
 		return a[0].substring(0,2)+"...@"+a[1];
 	},
@@ -192,6 +199,7 @@ var LoginComponent = React.createClass({
 	},
 	onNewPasswordError:function (response) {
 		console.log(response);
+		alert("Error setting your password, please check your email address: \n"+this.props.email);
 	},
 	render:function () {
 		var user = KUtils.getLocal("user");
@@ -207,11 +215,11 @@ var LoginComponent = React.createClass({
 					<header>
 						<img id="logo" src="img/logo-klerede-dark.svg" />
 						<div id="welcome">
-							Welcome Back to Klerede!
+							{this.state.welcomeMessage}
 						</div>
 					</header>
 					<section className={this.state.login}>
-						<div id="password-sent" className={this.state.passwordSent}>Congratulations!<br/>Your password has been reset</div>
+						<div id="password-sent" className={this.state.passwordSent}>Congratulations!<br/>{this.state.passwordSetMessage}</div>
 						<div id="title">Sign into your account</div>
 						<div id="login-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.handleKeyPress} >
 							
@@ -229,7 +237,7 @@ var LoginComponent = React.createClass({
 						</div>
 					</section>
 					<section className={this.state.reset}>
-						<div id="title">Reset Password</div>
+						<div id="title">{this.state.resetTitle}</div>
 						<div id="reset-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.resetKeyPress} >
 							
 							<input type="text" name="email" ref="emailReset" id="email" placeholder="Enter Email" defaultValue="" />
@@ -242,14 +250,14 @@ var LoginComponent = React.createClass({
 						</div>
 					</section>
 					<section className={this.state.resetSent}>
-						<div id="title">Reset Password</div>
+						<div id="title">{this.state.resetTitle}</div>
 						<div id="reset-sent-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" >
 							<p>An email has been sent to {this.dotMail(user.email)}</p>
 							<button className="btn form-group col-xs-4 col-xs-offset-4" onClick={this.gotoLogin}>Continue</button>
 						</div>
 					</section>
 					<section className={this.state.newPassword}>
-						<div id="title">Reset Password</div>
+						<div id="title">{this.state.resetTitle}</div>
 						<div className="col-xs-10 col-xs-offset-1 subtitle"> 
 							<p>Your password must be between <br />8 and 16 characters in length.</p>
 						</div>
@@ -271,7 +279,7 @@ var LoginComponent = React.createClass({
 
 if(document.getElementById('login-component')){
     React.render(
-		<LoginComponent token={resetToken} email={resetEmail} />,
+		<LoginComponent token={token} email={email} action={action} />,
         document.getElementById('login-component')
     );
 }
