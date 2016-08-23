@@ -63,7 +63,11 @@ Try {
 		}
 		Write-Message "Database test OK"
 		$resultQ = Get-Query $cfg_venue_id 0
-		Write-Message "Connectivity test OK"
+		if($resultQ.PSObject.Properties.Match('query_id').Count) {
+			Write-Message "Connectivity test OK"
+		} else {
+			Fail "Connectivity test failed"
+		}
 		exit 0
 	}
 	if($logFile) {
