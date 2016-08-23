@@ -266,7 +266,7 @@ var Header = React.createClass({
         //$(event.target).closest('.utilities-set').removeClass('active');
     },
 	onUserClose:function(i) {
-		console.log(event);
+		// console.log(event);
 		// console.log(this.refs);
 		var state = this.state;
 		if(state.currentUser===i) {
