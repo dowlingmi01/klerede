@@ -9,15 +9,12 @@
 	    <div id="login-component"><!-- ReactJS component: LoginComponent --></div>
         <script src="js/libs.js"></script>
 		<script type="text/javascript">
-			var reset = "<?php echo isSet($_GET['reset']) ? $_GET['reset'] : "";?>";
-			var resetToken = "",
-				resetEmail = "",
-				vars = reset.split("|");
-			if (vars.length) {
-				resetToken = vars[0];
-				resetEmail = vars[1];
-			}
+			var action = "<?php echo isSet($_GET['action']) ? $_GET['action'] : "";?>";
+			var token = "<?php echo isSet($_GET['token']) ? $_GET['token'] : "";?>";
+			var email = "<?php echo isSet($_GET['email']) ? $_GET['email'] : "";?>";
 		</script>
-        <script src="js/app.js"></script>
+
+       <script src="js/app.js"></script>
+
     </body>
 </html>
