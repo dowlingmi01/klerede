@@ -93,7 +93,7 @@
 
 			<br />
 			<br />
-			<a href="{{ url('login?action=reset') }}&token={{$token}}&email={{urlencode($user->email)}}">Reset My Password Now</a>
+			<a href="{!! url('login?action=reset&token='.$token.'&email='.urlencode($user->email) )!!}}">Reset My Password Now</a>
 			<br />
 			<br />
 
