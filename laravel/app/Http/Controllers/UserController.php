@@ -92,7 +92,8 @@ class UserController extends Controller
 
             $view = "emails.newuser";
             $this->sendResetLink($user, $view, function ($message) {
-                              $message->subject(config('app.new_user_email.subject'));
+                              $message->subject(config('app.new_user_email_subject'));
+
                         });
             
      

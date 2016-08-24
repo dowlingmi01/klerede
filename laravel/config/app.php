@@ -2,7 +2,7 @@
 
 return [
 
-	'new_user_email.subject' => 'Welcome!',
+	'new_user_email_subject' => 'Welcome!',
 
 
 	/*
