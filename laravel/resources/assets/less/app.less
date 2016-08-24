@@ -117,7 +117,7 @@ header {
         }
     }
     .user-info {
-        height: 108px;
+		top:25px;
         text-align: right;
         .client-name {
             border-right: 1px solid @lightgrey;
@@ -130,9 +130,8 @@ header {
             padding: 9px 28px;
             position: relative;
             text-overflow: ellipsis;
-            top: 50%;
-            transform: translateY(-50%);
-            white-space: nowrap;
+			vertical-align:middle;
+			white-space: nowrap;
             width: 60%;
             @media (max-width: 767px) {
                 border-right: none;
@@ -149,8 +148,7 @@ header {
         .user-wrapper {
             display: inline-block;
             position: relative;
-            top: 20%;
-            transform: translateY(-20%);
+			vertical-align:middle;
             @media (max-width: 767px) {
                 border-top: 1px solid @lightgrey;
                 clear: both;
@@ -227,6 +225,19 @@ header {
         }
     }
 }
+
+div#darken-background.active {
+	display:block;
+}
+div#darken-background {
+	height:100%;
+	z-index:1;
+	display:none;
+}
+div.user-wrapper {
+	z-index:2;
+}
+
 #utilities,
 .utilities-set {
     background-color: @black;
@@ -620,6 +631,7 @@ header {
 /******** WELCOME TEXT ********/
 /******************************/
 #welcome-text,
+#reporting-on,
 #time-date {
     font-size: 160%;
     font-weight: 500;
@@ -642,6 +654,18 @@ header {
             color: @mediumgrey;
         }
     }
+}
+#reporting-on {
+	margin-bottom:10px;
+}
+#reporting-on .time-date {
+	float:none;
+}
+#reporting-on h4 {
+	font-size: 9px;
+	text-transform: uppercase;
+	color: @mediumgrey;
+	margin:0;
 }
 .filter {
     background-color: @white;
@@ -2036,6 +2060,7 @@ body > .popover.top>.arrow:after {
             border: none;
             color: @black;
             width: 100%;
+			background-color:inherit;
         }
         input:focus{
             outline: none;
@@ -2265,6 +2290,7 @@ div#login section div.subtitle p {
 	font-weight:600;
 	margin-top:.6em;
 	text-align:center;
+	line-height:120%;
 }
 
 div#login section div#password-sent {

@@ -238,6 +238,9 @@ var LoginComponent = React.createClass({
 					</section>
 					<section className={this.state.reset}>
 						<div id="title">{this.state.resetTitle}</div>
+						<div className="col-xs-10 col-xs-offset-1 subtitle"> 
+							<p>Enter your email address associated with your account. We&apos;ll email you a link where you can create a new password.</p>
+						</div>
 						<div id="reset-form" className="form-group col-xs-10 col-xs-offset-1 klerede-form" onKeyPress={this.resetKeyPress} >
 							
 							<input type="text" name="email" ref="emailReset" id="email" placeholder="Enter Email" defaultValue="" />

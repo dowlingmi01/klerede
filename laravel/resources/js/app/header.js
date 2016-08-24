@@ -1,7 +1,13 @@
 /************************/
 /******** HEADER ********/
 /************************/
-
+var DarkenBackground = React.createClass({
+	render:function () {
+		return (
+			<div id="darken-background" className={"modal-backdrop fade in "+this.props.active}> </div>
+		);
+	}
+});
 var User = React.createClass({
     getInitialState: function() {
         return {
@@ -167,7 +173,8 @@ var Header = React.createClass({
 			currentUtilitiesSet:"",
 			currentUser:-1,
 			utilitiesClass:"",
-			addUserMessage:""
+			addUserMessage:"",
+			darkenBackgroundActive:""
         };
     },
 	componentDidMount:function () {
@@ -206,9 +213,13 @@ var Header = React.createClass({
 		var state = this.state;
 		state.currentUtilitiesSet = "";
 		if(state.utilitiesClass == "active") {
-			state.utilitiesClass = "";
-	        $('.user-name').removeClass('active');
+			this.closeUtilities();
+			return;
+			// state.darkenBackgroundActive = "";
+			// state.utilitiesClass = "";
+			// 	        $('.user-name').removeClass('active');
 		} else {
+			state.darkenBackgroundActive = "active";
 			state.utilitiesClass = "active";
 	        $('.user-name').addClass('active');
 		};
@@ -246,6 +257,7 @@ var Header = React.createClass({
     closeUtilities: function(event) {
 		console.log(event);
 		var state = this.state;
+		state.darkenBackgroundActive = "";
 		state.currentUtilitiesSet = "";
 		state.utilitiesClass = "";
         $('.user-name').removeClass('active');
@@ -534,6 +546,7 @@ var Header = React.createClass({
         //     users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
         // }
         return (
+			<div>
             <header className="container-fluid">
                 <div className="row">
                     <div className="col-xs-2 col-sm-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.svg" /></a></div>
@@ -557,21 +570,13 @@ var Header = React.createClass({
                         User Profile
                         <Caret className="utilities-caret" />
                     </div>
-                    <div className="utility" onClick={this.toggleUtility.bind(this,"manage-users","modal")}>
+                    <div className="utility last" onClick={this.toggleUtility.bind(this,"manage-users","modal")}>
                         Manage Users
                         <Caret className="utilities-caret" />
                     </div>
-                    <div className="utility last" onClick={this.toggleUtility.bind(this,"account-settings","modal")}>
-                        Account Settings
-                        <Caret className="utilities-caret" />
-                    </div>
                     <h3>General</h3>
-                    <div className="utility" data-utility="knowledge" data-type="tbd" onClick={this.toggleUtility.bind(this,"knowledge","tbd")}>
-                        Knowledge Base
-                        <ChangeArrow className="utility-arrow" />
-                    </div>
-                    <div className="utility" data-utility="help" data-type="page" onClick={this.toggleUtility.bind(this,"help","page")}>
-                        Help
+                    <div className="utility" data-utility="faq" data-type="page" onClick={this.toggleUtility.bind(this,"faq","page")}>
+                        FAQs
                         <ChangeArrow className="utility-arrow" />
                     </div>
                     <div className="utility" data-utility="logout" data-type="tbd" onClick={this.logout}>Logout</div>
@@ -625,13 +630,112 @@ var Header = React.createClass({
                         <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                         <div className="message">{this.state.addUserMessage}</div>
                     </form>
+                </div>
+            </header>
+			<DarkenBackground active={this.state.darkenBackgroundActive}/>
+		    </div>
+        );
+    }
+});
+
+if(document.getElementById('header')){
+    $.when(wnt.gettingVenueData).done(function(data) {
+        React.render(
+            <Header />,
+            document.getElementById('header')
+        );
+        console.log('2) Header loaded...');
+    });
+}
+
+
+/******************************************/
+/******** TEMPORARY COMMENTED CODE ********/
+/******************************************/
+
+/*
+var UserTypesMenu = React.createClass({
+	render:function () {
+		return (
                     <div className="utility-group" onClick={this.toggleUtility.bind(this,"user-types","modal")}>
                         <div className="utility sub-item">
                             Learn about user types
                             <Caret className="utilities-caret" />
                         </div>
                     </div>
+		);
+	}
+});
+var UserTypes = React.createClass({
+	render:function () {
+		return (
+                <div id="user-types" className={"utilities-set" + (this.state.currentUtilitiesSet=="user-types"? " active" : "") } >
+                    <h3>User Types <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.openUtility.bind(this,"manage-users")}></div></h3>
+                    <div className="utility-group">
+                        <div className="sub-item">
+                            <h4>Owner</h4>
+                            <p>The owner serves as the primary contact for the account. Owners have access to billing and plan information.</p>
+                        </div>
+                        <div className="sub-item">
+                            <h4>Admin</h4>
+                            <p>The admin can perform all actions in the account; including adding new users, closing accounts, and setting and editing goals.</p>
+                        </div>
+                        <div className="sub-item">
+                            <h4>Power</h4>
+                            <p>The power user can set and edit goals, view and export reports, but can&quot;t view billing information, add users, or close accounts.</p>
+                        </div>
+                        <div className="sub-item">
+                            <h4>Basic</h4>
+                            <p>The basic user can view the dashboard, and export reports.</p>
+                        </div>
+                    </div>
                 </div>
+		);
+	}
+});
+
+var ChangePlan = React.createClass({
+	render:function () {
+		return (
+                <div id="change-plan" className={"utilities-set" + (this.state.currentUtilitiesSet=="change-plan"? " active" : "") } >
+                    <h3>Time for an upgrade! <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.openUtility.bind(this,"account-settings")}></div></h3>
+                    <div className="utility-group">
+                        <div className="sub-item plan">
+                            <h4>Professional</h4>
+                            <div className="features">Unlimited Accounts</div>
+                            <div className="pricing">
+                                <div className="per-year">$540/yr</div>
+                                <div className="per-month">$50/mo</div>
+                            </div>
+                            <div className="plan-action"><button className="btn disabled" onClick={this.choosePlan}>Current Plan</button></div>
+                        </div>
+                        <div className="sub-item plan recommended-plan">
+                            <div className="recommended-tag">Recommended</div>
+                            <h4>Individual</h4>
+                            <div className="features">Advanced Features</div>
+                            <div className="pricing">
+                                <div className="per-year">$440/yr</div>
+                                <div className="per-month">$40/mo</div>
+                            </div>
+                            <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div>
+                        </div>
+                        <div className="sub-item plan">
+                            <h4>Enterprise</h4>
+                            <div className="features">Advanced Features</div>
+                            <div className="pricing">
+                                <div className="per-year">$640/yr</div>
+                                <div className="per-month">$60/mo</div>
+                            </div>
+                            <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div>
+                        </div>
+                    </div>
+                </div>
+		);
+	}
+});
+var AccountSettings = React.createClass({
+	render:function () {
+		return (
                 <div id="account-settings" className={"utilities-set" + (this.state.currentUtilitiesSet=="account-settings"? " active" : "") }  onClick={this.activateField}>
                     <h3>Account Settings <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
                     <div className="utility-group">
@@ -705,72 +809,6 @@ var Header = React.createClass({
                         <a href="#" className="invoice" onClick={this.openInvoice}>March 3, 2016 <span className="amount">$540.00</span></a>
                         <a href="#" className="invoice" onClick={this.openInvoice}>February 3, 2016 <span className="amount">$540.00</span></a>
                     </div>
-                </div>
-                <div id="user-types" className={"utilities-set" + (this.state.currentUtilitiesSet=="user-types"? " active" : "") } >
-                    <h3>User Types <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.openUtility.bind(this,"manage-users")}></div></h3>
-                    <div className="utility-group">
-                        <div className="sub-item">
-                            <h4>Owner</h4>
-                            <p>The owner serves as the primary contact for the account. Owners have access to billing and plan information.</p>
-                        </div>
-                        <div className="sub-item">
-                            <h4>Admin</h4>
-                            <p>The admin can perform all actions in the account; including adding new users, closing accounts, and setting and editing goals.</p>
-                        </div>
-                        <div className="sub-item">
-                            <h4>Power</h4>
-                            <p>The power user can set and edit goals, view and export reports, but can&quot;t view billing information, add users, or close accounts.</p>
-                        </div>
-                        <div className="sub-item">
-                            <h4>Basic</h4>
-                            <p>The basic user can view the dashboard, and export reports.</p>
-                        </div>
-                    </div>
-                </div>
-                <div id="change-plan" className={"utilities-set" + (this.state.currentUtilitiesSet=="change-plan"? " active" : "") } >
-                    <h3>Time for an upgrade! <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.openUtility.bind(this,"account-settings")}></div></h3>
-                    <div className="utility-group">
-                        <div className="sub-item plan">
-                            <h4>Professional</h4>
-                            <div className="features">Unlimited Accounts</div>
-                            <div className="pricing">
-                                <div className="per-year">$540/yr</div>
-                                <div className="per-month">$50/mo</div>
-                            </div>
-                            <div className="plan-action"><button className="btn disabled" onClick={this.choosePlan}>Current Plan</button></div>
-                        </div>
-                        <div className="sub-item plan recommended-plan">
-                            <div className="recommended-tag">Recommended</div>
-                            <h4>Individual</h4>
-                            <div className="features">Advanced Features</div>
-                            <div className="pricing">
-                                <div className="per-year">$440/yr</div>
-                                <div className="per-month">$40/mo</div>
-                            </div>
-                            <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div>
-                        </div>
-                        <div className="sub-item plan">
-                            <h4>Enterprise</h4>
-                            <div className="features">Advanced Features</div>
-                            <div className="pricing">
-                                <div className="per-year">$640/yr</div>
-                                <div className="per-month">$60/mo</div>
-                            </div>
-                            <div className="plan-action"><button className="btn" onClick={this.choosePlan}>Choose Plan</button></div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-        );
-    }
-});
-
-if(document.getElementById('header')){
-    $.when(wnt.gettingVenueData).done(function(data) {
-        React.render(
-            <Header />,
-            document.getElementById('header')
-        );
-        console.log('2) Header loaded...');
-    });
-}
+                </div>)
+	}
+});*/
