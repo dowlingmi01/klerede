@@ -111,7 +111,7 @@ class AuthenticateController extends Controller
             throw new ValidationHttpException($validator->errors()->all());
         }
         $response = Password::sendResetLink($request->only('email'), function (Message $message) {
-            $message->subject(Config::get('boilerplate.recovery_email_subject'));
+            $message->subject(config('app.recovery_email_subject'));
         });
         switch ($response) {
             case Password::RESET_LINK_SENT:

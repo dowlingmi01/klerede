@@ -4,6 +4,8 @@ return [
 
 	'new_user_email_subject' => 'Welcome!',
 
+	'recovery_email_subject' => 'Reset password',
+
 
 	/*
 	|--------------------------------------------------------------------------
