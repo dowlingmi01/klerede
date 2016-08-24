@@ -25,7 +25,7 @@ var User = React.createClass({
         event.preventDefault();
         console.log('DELETE USER CONFIRMED', this.state);
         $(event.target).closest('.confirm').hide();
-		
+		this.setState({ message: 'Deleting user...' });
 		KAPI.users.delete(this.props.id, this.onDeleteSuccess, this.onDeleteError);
     },
 	onDeleteSuccess:function (response) {
@@ -82,6 +82,7 @@ var User = React.createClass({
 			this.onResetPasswordSuccess, 
 			this.onResetPasswordError
 		);
+		this.setState({ message: 'Sending email to user...' });
         console.log('CHANGE PASSWORD', this.state);
         event.target.blur();
     },
@@ -91,7 +92,7 @@ var User = React.createClass({
 	},
 	onResetPasswordError:function (error) {
 		console.log(error);
-        this.setState({ message: 'Could reset password.' });
+        this.setState({ message: 'Could not reset password.' });
 	},
     componentDidUpdate: function(){
         // jQuery can control classes after components update
@@ -165,7 +166,8 @@ var Header = React.createClass({
 			roleNames:{},
 			currentUtilitiesSet:"",
 			currentUser:-1,
-			utilitiesClass:""
+			utilitiesClass:"",
+			addUserMessage:""
         };
     },
 	componentDidMount:function () {
@@ -179,6 +181,8 @@ var Header = React.createClass({
 		// console.log(users);
 		var newState = this.state;
 		newState.users = users;
+
+		newState.addUserMessage = _l("");
 		
 		this.setState(newState);
 	},
@@ -406,6 +410,7 @@ var Header = React.createClass({
 			return;
 		}
 		
+		this.setState({addUserMessage:"Adding new user..." });
         event.target.blur();
 		//new:function (name, email, password, role_id, venue_id, onSuccess, onError)
 		KAPI.users.new(
@@ -417,21 +422,24 @@ var Header = React.createClass({
 			this.onAddUser,
 			this.onAddUserError
 		);
-
+		
     },
 	onAddUser:function (response) {
 		console.log(response);
 		if (response.result == "ok") {
+			this.setState({addUserMessage:"New user added." });
 			// alert(_l("New user added."));
 			this.refs.addUserForm.getDOMNode().reset();
 			this.getUsers();
 		} else {
-			alert(_l("Could not add new user:")+" "+_l(response.message));
+			this.setState({addUserMessage:_l("Could not add new user.") });
+			// alert(_l("Could not add new user:")+" "+_l(response.message));
 		}
 	},
 	onAddUserError:function (error) {
 		console.log(error);
-		alert(_l("Could not add new user."));
+		this.setState({addUserMessage:_l("Could not add new user.") });
+		// alert(_l("Could not add new user."));
 	},
     changePlan: function(event){
 		this.openUtility('change-plan');
@@ -615,6 +623,7 @@ var Header = React.createClass({
                         <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
                         <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
                         <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
+                        <div className="message">{this.state.addUserMessage}</div>
                     </form>
                     <div className="utility-group" onClick={this.toggleUtility.bind(this,"user-types","modal")}>
                         <div className="utility sub-item">
