@@ -67,7 +67,7 @@
 				To get started, please follow this <a style="color:#1870b7; font-weight: 600;" href="{!! url('login?action=set&token='.$token.'&email='.urlencode($user->email) )!!}">link to set your password</a>.
 			<br />
 			<br />
-				Have questions? Contact our friendly <a href="mailto:support@klerede.com">support team</a> or check out our <a href="{!! url('help') !!}">FAQs section</a> once you've logged in.
+				Have questions? Contact our friendly <a href="mailto:support@klerede.com">support team</a> or check out our <a href="{!! url('faq') !!}">FAQs section</a> once you've logged in.
 			<br />
 			<br />
 
