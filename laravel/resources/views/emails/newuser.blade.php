@@ -61,7 +61,7 @@
 			Dear {{$user->first_name}} {{$user->last_name}}
 			<br />
 			<br />
-				Welcome to <strong>National Aquarium's Relay dashboard</strong>, powered by <strong>Klerede</strong>. Relay is super easy to use and provides you a daily view of all visitor and member transactions occurring at the National Aquarium.
+				Welcome to <strong>{{$venue->name}}'s Relay dashboard</strong>, powered by <strong>Klerede</strong>. Relay is super easy to use and provides you a daily view of all visitor and member transactions occurring at {{$venue->name}}.
 			<br />
 			<br />
 				To get started, please follow this <a style="color:#1870b7; font-weight: 600;" href="{!! url('login?action=set&token='.$token.'&email='.urlencode($user->email) )!!}">link to set your password</a>.
