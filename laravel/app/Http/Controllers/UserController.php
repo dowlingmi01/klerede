@@ -14,6 +14,7 @@ use JWTAuth;
 use \Password;
 use Mail;
 use Gate;
+use App\Venue;
 
 
 class UserController extends Controller
@@ -108,8 +109,10 @@ private function sendResetLink($user, $view,  $callback = null)
    
       
         $token = Password::createToken($user);
+
+        $venue = Venue::find($user->venue_id);
  
-        return Mail::send($view, compact('token', 'user'), function ($m) use ($user, $token, $callback) {
+        return Mail::send($view, compact('token', 'user', 'venue'), function ($m) use ($venue, $user, $token, $callback) {
             $m->to($user->email);
 
             if (! is_null($callback)) {
