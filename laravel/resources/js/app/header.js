@@ -1,6 +1,13 @@
 /************************/
 /******** HEADER ********/
 /************************/
+var DarkenBackground = React.createClass({
+	render:function () {
+		return (
+			<div id="darken-background" className={"modal-backdrop fade in "+this.props.active}> </div>
+		);
+	}
+});
 var User = React.createClass({
     getInitialState: function() {
         return {
@@ -166,7 +173,8 @@ var Header = React.createClass({
 			currentUtilitiesSet:"",
 			currentUser:-1,
 			utilitiesClass:"",
-			addUserMessage:""
+			addUserMessage:"",
+			darkenBackgroundActive:""
         };
     },
 	componentDidMount:function () {
@@ -205,9 +213,13 @@ var Header = React.createClass({
 		var state = this.state;
 		state.currentUtilitiesSet = "";
 		if(state.utilitiesClass == "active") {
-			state.utilitiesClass = "";
-	        $('.user-name').removeClass('active');
+			this.closeUtilities();
+			return;
+			// state.darkenBackgroundActive = "";
+			// state.utilitiesClass = "";
+			// 	        $('.user-name').removeClass('active');
 		} else {
+			state.darkenBackgroundActive = "active";
 			state.utilitiesClass = "active";
 	        $('.user-name').addClass('active');
 		};
@@ -245,6 +257,7 @@ var Header = React.createClass({
     closeUtilities: function(event) {
 		console.log(event);
 		var state = this.state;
+		state.darkenBackgroundActive = "";
 		state.currentUtilitiesSet = "";
 		state.utilitiesClass = "";
         $('.user-name').removeClass('active');
@@ -533,6 +546,7 @@ var Header = React.createClass({
         //     users.push(<User key={i} name={this.state.users[i]} email={this.state.usersEmail[i]} />);
         // }
         return (
+			<div>
             <header className="container-fluid">
                 <div className="row">
                     <div className="col-xs-2 col-sm-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.svg" /></a></div>
@@ -618,6 +632,8 @@ var Header = React.createClass({
                     </form>
                 </div>
             </header>
+			<DarkenBackground active={this.state.darkenBackgroundActive}/>
+		    </div>
         );
     }
 });
