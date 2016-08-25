@@ -221,7 +221,13 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             groupsChange: [0, 'up'],
             cafeChange: [0, 'up'],
             giftstoreChange: [0, 'up'],
-            membershipChange: [0, 'up']
+            membershipChange: [0, 'up'],
+			legendClassName:{
+				box:"bar-graph-legend-item empty",
+				cafe:"bar-graph-legend-item empty",
+				gift:"bar-graph-legend-item empty",
+				mem:"bar-graph-legend-item empty"
+			}
         };
     },
 	onWeatherResult:function(weather){
@@ -295,6 +301,15 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             this.formatNumbers;
         }
     },
+	onStatsResultFirst:function (result) {
+		this.onStatsResult(result);
+		var state = this.state;
+		state.legendClassName.box = "bar-graph-legend-item" + (result.box_bars.length ? "":" empty");
+		state.legendClassName.cafe = "bar-graph-legend-item" + (result.cafe_bars.length ? "":" empty");
+		state.legendClassName.gift = "bar-graph-legend-item" + (result.gift_bars.length ? "":" empty");
+		state.legendClassName.mem = "bar-graph-legend-item" + (result.mem_bars.length ? "":" empty");
+		this.setState(state);
+	},
 	onStatsResult: function(result) {
         console.log('Revenue data loaded using KAPI...');
         wnt.revenue = result;
@@ -328,7 +343,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 		
 		
     },
-	callAPI:function () {
+	callAPI:function (onSuccess) {
         var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
         var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
         // wnt.filter.bgDates   ...   "2016-3-27"
@@ -416,8 +431,11 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 		        mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
 		            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } }
 		};
-
-		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
+		
+		if (!onSuccess) {
+			onSuccess = this.onStatsResult;
+		}
+		KAPI.stats.query(wnt.venueID, queries, onSuccess);
 
 	},
     componentDidMount: function() {
@@ -442,7 +460,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.filter.bgChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
         wnt.filter.bgCompareActive = 'bg-compare-week';
         // Call method to load revenue and weather data
-        this.callAPI();
+        this.callAPI(this.onStatsResultFirst);
     },
     dataArray: function(stat, statUnits, days) {
         var data = [];
@@ -835,6 +853,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterChannels: function(event){
+		
+		if ($(event.currentTarget).hasClass("empty")) return;
+		
         $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         // Change bars first...
         // Toggle the legend/filter checkmark
@@ -961,25 +982,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </div>
 
                         <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.box} data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Box Office
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.cafe} data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Cafe
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.gift} data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Gift Store
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.mem} data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>

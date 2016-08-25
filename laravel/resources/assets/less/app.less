@@ -1223,9 +1223,21 @@ div.user-wrapper {
         fill: @white;
     }
 }
+
+.bar-graph-legend-item.empty {
+	color: @lightmediumgrey;
+}
+.bar-graph-legend-item.empty .legend-check-circle.active {
+	background-color: @lightmediumgrey;
+	cursor:inherit;
+}
+.empty .active .legend-check {
+    display: none;
+}
 .active .legend-check {
     display: block;
 }
+
 body > .popover {
     background-color: @darkmediumgrey;
     border: none;
