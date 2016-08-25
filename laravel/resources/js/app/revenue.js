@@ -179,7 +179,7 @@ var BarSet = React.createClass({
 var AccordionItem = React.createClass({
     render: function() {
         return (
-            <div className={this.props.className+" accordion-item col-md-6 active"}>
+            <div className={this.props.className+" accordion-item col-md-6 "+this.props.active}>
                 <div className="row">
                     <div className="col-md-4 accordion-stat-label">
                         {this.props.label}
@@ -221,7 +221,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             groupsChange: [0, 'up'],
             cafeChange: [0, 'up'],
             giftstoreChange: [0, 'up'],
-            membershipChange: [0, 'up']
+            membershipChange: [0, 'up'],
+			legendClassName:{
+				box:"bar-graph-legend-item empty",
+				cafe:"bar-graph-legend-item empty",
+				gift:"bar-graph-legend-item empty",
+				mem:"bar-graph-legend-item empty"
+			},
+			accordionActive:{
+				box:"",
+				cafe:"",
+				gift:"",
+				mem:""
+			}
         };
     },
 	onWeatherResult:function(weather){
@@ -295,6 +307,20 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             this.formatNumbers;
         }
     },
+	onStatsResultFirst:function (result) {
+		this.onStatsResult(result);
+		var state = this.state;
+		state.legendClassName.box = "bar-graph-legend-item" + (result.box_bars.length ? "":" empty");
+		state.legendClassName.cafe = "bar-graph-legend-item" + (result.cafe_bars.length ? "":" empty");
+		state.legendClassName.gift = "bar-graph-legend-item" + (result.gift_bars.length ? "":" empty");
+		state.legendClassName.mem = "bar-graph-legend-item" + (result.mem_bars.length ? "":" empty");
+
+		state.accordionActive.box = result.box_bars.length ? "active":"";
+		state.accordionActive.cafe = result.cafe_bars.length ? "active":"";
+		state.accordionActive.gift = result.gift_bars.length ? "active":"";
+		state.accordionActive.mem = result.mem_bars.length ? "active":"";
+		this.setState(state);
+	},
 	onStatsResult: function(result) {
         console.log('Revenue data loaded using KAPI...');
         wnt.revenue = result;
@@ -328,7 +354,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 		
 		
     },
-	callAPI:function () {
+	callAPI:function (onSuccess) {
         var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
         var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
         // wnt.filter.bgDates   ...   "2016-3-27"
@@ -416,8 +442,11 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 		        mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
 		            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } }
 		};
-
-		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
+		
+		if (!onSuccess) {
+			onSuccess = this.onStatsResult;
+		}
+		KAPI.stats.query(wnt.venueID, queries, onSuccess);
 
 	},
     componentDidMount: function() {
@@ -442,7 +471,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.filter.bgChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
         wnt.filter.bgCompareActive = 'bg-compare-week';
         // Call method to load revenue and weather data
-        this.callAPI();
+        this.callAPI(this.onStatsResultFirst);
     },
     dataArray: function(stat, statUnits, days) {
         var data = [];
@@ -835,6 +864,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterChannels: function(event){
+		
+		if ($(event.currentTarget).hasClass("empty")) return;
+		
         $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         // Change bars first...
         // Toggle the legend/filter checkmark
@@ -961,25 +993,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </div>
 
                         <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.box} data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Box Office
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.cafe} data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Cafe
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.gift} data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Gift Store
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.mem} data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
@@ -1035,6 +1067,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                             <div id="revenue-accordion" className="row">
                                 <AccordionItem 
                                     className="box"
+									active={this.state.accordionActive.box}
                                     label="Box Office"
                                     stat={this.state.boxofficeNow}
                                     statChange={this.state.boxofficeChange[0]}
@@ -1042,6 +1075,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.boxofficeThen} />
                                 <AccordionItem
                                     className="cafe"
+									active={this.state.accordionActive.cafe}
                                     label="Cafe"
                                     stat={this.state.cafeNow}
                                     statChange={this.state.cafeChange[0]}
@@ -1049,6 +1083,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.cafeThen} />
                                 <AccordionItem
                                     className="gift"
+									active={this.state.accordionActive.gift}
                                     label="Gift Store"
                                     stat={this.state.giftstoreNow}
                                     statChange={this.state.giftstoreChange[0]}
@@ -1056,6 +1091,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.giftstoreThen} />
                                 <AccordionItem
                                     className="mem"
+									active={this.state.accordionActive.mem}
                                     label="Membership"
                                     stat={this.state.membershipNow}
                                     statChange={this.state.membershipChange[0]}
