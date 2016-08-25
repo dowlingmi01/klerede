@@ -179,7 +179,7 @@ var BarSet = React.createClass({
 var AccordionItem = React.createClass({
     render: function() {
         return (
-            <div className={this.props.className+" accordion-item col-md-6 "+this.props.active}>
+            <div className={this.props.className+" accordion-item col-md-6 active "+this.props.empty}>
                 <div className="row">
                     <div className="col-md-4 accordion-stat-label">
                         {this.props.label}
@@ -228,7 +228,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 				gift:"bar-graph-legend-item empty",
 				mem:"bar-graph-legend-item empty"
 			},
-			accordionActive:{
+			accordionEmpty:{
 				box:"",
 				cafe:"",
 				gift:"",
@@ -315,10 +315,11 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 		state.legendClassName.gift = "bar-graph-legend-item" + (result.gift_bars.length ? "":" empty");
 		state.legendClassName.mem = "bar-graph-legend-item" + (result.mem_bars.length ? "":" empty");
 
-		state.accordionActive.box = result.box_bars.length ? "active":"";
-		state.accordionActive.cafe = result.cafe_bars.length ? "active":"";
-		state.accordionActive.gift = result.gift_bars.length ? "active":"";
-		state.accordionActive.mem = result.mem_bars.length ? "active":"";
+		state.accordionEmpty.box = result.box_bars.length ? "":"empty";
+		state.accordionEmpty.cafe = result.cafe_bars.length ? "":"empty";
+		state.accordionEmpty.gift = result.gift_bars.length ? "":"empty";
+		state.accordionEmpty.mem = result.mem_bars.length ? "":"empty";
+
 		this.setState(state);
 	},
 	onStatsResult: function(result) {
@@ -343,6 +344,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.barDates.push(dateStr);
         });
 		
+
 		KAPI.weather.query(
 			wnt.venueID, 
 			{
@@ -956,6 +958,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             }
             bars.push(<BarSet date={wnt.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} icon1={icon1} icon2={icon2} temp1={temp1} temp2={temp2} summary1={summary1} summary2={summary2} />);
         }
+		
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH datepicker PLUGIN
         return (
             <div className="row">
@@ -1067,7 +1070,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                             <div id="revenue-accordion" className="row">
                                 <AccordionItem 
                                     className="box"
-									active={this.state.accordionActive.box}
+									empty={this.state.accordionEmpty.box}
                                     label="Box Office"
                                     stat={this.state.boxofficeNow}
                                     statChange={this.state.boxofficeChange[0]}
@@ -1075,7 +1078,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.boxofficeThen} />
                                 <AccordionItem
                                     className="cafe"
-									active={this.state.accordionActive.cafe}
+									empty={this.state.accordionEmpty.cafe}
                                     label="Cafe"
                                     stat={this.state.cafeNow}
                                     statChange={this.state.cafeChange[0]}
@@ -1083,7 +1086,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.cafeThen} />
                                 <AccordionItem
                                     className="gift"
-									active={this.state.accordionActive.gift}
+									empty={this.state.accordionEmpty.gift}
                                     label="Gift Store"
                                     stat={this.state.giftstoreNow}
                                     statChange={this.state.giftstoreChange[0]}
@@ -1091,7 +1094,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.giftstoreThen} />
                                 <AccordionItem
                                     className="mem"
-									active={this.state.accordionActive.mem}
+									empty={this.state.accordionEmpty.mem}
                                     label="Membership"
                                     stat={this.state.membershipNow}
                                     statChange={this.state.membershipChange[0]}
