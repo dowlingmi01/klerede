@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Helpers;
+
+use App\Role;
+
+class PermissionHelper {
+	 
+	public static function permissions($user) {
+		$role = Role::find($user->id);
+		return explode("|", $role);
+	}
+	
+	public static function has_permission($user, $permission) {
+		$permissions = this->permissions($user);
+		return in_array($permission, $permissions);
+	}
+}
