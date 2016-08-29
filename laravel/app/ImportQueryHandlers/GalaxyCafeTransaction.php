@@ -23,10 +23,5 @@ class GalaxyCafeTransaction extends ImportQueryHandler {
 		$ins = "INSERT INTO cafe_transaction ($colsString) " . $sel->toSql();
 		DB::insert($ins, $sel->getBindings());
 		DB::table($this->getTableName())->where('query_id', $this->query->id)->update(['status'=>'imported']);
-		$dates = DB::table($this->getTableName())->where('query_id', $this->query->id)
-			->select(DB::raw('date(time) as business_day'))->distinct()->get();
-		foreach($dates as $date) {
-			StatStatus::newData(Channel::getFor('cafe')->id, $date->business_day, $this->query->venue_id);
-		}
 	}
 }

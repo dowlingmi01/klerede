@@ -23,13 +23,5 @@ class GalaxyBoxOfficeTransaction extends ImportQueryHandler {
 		$ins = "INSERT INTO box_office_transaction ($colsString) " . $sel->toSql();
 		DB::insert($ins, $sel->getBindings());
 		DB::table($this->getTableName())->where('query_id', $this->query->id)->update(['status'=>'imported']);
-		$dates = DB::table($this->getTableName())->where('query_id', $this->query->id)
-			->select('business_day')->distinct()->get();
-		$gate_channel_id = Channel::getFor('gate')->id;
-		$membership_channel_id = Channel::getFor('membership')->id;
-		foreach($dates as $date) {
-			StatStatus::newData($gate_channel_id, $date->business_day, $this->query->venue_id);
-			StatStatus::newData($membership_channel_id, $date->business_day, $this->query->venue_id);
-		}
 	}
 }
