@@ -18,6 +18,23 @@ class ComputeStats extends Migration
 			$table->integer('venue_id')->default(0)->after('id');
 			$table->unique(['venue_id', 'channel_id', 'date']);
 		});
+		Schema::table('box_office_transaction', function(Blueprint $table)
+		{
+			$table->index(['venue_id', 'time']);
+		});
+		Schema::table('box_office_transaction_line', function(Blueprint $table)
+		{
+			$table->index(['box_office_transaction_id']);
+		});
+		Schema::table('cafe_transaction', function(Blueprint $table)
+		{
+			$table->index(['venue_id', 'time']);
+		});
+		Schema::table('cafe_transaction_line', function(Blueprint $table)
+		{
+			$table->index(['cafe_transaction_id']);
+		});
+
 		$sps = ['sp_compute_stats_members', 'sp_compute_stats_box_office', 'sp_compute_stats_cafe',
 			'sp_compute_stats_visits'];
 		foreach($sps as $sp) {
