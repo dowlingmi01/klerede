@@ -154,6 +154,18 @@ class Stats {
 
 		StatStatus::computed($channel_id, $business_day);
 	}
+	static function computeBoxOfficeSales($venue_id, $date) {
+		DB::statement('call sp_compute_stats_box_office(?, ?)', [$venue_id, $date]);
+		StatStatus::computed(Channel::getFor('gate')->id, $date, $venue_id);
+	}
+	static function computeCafeSales($venue_id, $date) {
+		DB::statement('call sp_compute_stats_cafe(?, ?)', [$venue_id, $date]);
+		StatStatus::computed(Channel::getFor('cafe')->id, $date, $venue_id);
+	}
+	static function computeVisits($venue_id, $date) {
+		DB::statement('call sp_compute_stats_visits(?, ?)', [$venue_id, $date]);
+		StatStatus::computed(-1, $date, $venue_id);
+	}
 	static function lastDate($venue_id) {
 		$last_date = DB::Table('stat_sales')->where('venue_id', $venue_id)->groupBy('date')
 			->select(['date', DB::raw('count(distinct channel_id) as num_channels')])
