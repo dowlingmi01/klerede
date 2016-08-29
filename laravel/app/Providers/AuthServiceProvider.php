@@ -42,12 +42,12 @@ class AuthServiceProvider extends ServiceProvider
             if(!$role || !$user_role)
                 return false;
 
-            return $role->level <= $user_role->level;
+            return $role->level >= $user_role->level;
         });
 
         $gate->define('delete-user', function ($user, $delete_user_id) {
             $role = \App\Role::find($user->role_id);
-            return $user->id != $delete_user_id && $role->level < 40;
+            return $user->id != $delete_user_id && $role->level > PermissionHelper::OWNER_LEVEL;
         });
     }
  

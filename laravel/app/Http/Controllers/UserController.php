@@ -15,6 +15,7 @@ use \Password;
 use Mail;
 use Gate;
 use App\Venue;
+use App\Helpers\PermissionHelper;
 
 
 class UserController extends Controller
@@ -48,6 +49,9 @@ class UserController extends Controller
         if (Gate::denies('validate-venue', $input->venue_id)) {
             return "Invalid venue id";
         }
+        if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
+            return Response::json(["error"=>"Insufficient privileges"]);
+        }
 
         $users = User::where('venue_id', $input->venue_id)->get();
         return $users;
@@ -78,6 +82,9 @@ class UserController extends Controller
                 // store
                 if(Gate::denies('validate-venue', $request->venue_id)){
                     return "Invalid venue id";
+            }
+            if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
+                return Response::json(["error"=>"Insufficient privileges"]);
             }
             //$password = generateNewPassword(); //TODO: Generar la funcion
 
@@ -178,6 +185,9 @@ private function sendResetLink($user, $view,  $callback = null)
             if (Gate::denies('validate-venue', $user->venue_id)) {
                 return "Invalid venue id";
             }
+            if (Gate::denies('user-get', $id)) {
+                return Response::json(["error"=>"Can't get user"]);
+            }
             return $user;
         }
         return ['reuslt'=>'error', 'message'=>'user not found'];
@@ -222,6 +232,12 @@ private function sendResetLink($user, $view,  $callback = null)
             }
             if (Gate::denies('validate-venue', $user->venue_id)) {
                 return "Invalid venue id";
+            }
+            if (Gate::denies('user-set', $id)) {
+                return Response::json(["error"=>"Insufficient privileges"]);
+            }
+            if ($request->role_id !=0 && Gate::denies('valid-role', $request->role_id)) {
+                return Response::json(["error"=>"Can't set role"]);
             }
             $user->first_name       = trim($request->first_name) !== '' ? $request->first_name : $user->first_name;
             $user->last_name       = trim($request->last_name) !== '' ? $request->last_name : $user->last_name;
@@ -269,13 +285,16 @@ private function sendResetLink($user, $view,  $callback = null)
     {
         //check $id distinct to logged user
         //check venue_id
+        if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
+            return Response::json(["error"=>"Insufficient privileges"]);
+        }
         $user = User::find($id);
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];
          }
-        if (Gate::denies('validate-venue', $user->venue_id)) {
-                return "Invalid venue id";
-            }
+        if (Gate::denies('delete-user', $id)) {
+            return "Can't delete";
+        }
         $result = User::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }

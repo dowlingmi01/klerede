@@ -14,6 +14,7 @@
 use App\GoalsSales;
 use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
+use App\Helpers\PermissionHelper;
  
 Route::get('/', 'WelcomeController@index');
 
@@ -52,6 +53,9 @@ Route::group(['prefix'=>'api/v1'], function() {
 		function($venue_id, $year, $channel, $type, $sub_channel = null) {
         if (Gate::denies('validate-venue', $venue_id)) {
             return Response::json(["error"=>"Invalid venue id"]);
+        }
+        if (Gate::denies('has-permission', PermissionHelper::GOALS_SET)) {
+            return Response::json(["error"=>"Insufficient privileges"]);
         }
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));

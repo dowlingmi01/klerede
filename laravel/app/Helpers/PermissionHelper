@@ -6,11 +6,15 @@ use App\Role;
 
 class PermissionHelper {
 	 
+	public const OWNER_LEVEL = 'bar';
+	public const USER_MANAGE = 'UM';
+	public const GOALS_SET = 'GS';
+
 	public static function permissions($user) {
 		$role = Role::find($user->id);
 		return explode("|", $role);
 	}
-	
+
 	public static function has_permission($user, $permission) {
 		$permissions = this->permissions($user);
 		return in_array($permission, $permissions);
