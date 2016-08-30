@@ -30,6 +30,13 @@ var global = Function('return this')();
 (function(scope) {
 	if (!scope.KUtils) {
 		var _temp = {};
+        function _forceDigits(n, d) {
+            var s = n.toString(); //n must be a number
+            while (s.length < d) {
+                s = "0"+s;
+            }
+            return s;
+        };
 		scope.KUtils = {
 			isValidPassword:function(p1, p2) {
 				
@@ -80,7 +87,89 @@ var global = Function('return this')();
 					console.log(e);
 					return false;
 				}
-			}
+			},
+            date: {
+                weatherFormat:function(s, periodType) {
+                    // Friday, June 3, 2016
+                    if(periodType == "quarter") {
+                        var fromDate = new Date(scope.KUtils.date.getDateFromWeek(s));
+                        var toDate = new Date(scope.KUtils.date.addDays(fromDate,6));
+                        // Tue Aug 30 2016
+                        //Mar 27 - Apr 2, 2016
+                        var from = (fromDate.toDateString()).split(" ");
+                        var to = (toDate.toDateString()).split(" ");
+                        return from[1]+" "+from[2]+" - "+to[1]+" "+to[2]+", "+from[3];
+                    }
+                    
+                    var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; //TODO: take this to a global context
+                    
+                    var date = new Date(s);
+                    var d = weekDays[date.getUTCDay()];
+                    var m = wnt.months[date.getUTCMonth()];
+                    
+                    return d+", "+m+" "+date.getUTCDate()+", "+date.getUTCFullYear();
+                },
+                barFormat:function(s, periodType) {
+                    if(periodType == "quarter") {
+                        s = scope.KUtils.date.getDateFromWeek(s);
+                    }
+                    
+                    var date = new Date(s);
+                    var d =_forceDigits(date.getUTCDate(),2);
+                    var m =_forceDigits(date.getUTCMonth()+1,2);
+
+                    if(periodType == "month") return d;
+
+                    return m+"."+d;
+                },
+                serverFormat:function (date, periodType) {
+                    if (periodType == "week") {
+                        return date;
+                    };
+                    var date = new Date(date);
+                    var d =date.getUTCDate();
+                    var m =date.getUTCMonth()+1;
+                    return date.getUTCFullYear()+"-"+m+"-"+d;
+                },
+                format:function (isoDate) { //'mm/dd/yyyy'
+                    var date = new Date(isoDate);
+                    return scope.KUtils.date.formatFromDate(date);
+                },
+                formatFromDate:function (date) {
+                    var d =_forceDigits(date.getUTCDate(),2);
+                    var m =_forceDigits(date.getUTCMonth()+1,2);
+                    return m+"/"+d+"/"+date.getUTCFullYear();
+                },
+                addDays:function (date, days) {
+                    var result = new Date(date);
+                    result.setDate(result.getDate() + days);
+                    return scope.KUtils.date.formatFromDate(result);
+                },
+                addMonths:function (date, months) {
+                    var result = new Date(date);
+                    result.setMonth(result.getMonth() + months);
+                    return scope.KUtils.date.formatFromDate(result);
+                },
+                getWeekNumber:function (d) {
+                    d = new Date(d);
+                    d.setDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+                    var yearStart = new Date(d.getFullYear(),0,1);
+                    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+                    return weekNo;
+                },
+                getDateFromWeek:function (s) { //YYYY-W
+                    var a = s.split("-");
+                    var year = parseInt(a[0]);
+                    var week = parseInt(a[1]);
+                    var date = new Date("01/01/"+year.toString());
+                    return scope.KUtils.date.addDays(date, week*7);
+                }
+            },
+            number:{
+                forceDigits:function (n, d) {
+                    return _forceDigits(n,d);
+                }
+            }
 		};
 		
 	}

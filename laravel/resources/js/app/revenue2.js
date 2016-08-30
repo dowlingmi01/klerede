@@ -1,13 +1,17 @@
 var Dropdown = React.createClass({
     render:function () {
+
         var optionList = this.props.optionList;
         var options = [];
+
         for (v in optionList) {
-            options.push(<option key={v} value={v}>{optionList[v]}</option>);
+            var option = <option key={v} value={v} >{optionList[v]}</option>;
+            options.push(option);
         }
+        
         return (
             <form className="inline-block">
-                <select className="form-control" onChange={this.props.onChange}>
+                <select className="form-control" onChange={this.props.onChange} value={this.props.selected} >
                     {options}
                 </select>
             </form>
@@ -31,89 +35,519 @@ var Channel = React.createClass({
     }
 });
 
+var GBar = React.createClass({
+    render:function () {
+        // console.log(this.props);
+        var channels = this.props.channels;
+        var sections = [];
+        for (var i in channels) {
+            var channel = channels[i];
+            
+            if (!channel.data) {
+                sections.push(<div key={i}></div>);
+                continue;
+            }
+            var sectionH = (100*channel.data.amount/this.props.partial) + "%";
+            if (this.props.units == "percap") {
+                sectionH = (100*channel.data.percap/this.props.partialPercap) + "%";
+            }
+            sections.push(
+                <div key={i} className="gbar-section multicolorbg" style={{height:sectionH}} >
+                </div>
+            );
+        }
+        
+        var totalWidth = this.props.width;
+        var width = 2*totalWidth/3;
+        var marginRight = 1*totalWidth/3;
+        
+        var height = Math.round(300*this.props.partial/this.props.max);
+
+        if (this.props.units == "percap") {
+            height = Math.round(300*this.props.partialPercap/this.props.maxPercap);
+        }
+        
+        
+        return(
+            <div className="gbar" style={{width:width+"%", "marginRight":marginRight+"%"}}>
+                <div className="gbar-sections" style={{height:height+"px"}}>
+                    {sections}
+                </div>
+                <div className="glabel">
+                    {KUtils.date.barFormat(this.props.date, this.props.periodType)}
+                </div>
+                <WeatherPopup bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />
+            </div>
+        );
+    }
+});
+var ChannelPopup = React.createClass({
+    formatAmount:function (n) {
+        var fd = KUtils.number.forceDigits;
+        if(isNaN(n)) return "0";
+        var r = "";
+        if(n > 1000) {
+            r = Math.floor(n/1000)+","+fd(Math.round(n%1000),3);
+        } else if(n > 100) {
+            r = Math.round(10*n)/10;
+        } else {
+            r = Math.round(100*n)/100;
+        }
+        return r;
+    },
+    render:function () {
+        var key = this.props.units;
+        if (this.props.units == "dollars") {
+            key = "amount";
+        }
+        return(
+            <div id="gift" className="details-row multicolor-wrapper">
+                <div className="col-xs-1">
+                    <div className="circle multicolorbg"></div>
+                </div>
+                <div id="channel" className="col-xs-6">
+                    {this.props.name}
+                </div>
+                <div id="quantity" className="col-xs-5">
+                    ${this.formatAmount(this.props.data[key])}
+                </div>
+            </div>
+        );
+    }
+});
+var WeatherPopupView = React.createClass({
+    render:function () {
+        
+        if (!this.props.data) {
+            return (<div id="weather-data"></div>);
+        };
+
+        return (
+            <div id="weather-data">
+               <div className="col-xs-6 col-sm-6">
+                   <div id="icon" className="inline-block">
+                       <img src={"/img/"+this.props.data["icon_1"]+".svg"} className="popover-weather-icon" />
+                   </div>
+                   <div id="description" className="inline-block">
+                       <div id="time">
+                           10 A.M.
+                       </div>
+                       <div id="text">
+                           {this.props.data["summary_1"]}
+                       </div>
+                       <div className="temp">
+                           {Math.round(this.props.data["temp_1"])+"° F"}
+                       </div>
+                   </div>
+               </div>
+               <div className="col-xs-6 col-sm-6">
+                   <div id="icon" className="inline-block">
+                       <img src={"/img/"+this.props.data["icon_2"]+".svg"} className="popover-weather-icon" />
+                   </div>
+                   <div id="description" className="inline-block">
+                       <div id="time">
+                           4 P.M.
+                       </div>
+                       <div id="text">
+                           {this.props.data["summary_2"]}
+                       </div>
+                       <div className="temp">
+                           {Math.round(this.props.data["temp_2"])+"° F"}
+                       </div>
+                   </div>
+               </div>
+           </div>
+        );
+    }
+});
+
+var WeatherPopup = React.createClass({
+    render:function () {
+        var popupChannels = [];
+        var channels = this.props.channels;
+        for (var i in channels) {
+            var channel = channels[i];
+            if (!channel.data) {
+                popupChannels.push(<div key={i}></div>);
+                continue;
+            }
+            popupChannels.push(<ChannelPopup key={i} name={channels[i].name}  data={channels[i].data} units={this.props.units} />);
+        }
+        
+        var formattedDate = KUtils.date.weatherFormat(this.props.date, this.props.periodType);
+        
+        return(
+            <div id="popup" style={{bottom:this.props.bottom+"px"}}>
+                <div id="weather" className="row">
+                    <div id="popup-date">
+                        {formattedDate}
+                    </div>
+                    <WeatherPopupView data={this.props.data} />
+                </div>
+                <div id="details" className="row">
+                    {popupChannels}
+                </div>
+                <div id="arrow">
+        
+                </div>
+            </div>            
+        );
+    }
+});
+
 var DatePicker = React.createClass({
     componentDidMount: function() {
-        $('#'+this.props.id).datePicker({
+        Date.firstDayOfWeek = 0;
+        Date.format = 'mm/dd/yyyy';
+        var dp = $('#'+this.props.id).datePicker({
             selectWeek: true,
             closeOnSelect: true,
             startDate: '01/01/1996',
-            endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear
+            endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear,
+            defaultDate:this.props.defaultDate
         });
     },
     render:function () {
         return(
-            <input className="form-control" id={this.props.id} type="text" value="06/01/2016"></input>
+            <form className="datepicker-form">
+                <input className="form-control" onSelect={this.props.onSelect} id={this.props.id} type="text" defaultValue={this.props.defaultDate}></input>
+            </form>
+        );
+    }
+});
+
+var TabSelector = React.createClass({
+    render:function () {
+        var selected = (this.props.id == this.props.selected) ? " selected":"";
+        return (
+            <div className={"unit-filter"+selected} id={this.props.id} onClick={this.props.onClick}>
+                {this.props.name}
+                <div className="filter-highlight"></div>
+            </div>
         );
     }
 });
 
 var Revenue2 = React.createClass({
     getInitialState:function () {
+        var periodTo = KUtils.date.format(wnt.today);
+        var weekDay = (new Date(periodTo)).getUTCDay();
+        var periodFrom = KUtils.date.addDays(periodTo, -weekDay);
+        
         return {
-            channelNames:{box:"Box Office", cafe: "Cafe", gift: "Gift Store", mem: "Membership"},
-            channelActive:{box:"active", cafe: "active", gift: "active", mem: "active"}
+            channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
+            channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
+            periodType:"week",
+            periodTypeForServer:"date",
+            members:"members",
+            units:"dollars",
+            comparePeriodType:"lastweek",
+            currentDate:periodFrom,
+            periodFrom:periodFrom,
+            periodTo:periodTo,
+            dirty:false
         };
+    },
+    updatePeriod:function (date, periodType) {
+        var addMonths = KUtils.date.addMonths;
+        var addDays = KUtils.date.addDays;
+        var getWeekNumber = KUtils.date.getWeekNumber;
+        var forceDigits = KUtils.number.forceDigits;
+        var periodTypeForServer = "date";
+        
+        switch (periodType) {
+        case "quarter":
+            var week = getWeekNumber(date);
+            var year = (new Date(date)).getUTCFullYear();
+            var quarter = Math.ceil(week/13);
+            var periodFrom = year+"-"+forceDigits((quarter-1)*13,2);
+            var periodTo = year+"-"+forceDigits(quarter*13,2);
+            periodTypeForServer = "week";
+            break;
+        case "month":
+            var monthDay = (new Date(date)).getUTCDate();
+            var periodFrom = addDays(date, -monthDay+1); //first day of month
+            var nextMonthDate = addMonths(periodFrom, 1);
+            var periodTo = addDays(nextMonthDate, -1); //last day of month
+            break;
+        case "week":
+        default:
+            var periodFrom = date;
+            var periodTo = addDays(periodFrom, +6);
+        }
+        var state = this.state;
+        state.currentDate = date;
+        state.periodFrom = periodFrom;
+        state.periodTo = periodTo;
+        state.periodType = periodType;
+        state.periodTypeForServer = periodTypeForServer;
+        state.dirty = true;
+        this.setState(state);
+    },
+    onPeriodTypeChange:function (event) {
+        this.updatePeriod(this.state.currentDate, event.target.value);
+    },
+    onDateSelect:function (event) {
+        if (this.state.periodFrom === event.target.value) {
+            return;
+        }
+        this.updatePeriod(event.target.value, this.state.periodType);
+    },
+    onMembersChange:function (event) {
+        this.setState({members:event.target.value});
+    },
+    onUnitsChange:function (units) {
+        this.setState({units:units})
     },
     onChannelClick:function (channel) {
         var state = this.state;
         state.channelActive[channel] = (state.channelActive[channel] == "active") ? "" : "active" ;
+        state.dirty = true;
         this.setState(state);
     },
-    onMembersChange:function (event) {
-        console.log(event);
+    onComparePeriodTypeChange:function (event) {
+        this.setState({comparePeriodType:event.target.value, dirty:true});
     },
-    onPeriodTypeChange:function (event) {
-        console.log(event);
+    updateData:function (state) {
+        var sf = KUtils.date.serverFormat;
+        // var state = this.state;
+        var queries = {};
+        queries.total_bars = {
+            periods:{
+                type:state.periodTypeForServer, 
+                from:sf(state.periodFrom, state.periodTypeForServer), 
+                to:sf(state.periodTo, state.periodTypeForServer)},
+            specs: {type:"sales"}
+        };
+        queries.visitors = {
+            periods:{
+                type:state.periodTypeForServer, 
+                from:sf(state.periodFrom, state.periodTypeForServer), 
+                to:sf(state.periodTo, state.periodTypeForServer)},
+            specs: {type:"visits"}
+        };
+        
+        for (var channel in state.channelActive) {
+            if (state.channelActive[channel] == "active") {
+                queries[channel+"_bars"] = {
+                    periods:{
+                        type:state.periodTypeForServer, 
+                        from:sf(state.periodFrom, state.periodTypeForServer), 
+                        to:sf(state.periodTo, state.periodTypeForServer)
+                    },
+                    specs:{type:"sales", channel:channel}
+                }
+            }
+        }
+        console.log(queries);
+        KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
+    },
+    onDataUpdate:function (result) {
+
+        console.log(result);
+
+        var state = this.state;
+        var total_bars = result.total_bars;
+        var visitors = result.visitors;
+        var partial_sum = [];
+        var partial_sum_percap = [];
+        var max = 0;
+        var maxPercap = 0;
+        for (var i in total_bars) {
+            if(total_bars[i].amount < 0) {
+                total_bars[i].amount = 0;
+            }
+            
+            //Save sum, only active channels
+            //And calculate percaps
+            var barSum = 0;
+            var percapSum = 0;
+            for (var k in state.channelActive) {
+
+                if(state.channelActive[k] == "active") {
+                    if(result[k+"_bars"].length > i) {
+                        barSum += result[k+"_bars"][i].amount;
+                        
+                        if (visitors[i]) {
+                            var v = parseInt(visitors[i].units);
+                            result[k+"_bars"][i].percap = result[k+"_bars"][i].amount/v;
+                        } else {
+                            result[k+"_bars"][i].percap = 0;
+                        }
+                        
+                        percapSum += result[k+"_bars"][i].percap;
+                    }
+                }
+            }
+            partial_sum.push(barSum);
+            partial_sum_percap.push(percapSum);
+
+            //calculate max for the height of bars
+            max = Math.max(barSum, max);
+            maxPercap = Math.max(percapSum, maxPercap);
+            
+        }
+        
+        result.partial_sum = partial_sum;
+        result.partial_sum_percap = partial_sum_percap;
+        state.result = result;
+        state.max = max;
+        state.maxPercap = maxPercap;
+        state.dirty = false;
+        this.setState(state);
+    },
+    updateWeather: function(state) {
+        if (state.periodType == "quarter") {
+            return;
+        }
+        var sf = KUtils.date.serverFormat;
+		KAPI.weather.query(
+			wnt.venueID, 
+			{
+                from:sf(state.periodFrom, state.periodTypeForServer), 
+                to:sf(state.periodTo, state.periodTypeForServer)
+			},
+			this.onWeatherResult
+		);
+    },
+    onWeatherResult:function (wResult) {
+        console.log(wResult);
+        var state = this.state;
+        state.wResult = wResult;
+        this.setState(state);
+    },
+    formatY:function (n) {
+        var max = (this.state.units == "dollars") ? this.state.max : this.state.maxPercap;
+        var q = n*max/4;
+        if(isNaN(q)) return "";
+        
+        var r = "";
+        if(q > 100000) {
+            r = Math.round(q/1000) + "K";
+        } else if(q > 10000) {
+            r = Math.round(10*q/1000)/10 + "K";
+        } else if(q > 1000) {
+            r = Math.round(100*q/1000)/100 + "K";
+        } else if(q > 100) {
+            r = Math.round(q);
+        } else if(q > 10) {
+            r = Math.round(10*q)/10;
+        } else {
+            r = Math.round(100*q)/100;
+        }
+        return r;
+    },
+    componentDidMount:function () {
+        this.updateWeather(this.state);
+        this.updateData(this.state);
+    },
+    shouldComponentUpdate:function (nextProps, nextState) {
+        console.log(nextState.dirty);
+        if (nextState.dirty) {
+            this.updateWeather(nextState);
+            this.updateData(nextState);
+        };
+        return !nextState.dirty;
     },
     render:function () {
-        
+        console.log(this.state);
         var channelTypes = this.state.channelNames;
         var channelActive = this.state.channelActive;
-        var channels = [];
+        var channelControls = [];
         for (k in channelTypes) {
-            channels.push(
+            channelControls.push(
                 <Channel key={k} name={channelTypes[k]} active={channelActive[k]} onClick={this.onChannelClick.bind(this,k)} />
             );
         }
         
+        var bars = [];
+        var result = this.state.result;
+        var wResult = this.state.wResult;
+        var max = this.state.max;
+        if (result) {
+            var total_bars = result.total_bars;
+            var partial_sum = result.partial_sum;
+            var partial_sum_percap = result.partial_sum_percap;
+            var barWidth = 100/total_bars.length;
+            for (var i in total_bars) {
+                var channels = [];
+                for(var k in channelActive) {
+                    if (channelActive[k] == "active") {
+                        channels.push({
+                            name:channelTypes[k],
+                            data:result[k+"_bars"][i]
+                        })
+                    } else {
+                        channels.push({});
+                    }
+                };
+                
+                var weather;
+                if (this.state.periodType != "quarter" && wResult && wResult.length > i) {
+                    weather = wResult[i];
+                }
+                
+                bars.push(<GBar
+                            key={i}
+                            units={this.state.units}
+                            total={total_bars[i].amount}
+                            partial={partial_sum[i]}
+                            partialPercap={partial_sum_percap[i]}
+                            date={total_bars[i].period}
+                            channels={channels}  
+                            max={max}
+                            maxPercap={this.state.maxPercap}
+                            width={barWidth}
+                            periodType={this.state.periodType}
+                            weather={weather}
+                        />);
+            }
+        }
+        
         return (
             <div className="row">
-                <div className="col-xs-12 col-md-12">
+                <div className="col-xs-12 col-sm-12">
                     <div className="widget" id="revenue2">
                         <h2>
                             Earned Revenue
                         </h2>
                         <div className="row filters">
-                            <div className="col-xs-12 col-md-6">
+                            <div className="col-xs-12 col-sm-6">
                                 <Dropdown
                                     ref="periodType"
                                     optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
+                                    selected={this.state.periodType}
                                     onChange={this.onPeriodTypeChange}
                                 />
-                                <DatePicker id="datePicker2" />
+                                <DatePicker defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
                             </div>
-                            <div className="col-xs-12 col-md-6 text-right">
+                            <div className="col-xs-12 col-sm-6 text-right">
                                 <Dropdown
                                     ref="members"
                                     optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
                                     onChange={this.onMembersChange}
+                                    selected={this.state.members}
                                 />
                             </div>
                         </div>
                         <div className="row filters">
                             <div id="channel-filters">
-                                <div className="col-xs-12 col-md-6">
-                                    <div className="unit-filter selected" id="dollars">
-                                        Dollars
-                                        <div className="filter-highlight"></div>
-                                    </div>
-                                    <div className="unit-filter" id="percap">
-                                        Per Cap
-                                        <div className="filter-highlight"></div>
-                                    </div>
+                                <div className="col-xs-12 col-sm-6">
+                                    <TabSelector 
+                                        selected = {this.state.units}
+                                        id="dollars"
+                                        onClick={this.onUnitsChange.bind(this,"dollars")}
+                                        name="Dollars"
+                                    />
+                                    <TabSelector 
+                                        selected = {this.state.units}
+                                        id="percap"
+                                        onClick={this.onUnitsChange.bind(this,"percap")}
+                                        name="Per Cap"
+                                    />
                                 </div>
-                                <div className="col-xs-12 col-md-6 text-right">
-                                    {channels}
+                                <div className="col-xs-12 col-sm-6 text-right">
+                                    {channelControls}
                                 </div>
                             </div>
                         </div>
@@ -121,19 +555,19 @@ var Revenue2 = React.createClass({
                             <div id="y-axis" className="inline-block">
                                 <div className="grow">
                                     <div className="glabel">
-                                        80K
+                                        {this.formatY(4)}
                                     </div>
                                 </div><div className="grow">
                                     <div className="glabel">
-                                        60K
+                                        {this.formatY(3)}
                                     </div>
                                 </div><div className="grow">
                                     <div className="glabel">
-                                        40K
+                                        {this.formatY(2)}
                                     </div>
                                 </div><div className="grow">
                                     <div className="glabel">
-                                       20K
+                                        {this.formatY(1)}
                                     </div>
                                 </div><div className="grow">
                                     <div className="glabel">
@@ -152,150 +586,26 @@ var Revenue2 = React.createClass({
                                     </div>
                                 </div>
                                 <div id="gbars">
-                                    <div className="gbar">
-                                        <div className="gbar-sections">
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                        </div>
-                                        <div className="glabel">
-                                           05.29
-                                        </div>
-                                        <div id="popup">
-                                            <div id="weather" className="row">
-                                                <div id="popup-date">
-                                                    Friday, June 3, 2016
-                                                </div>
-                                                <div className="col-xs-6 col-md-6">
-                                                    <div id="icon" className="inline-block">
-                                                        <img src="/img/cloudy.svg" className="popover-weather-icon" />
-                                                    </div>
-                                                    <div id="description" className="inline-block">
-                                                        <div id="time">
-                                                            10 A.M.
-                                                        </div>
-                                                        <div id="text">
-                                                            Overcast
-                                                        </div>
-                                                        <div className="temp">
-                                                            70° F
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="col-xs-6 col-md-6">
-                                                    <div id="icon" className="inline-block">
-                                                        <img src="/img/cloudy.svg" className="popover-weather-icon" />
-                                                    </div>
-                                                    <div id="description" className="inline-block">
-                                                        <div id="time">
-                                                            10 A.M.
-                                                        </div>
-                                                        <div id="text">
-                                                            Overcast
-                                                        </div>
-                                                        <div className="temp">
-                                                            70° F
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="details" className="row">
-                                                <div id="gift" className="details-row multicolor-wrapper">
-                                                    <div className="col-xs-1">
-                                                        <div className="circle multicolorbg"></div>
-                                                    </div>
-                                                    <div id="channel" className="col-xs-6">
-                                                        Gift Store
-                                                    </div>
-                                                    <div id="quantity" className="col-xs-5">
-                                                        $17,284
-                                                    </div>
-                                                </div>
-                                                <div id="gift" className="details-row multicolor-wrapper">
-                                                    <div className="col-xs-1">
-                                                        <div className="circle multicolorbg"></div>
-                                                    </div>
-                                                    <div id="channel" className="col-xs-6">
-                                                        Gift Store
-                                                    </div>
-                                                    <div id="quantity" className="col-xs-5">
-                                                        $17,284
-                                                    </div>
-                                                </div>
-                                                <div id="gift" className="details-row multicolor-wrapper">
-                                                    <div className="col-xs-1">
-                                                        <div className="circle multicolorbg"></div>
-                                                    </div>
-                                                    <div id="channel" className="col-xs-6">
-                                                        Gift Store
-                                                    </div>
-                                                    <div id="quantity" className="col-xs-5">
-                                                        $17,284
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="arrow">
-                                    
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="gbar">
-                                        <div className="gbar-sections">
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                        </div>
-                                        <div className="glabel">
-                                           05.30
-                                        </div>
-                                    </div>
-                                    <div className="gbar">
-                                        <div className="gbar-sections">
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                            <div className="gbar-section multicolorbg">
-                                
-                                            </div>
-                                        </div>
-                                        <div className="glabel">
-                                           06.01
-                                        </div>
-                                    </div>
+                                    {bars}
                                 </div>
                             </div>
                         </div>
                         <div className="row details">
-                            <div className="col-xs-12 col-md-12">
-                                <div className="col-xs-12 col-md-6" id="header">
+                            <div className="col-xs-12 col-sm-12">
+                                <div className="col-xs-12 col-sm-6" id="header">
                                     May 29 - Jun 4, 2016
                                 </div>
-                                <div className="col-xs-12 col-md-6 text-right">
-                                    <form>
-                                        <select className="form-control" id="members">
-                                            <option value="last-week">Last Week</option>
-                                            <option value="average13-week">13 Week Average</option>
-                                        </select>
-                                    </form>
+                                <div className="col-xs-12 col-sm-6 text-right">
+                                    <Dropdown
+                                        ref="comparePeriodType"
+                                        optionList={{lastweek:"Last Week", average13week:"13 Week Average"}}
+                                        selected={this.state.comparePeriodType}
+                                        onChange={this.onComparePeriodTypeChange}
+                                    />
                                 </div>
                             </div>
-                            <div className="col-xs-12 col-md-12" id="table">
-                                <div className="col-xs-12 col-md-6 table-item-wrapper  multicolor-wrapper">
+                            <div className="col-xs-12 col-sm-12" id="table">
+                                <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
                                     <div className="table-item">
                                         <div className="col-xs-4">
                                             BOX OFFICE
@@ -313,7 +623,7 @@ var Revenue2 = React.createClass({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-xs-12 col-md-6 table-item-wrapper  multicolor-wrapper">
+                                <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
                                     <div className="table-item">
                                         <div className="col-xs-4">
                                             BOX OFFICE
@@ -331,7 +641,7 @@ var Revenue2 = React.createClass({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-xs-12 col-md-6 table-item-wrapper  multicolor-wrapper">
+                                <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
                                     <div className="table-item">
                                         <div className="col-xs-4">
                                             BOX OFFICE
