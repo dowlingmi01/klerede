@@ -109,6 +109,17 @@ var global = Function('return this')();
                     
                     return d+", "+m+" "+date.getUTCDate()+", "+date.getUTCFullYear();
                 },
+                detailsFormat:function(date1, date2) {
+                    
+                    if(!date1 || !date2) return "";
+                    
+                    var fromDate = new Date(date1);
+                    var toDate = new Date(date2);
+                    
+                    var from = (fromDate.toDateString()).split(" ");
+                    var to = (toDate.toDateString()).split(" ");
+                    return from[1]+" "+from[2]+" - "+to[1]+" "+to[2]+", "+from[3];
+                },
                 barFormat:function(s, periodType) {
                     if(periodType == "quarter") {
                         s = scope.KUtils.date.getDateFromWeek(s);
@@ -183,6 +194,19 @@ var global = Function('return this')();
             number:{
                 forceDigits:function (n, d) {
                     return _forceDigits(n,d);
+                },
+                formatAmount:function(n) {
+                    var fd = KUtils.number.forceDigits;
+                    if(isNaN(n)) return "0";
+                    var r = "";
+                    if(n > 1000) {
+                        r = Math.floor(n/1000)+","+fd(Math.round(n%1000),3);
+                    } else if(n > 100) {
+                        r = Math.round(10*n)/10;
+                    } else {
+                        r = Math.round(100*n)/100;
+                    }
+                    return r;
                 }
             }
 		};

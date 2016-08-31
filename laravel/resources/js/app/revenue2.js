@@ -83,20 +83,8 @@ var GBar = React.createClass({
     }
 });
 var ChannelPopup = React.createClass({
-    formatAmount:function (n) {
-        var fd = KUtils.number.forceDigits;
-        if(isNaN(n)) return "0";
-        var r = "";
-        if(n > 1000) {
-            r = Math.floor(n/1000)+","+fd(Math.round(n%1000),3);
-        } else if(n > 100) {
-            r = Math.round(10*n)/10;
-        } else {
-            r = Math.round(100*n)/100;
-        }
-        return r;
-    },
     render:function () {
+        var formatAmount = KUtils.number.formatAmount;
         var key = this.props.units;
         if (this.props.units == "dollars") {
             key = "amount";
@@ -110,7 +98,7 @@ var ChannelPopup = React.createClass({
                     {this.props.name}
                 </div>
                 <div id="quantity" className="col-xs-5">
-                    ${this.formatAmount(this.props.data[key])}
+                    ${formatAmount(this.props.data[key])}
                 </div>
             </div>
         );
@@ -228,7 +216,44 @@ var TabSelector = React.createClass({
         );
     }
 });
+var DetailsRow = React.createClass({
+    
+    //props
+    //from - to - title
+    render:function () {
+        var formatAmount = KUtils.number.formatAmount;
 
+        var from = this.props.from;
+        var to = this.props.to;
+
+        var upDownClass = to > from ? "up" : "down";
+
+        var change = 100*((to/from) - 1);
+        change = Math.abs(Math.round(100*change)/100);
+        
+        
+        return (
+            <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
+                <div className="table-item">
+                    <div className="col-xs-4">
+                        {this.props.title}
+                    </div>
+                    <div className="col-xs-8">
+                        <div className="col-xs-4">
+                            <ChangeArrow className={"change multicolorfl "+upDownClass} />
+                            <span className="multicolor" id="change">{change}%</span>
+                        </div>
+                        <div className="col-xs-8" id="from-val">
+                            <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
+                            <LongArrow className="long-arrow" width="21px" />
+                            &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+});
 var Revenue2 = React.createClass({
     getInitialState:function () {
         var periodTo = KUtils.date.format(wnt.today);
@@ -243,7 +268,7 @@ var Revenue2 = React.createClass({
             periodTypeForServer:"date",
             members:"totals",
             units:"dollars",
-            comparePeriodType:"last1",
+            comparePeriodType:"lastperiod_1",
             currentDate:periodFrom,
             periodFrom:periodFrom,
             periodTo:periodTo,
@@ -259,35 +284,61 @@ var Revenue2 = React.createClass({
         var forceDigits = KUtils.number.forceDigits;
         var periodTypeForServer = "date";
         
+        var sf = KUtils.date.serverFormat;
+        
         switch (periodType) {
         case "quarter":
-            // var week = getWeekNumber(date);
             var quarter = getQuarterNumber(date); //Math.ceil(week/13);
             var year = (new Date(date)).getUTCFullYear();
             
-            // var periodFrom = year+"-"+forceDigits((quarter-1)*13,2);
-            // var periodTo = year+"-"+forceDigits(quarter*13,2);
             var periodFrom = getDateFromWeek(year+"-"+(quarter-1)*13);//->tengo la semana
             var periodTo = getDateFromWeek(year+"-"+(quarter*13-1));//->tengo la semana
             periodTypeForServer = "week";
+            
+            var lastFrom1 = addDays(periodFrom, -(13*7));
+            var lastTo1 = addDays(periodFrom, -1);
+            var lastFrom2 = (sf(periodFrom, periodTypeForServer)).split("-");  //yyyy-w
+            var lastTo2 = (sf(periodTo, periodTypeForServer)).split("-");    //yyyy-w
+            lastFrom2 = (parseInt(lastFrom2[0])-1)+"-"+lastFrom2[1];
+            lastTo2 = (parseInt(lastTo2[0])-1)+"-"+lastTo2[1];
+
+            
             break;
         case "month":
             var monthDay = (new Date(date)).getUTCDate();
             var periodFrom = addDays(date, -monthDay+1); //first day of month
             var nextMonthDate = addMonths(periodFrom, 1);
             var periodTo = addDays(nextMonthDate, -1); //last day of month
+
+            var lastFrom1 = addMonths(periodFrom, -1);
+            var lastTo1 = addDays(periodFrom, -1);
+            var lastFrom2 = addMonths(periodFrom, -12);
+            var lastTo2 = addMonths(periodTo, -12);
+
             break;
         case "week":
         default:
             var periodFrom = date;
             var periodTo = addDays(periodFrom, +6);
+
+            var lastFrom1 = addDays(periodFrom, -7);
+            var lastTo1 = addDays(periodFrom, -1);
+            var lastFrom2 = addDays(periodFrom, -(13*7));
+            var lastTo2 = addDays(periodFrom, -7);
         }
+        
         var state = this.state;
         state.currentDate = date;
         state.periodFrom = periodFrom;
         state.periodTo = periodTo;
         state.periodType = periodType;
         state.periodTypeForServer = periodTypeForServer;
+
+        state.lastFrom1 = lastFrom1;
+        state.lastTo1 = lastTo1;
+        state.lastFrom2 = lastFrom2;
+        state.lastTo2 = lastTo2;
+
         state.dirty = true;
         this.setState(state);
     },
@@ -416,7 +467,89 @@ var Revenue2 = React.createClass({
                 to:sf(state.periodTo, state.periodTypeForServer)},
             specs: {type:"visits"}
         };
+        queries.visitors_total = {
+            periods:{
+                type:state.periodTypeForServer, 
+                from:sf(state.periodFrom, state.periodTypeForServer), 
+                to:sf(state.periodTo, state.periodTypeForServer),
+                kind:"sum"
+            },
+            specs: {type:"visits"}
+        };
+        
+        if (membership === true) {
+            queries.visitors.specs.kinds = ["membership"];
+        } else if (membership === false) {
+            queries.visitors.specs.kinds = ["ga", "group"];
+        }
 
+        var from1 =  state.lastFrom1;
+        var to1 = state.lastTo1;
+        var from2 = state.lastFrom2;
+        var to2 = state.lastTo2;
+
+        if(state.periodType == "week") {
+            queries.visitors_lastperiod_1 = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:sf(from1), 
+                    to:sf(to1),
+                    kind:"sum"
+                },
+                specs: {type:"visits"}
+            };
+            queries.visitors_lastperiod_2 = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:sf(from2), 
+                    to:sf(to2),
+                    kind:"average"
+                },
+                specs: {type:"visits"}
+            };
+            
+        } else if(state.periodType == "month"){
+            queries.visitors_lastperiod_1 = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:sf(from1), 
+                    to:sf(to1),
+                    kind:"sum"
+                },
+                specs: {type:"visits"}
+            };
+            queries.visitors_lastperiod_2 = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:sf(from2), 
+                    to:sf(to2),
+                    kind:"sum"
+                },
+                specs: {type:"visits"}
+            };
+
+        } else if(state.periodType == "quarter"){
+            queries.visitors_lastperiod_1 = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:sf(from1), 
+                    to:sf(to1),
+                    kind:"sum"
+                },
+                specs: {type:"visits"}
+            };
+            queries.visitors_lastperiod_2 = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:from2, 
+                    to:to2,
+                    kind:"sum"
+                },
+                specs: {type:"visits"}
+            };
+        }
+        
+        
         
         for (var channel in state.channelActive) {
             var query = {
@@ -427,26 +560,15 @@ var Revenue2 = React.createClass({
                 },
                 specs:{type:"sales", channel:channel, members:membership}
             }
-            
-            if(state.periodType == "week") {
-                var from1 = addDays(state.periodFrom, -7);
-                var to1 = addDays(state.periodFrom, -1);
-                var from2 = addDays(state.periodFrom, -(13*7));
-                var to2 = addDays(state.periodFrom, -7);
-            } else if(state.periodType == "month"){
-                var from1 = addMonths(state.periodFrom, -1);
-                var to1 = addDays(state.periodFrom, -1);
-                var from2 = addMonths(state.periodFrom, -12);
-                var to2 = addMonths(state.periodTo, -12);
-            } else if(state.periodType == "quarter"){
-                var from1 = addDays(state.periodFrom, -(13*7));
-                var to1 = addDays(state.periodFrom, -1);
-                
-                var from2 = (sf(state.periodFrom, state.periodTypeForServer)).split("-");  //yyyy-w
-                var to2 = (sf(state.periodTo, state.periodTypeForServer)).split("-");    //yyyy-w
-                from2 = (parseInt(from2[0])-1)+"-"+from2[1];
-                to2 = (parseInt(to2[0])-1)+"-"+to2[1];
-            }
+            var totals = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:sf(state.periodFrom, state.periodTypeForServer), 
+                    to:sf(state.periodTo, state.periodTypeForServer),
+                    kind:"sum"
+                },
+                specs:{type:"sales", channel:channel, members:membership}
+            };
             
             if(state.periodType == "week" || state.periodType == "month" ) {
                 var lastPeriod1 = {
@@ -459,6 +581,7 @@ var Revenue2 = React.createClass({
                     specs:{type:"sales", channel:channel, members:membership}
                 }
             }
+            
             if(state.periodType == "week") {
                 var fromWeek = serverFormatWeek(from2);
                 var toWeek = serverFormatWeek(to2);
@@ -509,10 +632,12 @@ var Revenue2 = React.createClass({
 
             if (membership===undefined) {
                 delete query.specs.members;
+                delete totals.specs.members;
                 delete lastPeriod1.specs.members;
                 delete lastPeriod2.specs.members;
             }
             queries[channel+"_bars"] = query;
+            queries[channel+"_bars_totals"] = totals;
             queries[channel+"_bars_lastperiod_1"] = lastPeriod1;
             queries[channel+"_bars_lastperiod_2"] = lastPeriod2;
         }
@@ -573,8 +698,9 @@ var Revenue2 = React.createClass({
         return r;
     },
     componentDidMount:function () {
-        this.updateWeather(this.state);
-        this.updateData(this.state);
+        this.updatePeriod(this.state.currentDate, this.state.periodType);
+        // this.updateWeather(this.state);
+        // this.updateData(this.state);
     },
     shouldComponentUpdate:function (nextProps, nextState) {
         console.log(nextState.dirty);
@@ -650,6 +776,33 @@ var Revenue2 = React.createClass({
                             weather={weather}
                         />);
             }
+            
+            var detailsRows = [];
+            var totalSufix = "_bars_totals";
+            var lastSufix = "_bars_"+this.state.comparePeriodType;
+            
+            var visitors = parseInt(result.visitors_total.units);
+            var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType].units);
+            
+            for(var k in channelActive) {
+                if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
+                    
+                    var to = result[k+totalSufix].amount;
+                    var from = result[k+lastSufix].amount;
+                    
+                    if(this.state.units == "percap") {
+                        to /= visitors;
+                        from /= lastVisitors;
+                    }
+                    
+                    detailsRows.push(
+                        <DetailsRow from={from} to={to} title={this.state.channelNames[k]} />
+                    );
+                } else {
+                    detailsRows.push(<div></div>);
+                }
+            };
+            
         }
         
         return (
@@ -741,18 +894,24 @@ var Revenue2 = React.createClass({
                         <div className="row details">
                             <div className="col-xs-12 col-sm-12">
                                 <div className="col-xs-12 col-sm-6" id="header">
-                                    May 29 - Jun 4, 2016
+                                    {
+                                        (this.state.comparePeriodType == "lastperiod_1") ?
+                                            KUtils.date.detailsFormat(this.state.lastFrom1, this.state.lastTo1)
+                                        :
+                                            KUtils.date.detailsFormat(this.state.lastFrom2, this.state.lastTo2)
+                                    }
+                                    
                                 </div>
                                 <div className="col-xs-12 col-sm-6 text-right">
                                     <Dropdown
                                         ref="comparePeriodType"
                                         optionList={
                                             (this.state.periodType == "week") ?
-                                                {last1:"Last Week", last2:"13 Week Average"}
+                                                {lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
                                             :
                                                 (this.state.periodType == "month") ?
-                                                {last1:"Last Month", last2:"Same Month Last Year"}
-                                                : {last1:"Last Quarter", last2:"Same Quarter Last Year"}
+                                                {lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"}
+                                                : {lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"}
                                         }
                                         selected={this.state.comparePeriodType}
                                         onChange={this.onComparePeriodTypeChange}
@@ -760,60 +919,7 @@ var Revenue2 = React.createClass({
                                 </div>
                             </div>
                             <div className="col-xs-12 col-sm-12" id="table">
-                                <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
-                                    <div className="table-item">
-                                        <div className="col-xs-4">
-                                            BOX OFFICE
-                                        </div>
-                                        <div className="col-xs-8">
-                                            <div className="col-xs-4">
-                                                <svg  xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 28.322 33.986" preserveAspectRatio="xMidYMid meet" className="change down multicolorfl"><path d="M16.382 31.766V8.503l8.147 8.15c0.867 0.9 2.3 0.9 3.1 0c0.867-0.868 0.867-2.275-0.001-3.142L16.382 2.2 L14.161 0l-2.222 2.223L0.65 13.512C0.217 13.9 0 14.5 0 15.082s0.217 1.1 0.7 1.571c0.868 0.9 2.3 0.9 3.1 0 l8.148-8.15v23.263c0 1.2 1 2.2 2.2 2.221C15.387 34 16.4 33 16.4 31.8"></path></svg>
-                                                <span className="multicolor" id="change">24.59%</span>
-                                            </div>
-                                            <div className="col-xs-8" id="from-val">
-                                                <span id="from-val">$704,974</span>
-                                                <svg  xmlns="http://www.w3.org/2000/svg" width="20px" height="22.322px" viewBox="0 0 51.9 22.322" preserveAspectRatio="xMidYMid meet" className="long-arrow" data-reactid=".5.0.0.6.1.2.0.3.0"><path d="M2.221 13.382h41.176l-5.148 5.147c-0.867 0.867-0.867 2.3 0 3.143c0.867 0.9 2.3 0.9 3.141-0.001l8.289-8.289 l2.222-2.221l-2.222-2.222L41.389 0.65C40.957 0.2 40.4 0 39.8 0c-0.566 0-1.137 0.217-1.569 0.7 c-0.867 0.868-0.867 2.3 0 3.141l5.148 5.148H2.221C0.994 8.9 0 9.9 0 11.161C0 12.4 1 13.4 2.2 13.4" data-reactid=".5.0.0.6.1.2.0.3.0.0"></path></svg>
-                                                <span className="multicolor" id="to-val" >$934,835</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
-                                    <div className="table-item">
-                                        <div className="col-xs-4">
-                                            BOX OFFICE
-                                        </div>
-                                        <div className="col-xs-8">
-                                            <div className="col-xs-4">
-                                                <svg  xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 28.322 33.986" preserveAspectRatio="xMidYMid meet" className="change down multicolorfl"><path d="M16.382 31.766V8.503l8.147 8.15c0.867 0.9 2.3 0.9 3.1 0c0.867-0.868 0.867-2.275-0.001-3.142L16.382 2.2 L14.161 0l-2.222 2.223L0.65 13.512C0.217 13.9 0 14.5 0 15.082s0.217 1.1 0.7 1.571c0.868 0.9 2.3 0.9 3.1 0 l8.148-8.15v23.263c0 1.2 1 2.2 2.2 2.221C15.387 34 16.4 33 16.4 31.8"></path></svg>
-                                                <span className="multicolor" id="change">24.59%</span>
-                                            </div>
-                                            <div className="col-xs-8" id="from-val">
-                                                <span id="from-val">$704,974</span>
-                                                <svg  xmlns="http://www.w3.org/2000/svg" width="20px" height="22.322px" viewBox="0 0 51.9 22.322" preserveAspectRatio="xMidYMid meet" className="long-arrow" data-reactid=".5.0.0.6.1.2.0.3.0"><path d="M2.221 13.382h41.176l-5.148 5.147c-0.867 0.867-0.867 2.3 0 3.143c0.867 0.9 2.3 0.9 3.141-0.001l8.289-8.289 l2.222-2.221l-2.222-2.222L41.389 0.65C40.957 0.2 40.4 0 39.8 0c-0.566 0-1.137 0.217-1.569 0.7 c-0.867 0.868-0.867 2.3 0 3.141l5.148 5.148H2.221C0.994 8.9 0 9.9 0 11.161C0 12.4 1 13.4 2.2 13.4" data-reactid=".5.0.0.6.1.2.0.3.0.0"></path></svg>
-                                                <span className="multicolor" id="to-val" >$934,835</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
-                                    <div className="table-item">
-                                        <div className="col-xs-4">
-                                            BOX OFFICE
-                                        </div>
-                                        <div className="col-xs-8">
-                                            <div className="col-xs-4">
-                                                <svg  xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 28.322 33.986" preserveAspectRatio="xMidYMid meet" className="change down multicolorfl"><path d="M16.382 31.766V8.503l8.147 8.15c0.867 0.9 2.3 0.9 3.1 0c0.867-0.868 0.867-2.275-0.001-3.142L16.382 2.2 L14.161 0l-2.222 2.223L0.65 13.512C0.217 13.9 0 14.5 0 15.082s0.217 1.1 0.7 1.571c0.868 0.9 2.3 0.9 3.1 0 l8.148-8.15v23.263c0 1.2 1 2.2 2.2 2.221C15.387 34 16.4 33 16.4 31.8"></path></svg>
-                                                <span className="multicolor" id="change">24.59%</span>
-                                            </div>
-                                            <div className="col-xs-8" id="from-val">
-                                                <span id="from-val">$704,974</span>
-                                                <svg  xmlns="http://www.w3.org/2000/svg" width="20px" height="22.322px" viewBox="0 0 51.9 22.322" preserveAspectRatio="xMidYMid meet" className="long-arrow" data-reactid=".5.0.0.6.1.2.0.3.0"><path d="M2.221 13.382h41.176l-5.148 5.147c-0.867 0.867-0.867 2.3 0 3.143c0.867 0.9 2.3 0.9 3.141-0.001l8.289-8.289 l2.222-2.221l-2.222-2.222L41.389 0.65C40.957 0.2 40.4 0 39.8 0c-0.566 0-1.137 0.217-1.569 0.7 c-0.867 0.868-0.867 2.3 0 3.141l5.148 5.148H2.221C0.994 8.9 0 9.9 0 11.161C0 12.4 1 13.4 2.2 13.4" data-reactid=".5.0.0.6.1.2.0.3.0.0"></path></svg>
-                                                <span className="multicolor" id="to-val" >$934,835</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {detailsRows}
                             </div>
                         </div>
                         <div className="text-center" id="details-handle">
