@@ -36,6 +36,9 @@ var Channel = React.createClass({
 });
 
 var GBar = React.createClass({
+    componentDidUpdate:function () {
+        // $(this.refs.barTransition.getDOMNode()).addClass("activate");
+    },
     render:function () {
         // console.log(this.props);
         var channels = this.props.channels;
@@ -72,7 +75,9 @@ var GBar = React.createClass({
         return(
             <div className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div className="gbar-sections" style={{height:height+"px"}}>
-                    {sections}
+                    <div ref="barTransition" className="bar-transition">
+                        {sections}
+                    </div>
                 </div>
                 <div className="glabel">
                     {KUtils.date.barFormat(this.props.date, this.props.periodType)}
@@ -272,7 +277,9 @@ var Revenue2 = React.createClass({
             currentDate:periodFrom,
             periodFrom:periodFrom,
             periodTo:periodTo,
-            dirty:false
+            dirty:false,
+            detailsClass:"",
+            detailsTitle:"Show Details"
         };
     },
     updatePeriod:function (date, periodType) {
@@ -366,6 +373,13 @@ var Revenue2 = React.createClass({
     },
     onComparePeriodTypeChange:function (event) {
         this.setState({comparePeriodType:event.target.value});
+    },
+    onDetailsClick:function (event) {
+        if (this.state.detailsClass == "") {
+            this.setState({detailsClass:"active", detailsTitle:"Hide Details"});
+        } else {
+            this.setState({detailsClass:"", detailsTitle:"Show Details"});
+        }
     },
     //receives state, so it can be called outside react lyfecyle
     updateEmptyChannels:function (state) {
@@ -796,7 +810,7 @@ var Revenue2 = React.createClass({
                     }
                     
                     detailsRows.push(
-                        <DetailsRow from={from} to={to} title={this.state.channelNames[k]} />
+                        <DetailsRow key={k} from={from} to={to} title={this.state.channelNames[k]} />
                     );
                 } else {
                     detailsRows.push(<div></div>);
@@ -891,7 +905,7 @@ var Revenue2 = React.createClass({
                                 </div>
                             </div>
                         </div>
-                        <div className="row details">
+                        <div className={"row details "+this.state.detailsClass}>
                             <div className="col-xs-12 col-sm-12">
                                 <div className="col-xs-12 col-sm-6" id="header">
                                     {
@@ -922,11 +936,13 @@ var Revenue2 = React.createClass({
                                 {detailsRows}
                             </div>
                         </div>
-                        <div className="text-center" id="details-handle">
-                            Show Details
+                        <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="7px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className="filter-caret"><path d="M21.854 0.439l-7.366 7.365L12.523 9.77L10.56 7.804L3.196 0.441C2.425-0.185 1.293-0.147 0.6 0.6 c-0.768 0.768-0.768 2 0 2.778l9.983 9.983l1.964 1.966l1.965-1.966l9.984-9.983c0.383-0.383 0.575-0.886 0.575-1.389 c0-0.502-0.192-1.006-0.575-1.389C23.755-0.146 22.626-0.185 21.9 0.4"/></svg>
+                            {this.state.detailsTitle}
                         </div>
                     </div>
                 </div>
+                <div className="clearFix"></div>
             </div>
         );
     }

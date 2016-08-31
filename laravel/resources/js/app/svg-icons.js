@@ -15,9 +15,14 @@ var ChangeArrow = React.createClass({
 
 var LongArrow = React.createClass({
     render: function() {
+        var width = "51.9px";
+        if (this.props.width) {
+            width = this.props.width;
+        }
+        
         return (
             /* width is 233% of height */
-            <svg width="51.9px" height="22.322px" viewBox="0 0 51.9 22.322" preserveAspectRatio="xMidYMid meet" className={this.props.className}>
+            <svg width={width} height="22.322px" viewBox="0 0 51.9 22.322" preserveAspectRatio="xMidYMid meet" className={this.props.className}>
                 <path d="M2.221 13.382h41.176l-5.148 5.147c-0.867 0.867-0.867 2.3 0 3.143c0.867 0.9 2.3 0.9 3.141-0.001l8.289-8.289 l2.222-2.221l-2.222-2.222L41.389 0.65C40.957 0.2 40.4 0 39.8 0c-0.566 0-1.137 0.217-1.569 0.7 c-0.867 0.868-0.867 2.3 0 3.141l5.148 5.148H2.221C0.994 8.9 0 9.9 0 11.161C0 12.4 1 13.4 2.2 13.4"/>
             </svg>
         );

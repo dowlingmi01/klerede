@@ -2810,7 +2810,19 @@ form.inline-block {
 /******************************************************/
 /********************** REVENUE2 **********************/
 /******************************************************/
+.bar-transition {
+    height:100%;
+    position:relative;
+}
+// .bar-transition.activate {
+//     transition:.3s;
+//     animation-timing-function: cubic-bezier(.12,0,.8,1);
+//     height:100%;
+// }
 
+#revenue2 {
+    margin-bottom: 30px;
+}
 #revenue2 h2 {
     font-size: 150%;
     text-transform: uppercase;
@@ -2884,7 +2896,7 @@ a.dp-choose-date {
 
 #revenue2 .graphic {
     padding-top:2em;
-    height:400px;
+    height:370px;
     font-weight:500;
     white-space-collapse: discard;
     padding-right:50px;
@@ -2962,6 +2974,7 @@ a.dp-choose-date {
 }
 
 #revenue2 .graphic  .gbar:hover #popup {
+    transition: .3s;
     display:block;
 }
 #revenue2 .graphic #popup {
@@ -3051,6 +3064,30 @@ a.dp-choose-date {
 
 
 
+#revenue2 .details {
+    overflow:hidden;
+    height:0;
+    transition: .3s;
+}
+#revenue2 .details.active {
+    height:144px;
+    transition: .3s;
+}
+#revenue2 #details-handle {
+    cursor:pointer;
+}
+#revenue2 #details-handle.active .filter-caret {
+    transform: rotate(180deg);
+    left:14px;
+    transition: .3s;
+}
+#revenue2 #details-handle  .filter-caret {
+    transform: rotate(0);
+    transition: .3s;
+    top:11px;
+    left:12px;
+}
+
 #revenue2 .details #header {
     font-size:140%;
 }
@@ -3103,7 +3140,4 @@ a.dp-choose-date {
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     text-transform: uppercase;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30px" height="7px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" class="filter-caret"><path d="M21.854 0.439l-7.366 7.365L12.523 9.77L10.56 7.804L3.196 0.441C2.425-0.185 1.293-0.147 0.6 0.6 c-0.768 0.768-0.768 2 0 2.778l9.983 9.983l1.964 1.966l1.965-1.966l9.984-9.983c0.383-0.383 0.575-0.886 0.575-1.389 c0-0.502-0.192-1.006-0.575-1.389C23.755-0.146 22.626-0.185 21.9 0.4"/></svg>');
-    background-repeat: no-repeat;
-    background-position: 2% 50%;
 }
