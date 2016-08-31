@@ -123,13 +123,19 @@ var global = Function('return this')();
                     return m+"."+d;
                 },
                 serverFormat:function (date, periodType) {
-                    if (periodType == "week") {
-                        return date;
-                    };
                     var date = new Date(date);
+                    if (periodType == "week") {
+                        var w = scope.KUtils.date.getWeekNumber(date);
+                        return date.getUTCFullYear()+"-"+w;
+                    };
                     var d =date.getUTCDate();
                     var m =date.getUTCMonth()+1;
                     return date.getUTCFullYear()+"-"+m+"-"+d;
+                },
+                serverFormatWeek:function (date) {
+                    var date = new Date(date);
+                    var w = scope.KUtils.date.getWeekNumber(date);
+                    return date.getUTCFullYear()+"-"+w;
                 },
                 format:function (isoDate) { //'mm/dd/yyyy'
                     var date = new Date(isoDate);

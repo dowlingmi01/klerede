@@ -2868,6 +2868,13 @@ a.dp-choose-date {
 #revenue2 .channel {
     display:inline-block;
 }
+#revenue2 .channel.empty {
+    color:@lightmediumgrey;
+}
+#revenue2 .channel.empty .circle-checkbox.multicolorbg  {
+    background-color:@lightmediumgrey;
+    cursor:initial;
+}
 
 #revenue2 .unit-filter {
     display:inline-block;
@@ -2972,10 +2979,11 @@ a.dp-choose-date {
 {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    background-color:lightblue;
+    background-color:@lightblue;
     width:100%;
     margin-bottom:0;
     padding: 0 6px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 }
 #revenue2 .graphic #popup #weather #popup-date
 {
@@ -3009,13 +3017,14 @@ a.dp-choose-date {
 
 #revenue2 .graphic #popup #details
 {
-    background-color:darkgray;
+    background-color:@darkmediumgrey;
     color:white;
     width:100%;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding:6px;
     margin-bottom:0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 }
 #revenue2 .graphic #popup #details .details-row div
 {
@@ -3035,7 +3044,7 @@ a.dp-choose-date {
 	height: 0;
 	border-left: 12px solid transparent;
 	border-right: 12px solid transparent;
-	border-top: 12px solid darkgray;
+	border-top: 12px solid @darkmediumgrey;
     position:absolute;
     left:110.5px;
 }

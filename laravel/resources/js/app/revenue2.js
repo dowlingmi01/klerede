@@ -22,7 +22,7 @@ var Dropdown = React.createClass({
 var Channel = React.createClass({
     render:function () {
         return(
-            <div className="channel multicolor-wrapper">
+            <div className={"channel multicolor-wrapper "+this.props.empty}>
                 <div className={"circle-checkbox multicolorbg "+this.props.active} onClick={this.props.onClick}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="21.294px" height="15.555px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className="legend-check" >
                         <path d="M20.641 0.653c-0.871-0.871-2.283-0.871-3.154 0.001l-9.489 9.528L3.793 5.98c-0.868-0.868-2.275-0.868-3.143 0 c-0.867 0.868-0.867 2.3 0 3.142l5.905 5.904c0.873 0.7 2.2 0.7 2.999-0.118L20.641 3.8 C21.512 2.9 21.5 1.5 20.6 0.7"/>
@@ -58,8 +58,9 @@ var GBar = React.createClass({
         }
         
         var totalWidth = this.props.width;
-        var width = 2*totalWidth/3;
-        var marginRight = 1*totalWidth/3;
+        var width = totalWidth/2;
+        var marginRight = totalWidth/4;
+        var marginLeft = totalWidth/4;
         
         var height = Math.round(300*this.props.partial/this.props.max);
 
@@ -69,7 +70,7 @@ var GBar = React.createClass({
         
         
         return(
-            <div className="gbar" style={{width:width+"%", "marginRight":marginRight+"%"}}>
+            <div className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div className="gbar-sections" style={{height:height+"px"}}>
                     {sections}
                 </div>
@@ -237,9 +238,10 @@ var Revenue2 = React.createClass({
         return {
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
+            channelEmpty:{gate:true, cafe: true, store: true, membership: true},
             periodType:"week",
             periodTypeForServer:"date",
-            members:"members",
+            members:"totals",
             units:"dollars",
             comparePeriodType:"lastweek",
             currentDate:periodFrom,
@@ -252,6 +254,7 @@ var Revenue2 = React.createClass({
         var addMonths = KUtils.date.addMonths;
         var addDays = KUtils.date.addDays;
         var getWeekNumber = KUtils.date.getWeekNumber;
+        var getDateFromWeek = KUtils.date.getDateFromWeek;
         var forceDigits = KUtils.number.forceDigits;
         var periodTypeForServer = "date";
         
@@ -260,8 +263,10 @@ var Revenue2 = React.createClass({
             var week = getWeekNumber(date);
             var year = (new Date(date)).getUTCFullYear();
             var quarter = Math.ceil(week/13);
-            var periodFrom = year+"-"+forceDigits((quarter-1)*13,2);
-            var periodTo = year+"-"+forceDigits(quarter*13,2);
+            // var periodFrom = year+"-"+forceDigits((quarter-1)*13,2);
+            // var periodTo = year+"-"+forceDigits(quarter*13,2);
+            var periodFrom = getDateFromWeek(year+"-"+(quarter-1)*13);//->tengo la semana
+            var periodTo = getDateFromWeek(year+"-"+(quarter)*13);//->tengo la semana
             periodTypeForServer = "week";
             break;
         case "month":
@@ -294,7 +299,7 @@ var Revenue2 = React.createClass({
         this.updatePeriod(event.target.value, this.state.periodType);
     },
     onMembersChange:function (event) {
-        this.setState({members:event.target.value});
+        this.setState({members:event.target.value, dirty:true});
     },
     onUnitsChange:function (units) {
         this.setState({units:units})
@@ -302,51 +307,33 @@ var Revenue2 = React.createClass({
     onChannelClick:function (channel) {
         var state = this.state;
         state.channelActive[channel] = (state.channelActive[channel] == "active") ? "" : "active" ;
-        state.dirty = true;
+        // state.dirty = true;
+        this.updateSums(state);
         this.setState(state);
     },
     onComparePeriodTypeChange:function (event) {
         this.setState({comparePeriodType:event.target.value, dirty:true});
     },
-    updateData:function (state) {
-        var sf = KUtils.date.serverFormat;
-        // var state = this.state;
-        var queries = {};
-        queries.total_bars = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)},
-            specs: {type:"sales"}
-        };
-        queries.visitors = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)},
-            specs: {type:"visits"}
-        };
+    //receives state, so it can be called outside react lyfecyle
+    updateEmptyChannels:function (state) {
+        var channelEmpty = state.channelEmpty;
+        var result = state.result;
         
-        for (var channel in state.channelActive) {
-            if (state.channelActive[channel] == "active") {
-                queries[channel+"_bars"] = {
-                    periods:{
-                        type:state.periodTypeForServer, 
-                        from:sf(state.periodFrom, state.periodTypeForServer), 
-                        to:sf(state.periodTo, state.periodTypeForServer)
-                    },
-                    specs:{type:"sales", channel:channel}
-                }
+        for (var channel in channelEmpty) {
+            if (!result[channel+"_bars"] || result[channel+"_bars"].length == 0) {
+                channelEmpty[channel] = true;
+            } else {
+                channelEmpty[channel] = false;
             }
         }
-        console.log(queries);
-        KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
+        
+        return state;
     },
-    onDataUpdate:function (result) {
-
-        console.log(result);
-
-        var state = this.state;
+    //receives state, so it can be called outside react lyfecyle
+    updateSums:function (state) {
+        
+        var result = state.result;
+        
         var total_bars = result.total_bars;
         var visitors = result.visitors;
         var partial_sum = [];
@@ -354,16 +341,12 @@ var Revenue2 = React.createClass({
         var max = 0;
         var maxPercap = 0;
         for (var i in total_bars) {
-            if(total_bars[i].amount < 0) {
-                total_bars[i].amount = 0;
-            }
-            
+
             //Save sum, only active channels
             //And calculate percaps
             var barSum = 0;
             var percapSum = 0;
             for (var k in state.channelActive) {
-
                 if(state.channelActive[k] == "active") {
                     if(result[k+"_bars"].length > i) {
                         barSum += result[k+"_bars"][i].amount;
@@ -390,9 +373,100 @@ var Revenue2 = React.createClass({
         
         result.partial_sum = partial_sum;
         result.partial_sum_percap = partial_sum_percap;
-        state.result = result;
         state.max = max;
         state.maxPercap = maxPercap;
+        state.result = result;
+        return state;
+    },
+    updateData:function (state) {
+        
+        var membership;
+        switch (state.members) {
+        case "members":
+            membership = true;
+            break;
+        case "nonmembers":
+            membership = false;
+            break;
+        default:
+            break;
+        }
+        
+        
+        var sf = KUtils.date.serverFormat;
+        var addDays = KUtils.date.addDays;
+        var serverFormatWeek = KUtils.date.serverFormatWeek;
+        // var state = this.state;
+        var queries = {};
+        queries.total_bars = {
+            periods:{
+                type:state.periodTypeForServer, 
+                from:sf(state.periodFrom, state.periodTypeForServer), 
+                to:sf(state.periodTo, state.periodTypeForServer)},
+            specs: {type:"sales", members:membership}
+        };
+        queries.visitors = {
+            periods:{
+                type:state.periodTypeForServer, 
+                from:sf(state.periodFrom, state.periodTypeForServer), 
+                to:sf(state.periodTo, state.periodTypeForServer)},
+            specs: {type:"visits"}
+        };
+
+        
+        for (var channel in state.channelActive) {
+            var query = {
+                periods:{
+                    type:state.periodTypeForServer, 
+                    from:sf(state.periodFrom, state.periodTypeForServer), 
+                    to:sf(state.periodTo, state.periodTypeForServer)
+                },
+                specs:{type:"sales", channel:channel, members:membership}
+            }
+            
+            var lastWeek = {
+                periods:{
+                    type:"date", 
+                    from:sf(addDays(state.periodFrom, -7), state.periodTypeForServer), 
+                    to:sf(addDays(state.periodFrom, -1), state.periodTypeForServer),
+                    kind:"sum"
+                },
+                specs:{type:"sales", channel:channel, members:membership}
+            }
+            
+            var fromWeek = serverFormatWeek(addDays(state.periodFrom, -(13*7)));
+            var toWeek = serverFormatWeek(addDays(state.periodFrom, -1));
+            var lastQuarterAverage = {
+                periods:{
+                    type:"week", 
+                    from:fromWeek, 
+                    to:toWeek,
+                    kind:"average"
+                },
+                specs:{type:"sales", channel:channel, members:membership}
+            }
+
+            if (membership===undefined) {
+                delete query.specs.members;
+                delete lastWeek.specs.members;
+                delete lastQuarterAverage.specs.members;
+            }
+            queries[channel+"_bars"] = query;
+            queries[channel+"_bars_lastweek"] = lastWeek;
+            queries[channel+"_bars_lastquarter"] = lastQuarterAverage;
+        }
+        console.log(queries);
+        KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
+    },
+    onDataUpdate:function (result) {
+
+        console.log(result);
+        
+        var state = this.state;
+        
+        state.result = result;
+        this.updateEmptyChannels(state);
+        this.updateSums(state);
         state.dirty = false;
         this.setState(state);
     },
@@ -454,9 +528,22 @@ var Revenue2 = React.createClass({
         var channelTypes = this.state.channelNames;
         var channelActive = this.state.channelActive;
         var channelControls = [];
+
         for (k in channelTypes) {
+            
+            var onClick;
+            var empty;
+            if(this.state.channelEmpty[k]) {
+                console.log("Channel is empty -> "+k);
+                empty = "empty";
+                onClick = null;
+            } else {
+                onClick = this.onChannelClick.bind(this,k);
+                empty = "";
+            }
+            
             channelControls.push(
-                <Channel key={k} name={channelTypes[k]} active={channelActive[k]} onClick={this.onChannelClick.bind(this,k)} />
+                <Channel key={k} empty={empty} name={channelTypes[k]} active={channelActive[k]} onClick={onClick} />
             );
         }
         
