@@ -156,12 +156,21 @@ var global = Function('return this')();
                     result.setMonth(result.getMonth() + months);
                     return scope.KUtils.date.formatFromDate(result);
                 },
+                addYears:function (date, years) {
+                    var result = new Date(date);
+                    result.setUTCFullYear(result.getUTCFullYear() + years);
+                    return scope.KUtils.date.formatFromDate(result);
+                },
                 getWeekNumber:function (d) {
-                    d = new Date(d);
-                    d.setDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-                    var yearStart = new Date(d.getFullYear(),0,1);
-                    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-                    return weekNo;
+                    var date = new Date(d);
+                    var jan1 = new Date("01/01/"+date.getUTCFullYear());
+                    var msec = date.getTime() - jan1.getTime(); //diff in milliseconds
+                    var weeks = Math.floor(msec/(1000*60*60*24*7)); //millisecondsasecond*secondsaminute*minutesanhour*hoursaday*weekdays
+                    return weeks;
+                },
+                getQuarterNumber:function (d) {
+                    var week = scope.KUtils.date.getWeekNumber(d);
+                    return Math.ceil(week/13);
                 },
                 getDateFromWeek:function (s) { //YYYY-W
                     var a = s.split("-");

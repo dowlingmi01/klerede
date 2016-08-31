@@ -243,7 +243,7 @@ var Revenue2 = React.createClass({
             periodTypeForServer:"date",
             members:"totals",
             units:"dollars",
-            comparePeriodType:"lastweek",
+            comparePeriodType:"last1",
             currentDate:periodFrom,
             periodFrom:periodFrom,
             periodTo:periodTo,
@@ -254,19 +254,21 @@ var Revenue2 = React.createClass({
         var addMonths = KUtils.date.addMonths;
         var addDays = KUtils.date.addDays;
         var getWeekNumber = KUtils.date.getWeekNumber;
+        var getQuarterNumber = KUtils.date.getQuarterNumber;
         var getDateFromWeek = KUtils.date.getDateFromWeek;
         var forceDigits = KUtils.number.forceDigits;
         var periodTypeForServer = "date";
         
         switch (periodType) {
         case "quarter":
-            var week = getWeekNumber(date);
+            // var week = getWeekNumber(date);
+            var quarter = getQuarterNumber(date); //Math.ceil(week/13);
             var year = (new Date(date)).getUTCFullYear();
-            var quarter = Math.ceil(week/13);
+            
             // var periodFrom = year+"-"+forceDigits((quarter-1)*13,2);
             // var periodTo = year+"-"+forceDigits(quarter*13,2);
             var periodFrom = getDateFromWeek(year+"-"+(quarter-1)*13);//->tengo la semana
-            var periodTo = getDateFromWeek(year+"-"+(quarter)*13);//->tengo la semana
+            var periodTo = getDateFromWeek(year+"-"+(quarter*13-1));//->tengo la semana
             periodTypeForServer = "week";
             break;
         case "month":
@@ -312,7 +314,7 @@ var Revenue2 = React.createClass({
         this.setState(state);
     },
     onComparePeriodTypeChange:function (event) {
-        this.setState({comparePeriodType:event.target.value, dirty:true});
+        this.setState({comparePeriodType:event.target.value});
     },
     //receives state, so it can be called outside react lyfecyle
     updateEmptyChannels:function (state) {
@@ -395,8 +397,10 @@ var Revenue2 = React.createClass({
         
         var sf = KUtils.date.serverFormat;
         var addDays = KUtils.date.addDays;
+        var addMonths = KUtils.date.addMonths;
+        var addYears = KUtils.date.addYears;
         var serverFormatWeek = KUtils.date.serverFormatWeek;
-        // var state = this.state;
+
         var queries = {};
         queries.total_bars = {
             periods:{
@@ -424,36 +428,93 @@ var Revenue2 = React.createClass({
                 specs:{type:"sales", channel:channel, members:membership}
             }
             
-            var lastWeek = {
-                periods:{
-                    type:"date", 
-                    from:sf(addDays(state.periodFrom, -7), state.periodTypeForServer), 
-                    to:sf(addDays(state.periodFrom, -1), state.periodTypeForServer),
-                    kind:"sum"
-                },
-                specs:{type:"sales", channel:channel, members:membership}
+            if(state.periodType == "week") {
+                var from1 = addDays(state.periodFrom, -7);
+                var to1 = addDays(state.periodFrom, -1);
+                var from2 = addDays(state.periodFrom, -(13*7));
+                var to2 = addDays(state.periodFrom, -7);
+            } else if(state.periodType == "month"){
+                var from1 = addMonths(state.periodFrom, -1);
+                var to1 = addDays(state.periodFrom, -1);
+                var from2 = addMonths(state.periodFrom, -12);
+                var to2 = addMonths(state.periodTo, -12);
+            } else if(state.periodType == "quarter"){
+                var from1 = addDays(state.periodFrom, -(13*7));
+                var to1 = addDays(state.periodFrom, -1);
+                
+                var from2 = (sf(state.periodFrom, state.periodTypeForServer)).split("-");  //yyyy-w
+                var to2 = (sf(state.periodTo, state.periodTypeForServer)).split("-");    //yyyy-w
+                from2 = (parseInt(from2[0])-1)+"-"+from2[1];
+                to2 = (parseInt(to2[0])-1)+"-"+to2[1];
             }
             
-            var fromWeek = serverFormatWeek(addDays(state.periodFrom, -(13*7)));
-            var toWeek = serverFormatWeek(addDays(state.periodFrom, -1));
-            var lastQuarterAverage = {
-                periods:{
-                    type:"week", 
-                    from:fromWeek, 
-                    to:toWeek,
-                    kind:"average"
-                },
-                specs:{type:"sales", channel:channel, members:membership}
+            if(state.periodType == "week" || state.periodType == "month" ) {
+                var lastPeriod1 = {
+                    periods:{
+                        type:"date", 
+                        from:sf(from1, "date"), 
+                        to:sf(to1, "date"),
+                        kind:"sum"
+                    },
+                    specs:{type:"sales", channel:channel, members:membership}
+                }
             }
+            if(state.periodType == "week") {
+                var fromWeek = serverFormatWeek(from2);
+                var toWeek = serverFormatWeek(to2);
+                var lastPeriod2 = {
+                    periods:{
+                        type:"week", 
+                        from:fromWeek, 
+                        to:toWeek,
+                        kind:"average"
+                    },
+                    specs:{type:"sales", channel:channel, members:membership}
+                }
+            } else if(state.periodType == "month") {
+                var lastPeriod2 = {
+                    periods:{
+                        type:"date", 
+                        from:sf(from2, state.periodTypeForServer), 
+                        to:sf(to2, state.periodTypeForServer),
+                        kind:"sum"
+                    },
+                    specs:{type:"sales", channel:channel, members:membership}
+                }
+            }
+            
+            if(state.periodType == "quarter") {
+                var lastPeriod1 = {
+                    periods:{
+                        type:"week", 
+                        from:sf(from1, state.periodTypeForServer), 
+                        to:sf(to1, state.periodTypeForServer),
+                        kind:"sum"
+                    },
+                    specs:{type:"sales", channel:channel, members:membership}
+                }
+                var lastPeriod2 = {
+                    periods:{
+                        type:"week", 
+                        from:from2,     //hack already formatted 
+                        to:to2,         //hack already formatted 
+                        kind:"sum"
+                    },
+                    specs:{type:"sales", channel:channel, members:membership}
+                }
+            }
+            
+            // console.log(from1, to1, lastPeriod1);
+            // console.log(from2, to2, lastPeriod2);
 
             if (membership===undefined) {
                 delete query.specs.members;
-                delete lastWeek.specs.members;
-                delete lastQuarterAverage.specs.members;
+                delete lastPeriod1.specs.members;
+                delete lastPeriod2.specs.members;
             }
             queries[channel+"_bars"] = query;
-            queries[channel+"_bars_lastweek"] = lastWeek;
-            queries[channel+"_bars_lastquarter"] = lastQuarterAverage;
+            queries[channel+"_bars_lastperiod_1"] = lastPeriod1;
+            queries[channel+"_bars_lastperiod_2"] = lastPeriod2;
         }
         console.log(queries);
         KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
@@ -685,7 +746,14 @@ var Revenue2 = React.createClass({
                                 <div className="col-xs-12 col-sm-6 text-right">
                                     <Dropdown
                                         ref="comparePeriodType"
-                                        optionList={{lastweek:"Last Week", average13week:"13 Week Average"}}
+                                        optionList={
+                                            (this.state.periodType == "week") ?
+                                                {last1:"Last Week", last2:"13 Week Average"}
+                                            :
+                                                (this.state.periodType == "month") ?
+                                                {last1:"Last Month", last2:"Same Month Last Year"}
+                                                : {last1:"Last Quarter", last2:"Same Quarter Last Year"}
+                                        }
                                         selected={this.state.comparePeriodType}
                                         onChange={this.onComparePeriodTypeChange}
                                     />
