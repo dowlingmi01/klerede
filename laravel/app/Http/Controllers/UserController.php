@@ -16,8 +16,7 @@ use Mail;
 use Gate;
 use App\Venue;
 use App\Helpers\PermissionHelper;
-
-
+ 
 class UserController extends Controller
 {
 
@@ -49,8 +48,9 @@ class UserController extends Controller
         if (Gate::denies('validate-venue', $input->venue_id)) {
             return "Invalid venue id";
         }
+        
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return Response::json(["error"=>"Insufficient privileges"]);
+            return ['error'=>'Insufficient privileges'];
         }
 
         $users = User::where('venue_id', $input->venue_id)->get();
@@ -66,52 +66,49 @@ class UserController extends Controller
     public function store(Request  $request)
     {
 
-            $rules = array(
-                'first_name'       => 'required',
-                'last_name'       => 'required',
-                'email'      => 'required|email',
-                'role_id' => 'required|numeric',
-                'venue_id' => 'required|numeric'
-            );
-            $validator = Validator::make(Input::all(), $rules);
-            if ($validator->fails()) {
-                $messages = $validator->messages();
-                $messages->add("result", "error");
-                return  $messages  ;
-            } 
-            
-            if(Gate::denies('validate-venue', $request->venue_id)){
-                return "Invalid venue id";
-            }
-            if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-                return Response::json(["error"=>"Insufficient privileges"]);
-            }
-            //$password = generateNewPassword(); //TODO: Generar la funcion
-
-            $user = new User;
-            $user->first_name       = $request->first_name;
-            $user->last_name       = $request->last_name;
-            $user->email      = $request->email ;
-            $user->password      = 'INVALID';
-            $user->role_id = $request->role_id;
-            $user->venue_id = $request->venue_id;
-            $user->save();
-
-
-            $view = "emails.newuser";
-            $this->sendResetLink($user, $view, function ($message) {
-                              $message->subject(config('app.new_user_email_subject'));
-
-                        });
-            
-     
-
-            return ['result'=>'ok', 'id'=>$user->id];
+        $rules = array(
+            'first_name'       => 'required',
+            'last_name'       => 'required',
+            'email'      => 'required|email',
+            'role_id' => 'required|numeric',
+            'venue_id' => 'required|numeric'
+        );
+        $validator = Validator::make(Input::all(), $rules);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            $messages->add("result", "error");
+            return  $messages  ;
+        } 
+        
+        if(Gate::denies('validate-venue', $request->venue_id)){
+            return "Invalid venue id";
         }
+        if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
+            return ['error'=>'Insufficient privileges'];
+        }
+        //$password = generateNewPassword(); //TODO: Generar la funcion
+
+        $user = new User;
+        $user->first_name       = $request->first_name;
+        $user->last_name       = $request->last_name;
+        $user->email      = $request->email ;
+        $user->password      = 'INVALID';
+        $user->role_id = $request->role_id;
+        $user->venue_id = $request->venue_id;
+        $user->save();
+
+
+        $view = "emails.newuser";
+        $this->sendResetLink($user, $view, function ($message) {
+                          $message->subject(config('app.new_user_email_subject'));
+
+                    });
+
+        return ['result'=>'ok', 'id'=>$user->id];
     }
 
 
-private function sendResetLink($user, $view,  $callback = null)
+    private function sendResetLink($user, $view,  $callback = null)
     {
    
       
@@ -186,7 +183,7 @@ private function sendResetLink($user, $view,  $callback = null)
                 return "Invalid venue id";
             }
             if (Gate::denies('user-get', $id)) {
-                return Response::json(["error"=>"Can't get user"]);
+                return ["error"=>"Can't get user"];
             }
             return $user;
         }
@@ -234,10 +231,10 @@ private function sendResetLink($user, $view,  $callback = null)
                 return "Invalid venue id";
             }
             if (Gate::denies('user-set', $id)) {
-                return Response::json(["error"=>"Insufficient privileges"]);
+                return ["error"=>"Insufficient privileges"];
             }
             if ($request->role_id !=0 && Gate::denies('valid-role', $request->role_id)) {
-                return Response::json(["error"=>"Can't set role"]);
+                return ["error"=>"Can't set role"];
             }
             $user->first_name       = trim($request->first_name) !== '' ? $request->first_name : $user->first_name;
             $user->last_name       = trim($request->last_name) !== '' ? $request->last_name : $user->last_name;
