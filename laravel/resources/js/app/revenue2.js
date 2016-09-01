@@ -286,9 +286,12 @@ var DetailsRow = React.createClass({
 });
 var Revenue2 = React.createClass({
     getInitialState:function () {
-        var periodTo = KUtils.date.format(wnt.today);
-        var weekDay = (new Date(periodTo)).getUTCDay();
-        var periodFrom = KUtils.date.addDays(periodTo, -weekDay);
+
+        var today = new Date(KUtils.date.format(wnt.today));
+        var weekDay = today.getUTCDay();
+        var offset = (weekDay==6) ? 0 : weekDay-1;
+        var periodTo = KUtils.date.addDays(today, offset);
+        var periodFrom = KUtils.date.addDays(periodTo, -6);
         
         return {
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
