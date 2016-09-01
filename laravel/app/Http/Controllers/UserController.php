@@ -78,10 +78,10 @@ class UserController extends Controller
                 $messages = $validator->messages();
                 $messages->add("result", "error");
                 return  $messages  ;
-            } else {
-                // store
-                if(Gate::denies('validate-venue', $request->venue_id)){
-                    return "Invalid venue id";
+            } 
+            
+            if(Gate::denies('validate-venue', $request->venue_id)){
+                return "Invalid venue id";
             }
             if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
                 return Response::json(["error"=>"Insufficient privileges"]);
@@ -291,7 +291,10 @@ private function sendResetLink($user, $view,  $callback = null)
         $user = User::find($id);
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];
-         }
+        }
+        if (Gate::denies('validate-venue', $user->venue_id)) {
+            return "Invalid venue id";
+        }
         if (Gate::denies('delete-user', $id)) {
             return "Can't delete";
         }
