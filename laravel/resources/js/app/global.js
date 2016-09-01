@@ -180,8 +180,9 @@ var global = Function('return this')();
                     return weeks;
                 },
                 getQuarterNumber:function (d) {
-                    var week = scope.KUtils.date.getWeekNumber(d);
-                    return Math.ceil(week/13);
+                    var date = new Date(d);
+                    var month = date.getUTCMonth();
+                    return Math.floor(month/4) + 1;
                 },
                 getDateFromWeek:function (s) { //YYYY-W
                     var a = s.split("-");

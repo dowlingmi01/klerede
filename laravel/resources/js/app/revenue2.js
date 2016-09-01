@@ -337,7 +337,7 @@ var Revenue2 = React.createClass({
             var lastTo2 = (sf(periodTo, periodTypeForServer)).split("-");    //yyyy-w
             lastFrom2 = (parseInt(lastFrom2[0])-1)+"-"+lastFrom2[1];
             lastTo2 = (parseInt(lastTo2[0])-1)+"-"+lastTo2[1];
-
+            
             
             break;
         case "month":
