@@ -87,76 +87,133 @@ var BarSet = React.createClass({
                 date = date.getFullYear() + '-' + wnt.doubleDigits(date.getMonth()+1) + '-' + wnt.doubleDigits(date.getDate());
                 dates = [date, date];
             }
-            wnt.gettingComparisonData = $.Deferred();
-            wnt.getComparison(type, dates, wnt.gettingComparisonData);
-            $.when(wnt.gettingComparisonData).done(function(data) {
-                var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
-                // if(wnt.filter.bgUnits === 'percap'){ ... CALC PER CAP ... }
-                var currentBO = $('.popover .bo').parseNumber({format:format, locale:"us"});
-                var currentC = $('.popover .c').parseNumber({format:format, locale:"us"});
-                var currentGS = $('.popover .gs').parseNumber({format:format, locale:"us"});
-                var currentM = $('.popover .m').parseNumber({format:format, locale:"us"});
-                currentBO = parseInt($('.popover .bo').text());
-                currentC = parseInt($('.popover .c').text());
-                currentGS = parseInt($('.popover .gs').text());
-                currentM = parseInt($('.popover .m').text());
-                var bo = wnt.calcChange(currentBO, parseInt(data.bo.amount));
-                var c = wnt.calcChange(currentC, parseInt(data.c.amount));
-                var gs = wnt.calcChange(currentGS, parseInt(data.gs.amount));
-                var m = wnt.calcChange(currentM, parseInt(data.m.amount));
-                // 1) Set current values in accordion to match popover
-                $('#earned-revenue .weather-period-title').text($('.popover-date').text());
-                $('#earned-revenue .box .accordion-stat').text($('.popover td.bo').text());
-                $('#earned-revenue .cafe .accordion-stat').text($('.popover td.c').text());
-                $('#earned-revenue .gift .accordion-stat').text($('.popover td.gs').text());
-                $('#earned-revenue .mem .accordion-stat').text($('.popover td.m').text());
-                // 2) Set percentage values in accordion
-                $('#earned-revenue .box .accordion-stat-change').text(bo[0]+'%');
-                $('#earned-revenue .cafe .accordion-stat-change').text(c[0]+'%');
-                $('#earned-revenue .gift .accordion-stat-change').text(gs[0]+'%');
-                $('#earned-revenue .mem .accordion-stat-change').text(m[0]+'%');
-                // 3) Set previous values in accordion
-                $('#earned-revenue .box .accordion-compared-to').text(data.bo.amount);
-                $('#earned-revenue .cafe .accordion-compared-to').text(data.c.amount);
-                $('#earned-revenue .gift .accordion-compared-to').text(data.gs.amount);
-                $('#earned-revenue .mem .accordion-compared-to').text(data.m.amount);
-                // 4) Set change arrows in accordion
-                // TO DO: Pull into own method (NOTE: Have to manipulate CSS since ReactJS won't let me change classes)
-                if($('.box .accordion-change .change').attr('class').indexOf(bo[1]) === -1){
-                    // Change arrow differs, so rotate it
-                    if($('.box .accordion-change .change').attr('class').indexOf('down') > -1){
-                        // Change arrow was down, so rotate it up
-                        $('.box .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        // Change arrow was up, so rotate it down
-                        $('.box .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                if($('.cafe .accordion-change .change').attr('class').indexOf(c[1]) === -1){
-                    if($('.cafe .accordion-change .change').attr('class').indexOf('down') > -1){
-                        $('.cafe .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        $('.cafe .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                if($('.gift .accordion-change .change').attr('class').indexOf(gs[1]) === -1){
-                    if($('.gift .accordion-change .change').attr('class').indexOf('down') > -1){
-                        $('.gift .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        $('.gift .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                if($('.mem .accordion-change .change').attr('class').indexOf(m[1]) === -1){
-                    if($('.mem .accordion-change .change').attr('class').indexOf('down') > -1){
-                        $('.mem .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        $('.mem .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                // Run number cleanup after processing...
-                self.formatNumbers();
-            });
+            // wnt.gettingComparisonData = $.Deferred();
+            this.getComparison(type, dates);
+            // $.when(wnt.gettingComparisonData).done();
         }
+    },
+    onComparisonGet:function(data) {
+        
+        var self = this;
+        
+        var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
+        // if(wnt.filter.bgUnits === 'percap'){ ... CALC PER CAP ... }
+        var currentBO = $('.popover .bo').parseNumber({format:format, locale:"us"});
+        var currentC = $('.popover .c').parseNumber({format:format, locale:"us"});
+        var currentGS = $('.popover .gs').parseNumber({format:format, locale:"us"});
+        var currentM = $('.popover .m').parseNumber({format:format, locale:"us"});
+        currentBO = parseInt($('.popover .bo').text());
+        currentC = parseInt($('.popover .c').text());
+        currentGS = parseInt($('.popover .gs').text());
+        currentM = parseInt($('.popover .m').text());
+        var bo = wnt.calcChange(currentBO, parseInt(data.bo.amount));
+        var c = wnt.calcChange(currentC, parseInt(data.c.amount));
+        var gs = wnt.calcChange(currentGS, parseInt(data.gs.amount));
+        var m = wnt.calcChange(currentM, parseInt(data.m.amount));
+        // 1) Set current values in accordion to match popover
+        $('#earned-revenue .weather-period-title').text($('.popover-date').text());
+        $('#earned-revenue .box .accordion-stat').text($('.popover td.bo').text());
+        $('#earned-revenue .cafe .accordion-stat').text($('.popover td.c').text());
+        $('#earned-revenue .gift .accordion-stat').text($('.popover td.gs').text());
+        $('#earned-revenue .mem .accordion-stat').text($('.popover td.m').text());
+        // 2) Set percentage values in accordion
+        $('#earned-revenue .box .accordion-stat-change').text(bo[0]+'%');
+        $('#earned-revenue .cafe .accordion-stat-change').text(c[0]+'%');
+        $('#earned-revenue .gift .accordion-stat-change').text(gs[0]+'%');
+        $('#earned-revenue .mem .accordion-stat-change').text(m[0]+'%');
+        // 3) Set previous values in accordion
+        $('#earned-revenue .box .accordion-compared-to').text(data.bo.amount);
+        $('#earned-revenue .cafe .accordion-compared-to').text(data.c.amount);
+        $('#earned-revenue .gift .accordion-compared-to').text(data.gs.amount);
+        $('#earned-revenue .mem .accordion-compared-to').text(data.m.amount);
+        // 4) Set change arrows in accordion
+        // TO DO: Pull into own method (NOTE: Have to manipulate CSS since ReactJS won't let me change classes)
+        if($('.box .accordion-change .change').attr('class').indexOf(bo[1]) === -1){
+            // Change arrow differs, so rotate it
+            if($('.box .accordion-change .change').attr('class').indexOf('down') > -1){
+                // Change arrow was down, so rotate it up
+                $('.box .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                // Change arrow was up, so rotate it down
+                $('.box .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        if($('.cafe .accordion-change .change').attr('class').indexOf(c[1]) === -1){
+            if($('.cafe .accordion-change .change').attr('class').indexOf('down') > -1){
+                $('.cafe .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                $('.cafe .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        if($('.gift .accordion-change .change').attr('class').indexOf(gs[1]) === -1){
+            if($('.gift .accordion-change .change').attr('class').indexOf('down') > -1){
+                $('.gift .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                $('.gift .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        if($('.mem .accordion-change .change').attr('class').indexOf(m[1]) === -1){
+            if($('.mem .accordion-change .change').attr('class').indexOf('down') > -1){
+                $('.mem .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                $('.mem .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        // Run number cleanup after processing...
+        self.formatNumbers();
+    },
+    getComparison:function (type, priorPeriod) {
+        var queries = {
+            bo: {
+                specs: {
+                    type: 'sales',
+                    channel: 'gate'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            },
+            c: {
+                specs: {
+                    type: 'sales',
+                    channel: 'cafe'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            },
+            gs: {
+                specs: {
+                    type: 'sales',
+                    channel: 'store'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            },
+            m: {
+                specs: {
+                    type: 'sales',
+                    channel: 'membership'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            }
+        }
+        KAPI.stats.query(wnt.venueID, queries, this.onComparisonGet);
     },
     render: function() {
         return (

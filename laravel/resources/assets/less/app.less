@@ -2722,3 +2722,463 @@ div.dp-popup td.disabled {
 .ui-state-focus {
     outline: none;
 }
+
+
+/******************************************************/
+/*********** SOME GENERIC ITEMS FOR GRAPHICS **********/
+/******************************************************/
+
+.multicolor-wrapper:nth-child(1) .multicolor,
+.multicolor:nth-child(1) 
+{
+    color: @boxoffice;
+}
+.multicolor-wrapper:nth-child(2) .multicolor,
+.multicolor:nth-child(2) 
+{
+    color: @cafe;
+}
+.multicolor-wrapper:nth-child(3) .multicolor,
+.multicolor:nth-child(3) 
+{
+    color: @giftstore;
+}
+.multicolor-wrapper:nth-child(4) .multicolor,
+.multicolor:nth-child(4) 
+{
+    color: @membership;
+}
+
+.multicolor-wrapper:nth-child(1) .multicolorbg,
+.multicolorbg:nth-child(1)
+{
+    background-color: @boxoffice;
+}
+.multicolor-wrapper:nth-child(2) .multicolorbg,
+.multicolorbg:nth-child(2)
+{
+    background-color: @cafe;
+}
+.multicolor-wrapper:nth-child(3) .multicolorbg,
+.multicolorbg:nth-child(3)
+{
+    background-color: @giftstore;
+}
+.multicolor-wrapper:nth-child(4) .multicolorbg,
+.multicolorbg:nth-child(4)
+{
+    background-color: @membership;
+}
+
+.multicolor-wrapper:nth-child(1) .multicolorfl,
+.multicolorfl:nth-child(1)
+{
+    fill: @boxoffice;
+}
+.multicolor-wrapper:nth-child(2) .multicolorfl,
+.multicolorfl:nth-child(2)
+{
+    fill: @cafe;
+}
+.multicolor-wrapper:nth-child(3) .multicolorfl,
+.multicolorfl:nth-child(3)
+{
+    fill: @giftstore;
+}
+.multicolor-wrapper:nth-child(4) .multicolorfl,
+.multicolorfl:nth-child(4)
+{
+    fill: @membership;
+}
+
+form.inline-block {
+    vertical-align:middle;
+}
+.inline-block {
+    display:inline-block;
+}
+.circle-checkbox {
+    border-radius: 10px;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+    background-color:lightgray;
+    display:inline-block;
+    vertical-align: bottom;
+}
+
+/******************************************************/
+/********************** REVENUE2 **********************/
+/******************************************************/
+.bar-transition {
+    height:100%;
+    position:relative;
+}
+// .bar-transition.activate {
+//     transition:.3s;
+//     animation-timing-function: cubic-bezier(.12,0,.8,1);
+//     height:100%;
+// }
+
+#revenue2 {
+    margin-bottom: 30px;
+}
+#revenue2 h2 {
+    font-size: 150%;
+    text-transform: uppercase;
+    margin-bottom:20px;
+}
+
+#revenue2 select.form-control {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30px" height="7px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" class="filter-caret"><path d="M21.854 0.439l-7.366 7.365L12.523 9.77L10.56 7.804L3.196 0.441C2.425-0.185 1.293-0.147 0.6 0.6 c-0.768 0.768-0.768 2 0 2.778l9.983 9.983l1.964 1.966l1.965-1.966l9.984-9.983c0.383-0.383 0.575-0.886 0.575-1.389 c0-0.502-0.192-1.006-0.575-1.389C23.755-0.146 22.626-0.185 21.9 0.4"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 100% 50%;
+}
+
+form.datepicker-form {
+    display:inline-block;
+    position:relative;
+    vertical-align:middle;
+}
+a.dp-choose-date {
+    float:none;
+    vertical-align: middle;
+    position: absolute;
+    right:16px;
+    top:50%;
+    margin-top:-8px;
+}
+#revenue2 .unit-filter {
+    cursor: pointer;
+}
+#revenue2 .form-control {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background-color: rgba(236,234,231,1);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 100%;
+    transition: none;
+    width: 180px;
+    display:inline-block;
+    vertical-align:middle;
+    font-weight: 600;
+    margin-right:10px;
+}
+
+#revenue2 .text-right .form-control {
+    margin-left:10px;
+    margin-right:0;
+}
+
+#revenue2 #channel-filters {
+    text-transform: uppercase;
+    font-weight: 600;
+}
+#revenue2 .channel {
+    display:inline-block;
+}
+#revenue2 .channel.empty {
+    color:@lightmediumgrey;
+}
+#revenue2 .channel.empty .circle-checkbox.multicolorbg  {
+    background-color:@lightmediumgrey;
+    cursor:initial;
+}
+
+#revenue2 .unit-filter {
+    display:inline-block;
+    font-weight: 500;
+    margin-right:10px;
+}
+
+#revenue2 .graphic {
+    padding-top:2em;
+    height:350px;
+    font-weight:500;
+    white-space-collapse: discard;
+    padding-right:50px;
+    padding-left:10px;
+}
+
+
+#revenue2 .graphic .grow {
+    width:100%;
+    height:75px;
+}
+
+#revenue2 .graphic #y-axis {
+    height:100%;
+    width:6%;
+    vertical-align: top;
+    margin-top:-1em;
+}
+#revenue2 .graphic #y-axis .glabel {
+    float:right;
+    min-width:70%;
+}
+
+#revenue2 .graphic #gbody {
+    height:100%;
+    vertical-align: top;
+    width:94%;
+    position:relative;
+}
+#revenue2 .graphic #gbody #gbackground {
+    width:100%;
+    position:absolute;
+}
+
+#revenue2 .graphic #gbody .grow {
+    border-top: 1px solid #999;
+}
+#revenue2 .graphic #gbody .grow:last-child {
+    border-bottom: 1px solid #999;
+}
+
+#revenue2 .graphic #gbody .grow {
+    border-top: 1px solid #999;
+}
+
+#revenue2 .graphic #gbody #gbars {
+    position:absolute;
+    width:100%;
+    height:100%;
+    padding: 0 10px;
+}
+#revenue2 .graphic #gbody #gbars .gbar {
+    width:10%;
+    margin-right:5%;
+    height:325px;
+    display:inline-block;
+    position:relative;
+}
+#revenue2 .graphic #gbody #gbars .gbar .glabel {
+    position:absolute;
+    bottom:0;
+    width: 100%;
+    text-align:center;
+}
+#revenue2 .graphic #gbody #gbars .gbar-sections {
+    position:absolute;
+    bottom: 24px;
+    width: 100%;
+    height:1px;
+    transition: height 600ms cubic-bezier(0.1, -1.2, 0.1, 2);
+}
+#revenue2 .graphic #gbody #gbars .gbar-section {
+    height: 33.33333333%;
+    width: 100%;
+    display:inline-block;
+}
+
+.weather-popup {
+    position:absolute;
+    width:260px;
+    z-index:1;
+    display:none;
+    left:60%;
+    margin-left:-125px;
+    bottom:287px;
+    /*bottom: 150 (alto barras) + 25 (exceso gbar ->325) + 12 (alto arrow)*/
+}
+
+.weather-popup #weather
+{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color:lightblue;
+    width:100%;
+    margin-bottom:0;
+    padding: 0 6px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+}
+.weather-popup #weather #popup-date
+{
+    margin-top:6px;
+    margin-left:10px;
+    margin-bottom:6px;
+}
+
+.weather-popup #weather #icon,
+.weather-popup #weather #description 
+{
+    vertical-align:top;
+    line-height:130%;
+    font-size:80%;
+}
+.weather-popup #weather #icon{
+    background-color:white;
+    width:45px;
+    height:45px;
+    margin-right:5px;
+}
+.weather-popup #weather #description {
+    max-width:58px;
+}
+.weather-popup #weather #icon img{
+    width:30px;
+    height:auto;
+    margin: 10px 8px;
+}
+
+
+.weather-popup #details
+{
+    background-color:@darkmediumgrey;
+    color:white;
+    width:100%;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding:6px;
+    margin-bottom:0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+}
+.weather-popup #details .details-row div
+{
+    margin-bottom:0;
+}
+.weather-popup #details .circle
+{
+    width:10px;
+    height:10px;
+    border-radius:10px;
+    margin-top:4px;
+}
+
+.weather-popup #arrow
+{
+	width: 0;
+	height: 0;
+	border-left: 12px solid transparent;
+	border-right: 12px solid transparent;
+	border-top: 12px solid @darkmediumgrey;
+    position:absolute;
+    left:110.5px;
+}
+
+#revenue2 .details {
+    overflow:hidden;
+    height:0;
+    transition: .3s;
+}
+#revenue2 .details.active {
+    height:144px;
+    transition: .3s;
+}
+#revenue2 #details-handle {
+    cursor:pointer;
+}
+#revenue2 #details-handle.active .filter-caret {
+    transform: rotate(180deg);
+    left:14px;
+    transition: .3s;
+}
+#revenue2 #details-handle  .filter-caret {
+    transform: rotate(0);
+    transition: .3s;
+    top:11px;
+    left:12px;
+}
+
+#revenue2 .details #header {
+    font-size:140%;
+}
+#revenue2 .details #table {
+    font-size:120%;
+}
+#revenue2 .details #table .table-item-wrapper {
+    margin-bottom:0;
+}
+#revenue2 .details #table .table-item {
+    border-top: 1px solid #999;
+    padding-top:10px;
+    padding-right:5px;
+    padding-left:5px;
+    padding-bottom:5px;
+    line-height:100%;
+    height:40px;
+    text-transform: uppercase;
+}
+
+#revenue2 .details #table .table-item svg {
+    vertical-align: middle;
+}
+#revenue2 .details #table .table-item div {
+    padding:0!important;
+    margin-bottom:0;
+}
+#revenue2 .details #table .table-item .down {
+    transform: rotate(180deg);
+}
+
+#revenue2 .details #table .table-item #change,
+#revenue2 .details #table .table-item #to-val 
+{
+    font-weight:700;
+}
+#revenue2 .details #table .table-item #from-val 
+{
+    color:gray;
+}
+#revenue2 #details-handle {
+    display:inline-block;
+    position:absolute;
+    bottom:-30px;
+    left:50%;
+    width:160px;
+    height:30px;
+    line-height:30px;
+    background-color:white;
+    margin-left:-80px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    text-transform: uppercase;
+}
+
+#revenue2 .details #table .table-item .left-line {
+    border-left: 1px solid #CCC;
+}
+#revenue2 .details #table .table-item .left-line div {
+    margin-left:10px;
+}
+
+@media (max-width: 1199px) {
+    #revenue2 .details #table .table-item {
+        margin-top:10px;
+    }
+    #revenue2 .details.active {
+        height:200px;
+        transition: .3s;
+    }
+    
+}
+@media (max-width: 991px) {
+    #revenue2 .details #table .table-item {
+        height:auto;
+    }
+    #revenue2 .details #table .table-item .left-line {
+        border-left: none;
+    }
+    #revenue2 .details #table .table-item .left-line div {
+        margin-left:0;
+    }
+
+    #revenue2 .details #table .table-item div.title {
+        text-align:center;
+        margin-bottom:5px;
+    }
+
+    #revenue2 .details.active {
+        height:250px;
+        transition: .3s;
+    }
+}
+@media (max-width: 767px) {
+    #revenue2 .details.active {
+        height:400px;
+        transition: .3s;
+    }
+}

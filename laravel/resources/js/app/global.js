@@ -30,6 +30,13 @@ var global = Function('return this')();
 (function(scope) {
 	if (!scope.KUtils) {
 		var _temp = {};
+        function _forceDigits(n, d) {
+            var s = n.toString(); //n must be a number
+            while (s.length < d) {
+                s = "0"+s;
+            }
+            return s;
+        };
 		scope.KUtils = {
 			isValidPassword:function(p1, p2) {
 				
@@ -80,7 +87,128 @@ var global = Function('return this')();
 					console.log(e);
 					return false;
 				}
-			}
+			},
+            date: {
+                weatherFormat:function(s, periodType) {
+                    // Friday, June 3, 2016
+                    if(periodType == "quarter") {
+                        var fromDate = new Date(scope.KUtils.date.getDateFromWeek(s));
+                        var toDate = new Date(scope.KUtils.date.addDays(fromDate,6));
+                        // Tue Aug 30 2016
+                        //Mar 27 - Apr 2, 2016
+                        var from = (fromDate.toDateString()).split(" ");
+                        var to = (toDate.toDateString()).split(" ");
+                        return from[1]+" "+from[2]+" - "+to[1]+" "+to[2]+", "+from[3];
+                    }
+                    
+                    var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; //TODO: take this to a global context
+                    
+                    var date = new Date(s);
+                    var d = weekDays[date.getUTCDay()];
+                    var m = wnt.months[date.getUTCMonth()];
+                    
+                    return d+", "+m+" "+date.getUTCDate()+", "+date.getUTCFullYear();
+                },
+                detailsFormat:function(date1, date2) {
+                    
+                    if(!date1 || !date2) return "";
+                    
+                    var fromDate = new Date(date1);
+                    var toDate = new Date(date2);
+                    
+                    var from = (fromDate.toDateString()).split(" ");
+                    var to = (toDate.toDateString()).split(" ");
+                    return from[1]+" "+from[2]+" - "+to[1]+" "+to[2]+", "+from[3];
+                },
+                barFormat:function(s, periodType) {
+                    if(periodType == "quarter") {
+                        s = scope.KUtils.date.getDateFromWeek(s);
+                    }
+                    
+                    var date = new Date(s);
+                    var d =_forceDigits(date.getUTCDate(),2);
+                    var m =_forceDigits(date.getUTCMonth()+1,2);
+
+                    if(periodType == "month") return d;
+
+                    return m+"."+d;
+                },
+                serverFormat:function (date, periodType) {
+                    var date = new Date(date);
+                    if (periodType == "week") {
+                        var w = scope.KUtils.date.getWeekNumber(date);
+                        return date.getUTCFullYear()+"-"+w;
+                    };
+                    var d =date.getUTCDate();
+                    var m =date.getUTCMonth()+1;
+                    return date.getUTCFullYear()+"-"+m+"-"+d;
+                },
+                serverFormatWeek:function (date) {
+                    var date = new Date(date);
+                    var w = scope.KUtils.date.getWeekNumber(date);
+                    return date.getUTCFullYear()+"-"+w;
+                },
+                format:function (isoDate) { //'mm/dd/yyyy'
+                    var date = new Date(isoDate);
+                    return scope.KUtils.date.formatFromDate(date);
+                },
+                formatFromDate:function (date) {
+                    var d =_forceDigits(date.getUTCDate(),2);
+                    var m =_forceDigits(date.getUTCMonth()+1,2);
+                    return m+"/"+d+"/"+date.getUTCFullYear();
+                },
+                addDays:function (date, days) {
+                    var result = new Date(date);
+                    result.setDate(result.getDate() + days);
+                    return scope.KUtils.date.formatFromDate(result);
+                },
+                addMonths:function (date, months) {
+                    var result = new Date(date);
+                    result.setMonth(result.getMonth() + months);
+                    return scope.KUtils.date.formatFromDate(result);
+                },
+                addYears:function (date, years) {
+                    var result = new Date(date);
+                    result.setUTCFullYear(result.getUTCFullYear() + years);
+                    return scope.KUtils.date.formatFromDate(result);
+                },
+                getWeekNumber:function (d) {
+                    var date = new Date(d);
+                    var jan1 = new Date("01/01/"+date.getUTCFullYear());
+                    var msec = date.getTime() - jan1.getTime(); //diff in milliseconds
+                    var weeks = Math.floor(msec/(1000*60*60*24*7)); //millisecondsasecond*secondsaminute*minutesanhour*hoursaday*weekdays
+                    return weeks;
+                },
+                getQuarterNumber:function (d) {
+                    var week = scope.KUtils.date.getWeekNumber(d);
+                    return Math.ceil(week/13);
+                },
+                getDateFromWeek:function (s) { //YYYY-W
+                    var a = s.split("-");
+                    var year = parseInt(a[0]);
+                    var week = parseInt(a[1]);
+                    var date = new Date("01/01/"+year.toString());
+                    return scope.KUtils.date.addDays(date, week*7);
+                }
+            },
+            number:{
+                forceDigits:function (n, d) {
+                    return _forceDigits(n,d);
+                },
+                formatAmount:function(n) {
+                    var fd = KUtils.number.forceDigits;
+                    if(isNaN(n)) return "0";
+                    var r = "";
+                    if(n > 1000) {
+                        r = Math.floor(n/1000)+","+fd(Math.round(n%1000),3);
+                    } else if(n > 100) {
+                        r = Math.round(10*n)/10;
+                    } else {
+                        r = Math.round(100*n)/100;
+                    }
+                    return r;
+                }
+            }
 		};
 		
 	}

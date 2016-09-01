@@ -12,7 +12,7 @@
     </div>
     
 
-    <div id="revenue-row-widget"><!-- ReactJS component: Revenue --></div>
+    <div id="revenue-row-widget2"><!-- ReactJS component: Revenue --></div>
 
 
     <div id="members-blocks-widget"><!-- ReactJS component: MembersBlocksSet --></div>
