@@ -2896,7 +2896,7 @@ a.dp-choose-date {
 
 #revenue2 .graphic {
     padding-top:2em;
-    height:370px;
+    height:350px;
     font-weight:500;
     white-space-collapse: discard;
     padding-right:50px;
@@ -3105,6 +3105,7 @@ a.dp-choose-date {
     padding-bottom:5px;
     line-height:100%;
     height:40px;
+    text-transform: uppercase;
 }
 
 #revenue2 .details #table .table-item svg {
@@ -3140,4 +3141,49 @@ a.dp-choose-date {
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     text-transform: uppercase;
+}
+
+#revenue2 .details #table .table-item .left-line {
+    border-left: 1px solid #CCC;
+}
+#revenue2 .details #table .table-item .left-line div {
+    margin-left:10px;
+}
+
+@media (max-width: 1199px) {
+    #revenue2 .details #table .table-item {
+        margin-top:10px;
+    }
+    #revenue2 .details.active {
+        height:200px;
+        transition: .3s;
+    }
+    
+}
+@media (max-width: 991px) {
+    #revenue2 .details #table .table-item {
+        height:auto;
+    }
+    #revenue2 .details #table .table-item .left-line {
+        border-left: none;
+    }
+    #revenue2 .details #table .table-item .left-line div {
+        margin-left:0;
+    }
+
+    #revenue2 .details #table .table-item div.title {
+        text-align:center;
+        margin-bottom:5px;
+    }
+
+    #revenue2 .details.active {
+        height:250px;
+        transition: .3s;
+    }
+}
+@media (max-width: 767px) {
+    #revenue2 .details.active {
+        height:400px;
+        transition: .3s;
+    }
 }

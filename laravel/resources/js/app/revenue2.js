@@ -10,7 +10,7 @@ var Dropdown = React.createClass({
         }
         
         return (
-            <form className="inline-block">
+            <form className={this.props.className}>
                 <select className="form-control" onChange={this.props.onChange} value={this.props.selected} >
                     {options}
                 </select>
@@ -189,10 +189,11 @@ var WeatherPopup = React.createClass({
     }
 });
 
-var DatePicker = React.createClass({
+var DatePickerReact = React.createClass({
     componentDidMount: function() {
         Date.firstDayOfWeek = 0;
         Date.format = 'mm/dd/yyyy';
+        // var dp = $('#'+this.props.id).datePicker({
         var dp = $('#'+this.props.id).datePicker({
             selectWeek: true,
             closeOnSelect: true,
@@ -200,11 +201,12 @@ var DatePicker = React.createClass({
             endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear,
             defaultDate:this.props.defaultDate
         });
+        $("input#datepicker-2").bind("change", this.props.onSelect);
     },
     render:function () {
         return(
             <form className="datepicker-form">
-                <input className="form-control" onSelect={this.props.onSelect} id={this.props.id} type="text" defaultValue={this.props.defaultDate}></input>
+                <input className="form-control" ref="datepickerInput" id={this.props.id} type="text" defaultValue={this.props.defaultDate}></input>
             </form>
         );
     }
@@ -240,18 +242,31 @@ var DetailsRow = React.createClass({
         return (
             <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
                 <div className="table-item">
-                    <div className="col-xs-4">
+                    <div className="col-md-4 title">
                         {this.props.title}
                     </div>
-                    <div className="col-xs-8">
-                        <div className="col-xs-4">
-                            <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                            <span className="multicolor" id="change">{change}%</span>
+                    <div className="col-md-8">
+                        <div className="col-md-12 col-lg-4 left-line">
+                            <div className="text-center hidden-lg hidden-xl">
+                                <ChangeArrow className={"change multicolorfl "+upDownClass} />
+                                <span className="multicolor" id="change">{change}%</span>
+                            </div>
+                            <div className=" hidden-xs hidden-sm hidden-md">
+                                <ChangeArrow className={"change multicolorfl "+upDownClass} />
+                                <span className="multicolor" id="change">{change}%</span>
+                            </div>
                         </div>
-                        <div className="col-xs-8" id="from-val">
-                            <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
-                            <LongArrow className="long-arrow" width="21px" />
-                            &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                        <div className="col-md-12 col-lg-8 left-line" id="from-val">
+                            <div className="text-center hidden-lg hidden-xl">
+                                <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
+                                <LongArrow className="long-arrow" width="21px" />
+                                &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                            </div>
+                            <div className=" hidden-xs hidden-sm hidden-md">
+                                <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
+                                <LongArrow className="long-arrow" width="21px" />
+                                &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -671,6 +686,7 @@ var Revenue2 = React.createClass({
         this.setState(state);
     },
     updateWeather: function(state) {
+        console.log("UpdateWeather");
         if (state.periodType == "quarter") {
             return;
         }
@@ -688,6 +704,7 @@ var Revenue2 = React.createClass({
         console.log(wResult);
         var state = this.state;
         state.wResult = wResult;
+        state.dirty = false;
         this.setState(state);
     },
     formatY:function (n) {
@@ -713,11 +730,9 @@ var Revenue2 = React.createClass({
     },
     componentDidMount:function () {
         this.updatePeriod(this.state.currentDate, this.state.periodType);
-        // this.updateWeather(this.state);
-        // this.updateData(this.state);
     },
     shouldComponentUpdate:function (nextProps, nextState) {
-        console.log(nextState.dirty);
+        // console.log(nextState.dirty);
         if (nextState.dirty) {
             this.updateWeather(nextState);
             this.updateData(nextState);
@@ -725,7 +740,7 @@ var Revenue2 = React.createClass({
         return !nextState.dirty;
     },
     render:function () {
-        console.log(this.state);
+        // console.log(this.state);
         var channelTypes = this.state.channelNames;
         var channelActive = this.state.channelActive;
         var channelControls = [];
@@ -735,7 +750,6 @@ var Revenue2 = React.createClass({
             var onClick;
             var empty;
             if(this.state.channelEmpty[k]) {
-                console.log("Channel is empty -> "+k);
                 empty = "empty";
                 onClick = null;
             } else {
@@ -827,17 +841,19 @@ var Revenue2 = React.createClass({
                             Earned Revenue
                         </h2>
                         <div className="row filters">
-                            <div className="col-xs-12 col-sm-6">
+                            <div className="col-xs-8 col-lg-6" id="period-type">
                                 <Dropdown
+                                    className="inline-block"
                                     ref="periodType"
                                     optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
                                     selected={this.state.periodType}
                                     onChange={this.onPeriodTypeChange}
                                 />
-                                <DatePicker defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
+                                <DatePickerReact defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
                             </div>
-                            <div className="col-xs-12 col-sm-6 text-right">
-                                <Dropdown
+                            <div className="col-xs-4 col-lg-6 text-right" id="members">
+                                <Dropdown 
+                                    className="inline-block"
                                     ref="members"
                                     optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
                                     onChange={this.onMembersChange}
@@ -907,7 +923,7 @@ var Revenue2 = React.createClass({
                         </div>
                         <div className={"row details "+this.state.detailsClass}>
                             <div className="col-xs-12 col-sm-12">
-                                <div className="col-xs-12 col-sm-6" id="header">
+                                <div className="col-xs-6 col-sm-6" id="header">
                                     {
                                         (this.state.comparePeriodType == "lastperiod_1") ?
                                             KUtils.date.detailsFormat(this.state.lastFrom1, this.state.lastTo1)
@@ -916,8 +932,9 @@ var Revenue2 = React.createClass({
                                     }
                                     
                                 </div>
-                                <div className="col-xs-12 col-sm-6 text-right">
+                                <div className="col-xs-6 col-sm-6 text-right">
                                     <Dropdown
+                                        className="inline-block"
                                         ref="comparePeriodType"
                                         optionList={
                                             (this.state.periodType == "week") ?
