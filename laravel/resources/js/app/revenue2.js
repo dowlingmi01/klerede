@@ -83,7 +83,7 @@ var GBar = React.createClass({
         
         
         return(
-            <div className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
+            <div id={this.props.id} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
                     <div ref="barTransition" className="bar-transition">
                         {sections}
@@ -92,7 +92,7 @@ var GBar = React.createClass({
                 <div className="glabel">
                     {KUtils.date.barFormat(this.props.date, this.props.periodType)}
                 </div>
-                <WeatherPopup ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />
+                <WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />
             </div>
         );
     }
@@ -181,7 +181,7 @@ var WeatherPopup = React.createClass({
         var formattedDate = KUtils.date.weatherFormat(this.props.date, this.props.periodType);
         
         return(
-            <div id="popup" style={{bottom:this.props.bottom+"px"}}>
+            <div id={this.props.id} className="weather-popup" style={{bottom:this.props.bottom+"px"}}>
                 <div id="weather" className="row">
                     <div id="popup-date">
                         {formattedDate}
@@ -422,6 +422,14 @@ var Revenue2 = React.createClass({
         return state;
     },
     //receives state, so it can be called outside react lyfecyle
+    singleResultsToArray:function (state){
+        for (var k in state.channelActive) {
+            var bars = state.result[k+"_bars"];
+            if (Object.prototype.toString.call( bars ) === "[object Object]") {
+                state.result[k+"_bars"] = [bars];
+            };
+        }
+    },
     updateSums:function (state) {
         
         var result = state.result;
@@ -690,6 +698,7 @@ var Revenue2 = React.createClass({
         var state = this.state;
         
         state.result = result;
+        this.singleResultsToArray(state);
         this.updateEmptyChannels(state);
         this.updateSums(state);
         state.dirty = false;
@@ -801,6 +810,7 @@ var Revenue2 = React.createClass({
                 
                 bars.push(<GBar
                             key={i}
+                            id={"gbar-"+i}
                             units={this.state.units}
                             total={total_bars[i].amount}
                             partial={partial_sum[i]}

@@ -2974,10 +2974,7 @@ a.dp-choose-date {
     display:inline-block;
 }
 
-#revenue2 .graphic  .gbar:hover #popup {
-    // display:block;
-}
-#revenue2 .graphic #popup {
+.weather-popup {
     position:absolute;
     width:260px;
     z-index:1;
@@ -2988,47 +2985,47 @@ a.dp-choose-date {
     /*bottom: 150 (alto barras) + 25 (exceso gbar ->325) + 12 (alto arrow)*/
 }
 
-#revenue2 .graphic #popup #weather
+.weather-popup #weather
 {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    background-color:@lightblue;
+    background-color:lightblue;
     width:100%;
     margin-bottom:0;
     padding: 0 6px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 }
-#revenue2 .graphic #popup #weather #popup-date
+.weather-popup #weather #popup-date
 {
     margin-top:6px;
     margin-left:10px;
     margin-bottom:6px;
 }
 
-#revenue2 .graphic #popup #weather #icon,
-#revenue2 .graphic #popup #weather #description 
+.weather-popup #weather #icon,
+.weather-popup #weather #description 
 {
     vertical-align:top;
     line-height:130%;
     font-size:80%;
 }
-#revenue2 .graphic #popup #weather #icon{
+.weather-popup #weather #icon{
     background-color:white;
     width:45px;
     height:45px;
     margin-right:5px;
 }
-#revenue2 .graphic #popup #weather #description {
+.weather-popup #weather #description {
     max-width:58px;
 }
-#revenue2 .graphic #popup #weather #icon img{
+.weather-popup #weather #icon img{
     width:30px;
     height:auto;
     margin: 10px 8px;
 }
 
 
-#revenue2 .graphic #popup #details
+.weather-popup #details
 {
     background-color:@darkmediumgrey;
     color:white;
@@ -3039,11 +3036,11 @@ a.dp-choose-date {
     margin-bottom:0;
     box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 }
-#revenue2 .graphic #popup #details .details-row div
+.weather-popup #details .details-row div
 {
     margin-bottom:0;
 }
-#revenue2 .graphic #popup #details .circle
+.weather-popup #details .circle
 {
     width:10px;
     height:10px;
@@ -3051,7 +3048,7 @@ a.dp-choose-date {
     margin-top:4px;
 }
 
-#revenue2 .graphic #popup #arrow
+.weather-popup #arrow
 {
 	width: 0;
 	height: 0;
@@ -3061,8 +3058,6 @@ a.dp-choose-date {
     position:absolute;
     left:110.5px;
 }
-
-
 
 #revenue2 .details {
     overflow:hidden;
