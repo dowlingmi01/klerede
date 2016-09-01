@@ -45,8 +45,9 @@ var GBar = React.createClass({
         $(this.refs.gbarSections.getDOMNode()).on("mouseover", function(event){
             $(popup).fadeIn(300);
         });
-        $(this.refs.gbarSections.getDOMNode()).on("mouseout", function(event){
-            $(popup).fadeOut(100);
+        $(this.refs.gbarSections.getDOMNode()).on("mouseleave", function(event){
+            $(popup).finish();
+            $(popup).fadeOut(150);
         });
     },
     render:function () {
