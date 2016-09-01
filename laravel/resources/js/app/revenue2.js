@@ -39,6 +39,16 @@ var GBar = React.createClass({
     componentDidUpdate:function () {
         // $(this.refs.barTransition.getDOMNode()).addClass("activate");
     },
+    componentDidMount:function () {
+        var popup = this.refs.popup.getDOMNode();
+        
+        $(this.refs.gbarSections.getDOMNode()).on("mouseover", function(event){
+            $(popup).fadeIn(300);
+        });
+        $(this.refs.gbarSections.getDOMNode()).on("mouseout", function(event){
+            $(popup).fadeOut(100);
+        });
+    },
     render:function () {
         // console.log(this.props);
         var channels = this.props.channels;
@@ -74,7 +84,7 @@ var GBar = React.createClass({
         
         return(
             <div className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
-                <div className="gbar-sections" style={{height:height+"px"}}>
+                <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
                     <div ref="barTransition" className="bar-transition">
                         {sections}
                     </div>
@@ -82,7 +92,7 @@ var GBar = React.createClass({
                 <div className="glabel">
                     {KUtils.date.barFormat(this.props.date, this.props.periodType)}
                 </div>
-                <WeatherPopup bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />
+                <WeatherPopup ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />
             </div>
         );
     }
@@ -928,7 +938,13 @@ var Revenue2 = React.createClass({
                                         (this.state.comparePeriodType == "lastperiod_1") ?
                                             KUtils.date.detailsFormat(this.state.lastFrom1, this.state.lastTo1)
                                         :
-                                            KUtils.date.detailsFormat(this.state.lastFrom2, this.state.lastTo2)
+                                            (this.state.periodType=="quarter") ?
+                                                KUtils.date.detailsFormat(
+                                                    KUtils.date.getDateFromWeek(this.state.lastFrom2), 
+                                                    KUtils.date.getDateFromWeek(this.state.lastTo2)
+                                                )
+                                            :
+                                                KUtils.date.detailsFormat(this.state.lastFrom2, this.state.lastTo2)
                                     }
                                     
                                 </div>
