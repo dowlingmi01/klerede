@@ -1,3 +1,10 @@
+var CaretHandler = React.createClass({
+    render:function () {
+        return(
+            <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="7px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className={"filter-caret "+this.props.className}><path d="M21.854 0.439l-7.366 7.365L12.523 9.77L10.56 7.804L3.196 0.441C2.425-0.185 1.293-0.147 0.6 0.6 c-0.768 0.768-0.768 2 0 2.778l9.983 9.983l1.964 1.966l1.965-1.966l9.984-9.983c0.383-0.383 0.575-0.886 0.575-1.389 c0-0.502-0.192-1.006-0.575-1.389C23.755-0.146 22.626-0.185 21.9 0.4"/></svg>
+        );
+    }
+});
 var Dropdown = React.createClass({
     render:function () {
 
@@ -235,7 +242,18 @@ var TabSelector = React.createClass({
     }
 });
 var DetailsRow = React.createClass({
-    
+    getInitialState:function () {
+        return {
+            detailsClass:""
+        };
+    },
+    togleDetails:function (event) {
+        if(this.state.detailsClass == "") {
+            this.setState({detailsClass:"active"});
+        } else {
+            this.setState({detailsClass:""});
+        }
+    },
     //props
     //from - to - title
     render:function () {
@@ -250,36 +268,64 @@ var DetailsRow = React.createClass({
         change = Math.abs(Math.round(100*change)/100);
         
         
+        var details = this.props.details;
+        var detailsRows = [];
+        var detailsHandler = <div></div>;
+        
+        if (details.length) {
+            
+            detailsHandler = <div id="filter-caret-wrapper" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
+            
+            for (var i in details) {
+                var detail = details[i];
+                detailsRows.push(
+                    <DetailsRow 
+                        className="child-details"
+                        key={i} from={detail.from} to={detail.to} title={detail.title} 
+                        details={detail.details}
+                    />
+                )
+            }
+        }
+        
         return (
-            <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
-                <div className="table-item">
-                    <div className="col-md-4 title">
-                        {this.props.title}
-                    </div>
-                    <div className="col-md-8">
-                        <div className="col-md-12 col-lg-4 left-line">
-                            <div className="text-center hidden-lg hidden-xl">
-                                <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                <span className="multicolor" id="change">{change}%</span>
-                            </div>
-                            <div className=" hidden-xs hidden-sm hidden-md">
-                                <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                <span className="multicolor" id="change">{change}%</span>
+            <div className={this.props.className} >
+                <div className="table-item-wrapper">
+                    <div className="table-item">
+                        <div className="col-md-4 title">
+                            <div className="title-text">
+                                {this.props.title}
                             </div>
                         </div>
-                        <div className="col-md-12 col-lg-8 left-line" id="from-val">
-                            <div className="text-center hidden-lg hidden-xl">
-                                <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
-                                <LongArrow className="long-arrow" width="21px" />
-                                &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                        <div className="col-md-8">
+                            <div className="col-md-12 col-lg-4 left-line">
+                                <div className="text-center hidden-lg hidden-xl">
+                                    <ChangeArrow className={"change multicolorfl "+upDownClass} />
+                                    <span className="multicolor" id="change">{change}%</span>
+                                </div>
+                                <div className=" hidden-xs hidden-sm hidden-md">
+                                    <ChangeArrow className={"change multicolorfl "+upDownClass} />
+                                    <span className="multicolor" id="change">{change}%</span>
+                                </div>
                             </div>
-                            <div className=" hidden-xs hidden-sm hidden-md">
-                                <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
-                                <LongArrow className="long-arrow" width="21px" />
-                                &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                            <div className="col-md-12 col-lg-8 left-line">
+                                <div className="text-center hidden-lg hidden-xl">
+                                    <div id="from-val">${formatAmount(from)}</div>&nbsp;&nbsp;
+                                    <LongArrow className="long-arrow" width="21px" />
+                                    &nbsp;&nbsp;<div className="multicolor" id="to-val" >${formatAmount(to)}</div>
+                                </div>
+                                <div className=" hidden-xs hidden-sm hidden-md">
+                                    <div id="from-val">${formatAmount(from)}</div>&nbsp;&nbsp;
+                                    <LongArrow className="long-arrow" width="21px" />
+                                    &nbsp;&nbsp;<div className="multicolor" id="to-val" >${formatAmount(to)}</div>
+                                </div>
                             </div>
                         </div>
+                        {detailsHandler}
                     </div>
+                </div>
+                <div className={"child-details-wrapper "+this.state.detailsClass}>
+                    {detailsRows}
                 </div>
             </div>
         )
@@ -848,10 +894,21 @@ var Revenue2 = React.createClass({
                     }
                     
                     detailsRows.push(
-                        <DetailsRow key={k} from={from} to={to} title={this.state.channelNames[k]} />
+                        <DetailsRow 
+                            key={k} from={from} to={to} title={this.state.channelNames[k]}
+                            className="parent-details multicolor-wrapper col-xs-12 col-sm-6"
+                            details={
+                                [
+                                    {title:"General admision", from:11000, to:12323, details:[]},
+                                    {title:"Groups", from:11000, to:10323, details:[]},
+                                    {title:"Donation", from:9500, to:8100, details:[]},
+                                    {title:"Other", from:10100, to:10323, details:[]}
+                                ]
+                            }
+                        />
                     );
                 } else {
-                    detailsRows.push(<div></div>);
+                    detailsRows.push(<div key={k} ></div>);
                 }
             };
             
@@ -984,7 +1041,7 @@ var Revenue2 = React.createClass({
                             </div>
                         </div>
                         <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="7px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className="filter-caret"><path d="M21.854 0.439l-7.366 7.365L12.523 9.77L10.56 7.804L3.196 0.441C2.425-0.185 1.293-0.147 0.6 0.6 c-0.768 0.768-0.768 2 0 2.778l9.983 9.983l1.964 1.966l1.965-1.966l9.984-9.983c0.383-0.383 0.575-0.886 0.575-1.389 c0-0.502-0.192-1.006-0.575-1.389C23.755-0.146 22.626-0.185 21.9 0.4"/></svg>
+                            <CaretHandler />
                             {this.state.detailsTitle}
                         </div>
                     </div>
