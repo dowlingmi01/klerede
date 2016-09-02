@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-10 main-content">
                     @yield('content')
-                    <footer>&copy; 2015 <a href="//klerede.com/" target="_blank">Klerede</a>. All rights reserved.</footer>
+                    <footer>&copy; <span id="copyright-year">2015</span> <a href="//klerede.com/" target="_blank">Klerede</a>. All rights reserved.</footer>
                 </div>
             </div>
         </section>

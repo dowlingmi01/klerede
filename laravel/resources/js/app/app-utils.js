@@ -571,6 +571,9 @@ function onVenueDataGet(data) {
 /*********************************************/
 
 $(function(){
+    $.when(wnt.gettingVenueData).done(function(data) {
+        $('#copyright-year').text(wnt.thisYear);
+    });
     $('circle').popover();
     // $(event.target).closest('.accordion-sub-item').toggleClass('open').find('ul').eq(0).toggle();
     $('.accordion-sub-item').on('click', function(){
