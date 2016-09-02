@@ -875,7 +875,8 @@ var Revenue2 = React.createClass({
                         />);
             }
             
-            var detailsRows = [];
+            var detailsRowsLeft = [];
+            var detailsRowsRight = [];
             var totalSufix = "_bars_totals";
             var lastSufix = "_bars_"+this.state.comparePeriodType;
             
@@ -892,17 +893,17 @@ var Revenue2 = React.createClass({
                         to /= visitors;
                         from /= lastVisitors;
                     }
-                    
+                    var detailsRows = (detailsRowsLeft.length == detailsRowsRight.length)? detailsRowsLeft : detailsRowsRight;
                     detailsRows.push(
                         <DetailsRow 
                             key={k} from={from} to={to} title={this.state.channelNames[k]}
-                            className="parent-details multicolor-wrapper col-xs-12 col-sm-6"
+                            className="parent-details multicolor-wrapper col-xs-12"
                             details={
                                 [
-                                    {title:"General admision", from:11000, to:12323, details:[]},
-                                    {title:"Groups", from:11000, to:10323, details:[]},
-                                    {title:"Donation", from:9500, to:8100, details:[]},
-                                    {title:"Other", from:10100, to:10323, details:[]}
+                                    // {title:"General admision", from:11000, to:12323, details:[]},
+                                    // {title:"Groups", from:11000, to:10323, details:[]},
+                                    // {title:"Donation", from:9500, to:8100, details:[]},
+                                    // {title:"Other", from:10100, to:10323, details:[]}
                                 ]
                             }
                         />
@@ -1036,8 +1037,13 @@ var Revenue2 = React.createClass({
                                     />
                                 </div>
                             </div>
-                            <div className="col-xs-12 col-sm-12" id="table">
-                                {detailsRows}
+                            <div className="col-xs-12 col-sm-12">
+                                    <div className="col-xs-12 col-sm-6" id="table">
+                                        {detailsRowsLeft}
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6" id="table">
+                                        {detailsRowsRight}
+                                    </div>
                             </div>
                         </div>
                         <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
