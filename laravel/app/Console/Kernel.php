@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\StatsMembersCompute',
 		'App\Console\Commands\ImportQueryInit',
 		'App\Console\Commands\ImportQueryProcess',
+		'App\Console\Commands\ImportFromProd',
 	];
 
 	/**
@@ -35,5 +36,6 @@ class Kernel extends ConsoleKernel {
 		$schedule->command('kl:weatherimport')->dailyAt('13:30')->environments('production');
 		$schedule->command('kl:stats_compute')->dailyAt('06:30')->environments('test');
 		$schedule->command('kl:stats_members_compute')->dailyAt('06:31')->environments('test');
+		$schedule->command('kl:importfromprod')->dailyAt('13:40')->environments('test');
 	}
 }
