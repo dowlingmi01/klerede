@@ -2,6 +2,7 @@
 namespace App\ImportQueryHandlers;
 
 use App\ImportQuery;
+use App\StatStatus;
 use App\VenueVariable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -79,6 +80,11 @@ SET query_id = $query_id, status = 'pending', venue_id = $venue_id, created_at =
 		$codes = $sel->get();
 		foreach($codes as $code) {
 			$class::getFor($this->query->venue_id, $code->{$column});
+		}
+	}
+	function setStatStatus($dates, $channel_id) {
+		foreach($dates as $date) {
+			StatStatus::newData($channel_id, $date, $this->query->venue_id);
 		}
 	}
 }

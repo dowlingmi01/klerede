@@ -103,7 +103,7 @@ return [
             'provider' => 'users',
             'email' => 'emails.password',
             'table' => 'password_resets',
-            'expire' => 60,
+            'expire' => 24*60,
         ],
     ],
 

@@ -14,21 +14,13 @@
 use App\GoalsSales;
 use App\StoreTransaction, App\Stats;
 use App\WeatherDaily;
+use App\Helpers\PermissionHelper;
  
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
 
 Route::group(['prefix'=>'api/v1'], function() {
-	Route::resource('store-product-category-group', 'StoreProductCategoryGroupController');
-	Route::get('query/store_transactions', function() {
-		$input = Request::all();
-		$input = (object) $input;
-		if(isset($input->member))
-			$input->member = filter_var($input->member, FILTER_VALIDATE_BOOLEAN);
-		$result = StoreTransaction::queryF($input);
-		return Response::json($result);
-	});
 	Route::post('stats/query', function() {
 		$input = Request::all();
         if (Gate::denies('validate-venue', $input['venue_id'])) {
@@ -61,6 +53,9 @@ Route::group(['prefix'=>'api/v1'], function() {
 		function($venue_id, $year, $channel, $type, $sub_channel = null) {
         if (Gate::denies('validate-venue', $venue_id)) {
             return Response::json(["error"=>"Invalid venue id"]);
+        }
+        if (Gate::denies('has-permission', PermissionHelper::GOALS_SET)) {
+            return Response::json(["error"=>"Insufficient privileges"]);
         }
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));

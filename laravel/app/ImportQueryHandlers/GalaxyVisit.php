@@ -40,7 +40,7 @@ class GalaxyVisit extends ImportQueryHandler {
 			->select($cols)
 			->orderBy('v.id');
 		$dates = [];
-		$sel->chunk(5000, function($visits) use ($dates) {
+		$sel->chunk(5000, function($visits) use (&$dates) {
 			$inserts = [];
 			$ids = [];
 			foreach($visits as $visit) {
@@ -54,5 +54,7 @@ class GalaxyVisit extends ImportQueryHandler {
 			DB::table('visit')->insert($inserts);
 			DB::table($this->getTableName())->whereIn('id', $ids)->update(['status'=>'imported']);
 		});
+		$dates = array_keys($dates);
+		$this->setStatStatus($dates, -1);
 	}
 }

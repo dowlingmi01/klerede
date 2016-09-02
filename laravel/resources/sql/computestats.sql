@@ -6,12 +6,12 @@ SELECT p.venue_id, date(v.time), year(v.time)
      , year(v.time)*100 + week(v.time)
      , m.box_office_product_kind_id, sum(quantity)
   FROM visit v
-  JOIN box_office_product p ON v.box_office_product_id = p.id
-  JOIN box_office_product_kind_map m
+  STRAIGHT_JOIN box_office_product p ON v.box_office_product_id = p.id
+  STRAIGHT_JOIN box_office_product_kind_map m
         ON p.venue_id = m.venue_id
        AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
        AND box_office_product_kind_id < 4
-  JOIN facility f ON v.facility_id = f.id
+  STRAIGHT_JOIN facility f ON v.facility_id = f.id
  WHERE f.is_ga = 1
  GROUP BY p.venue_id, date(v.time), m.box_office_product_kind_id
 ;
@@ -27,13 +27,13 @@ SELECT t.venue_id, date(t.time), year(t.time)
      , IF(p.kind = 'pass', 2, 1) as channel_id, m.box_office_product_kind_id
      , IFNULL(p.membership_kind_id, 0), IF(p.kind = 'pass', 1, 0) as members, o.is_online as online
      , sum(quantity), sum(sale_price)
-  FROM box_office_transaction t
-  JOIN box_office_transaction_line l ON l.box_office_transaction_id = t.id
-  JOIN box_office_product p ON p.id = l.box_office_product_id
-  JOIN box_office_product_kind_map m
+  FROM box_office_transaction_line l
+  STRAIGHT_JOIN box_office_transaction t ON l.box_office_transaction_id = t.id
+  STRAIGHT_JOIN box_office_product p ON p.id = l.box_office_product_id
+  STRAIGHT_JOIN box_office_product_kind_map m
         ON p.venue_id = m.venue_id
        AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-  JOIN operator o ON t.operator_id = o.id
+  STRAIGHT_JOIN operator o ON t.operator_id = o.id
  GROUP BY t.venue_id, date(t.time), channel_id, m.box_office_product_kind_id
      , p.membership_kind_id, members, online
 ;

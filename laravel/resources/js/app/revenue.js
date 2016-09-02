@@ -87,76 +87,133 @@ var BarSet = React.createClass({
                 date = date.getFullYear() + '-' + wnt.doubleDigits(date.getMonth()+1) + '-' + wnt.doubleDigits(date.getDate());
                 dates = [date, date];
             }
-            wnt.gettingComparisonData = $.Deferred();
-            wnt.getComparison(type, dates, wnt.gettingComparisonData);
-            $.when(wnt.gettingComparisonData).done(function(data) {
-                var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
-                // if(wnt.filter.bgUnits === 'percap'){ ... CALC PER CAP ... }
-                var currentBO = $('.popover .bo').parseNumber({format:format, locale:"us"});
-                var currentC = $('.popover .c').parseNumber({format:format, locale:"us"});
-                var currentGS = $('.popover .gs').parseNumber({format:format, locale:"us"});
-                var currentM = $('.popover .m').parseNumber({format:format, locale:"us"});
-                currentBO = parseInt($('.popover .bo').text());
-                currentC = parseInt($('.popover .c').text());
-                currentGS = parseInt($('.popover .gs').text());
-                currentM = parseInt($('.popover .m').text());
-                var bo = wnt.calcChange(currentBO, parseInt(data.bo.amount));
-                var c = wnt.calcChange(currentC, parseInt(data.c.amount));
-                var gs = wnt.calcChange(currentGS, parseInt(data.gs.amount));
-                var m = wnt.calcChange(currentM, parseInt(data.m.amount));
-                // 1) Set current values in accordion to match popover
-                $('#earned-revenue .weather-period-title').text($('.popover-date').text());
-                $('#earned-revenue .box .accordion-stat').text($('.popover td.bo').text());
-                $('#earned-revenue .cafe .accordion-stat').text($('.popover td.c').text());
-                $('#earned-revenue .gift .accordion-stat').text($('.popover td.gs').text());
-                $('#earned-revenue .mem .accordion-stat').text($('.popover td.m').text());
-                // 2) Set percentage values in accordion
-                $('#earned-revenue .box .accordion-stat-change').text(bo[0]+'%');
-                $('#earned-revenue .cafe .accordion-stat-change').text(c[0]+'%');
-                $('#earned-revenue .gift .accordion-stat-change').text(gs[0]+'%');
-                $('#earned-revenue .mem .accordion-stat-change').text(m[0]+'%');
-                // 3) Set previous values in accordion
-                $('#earned-revenue .box .accordion-compared-to').text(data.bo.amount);
-                $('#earned-revenue .cafe .accordion-compared-to').text(data.c.amount);
-                $('#earned-revenue .gift .accordion-compared-to').text(data.gs.amount);
-                $('#earned-revenue .mem .accordion-compared-to').text(data.m.amount);
-                // 4) Set change arrows in accordion
-                // TO DO: Pull into own method (NOTE: Have to manipulate CSS since ReactJS won't let me change classes)
-                if($('.box .accordion-change .change').attr('class').indexOf(bo[1]) === -1){
-                    // Change arrow differs, so rotate it
-                    if($('.box .accordion-change .change').attr('class').indexOf('down') > -1){
-                        // Change arrow was down, so rotate it up
-                        $('.box .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        // Change arrow was up, so rotate it down
-                        $('.box .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                if($('.cafe .accordion-change .change').attr('class').indexOf(c[1]) === -1){
-                    if($('.cafe .accordion-change .change').attr('class').indexOf('down') > -1){
-                        $('.cafe .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        $('.cafe .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                if($('.gift .accordion-change .change').attr('class').indexOf(gs[1]) === -1){
-                    if($('.gift .accordion-change .change').attr('class').indexOf('down') > -1){
-                        $('.gift .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        $('.gift .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                if($('.mem .accordion-change .change').attr('class').indexOf(m[1]) === -1){
-                    if($('.mem .accordion-change .change').attr('class').indexOf('down') > -1){
-                        $('.mem .accordion-change .change').css('transform','rotate(0deg)');
-                    } else {
-                        $('.mem .accordion-change .change').css('transform','rotate(180deg)');
-                    }
-                }
-                // Run number cleanup after processing...
-                self.formatNumbers();
-            });
+            // wnt.gettingComparisonData = $.Deferred();
+            this.getComparison(type, dates);
+            // $.when(wnt.gettingComparisonData).done();
         }
+    },
+    onComparisonGet:function(data) {
+        
+        var self = this;
+        
+        var format = wnt.filter.bgUnits === 'percap' ? '$#,##0.00' : '$#,###';
+        // if(wnt.filter.bgUnits === 'percap'){ ... CALC PER CAP ... }
+        var currentBO = $('.popover .bo').parseNumber({format:format, locale:"us"});
+        var currentC = $('.popover .c').parseNumber({format:format, locale:"us"});
+        var currentGS = $('.popover .gs').parseNumber({format:format, locale:"us"});
+        var currentM = $('.popover .m').parseNumber({format:format, locale:"us"});
+        currentBO = parseInt($('.popover .bo').text());
+        currentC = parseInt($('.popover .c').text());
+        currentGS = parseInt($('.popover .gs').text());
+        currentM = parseInt($('.popover .m').text());
+        var bo = wnt.calcChange(currentBO, parseInt(data.bo.amount));
+        var c = wnt.calcChange(currentC, parseInt(data.c.amount));
+        var gs = wnt.calcChange(currentGS, parseInt(data.gs.amount));
+        var m = wnt.calcChange(currentM, parseInt(data.m.amount));
+        // 1) Set current values in accordion to match popover
+        $('#earned-revenue .weather-period-title').text($('.popover-date').text());
+        $('#earned-revenue .box .accordion-stat').text($('.popover td.bo').text());
+        $('#earned-revenue .cafe .accordion-stat').text($('.popover td.c').text());
+        $('#earned-revenue .gift .accordion-stat').text($('.popover td.gs').text());
+        $('#earned-revenue .mem .accordion-stat').text($('.popover td.m').text());
+        // 2) Set percentage values in accordion
+        $('#earned-revenue .box .accordion-stat-change').text(bo[0]+'%');
+        $('#earned-revenue .cafe .accordion-stat-change').text(c[0]+'%');
+        $('#earned-revenue .gift .accordion-stat-change').text(gs[0]+'%');
+        $('#earned-revenue .mem .accordion-stat-change').text(m[0]+'%');
+        // 3) Set previous values in accordion
+        $('#earned-revenue .box .accordion-compared-to').text(data.bo.amount);
+        $('#earned-revenue .cafe .accordion-compared-to').text(data.c.amount);
+        $('#earned-revenue .gift .accordion-compared-to').text(data.gs.amount);
+        $('#earned-revenue .mem .accordion-compared-to').text(data.m.amount);
+        // 4) Set change arrows in accordion
+        // TO DO: Pull into own method (NOTE: Have to manipulate CSS since ReactJS won't let me change classes)
+        if($('.box .accordion-change .change').attr('class').indexOf(bo[1]) === -1){
+            // Change arrow differs, so rotate it
+            if($('.box .accordion-change .change').attr('class').indexOf('down') > -1){
+                // Change arrow was down, so rotate it up
+                $('.box .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                // Change arrow was up, so rotate it down
+                $('.box .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        if($('.cafe .accordion-change .change').attr('class').indexOf(c[1]) === -1){
+            if($('.cafe .accordion-change .change').attr('class').indexOf('down') > -1){
+                $('.cafe .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                $('.cafe .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        if($('.gift .accordion-change .change').attr('class').indexOf(gs[1]) === -1){
+            if($('.gift .accordion-change .change').attr('class').indexOf('down') > -1){
+                $('.gift .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                $('.gift .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        if($('.mem .accordion-change .change').attr('class').indexOf(m[1]) === -1){
+            if($('.mem .accordion-change .change').attr('class').indexOf('down') > -1){
+                $('.mem .accordion-change .change').css('transform','rotate(0deg)');
+            } else {
+                $('.mem .accordion-change .change').css('transform','rotate(180deg)');
+            }
+        }
+        // Run number cleanup after processing...
+        self.formatNumbers();
+    },
+    getComparison:function (type, priorPeriod) {
+        var queries = {
+            bo: {
+                specs: {
+                    type: 'sales',
+                    channel: 'gate'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            },
+            c: {
+                specs: {
+                    type: 'sales',
+                    channel: 'cafe'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            },
+            gs: {
+                specs: {
+                    type: 'sales',
+                    channel: 'store'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            },
+            m: {
+                specs: {
+                    type: 'sales',
+                    channel: 'membership'
+                },
+                periods: {
+                    type: type,
+                    from: priorPeriod[0],
+                    to: priorPeriod[1],
+                    kind: 'sum'
+                }
+            }
+        }
+        KAPI.stats.query(wnt.venueID, queries, this.onComparisonGet);
     },
     render: function() {
         return (
@@ -179,7 +236,7 @@ var BarSet = React.createClass({
 var AccordionItem = React.createClass({
     render: function() {
         return (
-            <div className={this.props.className+" accordion-item col-md-6 active"}>
+            <div className={this.props.className+" accordion-item col-md-6 active "+this.props.empty}>
                 <div className="row">
                     <div className="col-md-4 accordion-stat-label">
                         {this.props.label}
@@ -221,7 +278,19 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             groupsChange: [0, 'up'],
             cafeChange: [0, 'up'],
             giftstoreChange: [0, 'up'],
-            membershipChange: [0, 'up']
+            membershipChange: [0, 'up'],
+			legendClassName:{
+				box:"bar-graph-legend-item empty",
+				cafe:"bar-graph-legend-item empty",
+				gift:"bar-graph-legend-item empty",
+				mem:"bar-graph-legend-item empty"
+			},
+			accordionEmpty:{
+				box:"",
+				cafe:"",
+				gift:"",
+				mem:""
+			}
         };
     },
 	onWeatherResult:function(weather){
@@ -295,6 +364,21 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             this.formatNumbers;
         }
     },
+	onStatsResultFirst:function (result) {
+		this.onStatsResult(result);
+		var state = this.state;
+		state.legendClassName.box = "bar-graph-legend-item" + (result.box_bars.length ? "":" empty");
+		state.legendClassName.cafe = "bar-graph-legend-item" + (result.cafe_bars.length ? "":" empty");
+		state.legendClassName.gift = "bar-graph-legend-item" + (result.gift_bars.length ? "":" empty");
+		state.legendClassName.mem = "bar-graph-legend-item" + (result.mem_bars.length ? "":" empty");
+
+		state.accordionEmpty.box = result.box_bars.length ? "":"empty";
+		state.accordionEmpty.cafe = result.cafe_bars.length ? "":"empty";
+		state.accordionEmpty.gift = result.gift_bars.length ? "":"empty";
+		state.accordionEmpty.mem = result.mem_bars.length ? "":"empty";
+
+		this.setState(state);
+	},
 	onStatsResult: function(result) {
         console.log('Revenue data loaded using KAPI...');
         wnt.revenue = result;
@@ -317,6 +401,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             wnt.barDates.push(dateStr);
         });
 		
+
 		KAPI.weather.query(
 			wnt.venueID, 
 			{
@@ -328,7 +413,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 		
 		
     },
-	callAPI:function () {
+	callAPI:function (onSuccess) {
         var currentPeriod = wnt.getDateRange(wnt.filter.bgDates, 'this '+wnt.filter.bgPeriod);
         var priorPeriod = wnt.getDateRange(wnt.filter.bgDates, wnt.filter.bgCompare+' '+wnt.filter.bgPeriod);
         // wnt.filter.bgDates   ...   "2016-3-27"
@@ -416,8 +501,11 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 		        mem_sum_prior: { specs: { type: 'sales', channel: 'membership' }, 
 		            periods: { type: wnt.priorScope, from: priorPeriod[0], to: priorPeriod[1], kind: wnt.priorKind } }
 		};
-
-		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
+		
+		if (!onSuccess) {
+			onSuccess = this.onStatsResult;
+		}
+		KAPI.stats.query(wnt.venueID, queries, onSuccess);
 
 	},
     componentDidMount: function() {
@@ -442,7 +530,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         wnt.filter.bgChannels = { box: 1, cafe: 1, gift: 1, mem: 1 };
         wnt.filter.bgCompareActive = 'bg-compare-week';
         // Call method to load revenue and weather data
-        this.callAPI();
+        this.callAPI(this.onStatsResultFirst);
     },
     dataArray: function(stat, statUnits, days) {
         var data = [];
@@ -835,6 +923,9 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         event.target.blur();
     },
     filterChannels: function(event){
+		
+		if ($(event.currentTarget).hasClass("empty")) return;
+		
         $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         // Change bars first...
         // Toggle the legend/filter checkmark
@@ -924,6 +1015,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
             }
             bars.push(<BarSet date={wnt.barDates[i]} key={i} box={box} cafe={cafe} gift={gift} mem={mem} icon1={icon1} icon2={icon2} temp1={temp1} temp2={temp2} summary1={summary1} summary2={summary2} />);
         }
+		
         // HAD TO USE ONFOCUS SINCE ONCHANGE WASN'T FIRING WITH datepicker PLUGIN
         return (
             <div className="row">
@@ -961,25 +1053,25 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                         </div>
 
                         <div className="bar-graph-legend">
-                            <div className="bar-graph-legend-item" data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.box} data-segment="bar-section-boxoffice" data-channel="box" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Box Office
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.cafe} data-segment="bar-section-cafe" data-channel="cafe" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Cafe
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.gift} data-segment="bar-section-giftstore" data-channel="gift" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
                                 Gift Store
                             </div>
-                            <div className="bar-graph-legend-item" data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
+                            <div className={this.state.legendClassName.mem} data-segment="bar-section-membership" data-channel="mem" onClick={this.filterChannels}>
                                 <div className="legend-check-circle active">
                                     <CheckMark className="legend-check" />
                                 </div>
@@ -1035,6 +1127,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                             <div id="revenue-accordion" className="row">
                                 <AccordionItem 
                                     className="box"
+									empty={this.state.accordionEmpty.box}
                                     label="Box Office"
                                     stat={this.state.boxofficeNow}
                                     statChange={this.state.boxofficeChange[0]}
@@ -1042,6 +1135,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.boxofficeThen} />
                                 <AccordionItem
                                     className="cafe"
+									empty={this.state.accordionEmpty.cafe}
                                     label="Cafe"
                                     stat={this.state.cafeNow}
                                     statChange={this.state.cafeChange[0]}
@@ -1049,6 +1143,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.cafeThen} />
                                 <AccordionItem
                                     className="gift"
+									empty={this.state.accordionEmpty.gift}
                                     label="Gift Store"
                                     stat={this.state.giftstoreNow}
                                     statChange={this.state.giftstoreChange[0]}
@@ -1056,6 +1151,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
                                     comparedTo={this.state.giftstoreThen} />
                                 <AccordionItem
                                     className="mem"
+									empty={this.state.accordionEmpty.mem}
                                     label="Membership"
                                     stat={this.state.membershipNow}
                                     statChange={this.state.membershipChange[0]}

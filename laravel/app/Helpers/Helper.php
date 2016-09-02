@@ -5,6 +5,7 @@ namespace App\Helpers;
 use Illuminate\Database\Eloquent\Model;
 
 class Helper {
+ 
 	public static function readCSV($filename) {
 		$rows = array_map('str_getcsv', file($filename));
 		$header = array_shift($rows);
