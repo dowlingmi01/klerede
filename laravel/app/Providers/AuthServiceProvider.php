@@ -24,11 +24,11 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         $gate->define('user-get', function ($user, $user_id) {
-            return $user->id == $user_id || PermissionHelper::has_permission($user, 'UM');
+            return $user->id == $user_id || PermissionHelper::has_permission($user, PermissionHelper::USER_MANAGE);
         });
 
         $gate->define('user-set', function ($user, $user_id) {
-            return $user->id == $user_id || PermissionHelper::has_permission($user, 'UM');
+            return $user->id == $user_id || PermissionHelper::has_permission($user,  PermissionHelper::USER_MANAGE);
         });
 
         $gate->define('has-permission', function ($user, $permission) {
@@ -46,7 +46,9 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         $gate->define('delete-user', function ($user, $delete_user_id) {
-            $role = \App\Role::find($user->role_id);
+            $delete_user = \App\User::find($delete_user_id);
+            $role = \App\Role::find($delete_user->role_id);
+           
             return $user->id != $delete_user_id && $role->level > PermissionHelper::OWNER_LEVEL;
         });
     }
