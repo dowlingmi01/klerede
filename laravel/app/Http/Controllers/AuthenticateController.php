@@ -87,7 +87,9 @@ class AuthenticateController extends Controller
 		        return response()->json(['user_not_found'], 404);
 		     }
 		}
-		return response()->json(compact('user'));
+        $role = \App\Role::find($user->role_id);
+        $user->permission = $role->permission; 
+        return response()->json(compact('user'));
 	}
 
 
