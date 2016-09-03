@@ -40,7 +40,7 @@ var global = Function('return this')();
 		scope.KUtils = {
 			isValidPassword:function(p1, p2) {
 				
-				if (scope.KUtils.isEmpty(p1)) {
+				if (_isEmpty(p1)) {
 					return "Please enter a valid password."
 				};
 				
@@ -92,8 +92,8 @@ var global = Function('return this')();
                 weatherFormat:function(s, periodType) {
                     // Friday, June 3, 2016
                     if(periodType == "quarter") {
-                        var fromDate = new Date(scope.KUtils.date.getDateFromWeek(s));
-                        var toDate = new Date(scope.KUtils.date.addDays(fromDate,6));
+                        var fromDate = new Date(_date.getDateFromWeek(s));
+                        var toDate = new Date(_date.addDays(fromDate,6));
                         // Tue Aug 30 2016
                         //Mar 27 - Apr 2, 2016
                         var from = (fromDate.toDateString()).split(" ");
@@ -122,7 +122,7 @@ var global = Function('return this')();
                 },
                 barFormat:function(s, periodType) {
                     if(periodType == "quarter") {
-                        s = scope.KUtils.date.getDateFromWeek(s);
+                        s = _date.getDateFromWeek(s);
                     }
                     
                     var date = new Date(s);
@@ -136,8 +136,7 @@ var global = Function('return this')();
                 serverFormat:function (date, periodType) {
                     var date = new Date(date);
                     if (periodType == "week") {
-                        var w = scope.KUtils.date.getWeekNumber(date);
-                        return date.getUTCFullYear()+"-"+w;
+                        return _date.serverFormatWeek(date);
                     };
                     var d =date.getUTCDate();
                     var m =date.getUTCMonth()+1;
@@ -145,12 +144,12 @@ var global = Function('return this')();
                 },
                 serverFormatWeek:function (date) {
                     var date = new Date(date);
-                    var w = scope.KUtils.date.getWeekNumber(date);
+                    var w = _date.getWeekNumber(date);
                     return date.getUTCFullYear()+"-"+w;
                 },
-                format:function (isoDate) { //'mm/dd/yyyy'
-                    var date = new Date(isoDate);
-                    return scope.KUtils.date.formatFromDate(date);
+                localFormat:function (serverDate) { //yyyy-mm-dd -> mm/dd/yyy
+                    var date = new Date(serverDate);
+                    return _date.formatFromDate(date);
                 },
                 formatFromDate:function (date) {
                     var d =_forceDigits(date.getUTCDate(),2);
@@ -160,17 +159,17 @@ var global = Function('return this')();
                 addDays:function (date, days) {
                     var result = new Date(date);
                     result.setDate(result.getDate() + days);
-                    return scope.KUtils.date.formatFromDate(result);
+                    return _date.formatFromDate(result);
                 },
                 addMonths:function (date, months) {
                     var result = new Date(date);
                     result.setMonth(result.getMonth() + months);
-                    return scope.KUtils.date.formatFromDate(result);
+                    return _date.formatFromDate(result);
                 },
                 addYears:function (date, years) {
                     var result = new Date(date);
                     result.setUTCFullYear(result.getUTCFullYear() + years);
-                    return scope.KUtils.date.formatFromDate(result);
+                    return _date.formatFromDate(result);
                 },
                 getWeekNumber:function (d) {
                     var date = new Date(d);
@@ -184,12 +183,30 @@ var global = Function('return this')();
                     var month = date.getUTCMonth();
                     return Math.floor(month/4) + 1;
                 },
-                getDateFromWeek:function (s) { //YYYY-W
+                quarterToDates:function(q, y) {            //q,yyyy -> mm/dd/yyyy
+                    
+                    console.log(q, y);
+                    
+                    if (q == 0) {
+                        y -= 1;
+                        q = 4;
+                    }
+                    
+                    var fromMonth = (q-1)*3 + 1;
+                    var toMonth = (q==4) ? 1 : q*3 + 1;
+                    var from = new Date(fromMonth+"/01/"+y);
+                    var to = new Date(toMonth+"/01/"+y);
+                    to.setUTCDate(0);
+                    var dates = {from: _date.formatFromDate(from), to: _date.formatFromDate(to)};
+                    console.log(q, y, dates);
+                    return dates;
+                },
+                getDateFromWeek:function (s) { //YYYY-W -> mm/dd/yyyy
                     var a = s.split("-");
                     var year = parseInt(a[0]);
                     var week = parseInt(a[1]);
                     var date = new Date("01/01/"+year.toString());
-                    return scope.KUtils.date.addDays(date, week*7);
+                    return _date.addDays(date, week*7);
                 }
             },
             number:{
@@ -212,6 +229,14 @@ var global = Function('return this')();
             }
 		};
 		
+        var _date = scope.KUtils.date;
+        var _isValidPassword = scope.KUtils.isValidPassword;
+        var _isEmail = scope.KUtils.isEmail;
+        var _isEmpty = scope.KUtils.isEmpty;
+        var _storeLocal = scope.KUtils.storeLocal;
+        var _clearLocal = scope.KUtils.clearLocal;
+        var _date = scope.KUtils.date;
+        var _number = scope.KUtils.number;
 	}
 })(global);
 
@@ -293,9 +318,6 @@ var global = Function('return this')();
 
 		//Public
 		scope.KAPI = {
-			// custom:function (method, route, onSuccess, data, options) {
-			// 	_srdata(method, route, onSuccess, data, options);
-			// },
 			goals:{
 				sales: {
 					get:function (venueID, year, onSuccess) {
@@ -319,7 +341,89 @@ var global = Function('return this')();
 						options.error = onError;
 					}
 					_postData(route, onSuccess, {venue_id:venueID, queries:queries}, options);
-				}
+				},
+                getSimpleQuery:function (period, members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for membres+nonmembers, null for all channels, 'sales', 'detail', 'date'
+                    var query = _stats.getQuery(period, period, members, channel, type, operation, periodType);                    
+                    query.periods = period;
+                    return query;
+                    
+                },
+                getQuery:function (from, to, members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for membres+nonmembers, null for all channels, 'sales', 'detail', 'date'
+                    
+                    var query = {
+                        periods: {
+                            type: periodType,
+                            from: from,
+                            to: to,
+                            kind:operation
+                        },
+                        specs: {
+                            type: type,
+                            channel:channel,
+                            members:members
+                        }
+                    };
+                    
+                    if (!channel || channel=='ALL')
+                        delete query.specs.channel;
+                    
+                    if (!operation || operation == 'detail')
+                        delete query.periods.kind;
+                    
+                    if (!type)
+                        query.specs.type = 'sales';
+
+                    if (!periodType || periodType=='date')
+                        delete query.periods.type;
+
+                    if (members === null || members===undefined || type === 'visits')
+                        delete query.specs.members;
+                    
+                    if (type === 'visits') {
+                        if (members===true) 
+                            query.specs.kinds = ["membership"];
+                        else if (members===false)
+                            query.specs.kinds = ["ga", "group"];
+                    }
+                    return query;                    
+                },
+                getQueryDays:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
+                    return _stats.getQuery(from, to, members, channel, type);
+                },
+                getQueryWeeks:function(from, to, members, channel, type) {
+                    return _stats.getQuery(from, to, members, channel, type, 'detail', 'week');
+                },
+                getQueryDaysSum:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
+                    return _stats.getQuery(from, to, members, channel, type, 'sum');
+                },
+                getQueryWeeksSum:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
+                    return _stats.getQuery(from, to, members, channel, type, 'sum', 'week');
+                },
+                getQueryDaysAverage:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
+                    return _stats.getQuery(from, to, members, channel, type, 'average');
+                },
+                getQueryWeeksAverage:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
+                    return _stats.getQuery(from, to, members, channel, type, 'average', 'week');
+                },
+                getQueryDailyWeeksAverage:function (f, t,  members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
+                    //returns {d0w0:{query},d1w1:{query}.. etc}
+                    var queries = {};
+                    var w = 0;
+                    while(1) {
+                        for (var d = 0; d<7; d++) {
+                            var formated = f.getUTCFullYear()+"-"+ (f.getUTCMonth()+1) +"-"+f.getUTCDate();
+                            queries["d"+d+"w"+w] = _stats.getSimpleQuery(formated, members, channel, type, operation, periodType);
+                            f.setUTCDate(f.getDate()+1);
+                        }
+                        if (f.getTime() > t.getTime()) {
+                            break;
+                        } else if( w++ > 1024) {                                        //1024 limit to avoid inf loops
+                            throw new Error("getQueryDailyWeeksAverage: query is getting too big -> "+w);
+                        }
+                    }
+                    return queries;
+                }
+                
 			},
 			weather:{
 				query:function(venueID, date, onSuccess, hourly){
@@ -451,6 +555,12 @@ var global = Function('return this')();
 				}
 			}
 		};
+        var _goals = scope.KAPI.goals;
+        var _stats = scope.KAPI.stats;
+        var _weather = scope.KAPI.weather;
+        var _venue = scope.KAPI.venue;
+        var _users = scope.KAPI.users;
+        var _auth = scope.KAPI.auth;
 	}
 })(jQuery.ajax, global);
 

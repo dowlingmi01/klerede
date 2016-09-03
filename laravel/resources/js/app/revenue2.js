@@ -91,7 +91,7 @@ var GBar = React.createClass({
         
         
         return(
-            <div id={this.props.id} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
+            <div id={this.props.id} onMouseLeave={this.props.onMouseLeave} onMouseEnter={this.props.onMouseEnter} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
                     <div ref="barTransition" className="bar-transition">
                         {sections}
@@ -334,7 +334,7 @@ var DetailsRow = React.createClass({
 var Revenue2 = React.createClass({
     getInitialState:function () {
 
-        var today = new Date(KUtils.date.format(wnt.today));
+        var today = new Date(KUtils.date.localFormat(wnt.today));
         var weekDay = today.getUTCDay();
         var offset = (weekDay==6) ? 0 : weekDay-1;
         var periodTo = KUtils.date.addDays(today, offset);
@@ -349,12 +349,17 @@ var Revenue2 = React.createClass({
             members:"totals",
             units:"dollars",
             comparePeriodType:"lastperiod_1",
-            currentDate:periodFrom,
-            periodFrom:periodFrom,
-            periodTo:periodTo,
+            currentDate:periodFrom,     //mm/dd/yyyy
+            periodFrom:periodFrom,      //mm/dd/yyyy
+            periodTo:periodTo,          //mm/dd/yyyy
+            lastFrom1:"",               //mm/dd/yyyy
+            lastTo2:"",                 //mm/dd/yyyy
+            lastFrom2:"",               //mm/dd/yyyy
+            lastTo2:"",                 //mm/dd/yyyy
             dirty:false,
             detailsClass:"",
-            detailsTitle:"Show Details"
+            detailsTitle:"Show Details",
+            barEnter:null
         };
     },
     updatePeriod:function (date, periodType) {
@@ -363,6 +368,7 @@ var Revenue2 = React.createClass({
         var getWeekNumber = KUtils.date.getWeekNumber;
         var getQuarterNumber = KUtils.date.getQuarterNumber;
         var getDateFromWeek = KUtils.date.getDateFromWeek;
+        var quarterToDates = KUtils.date.quarterToDates;
         var forceDigits = KUtils.number.forceDigits;
         var periodTypeForServer = "date";
         
@@ -370,20 +376,22 @@ var Revenue2 = React.createClass({
         
         switch (periodType) {
         case "quarter":
-            var quarter = getQuarterNumber(date); //Math.ceil(week/13);
-            var year = (new Date(date)).getUTCFullYear();
             
-            var periodFrom = getDateFromWeek(year+"-"+(quarter-1)*13);//->tengo la semana
-            var periodTo = getDateFromWeek(year+"-"+(quarter*13-1));//->tengo la semana
+            var quarter = getQuarterNumber(date);
+            var year = (new Date(date)).getUTCFullYear();
+            var period = quarterToDates(quarter, year);
+            
+            var periodFrom = period.from;
+            var periodTo = period.to
             periodTypeForServer = "week";
             
-            var lastFrom1 = addDays(periodFrom, -(13*7));
-            var lastTo1 = addDays(periodFrom, -1);
-            var lastFrom2 = (sf(periodFrom, periodTypeForServer)).split("-");  //yyyy-w
-            var lastTo2 = (sf(periodTo, periodTypeForServer)).split("-");    //yyyy-w
-            lastFrom2 = (parseInt(lastFrom2[0])-1)+"-"+lastFrom2[1];
-            lastTo2 = (parseInt(lastTo2[0])-1)+"-"+lastTo2[1];
+            var last1 = quarterToDates(quarter-1, year);
+            var lastFrom1 = last1.from;
+            var lastTo1 = last1.to;
             
+            var last2 = quarterToDates(quarter, year-1);
+            var lastFrom2 = last2.from;
+            var lastTo2 = last2.to;
             
             break;
         case "month":
@@ -423,6 +431,14 @@ var Revenue2 = React.createClass({
 
         state.dirty = true;
         this.setState(state);
+    },
+    onBarEnter:function (n) {
+        this.setState({barEnter:n})
+    },
+    onBarLeave:function (n) {
+        if(n === this.state.barEnter) {
+            this.setState({barEnter:null})
+        }
     },
     onPeriodTypeChange:function (event) {
         this.updatePeriod(this.state.currentDate, event.target.value);
@@ -542,201 +558,124 @@ var Revenue2 = React.createClass({
             break;
         }
         
+        //GET KAPI stats functions
+        var getQuery = KAPI.stats.getQuery; // getQuery(from, to, members, channel, type, operation, periodType)
+        var getQueryDays = KAPI.stats.getQueryDays;
+        var getQueryDaysSum = KAPI.stats.getQueryDaysSum;
+        var getQueryWeeksSum = KAPI.stats.getQueryWeeksSum;
+        var getQueryWeeksAverage = KAPI.stats.getQueryWeeksAverage;
+        var getQueryDailyWeeksAverage = KAPI.stats.getQueryDailyWeeksAverage;
         
-        var sf = KUtils.date.serverFormat;
+        //GET KUtils date functions
+        var serverFormat = KUtils.date.serverFormat;
         var addDays = KUtils.date.addDays;
         var addMonths = KUtils.date.addMonths;
         var addYears = KUtils.date.addYears;
         var serverFormatWeek = KUtils.date.serverFormatWeek;
+        
+        
+        //GENERAL QUERIES -> CURRENT PERIOD
+        var periodFrom = serverFormat(state.periodFrom, state.periodTypeForServer);
+        var periodTo = serverFormat(state.periodTo, state.periodTypeForServer);
 
         var queries = {};
-        queries.total_bars = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)},
-            specs: {type:"sales", members:membership}
-        };
-        queries.visitors = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)},
-            specs: {type:"visits"}
-        };
-        queries.visitors_total = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer),
-                kind:"sum"
-            },
-            specs: {type:"visits"}
-        };
+        //
+        queries.total_bars = getQuery(periodFrom, periodTo, membership, 'ALL', 'sales', 'detail', state.periodTypeForServer);
         
-        if (membership === true) {
-            queries.visitors.specs.kinds = ["membership"];
-        } else if (membership === false) {
-            queries.visitors.specs.kinds = ["ga", "group"];
-        }
+        queries.visitors = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
+        
+        queries.visitors_total = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'sum', state.periodTypeForServer);
+        
 
-        var from1 =  state.lastFrom1;
-        var to1 = state.lastTo1;
-        var from2 = state.lastFrom2;
-        var to2 = state.lastTo2;
+        //GENERAL QUERIES -> PAST PERIODS
+        var from1 =  serverFormat(state.lastFrom1);
+        var to1 = serverFormat(state.lastTo1);
+        var from1WeekFormat = serverFormatWeek(state.lastFrom1);
+        var to1WeekFormat = serverFormatWeek(state.lastTo1);
+        var from2 = serverFormat(state.lastFrom2);
+        var to2 = serverFormat(state.lastTo2);
+        var from2WeekFormat = serverFormatWeek(state.lastFrom2);
+        var to2WeekFormat = serverFormatWeek(state.lastTo2);
+
+        queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits');
+        queries.visitors_lastperiod_1_totals = getQueryDaysSum(from1, to1, membership, 'ALL', 'visits');
+
 
         if(state.periodType == "week") {
-            queries.visitors_lastperiod_1 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from1), 
-                    to:sf(to1),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
-            queries.visitors_lastperiod_2 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from2), 
-                    to:sf(to2),
-                    kind:"average"
-                },
-                specs: {type:"visits"}
-            };
             
-        } else if(state.periodType == "month"){
-            queries.visitors_lastperiod_1 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from1), 
-                    to:sf(to1),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
-            queries.visitors_lastperiod_2 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from2), 
-                    to:sf(to2),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
+            var visitors_lastperiod_2 = {}; //getQueryDailyWeeksAverage returns queries d0w0, d1w1, etc
+            
+            // var queryList = getQueryDailyWeeksAverage(new Date(state.lastFrom2), new Date(state.lastTo2), membership, 'ALL', 'visits');
+            //
+            // for (var dayWeek in queryList) {
+            //     queries["visitors_lastperiod_2_"+dayWeek] = queryList[dayWeek];
+            // }
 
-        } else if(state.periodType == "quarter"){
-            queries.visitors_lastperiod_1 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from1), 
-                    to:sf(to1),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
-            queries.visitors_lastperiod_2 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:from2, 
-                    to:to2,
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
+            queries.visitors_lastperiod_2_totals = getQueryWeeksAverage(from2WeekFormat, to2WeekFormat, membership, 'ALL', 'visits');
+            // console.log(from2, to2)
+            
+        } else { 
+            //month and quarter
+            queries.visitors_lastperiod_2_totals = getQueryDaysSum(from2, to2, membership, 'ALL', 'visits');
+            
         }
         
         
+        //PER CHANNEL QUERIES
         
         for (var channel in state.channelActive) {
-            var query = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(state.periodFrom, state.periodTypeForServer), 
-                    to:sf(state.periodTo, state.periodTypeForServer)
-                },
-                specs:{type:"sales", channel:channel, members:membership}
-            }
-            var totals = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(state.periodFrom, state.periodTypeForServer), 
-                    to:sf(state.periodTo, state.periodTypeForServer),
-                    kind:"sum"
-                },
-                specs:{type:"sales", channel:channel, members:membership}
-            };
             
-            if(state.periodType == "week" || state.periodType == "month" ) {
-                var lastPeriod1 = {
-                    periods:{
-                        type:"date", 
-                        from:sf(from1, "date"), 
-                        to:sf(to1, "date"),
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            }
+            //CURRENT PERIOD
+            var query = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'detail', state.periodTypeForServer);
             
-            if(state.periodType == "week") {
-                var fromWeek = serverFormatWeek(from2);
-                var toWeek = serverFormatWeek(to2);
-                var lastPeriod2 = {
-                    periods:{
-                        type:"week", 
-                        from:fromWeek, 
-                        to:toWeek,
-                        kind:"average"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            } else if(state.periodType == "month") {
-                var lastPeriod2 = {
-                    periods:{
-                        type:"date", 
-                        from:sf(from2, state.periodTypeForServer), 
-                        to:sf(to2, state.periodTypeForServer),
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            }
+            var totals = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'sum', state.periodTypeForServer);
             
-            if(state.periodType == "quarter") {
-                var lastPeriod1 = {
-                    periods:{
-                        type:"week", 
-                        from:sf(from1, state.periodTypeForServer), 
-                        to:sf(to1, state.periodTypeForServer),
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-                var lastPeriod2 = {
-                    periods:{
-                        type:"week", 
-                        from:from2,     //hack already formatted 
-                        to:to2,         //hack already formatted 
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            }
-            
-            // console.log(from1, to1, lastPeriod1);
-            // console.log(from2, to2, lastPeriod2);
 
-            if (membership===undefined) {
-                delete query.specs.members;
-                delete totals.specs.members;
-                delete lastPeriod1.specs.members;
-                delete lastPeriod2.specs.members;
+            //LAST PERIOD
+            if (state.periodType == "week" || state.periodType == "month" ) {
+                var lastPeriod1 = getQuery(from1, to1, membership, channel);
+            } else {
+                //for quarter
+                var lastPeriod1 = getQuery(from1WeekFormat, to1WeekFormat, membership, channel, 'sales', 'detail', 'week');
             }
+            
+            if (state.periodType == "quarter"){
+                
+                var lastPeriod2 = getQuery(from1WeekFormat, to1WeekFormat, membership, channel, 'sales', 'detail', 'week');;
+                
+            } else if (state.periodType == "week"){ //for week, month
+                
+                var lastPeriod2 = getQuery(from1, to1, membership, channel, 'sales', 'average', 'date');;
+                console.log(lastPeriod2);
+                
+            } else {
+                
+                var lastPeriod2 = getQuery(from1, to1, membership, channel);
+                
+            }
+            
+
+            //LAST PERIOD TOTALS
+            var lastPeriod1_totals = getQuery(from1, to1, membership, channel, 'sales', 'sum');
+
+            if (state.periodType == "week") {
+                
+                var lastPeriod2_totals = getQueryWeeksAverage(from2WeekFormat, to2WeekFormat, membership, channel);
+                
+            } else {
+                
+                var lastPeriod2_totals = getQueryDaysSum(from2, to2, membership, channel);
+                
+            }
+            
+            
+            //WRITE VARS
             queries[channel+"_bars"] = query;
             queries[channel+"_bars_totals"] = totals;
             queries[channel+"_bars_lastperiod_1"] = lastPeriod1;
             queries[channel+"_bars_lastperiod_2"] = lastPeriod2;
+            queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
+            queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
         }
         console.log(queries);
         KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
@@ -836,6 +775,9 @@ var Revenue2 = React.createClass({
         var wResult = this.state.wResult;
         var max = this.state.max;
         if (result) {
+            
+            //Build BARS
+            
             var total_bars = result.total_bars;
             var partial_sum = result.partial_sum;
             var partial_sum_percap = result.partial_sum_percap;
@@ -872,28 +814,67 @@ var Revenue2 = React.createClass({
                             width={barWidth}
                             periodType={this.state.periodType}
                             weather={weather}
+                            onMouseEnter={this.onBarEnter.bind(this, i)}
+                            onMouseLeave={this.onBarLeave.bind(this, i)}
                         />);
             }
             
+            //Build DETAILS
+            
+            
+            var dataIndex = this.state.barEnter;
+
+            if(dataIndex === null) {
+                var toSufix = "_bars_totals";
+                var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
+                var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
+                var visitors = parseInt(result.visitors_total.units);
+                var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
+            } else {
+                
+                toSufix = "_bars";
+                fromSufix = "_bars_"+this.state.comparePeriodType;
+                
+                var visitorsDetail = this.state.result["total_bars"][dataIndex];
+
+                var lastPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
+
+                var visitors = parseInt(result.visitors[dataIndex].units);
+                var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
+                
+            };
+            
+            
+            
+            
+            var count = 0;
             var detailsRowsLeft = [];
             var detailsRowsRight = [];
-            var totalSufix = "_bars_totals";
-            var lastSufix = "_bars_"+this.state.comparePeriodType;
-            
-            var visitors = parseInt(result.visitors_total.units);
-            var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType].units);
             
             for(var k in channelActive) {
+
+                var detailsRows = (count%2 == 0)? detailsRowsLeft : detailsRowsRight;
+
                 if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
                     
-                    var to = result[k+totalSufix].amount;
-                    var from = result[k+lastSufix].amount;
+                    count++; //count only displayed channels
+
+                    var fromData = result[k+fromSufix];
+                    var toData = result[k+toSufix];
+                    
+                    if (dataIndex !== null) {
+                        var from = fromData[dataIndex].amount;
+                        var to = toData[dataIndex].amount;
+                    } else {
+                        from = fromData.amount;
+                        to = toData.amount;
+                    }
+                    
                     
                     if(this.state.units == "percap") {
                         to /= visitors;
                         from /= lastVisitors;
                     }
-                    var detailsRows = (detailsRowsLeft.length == detailsRowsRight.length)? detailsRowsLeft : detailsRowsRight;
                     detailsRows.push(
                         <DetailsRow 
                             key={k} from={from} to={to} title={this.state.channelNames[k]}
@@ -1006,18 +987,8 @@ var Revenue2 = React.createClass({
                         <div className={"row details "+this.state.detailsClass}>
                             <div className="col-xs-12 col-sm-12">
                                 <div className="col-xs-6 col-sm-6" id="header">
-                                    {
-                                        (this.state.comparePeriodType == "lastperiod_1") ?
-                                            KUtils.date.detailsFormat(this.state.lastFrom1, this.state.lastTo1)
-                                        :
-                                            (this.state.periodType=="quarter") ?
-                                                KUtils.date.detailsFormat(
-                                                    KUtils.date.getDateFromWeek(this.state.lastFrom2), 
-                                                    KUtils.date.getDateFromWeek(this.state.lastTo2)
-                                                )
-                                            :
-                                                KUtils.date.detailsFormat(this.state.lastFrom2, this.state.lastTo2)
-                                    }
+                                    
+                                    {lastPeriodFormattedDate}
                                     
                                 </div>
                                 <div className="col-xs-6 col-sm-6 text-right">
