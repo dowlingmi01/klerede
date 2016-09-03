@@ -597,19 +597,13 @@ var Revenue2 = React.createClass({
         var from2WeekFormat = serverFormatWeek(state.lastFrom2);
         var to2WeekFormat = serverFormatWeek(state.lastTo2);
 
-        queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits');
+        queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
         queries.visitors_lastperiod_1_totals = getQueryDaysSum(from1, to1, membership, 'ALL', 'visits');
 
 
         if(state.periodType == "week") {
             
-            var visitors_lastperiod_2 = {}; //getQueryDailyWeeksAverage returns queries d0w0, d1w1, etc
-            
-            // var queryList = getQueryDailyWeeksAverage(new Date(state.lastFrom2), new Date(state.lastTo2), membership, 'ALL', 'visits');
-            //
-            // for (var dayWeek in queryList) {
-            //     queries["visitors_lastperiod_2_"+dayWeek] = queryList[dayWeek];
-            // }
+            var visitors_lastperiod_2 = {}; //TODO: How to ask server for day by day last 13 week average visits or sales?
 
             queries.visitors_lastperiod_2_totals = getQueryWeeksAverage(from2WeekFormat, to2WeekFormat, membership, 'ALL', 'visits');
             // console.log(from2, to2)
@@ -617,6 +611,8 @@ var Revenue2 = React.createClass({
         } else { 
             //month and quarter
             queries.visitors_lastperiod_2_totals = getQueryDaysSum(from2, to2, membership, 'ALL', 'visits');
+
+            queries.visitors_lastperiod_2 = getQuery(from2, to2, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
             
         }
         
