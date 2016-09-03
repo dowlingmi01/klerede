@@ -15,6 +15,7 @@ use \Input;
 use Illuminate\Mail\Message;
 use \Config;
 use \Hash;
+use App\Helpers\PermissionHelper;
 
 
 class AuthenticateController extends Controller
@@ -88,7 +89,7 @@ class AuthenticateController extends Controller
 		     }
 		}
         $role = \App\Role::find($user->role_id);
-        $user->permission = $role->permission; 
+        $user->permissions = PermissionHelper::permissions($user);
         return response()->json(compact('user'));
 	}
 

@@ -17,7 +17,6 @@ class AddLevelToRoleTable extends Migration
             $table->string('permission', 256)->after('level');
         });
 
- 
         $roles = array(
                 ['id'=>1, 'name' => 'Owner', 'level'=>'10', 'permission'=>'UM|GS'],
                 ['id'=>2, 'name' => 'Admin', 'level'=>'20', 'permission'=>'UM|GS'],
@@ -40,4 +39,5 @@ class AddLevelToRoleTable extends Migration
             $table->dropColumn('permission');
         });
     }
+        
 }
