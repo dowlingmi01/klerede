@@ -7,8 +7,8 @@ use App\Role;
 class PermissionHelper {
 	 
 	const OWNER_LEVEL = 10;
-	const USER_MANAGE = 'user_manage';
-	const GOALS_SET = 'goals_set';
+	const USER_MANAGE = 'users-manage';
+	const GOALS_SET = 'goals-set';
 
 	public static function permissions($user) {
 		$role = Role::find($user->role_id);

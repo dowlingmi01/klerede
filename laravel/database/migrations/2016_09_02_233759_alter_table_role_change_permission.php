@@ -13,14 +13,14 @@ class AlterTableRoleChangePermission extends Migration
     public function up()
     {
         Schema::table('role', function (Blueprint $table) {
-            $table->dropColumn('permission')->after('level');
-            $table->string('permissions', 1000);
+            $table->dropColumn('permission');
+            $table->string('permissions', 1000)->after('level');
         });
 
         $roles = array(
-                ['id'=>1, 'name' => 'Owner', 'level'=>'10', 'permissions'=>'user_manage|goals_set'],
-                ['id'=>2, 'name' => 'Admin', 'level'=>'20', 'permissions'=>'user_manage|goals_set'],
-                ['id'=>3, 'name' => 'Power', 'level'=>'30', 'permissions'=>'goals_set'],
+                ['id'=>1, 'name' => 'Owner', 'level'=>'10', 'permissions'=>'users-manage|goals-set'],
+                ['id'=>2, 'name' => 'Admin', 'level'=>'20', 'permissions'=>'users-manage|goals-set'],
+                ['id'=>3, 'name' => 'Power', 'level'=>'30', 'permissions'=>'goals-set'],
                 ['id'=>4, 'name' => 'Basic', 'level'=>'40', 'permissions'=>''],
         );
         DB::table('role')->truncate();
