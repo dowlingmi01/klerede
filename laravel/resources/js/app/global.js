@@ -30,8 +30,8 @@ var global = Function('return this')();
 (function(scope) {
 	if (!scope.KUtils) {
 		var _temp = {};
-        function _forceDigits(n, d) {
-            var s = n.toString(); //n must be a number
+        function _forceDigits(n, d) { //n:number, d:number -> string
+            var s = n.toString();
             while (s.length < d) {
                 s = "0"+s;
             }
@@ -185,7 +185,7 @@ var global = Function('return this')();
                 },
                 quarterToDates:function(q, y) {            //q,yyyy -> mm/dd/yyyy
                     
-                    console.log(q, y);
+                    // console.log(q, y);
                     
                     if (q == 0) {
                         y -= 1;
@@ -198,7 +198,7 @@ var global = Function('return this')();
                     var to = new Date(toMonth+"/01/"+y);
                     to.setUTCDate(0);
                     var dates = {from: _date.formatFromDate(from), to: _date.formatFromDate(to)};
-                    console.log(q, y, dates);
+                    // console.log(q, y, dates);
                     return dates;
                 },
                 getDateFromWeek:function (s) { //YYYY-W -> mm/dd/yyyy
@@ -214,17 +214,28 @@ var global = Function('return this')();
                     return _forceDigits(n,d);
                 },
                 formatAmount:function(n) {
-                    var fd = KUtils.number.forceDigits;
-                    if(isNaN(n)) return "0";
-                    var r = "";
-                    if(n > 1000) {
-                        r = Math.floor(n/1000)+","+fd(Math.round(n%1000),3);
-                    } else if(n > 100) {
-                        r = Math.round(10*n)/10;
+                    // return n;
+                    if(n===null || n===undefined || isNaN(n) || n===0) return "0";
+                    
+                    if (Math.abs(n) >= 1000) {
+                        //comma values, no decimals
+                        var s = n.toFixed(0);
+                        var r = "";
+                        for (var i = s.length - 1; i >= 0; i--) {
+                            r = s.charAt(i) + r;
+                            
+                            if ((s.length-i) % 3 === 0 && i>0 ) {
+                                r = ","+r;
+                            }
+                        };
+                        return r;
+                    } else if (Math.abs(n) > 100) {
+                        //one decimal
+                        return n.toFixed(1);
                     } else {
-                        r = Math.round(100*n)/100;
+                        //2 decimals
+                        return n.toFixed(2);
                     }
-                    return r;
                 }
             }
 		};

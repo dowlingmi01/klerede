@@ -254,6 +254,17 @@ var DetailsRow = React.createClass({
             this.setState({detailsClass:""});
         }
     },
+    getFontStyle:function (n) { //adjust % to show the whole number
+        var style = {};
+        if (n >= 1e6 ) {
+            style.fontSize = "85%";
+        } else if (n > 1e7) {
+            style.fontSize = "70%";
+        } else if (n > 1e8) {
+            style.fontSize = "60%";
+        }
+        return style;
+    },
     //props
     //from - to - title
     render:function () {
@@ -261,11 +272,22 @@ var DetailsRow = React.createClass({
 
         var from = this.props.from;
         var to = this.props.to;
+        
+        var fromStyle = this.getFontStyle(from);
+        var toStyle = this.getFontStyle(to);
 
         var upDownClass = to > from ? "up" : "down";
-
-        var change = 100*((to/from) - 1);
-        change = Math.abs(Math.round(100*change)/100);
+        
+        if(from !== 0 ) {
+            var percent = 100*((to/from) - 1);
+        }
+        if(isNaN(percent) || !isFinite(percent)) {
+            var change = "n/d";
+            var changeStyle = {opacity:0};
+        } else {
+            change = (percent.toFixed(2))+"%";
+            changeStyle = {};
+        }
         
         
         var details = this.props.details;
@@ -298,26 +320,26 @@ var DetailsRow = React.createClass({
                             </div>
                         </div>
                         <div className="col-md-8">
-                            <div className="col-md-12 col-lg-4 left-line">
-                                <div className="text-center hidden-lg hidden-xl">
+                            <div className="col-md-12 col-lg-4 left-line" >
+                                <div className="text-center hidden-lg hidden-xl" style={changeStyle}>
                                     <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                    <span className="multicolor" id="change">{change}%</span>
+                                    <span className="multicolor" id="change">{change}</span>
                                 </div>
-                                <div className=" hidden-xs hidden-sm hidden-md">
+                                <div className=" hidden-xs hidden-sm hidden-md" style={changeStyle}>
                                     <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                    <span className="multicolor" id="change">{change}%</span>
+                                    <span className="multicolor" id="change">{change}</span>
                                 </div>
                             </div>
                             <div className="col-md-12 col-lg-8 left-line">
                                 <div className="text-center hidden-lg hidden-xl">
-                                    <div id="from-val">${formatAmount(from)}</div>&nbsp;&nbsp;
+                                    <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
                                     <LongArrow className="long-arrow" width="21px" />
-                                    &nbsp;&nbsp;<div className="multicolor" id="to-val" >${formatAmount(to)}</div>
+                                    <div className="multicolor" id="to-val" style={toStyle}>${formatAmount(to)}</div>
                                 </div>
                                 <div className=" hidden-xs hidden-sm hidden-md">
-                                    <div id="from-val">${formatAmount(from)}</div>&nbsp;&nbsp;
+                                    <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
                                     <LongArrow className="long-arrow" width="21px" />
-                                    &nbsp;&nbsp;<div className="multicolor" id="to-val" >${formatAmount(to)}</div>
+                                    <div className="multicolor" id="to-val"  style={toStyle}>${formatAmount(to)}</div>
                                 </div>
                             </div>
                         </div>
@@ -581,16 +603,20 @@ var Revenue2 = React.createClass({
         
         
         //GENERAL QUERIES -> CURRENT PERIOD
-        var periodFrom = serverFormat(state.periodFrom, state.periodTypeForServer);
-        var periodTo = serverFormat(state.periodTo, state.periodTypeForServer);
+        var periodFromSf = serverFormat(state.periodFrom, state.periodTypeForServer);
+        var periodToSf = serverFormat(state.periodTo, state.periodTypeForServer);
+        var periodFrom = serverFormat(state.periodFrom);
+        var periodTo = serverFormat(state.periodTo);
+        var periodFromWeek = serverFormatWeek(state.periodFrom);
+        var periodToWeek = serverFormatWeek(state.periodTo);
 
         var queries = {};
         
-        queries.total_bars = getQuery(periodFrom, periodTo, membership, 'ALL', 'sales', 'detail', state.periodTypeForServer);
+        queries.total_bars = getQuery(periodFromSf, periodToSf, membership, 'ALL', 'sales', 'detail', state.periodTypeForServer);
         
-        queries.visitors = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
+        queries.visitors = getQuery(periodFromSf, periodToSf, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
         
-        queries.visitors_total = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'sum', state.periodTypeForServer);
+        queries.visitors_total = getQuery(periodFromSf, periodToSf, membership, 'ALL', 'visits', 'sum', state.periodTypeForServer);
         
 
         //GENERAL QUERIES -> PAST PERIODS
@@ -628,9 +654,9 @@ var Revenue2 = React.createClass({
         for (var channel in state.channelActive) {
             
             //CURRENT PERIOD
-            var query = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'detail', state.periodTypeForServer);
+            var query = getQuery(periodFromSf, periodToSf, membership, channel, 'sales', 'detail', state.periodTypeForServer);
             
-            var totals = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'sum', state.periodTypeForServer);
+            var totals = getQuery(periodFromSf, periodToSf, membership, channel, 'sales', 'sum', state.periodTypeForServer);
             
 
             //LAST PERIOD
@@ -689,6 +715,7 @@ var Revenue2 = React.createClass({
             queries["gate_bars_by_"+ttype] = getQuery(
                     periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
             );
+            // console.log([periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'],queries["gate_bars_by_"+ttype]);
             queries["gate_bars_by_"+ttype+"_totals"] = getQuery(
                     periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
             );
@@ -789,7 +816,9 @@ var Revenue2 = React.createClass({
         return !nextState.dirty;
     },
     render:function () {
+        
         // console.log(this.state);
+        
         var channelTypes = this.state.channelNames;
         var channelActive = this.state.channelActive;
         var channelControls = [];
@@ -818,280 +847,334 @@ var Revenue2 = React.createClass({
         if (result) {
             
             //Build BARS
-            
-            var total_bars = result.total_bars;
-            var partial_sum = result.partial_sum;
-            var partial_sum_percap = result.partial_sum_percap;
-            var barWidth = 100/total_bars.length;
-            for (var i in total_bars) {
-                var channels = [];
-                for(var k in channelActive) {
-                    if (channelActive[k] == "active") {
-                        channels.push({
-                            name:channelTypes[k],
-                            data:result[k+"_bars"][i]
-                        })
-                    } else {
-                        channels.push({});
+            try {
+                
+                var total_bars = result.total_bars;
+                var partial_sum = result.partial_sum;
+                var partial_sum_percap = result.partial_sum_percap;
+                var barWidth = 100/total_bars.length;
+                
+                for (var i in total_bars) {
+                    
+                    //Collect Bar Data by Channel
+                    var channels = [];
+                    try {
+                        for(var k in channelActive) {
+                            if (channelActive[k] == "active") {
+                                channels.push({
+                                    name:channelTypes[k],
+                                    data:result[k+"_bars"][i]
+                                })
+                            } else {
+                                channels.push({});
+                            }
+                        };
+                    } catch (e) {
+                        console.log("Collect Bar Data by Channel Error -> "+e, this.state);
                     }
-                };
-                
-                var weather;
-                if (this.state.periodType != "quarter" && wResult && wResult.length > i) {
-                    weather = wResult[i];
+                    
+                    //Collect Weather Data
+                    try {
+                        var weather;
+                        if (this.state.periodType != "quarter" && wResult && wResult.length > i) {
+                            weather = wResult[i];
+                        }
+                    } catch (e) {
+                        console.log("Collect Weather Data Error -> "+e, this.state);
+                    }
+                    
+                    //Create GBars
+                    try {
+                    bars.push(<GBar
+                                key={i}
+                                id={"gbar-"+i}
+                                units={this.state.units}
+                                total={total_bars[i].amount}
+                                partial={partial_sum[i]}
+                                partialPercap={partial_sum_percap[i]}
+                                date={total_bars[i].period}
+                                channels={channels}  
+                                max={max}
+                                maxPercap={this.state.maxPercap}
+                                width={barWidth}
+                                periodType={this.state.periodType}
+                                weather={weather}
+                                onMouseEnter={this.onBarEnter.bind(this, i)}
+                                onMouseLeave={this.onBarLeave.bind(this, i)}
+                            />);
+                    } catch(e) {
+                        console.log("Create GBars Error -> "+e, this.state);
+                    }
                 }
+            } catch(e) {
+               console.log("Build Bars Error -> "+e, this.state);
+            }
+            
+            //Collect General Data for Details
+            try {
+                var dataIndex = this.state.barEnter;
+            
+                if(dataIndex === null) {
+                    var toSufix = "_bars_totals";
+                    var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
+                    var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
+                    var visitors = parseInt(result.visitors_total.units);
+                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
+                    var ttTotals = "_totals";
+                } else {
                 
-                bars.push(<GBar
-                            key={i}
-                            id={"gbar-"+i}
-                            units={this.state.units}
-                            total={total_bars[i].amount}
-                            partial={partial_sum[i]}
-                            partialPercap={partial_sum_percap[i]}
-                            date={total_bars[i].period}
-                            channels={channels}  
-                            max={max}
-                            maxPercap={this.state.maxPercap}
-                            width={barWidth}
-                            periodType={this.state.periodType}
-                            weather={weather}
-                            onMouseEnter={this.onBarEnter.bind(this, i)}
-                            onMouseLeave={this.onBarLeave.bind(this, i)}
-                        />);
+                    toSufix = "_bars";
+                    fromSufix = "_bars_"+this.state.comparePeriodType;
+                
+                    var visitorsDetail = this.state.result["total_bars"][dataIndex];
+
+                    var lastPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
+
+                    var visitors = parseInt(result.visitors[dataIndex].units);
+                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
+                
+                    ttTotals = "";
+                };
+            } catch(e) {
+                console.log("Collect General Data for Details Error -> "+e, this.state);
             }
             
             
-            //Build DETAILS
+            //Build Detail Rows
+            try {
+                var count = 0;
+                var detailsRowsLeft = [];
+                var detailsRowsRight = [];
             
-            
-            var dataIndex = this.state.barEnter;
+                for(var k in channelActive) {
 
-            if(dataIndex === null) {
-                var toSufix = "_bars_totals";
-                var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
-                var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
-                var visitors = parseInt(result.visitors_total.units);
-                var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
-                var ttTotals = "_totals";
-            } else {
-                
-                toSufix = "_bars";
-                fromSufix = "_bars_"+this.state.comparePeriodType;
-                
-                var visitorsDetail = this.state.result["total_bars"][dataIndex];
+                    var detailsRows = (count%2 == 0)? detailsRowsLeft : detailsRowsRight;
 
-                var lastPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
-
-                var visitors = parseInt(result.visitors[dataIndex].units);
-                var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
-                
-                ttTotals = "";
-            };
-            
-            
-            
-            
-            var count = 0;
-            var detailsRowsLeft = [];
-            var detailsRowsRight = [];
-            
-            for(var k in channelActive) {
-
-                var detailsRows = (count%2 == 0)? detailsRowsLeft : detailsRowsRight;
-
-                if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
+                    if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
                     
-                    count++; //count only displayed channels
-
-                    var fromData = result[k+fromSufix];
-                    var toData = result[k+toSufix];
+                        count++; //count only displayed channels
                     
-                    if (dataIndex !== null) {
-                        var from = fromData[dataIndex].amount;
-                        var to = toData[dataIndex].amount;
-                    } else {
-                        from = fromData.amount;
-                        to = toData.amount;
-                    }
+                        //Collect From/To data for Detail Rows
+                        try {
+                            var fromData = result[k+fromSufix];
+                            var toData = result[k+toSufix];
                     
-                    
-                    if(this.state.units == "percap") {
-                        to /= visitors;
-                        from /= lastVisitors;
-                    }
-                    
-                    var subDetails = [];
-                    var ticketTypes = this.state.ticketTypes;
-                    for (var tt in ticketTypes) {
-                        var ttSufix = k+"_bars_by_"+tt;
-                        
-                        var ttFromData = this.state.result[ttSufix+ttTotals];
-                        var ttToData = this.state.result[ttSufix+"_"+this.state.comparePeriodType+ttTotals];
-
-                        if (ttFromData && ttToData) {
-                            
-                            
                             if (dataIndex !== null) {
-                                var ttFrom = ttFromData[dataIndex].amount;
-                                var ttTo = ttToData[dataIndex].amount;
+                                var from = fromData[dataIndex].amount;
+                                var to = toData[dataIndex].amount;
                             } else {
-                                ttFrom = ttFromData.amount;
-                                ttTo = ttToData.amount;
+                                from = fromData.amount;
+                                to = toData.amount;
                             }
                             
-                            var title = ticketTypes[tt];
-                            subDetails.push({
-                                title:title,
-                                from:ttFrom,
-                                to:ttTo,
-                                details:[]              //recursive DetailsRow requires details
-                            });
+                            if(this.state.units == "percap") {
+                                to /= visitors;
+                                from /= lastVisitors;
+                            }
+                            
+                        } catch (e) {
+                            console.log("Collect From/To data for Detail Rows Error -> "+e, this.state);
                         }
+                    
+                        //Collect Ticket Type Data for Detail Rows
+                        try {
+                            var subDetails = [];
+                            var ticketTypes = this.state.ticketTypes;
+                            for (var tt in ticketTypes) {
+                        
+                                var ttSufix = k+"_bars_by_"+tt;
+                        
+                                var ttToData = this.state.result[ttSufix+ttTotals];
+                                var ttFromData = this.state.result[ttSufix+"_"+this.state.comparePeriodType+ttTotals];
+
+                                if (ttFromData && ttToData) {
+                                    
+                                    
+                                    //Collect To/From by Ticket Type Detail Rows
+                                    try {
+                                        if (dataIndex !== null) {
+                                            var ttFrom = ttFromData[dataIndex].amount;
+                                            var ttTo = ttToData[dataIndex].amount;
+                                        } else {
+                                            ttFrom = ttFromData.amount;
+                                            ttTo = ttToData.amount;
+                                        }
+                            
+                                        var title = ticketTypes[tt];
+                                        subDetails.push({
+                                            title:title,
+                                            from:ttFrom,
+                                            to:ttTo,
+                                            details:[]              //recursive DetailsRow requires details
+                                        });
+                                    } catch (e) {
+                                        console.log("Collect To/From by Ticket Type Detail Rows Error -> "+e, this.state);
+                                    }
+                                }
+                            }
+                        } catch(e) {
+                            console.log("Collect Ticket Type Data for Detail Rows Error -> "+e, this.state);
+                        }
+                        
+                        //Create Detail Rows
+                        try {
+                            detailsRows.push(
+                                <DetailsRow 
+                                    key={k} from={from} to={to} title={this.state.channelNames[k]}
+                                    className="parent-details multicolor-wrapper col-xs-12"
+                                    details={subDetails}
+                                />
+                            );
+                        } catch (e) {
+                            console.log("Create Detail Rows Error -> "+e, this.state);
+                        }
+                    } else {
+                        detailsRows.push(<div key={k} ></div>);
                     }
-                    detailsRows.push(
-                        <DetailsRow 
-                            key={k} from={from} to={to} title={this.state.channelNames[k]}
-                            className="parent-details multicolor-wrapper col-xs-12"
-                            details={subDetails}
-                        />
-                    );
-                } else {
-                    detailsRows.push(<div key={k} ></div>);
-                }
-            };
-            
+                };
+            } catch(e) {
+                console.log("Build Detail Rows Error -> "+e);
+            }
         }
         
-        return (
-            <div className="row">
-                <div className="col-xs-12 col-sm-12">
-                    <div className="widget" id="revenue2">
-                        <h2>
-                            Earned Revenue
-                        </h2>
-                        <div className="row filters">
-                            <div className="col-xs-8 col-lg-6" id="period-type">
-                                <Dropdown
-                                    className="inline-block"
-                                    ref="periodType"
-                                    optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
-                                    selected={this.state.periodType}
-                                    onChange={this.onPeriodTypeChange}
-                                />
-                                <DatePickerReact defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
-                            </div>
-                            <div className="col-xs-4 col-lg-6 text-right" id="members">
-                                <Dropdown 
-                                    className="inline-block"
-                                    ref="members"
-                                    optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
-                                    onChange={this.onMembersChange}
-                                    selected={this.state.members}
-                                />
-                            </div>
-                        </div>
-                        <div className="row filters">
-                            <div id="channel-filters">
-                                <div className="col-xs-12 col-sm-6">
-                                    <TabSelector 
-                                        selected = {this.state.units}
-                                        id="dollars"
-                                        onClick={this.onUnitsChange.bind(this,"dollars")}
-                                        name="Dollars"
-                                    />
-                                    <TabSelector 
-                                        selected = {this.state.units}
-                                        id="percap"
-                                        onClick={this.onUnitsChange.bind(this,"percap")}
-                                        name="Per Cap"
-                                    />
-                                </div>
-                                <div className="col-xs-12 col-sm-6 text-right">
-                                    {channelControls}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row graphic">
-                            <div id="y-axis" className="inline-block">
-                                <div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(4)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(3)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(2)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(1)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        0
-                                    </div>
-                                </div>
-                            </div><div id="gbody"  className="inline-block">
-                                <div id="gbackground">
-                                    <div className="grow">
-                                    </div>
-                                    <div className="grow">
-                                    </div>
-                                    <div className="grow">
-                                    </div>
-                                    <div className="grow">
-                                    </div>
-                                </div>
-                                <div id="gbars">
-                                    {bars}
-                                </div>
-                            </div>
-                        </div>
-                        <div className={"row details "+this.state.detailsClass}>
-                            <div className="col-xs-12 col-sm-12">
-                                <div className="col-xs-6 col-sm-6" id="header">
-                                    
-                                    {lastPeriodFormattedDate}
-                                    
-                                </div>
-                                <div className="col-xs-6 col-sm-6 text-right">
+        if(!result) { console.log("Revenue 2 -> No Result Yet.")};
+        
+        // Build HTML
+        try {
+            return (
+                <div className="row">
+                    <div className="col-xs-12 col-sm-12">
+                        <div className="widget" id="revenue2">
+                            <h2>
+                                Earned Revenue
+                            </h2>
+                            <div className="row filters">
+                                <div className="col-xs-8 col-lg-6" id="period-type">
                                     <Dropdown
                                         className="inline-block"
-                                        ref="comparePeriodType"
-                                        optionList={
-                                            (this.state.periodType == "week") ?
-                                                {lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
-                                            :
-                                                (this.state.periodType == "month") ?
-                                                {lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"}
-                                                : {lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"}
-                                        }
-                                        selected={this.state.comparePeriodType}
-                                        onChange={this.onComparePeriodTypeChange}
+                                        ref="periodType"
+                                        optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
+                                        selected={this.state.periodType}
+                                        onChange={this.onPeriodTypeChange}
+                                    />
+                                    <DatePickerReact defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
+                                </div>
+                                <div className="col-xs-4 col-lg-6 text-right" id="members">
+                                    <Dropdown 
+                                        className="inline-block"
+                                        ref="members"
+                                        optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
+                                        onChange={this.onMembersChange}
+                                        selected={this.state.members}
                                     />
                                 </div>
                             </div>
-                            <div className="col-xs-12 col-sm-12">
-                                    <div className="col-xs-12 col-sm-6" id="table">
-                                        {detailsRowsLeft}
+                            <div className="row filters">
+                                <div id="channel-filters">
+                                    <div className="col-xs-12 col-sm-6">
+                                        <TabSelector 
+                                            selected = {this.state.units}
+                                            id="dollars"
+                                            onClick={this.onUnitsChange.bind(this,"dollars")}
+                                            name="Dollars"
+                                        />
+                                        <TabSelector 
+                                            selected = {this.state.units}
+                                            id="percap"
+                                            onClick={this.onUnitsChange.bind(this,"percap")}
+                                            name="Per Cap"
+                                        />
                                     </div>
-                                    <div className="col-xs-12 col-sm-6" id="table">
-                                        {detailsRowsRight}
+                                    <div className="col-xs-12 col-sm-6 text-right">
+                                        {channelControls}
                                     </div>
+                                </div>
+                            </div>
+                            <div className="row graphic">
+                                <div id="y-axis" className="inline-block">
+                                    <div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(4)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(3)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(2)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(1)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            0
+                                        </div>
+                                    </div>
+                                </div><div id="gbody"  className="inline-block">
+                                    <div id="gbackground">
+                                        <div className="grow">
+                                        </div>
+                                        <div className="grow">
+                                        </div>
+                                        <div className="grow">
+                                        </div>
+                                        <div className="grow">
+                                        </div>
+                                    </div>
+                                    <div id="gbars">
+                                        {bars}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={"row details "+this.state.detailsClass}>
+                                <div className="col-xs-12 col-sm-12">
+                                    <div className="col-xs-6 col-sm-6" id="header">
+                                    
+                                        {lastPeriodFormattedDate}
+                                    
+                                    </div>
+                                    <div className="col-xs-6 col-sm-6 text-right">
+                                        <Dropdown
+                                            className="inline-block"
+                                            ref="comparePeriodType"
+                                            optionList={
+                                                (this.state.periodType == "week") ?
+                                                    {lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
+                                                :
+                                                    (this.state.periodType == "month") ?
+                                                    {lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"}
+                                                    : {lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"}
+                                            }
+                                            selected={this.state.comparePeriodType}
+                                            onChange={this.onComparePeriodTypeChange}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-xs-12 col-sm-12">
+                                        <div className="col-xs-12 col-sm-6" id="table">
+                                            {detailsRowsLeft}
+                                        </div>
+                                        <div className="col-xs-12 col-sm-6" id="table">
+                                            {detailsRowsRight}
+                                        </div>
+                                </div>
+                            </div>
+                            <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
+                                <CaretHandler />
+                                {this.state.detailsTitle}
                             </div>
                         </div>
-                        <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
-                            <CaretHandler />
-                            {this.state.detailsTitle}
-                        </div>
                     </div>
+                    <div className="clearFix"></div>
                 </div>
-                <div className="clearFix"></div>
-            </div>
-        );
+            );
+        } catch(e) {
+            console.log("Build HTML Error -> "+e, this.state);
+            return (<div></div>);
+        }
     }
 });
 
