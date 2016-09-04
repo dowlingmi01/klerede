@@ -359,7 +359,8 @@ var Revenue2 = React.createClass({
             dirty:false,
             detailsClass:"",
             detailsTitle:"Show Details",
-            barEnter:null
+            barEnter:null,
+            ticketTypes:{ga:"General admision", group:"Groups", donation:"Donation", other:"Other"}
         };
     },
     updatePeriod:function (date, periodType) {
@@ -433,6 +434,11 @@ var Revenue2 = React.createClass({
         this.setState(state);
     },
     onBarEnter:function (n) {
+        
+        if (this.state.periodType == "week" && this.state.comparePeriodType == "lastperiod_2") {
+            return;
+        }
+        
         this.setState({barEnter:n})
     },
     onBarLeave:function (n) {
@@ -579,7 +585,7 @@ var Revenue2 = React.createClass({
         var periodTo = serverFormat(state.periodTo, state.periodTypeForServer);
 
         var queries = {};
-        //
+        
         queries.total_bars = getQuery(periodFrom, periodTo, membership, 'ALL', 'sales', 'detail', state.periodTypeForServer);
         
         queries.visitors = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
@@ -673,6 +679,45 @@ var Revenue2 = React.createClass({
             queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
             queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
         }
+        
+        
+        //TICKET TYPE QUERIES
+        var ticketTypes = this.state.ticketTypes;
+        for (var ttype in ticketTypes) {
+            
+            //current period
+            queries["gate_bars_by_"+ttype] = getQuery(
+                    periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
+            );
+            queries["gate_bars_by_"+ttype+"_totals"] = getQuery(
+                    periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+            );
+            
+            //Last period I
+            queries["gate_bars_by_"+ttype+"_lastperiod_1"] = getQuery(
+                    from1, to1, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
+            );
+            queries["gate_bars_by_"+ttype+"_lastperiod_1_totals"] = getQuery(
+                    from1, to1, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+            );
+            
+            //Last period II
+            if (state.periodType == "week") {
+                queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
+                        from2WeekFormat, to2WeekFormat, membership, 'gate', {type:"sales", kinds:[ttype]}, 'average', 'week'
+                );
+            } else {
+                queries["gate_bars_by_"+ttype+"_lastperiod_2"] = getQuery(
+                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
+                );
+                queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
+                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+                );
+            }
+        }
+        
+        
+        
         console.log(queries);
         KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
     },
@@ -815,6 +860,7 @@ var Revenue2 = React.createClass({
                         />);
             }
             
+            
             //Build DETAILS
             
             
@@ -826,6 +872,7 @@ var Revenue2 = React.createClass({
                 var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
                 var visitors = parseInt(result.visitors_total.units);
                 var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
+                var ttTotals = "_totals";
             } else {
                 
                 toSufix = "_bars";
@@ -838,6 +885,7 @@ var Revenue2 = React.createClass({
                 var visitors = parseInt(result.visitors[dataIndex].units);
                 var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
                 
+                ttTotals = "";
             };
             
             
@@ -871,18 +919,40 @@ var Revenue2 = React.createClass({
                         to /= visitors;
                         from /= lastVisitors;
                     }
+                    
+                    var subDetails = [];
+                    var ticketTypes = this.state.ticketTypes;
+                    for (var tt in ticketTypes) {
+                        var ttSufix = k+"_bars_by_"+tt;
+                        
+                        var ttFromData = this.state.result[ttSufix+ttTotals];
+                        var ttToData = this.state.result[ttSufix+"_"+this.state.comparePeriodType+ttTotals];
+
+                        if (ttFromData && ttToData) {
+                            
+                            
+                            if (dataIndex !== null) {
+                                var ttFrom = ttFromData[dataIndex].amount;
+                                var ttTo = ttToData[dataIndex].amount;
+                            } else {
+                                ttFrom = ttFromData.amount;
+                                ttTo = ttToData.amount;
+                            }
+                            
+                            var title = ticketTypes[tt];
+                            subDetails.push({
+                                title:title,
+                                from:ttFrom,
+                                to:ttTo,
+                                details:[]              //recursive DetailsRow requires details
+                            });
+                        }
+                    }
                     detailsRows.push(
                         <DetailsRow 
                             key={k} from={from} to={to} title={this.state.channelNames[k]}
                             className="parent-details multicolor-wrapper col-xs-12"
-                            details={
-                                [
-                                    // {title:"General admision", from:11000, to:12323, details:[]},
-                                    // {title:"Groups", from:11000, to:10323, details:[]},
-                                    // {title:"Donation", from:9500, to:8100, details:[]},
-                                    // {title:"Other", from:10100, to:10323, details:[]}
-                                ]
-                            }
+                            details={subDetails}
                         />
                     );
                 } else {

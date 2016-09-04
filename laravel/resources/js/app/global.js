@@ -385,6 +385,13 @@ var global = Function('return this')();
                         else if (members===false)
                             query.specs.kinds = ["ga", "group"];
                     }
+                    
+                    if (typeof type === "object") {
+                        query.specs.type = type.type;
+                        query.specs.kinds = type.kinds;
+                    }
+                    
+                    
                     return query;                    
                 },
                 getQueryDays:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
