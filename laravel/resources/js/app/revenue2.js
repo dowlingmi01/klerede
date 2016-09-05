@@ -731,8 +731,9 @@ var Revenue2 = React.createClass({
             //Last period II
             if (state.periodType == "week") {
                 queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
-                        from2WeekFormat, to2WeekFormat, membership, 'gate', {type:"sales", kinds:[ttype]}, 'average', 'week'
+                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'average', 'week'
                 );
+                
             } else {
                 queries["gate_bars_by_"+ttype+"_lastperiod_2"] = getQuery(
                         from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
