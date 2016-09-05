@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Process\Process;
 
 class PosLogDaily extends Command {
 
@@ -52,6 +53,11 @@ class PosLogDaily extends Command {
 			Artisan::call('kl:poslogimport_dir', ['directory'=>$dirname]);
 			$storage->move($dirname, 'proc/'.$dirname);
 			Artisan::call('kl:stats_compute', ['--channel'=>'store']);
+			$postCmd = env('CMD_AFTER_POSLOG');
+			if($postCmd) {
+				$process = new Process($postCmd);
+				$process->run();
+			}
 		}
 	}
 
