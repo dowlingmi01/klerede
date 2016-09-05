@@ -661,8 +661,9 @@ div.user-wrapper {
 #reporting-on .time-date {
 	float:none;
 }
+#revenue2 h4,
 #reporting-on h4 {
-	font-size: 9px;
+	font-size: 10px;
 	text-transform: uppercase;
 	color: @mediumgrey;
 	margin:0;
@@ -2811,7 +2812,7 @@ form.inline-block {
 /********************** REVENUE2 **********************/
 /******************************************************/
 
-
+// #revenue2 h4 defined as reporting-on
 #revenue2 {
     margin-bottom: 30px;
 }
@@ -3062,7 +3063,6 @@ a.dp-choose-date {
 /******************** REVENUE 2 DETAILS ***************/
 /******************************************************/
 
-
 #revenue2 .details {
     overflow:hidden;
     font-weight:600;
@@ -3072,6 +3072,17 @@ a.dp-choose-date {
 #revenue2 .details.active {
     max-height:1024px;
     transition: max-height .5s ease-in;
+}
+#revenue2 .descriptors #compared-to {
+    width:190px;
+    float:right;
+}
+#revenue2 .descriptors h4 {
+    font-size:10px;
+}
+#revenue2 .descriptors div,
+#revenue2 div.descriptors {
+    margin-bottom:2px !important;
 }
 
                                                                         
@@ -3181,7 +3192,9 @@ a.dp-choose-date {
     font-size:80%;
     max-height:0;
     overflow:hidden;
+    padding:0;
 }
+
 #revenue2 .details #table .child-details-wrapper .table-item  {
     text-transform: none;
     border-top: 1px solid #CCC;
@@ -3207,6 +3220,31 @@ a.dp-choose-date {
     transform: rotate(0);
     transition: .3s;
 }
+#revenue2 .details .details-header {
+    margin-bottom:0;
+}
+#revenue2 .details .details-header #table {
+    margin-bottom:0px;
+}
+#revenue2 .details .details-header #table svg.long-arrow {
+    opacity:0;
+}
+
+#revenue2 .details .details-header #table .table-item {
+    border-top:none;
+    height:20px;
+    padding-left:10px;
+}
+#revenue2 .details .details-header #table .table-item div {
+    border-top:none;
+    height:10px;
+    line-height:10px;
+}
+#revenue2 .details-header #from-val,
+#revenue2 .details-header #to-val
+{
+  vertical-align:top;  
+}
 
                                                                         
                                                                         //@MEDIA QUERIES
@@ -3218,6 +3256,14 @@ a.dp-choose-date {
     #revenue2 .details #table .table-item div {
         height:auto;
         line-height:auto;
+    }
+    
+    #revenue2 .details .details-header #table .table-item {
+        height:30px;
+    }
+    
+    #revenue2 .details #table .child-details-wrapper .table-item {
+        height:48px;
     }
 }
 @media (max-width: 991px) {
@@ -3235,7 +3281,20 @@ a.dp-choose-date {
         text-align:center;
         margin-bottom:5px;
     }
+    
+    #revenue2 .details #table .child-details-wrapper .table-item {
+        height:72px;
+    }
 
 }
 @media (max-width: 767px) {
+    #revenue2 .details #table .table-item div.title {
+        text-align:left;
+    }
+    #revenue2 .details #table .table-item div.title {
+        text-align:left;
+    }
+    #revenue2 .details #table .child-details-wrapper .table-item {
+        height:30px;
+    }
 }

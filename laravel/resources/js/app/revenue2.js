@@ -91,7 +91,7 @@ var GBar = React.createClass({
         
         
         return(
-            <div id={this.props.id} onMouseLeave={this.props.onMouseLeave} onMouseEnter={this.props.onMouseEnter} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
+            <div id={this.props.id} onMouseLeave={this.props.onMouseLeave} onMouseDown={this.props.onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
                     <div ref="barTransition" className="bar-transition">
                         {sections}
@@ -314,29 +314,29 @@ var DetailsRow = React.createClass({
             <div className={this.props.className} >
                 <div className="table-item-wrapper">
                     <div className="table-item">
-                        <div className="col-md-4 title">
+                        <div className="col-xs-4 col-sm-12 col-md-4 title">
                             <div className="title-text">
                                 {this.props.title}
                             </div>
                         </div>
-                        <div className="col-md-8">
-                            <div className="col-md-12 col-lg-4 left-line" >
-                                <div className="text-center hidden-lg hidden-xl" style={changeStyle}>
+                        <div className="col-xs-8 col-sm-12 col-md-8 title">
+                            <div className="col-xs-4 col-sm-12 col-lg-4 left-line" >
+                                <div className="text-center hidden-xs hidden-lg hidden-xl" style={changeStyle}>
                                     <ChangeArrow className={"change multicolorfl "+upDownClass} />
                                     <span className="multicolor" id="change">{change}</span>
                                 </div>
-                                <div className=" hidden-xs hidden-sm hidden-md" style={changeStyle}>
+                                <div className="hidden-sm hidden-md" style={changeStyle}>
                                     <ChangeArrow className={"change multicolorfl "+upDownClass} />
                                     <span className="multicolor" id="change">{change}</span>
                                 </div>
                             </div>
-                            <div className="col-md-12 col-lg-8 left-line">
-                                <div className="text-center hidden-lg hidden-xl">
+                            <div className="col-xs-8 col-sm-12 col-lg-8 left-line">
+                                <div className="text-center hidden-xs hidden-lg hidden-xl">
                                     <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
                                     <LongArrow className="long-arrow" width="21px" />
                                     <div className="multicolor" id="to-val" style={toStyle}>${formatAmount(to)}</div>
                                 </div>
-                                <div className=" hidden-xs hidden-sm hidden-md">
+                                <div className="hidden-sm hidden-md">
                                     <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
                                     <LongArrow className="long-arrow" width="21px" />
                                     <div className="multicolor" id="to-val"  style={toStyle}>${formatAmount(to)}</div>
@@ -346,11 +346,34 @@ var DetailsRow = React.createClass({
                         {detailsHandler}
                     </div>
                 </div>
-                <div className={"child-details-wrapper "+this.state.detailsClass}>
+                <div className={"child-details-wrapper col-xs-12 "+this.state.detailsClass}>
                     {detailsRows}
                 </div>
             </div>
         )
+    }
+});
+var DetailsHeader = React.createClass({
+    render:function () {
+        return(
+            <div className="table-item-wrapper">
+                <div className="table-item">
+                    <div className="col-xs-4">
+                        <h4>Location</h4>
+                    </div>
+                    <div className="col-xs-8">
+                        <div className="col-xs-4" >
+                            <h4>% Change</h4>
+                        </div>
+                        <div className="col-xs-8">
+                            <div id="from-val"><h4>From</h4></div>
+                            <LongArrow className="long-arrow" width="21px" />
+                            <div id="to-val"><h4>to</h4></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 });
 var Revenue2 = React.createClass({
@@ -451,7 +474,7 @@ var Revenue2 = React.createClass({
         state.dirty = true;
         this.setState(state);
     },
-    onBarEnter:function (n) {
+    onBarMouseDown:function (n) {
         
         if (this.state.periodType == "week" && this.state.comparePeriodType == "lastperiod_2") {
             return;
@@ -877,7 +900,7 @@ var Revenue2 = React.createClass({
                                 width={barWidth}
                                 periodType={this.state.periodType}
                                 weather={weather}
-                                onMouseEnter={this.onBarEnter.bind(this, i)}
+                                onMouseDown={this.onBarMouseDown.bind(this, i)}
                                 onMouseLeave={this.onBarLeave.bind(this, i)}
                             />);
                     } catch(e) {
@@ -975,8 +998,18 @@ var Revenue2 = React.createClass({
                                     //Collect To/From by Ticket Type Detail Rows
                                     try {
                                         if (dataIndex !== null) {
-                                            var ttFrom = ttFromData[dataIndex].amount;
-                                            var ttTo = ttToData[dataIndex].amount;
+                                            if(ttFromData[dataIndex]) {
+                                                var ttFrom = ttFromData[dataIndex].amount;
+                                            } else {
+                                                ttFrom = 0;
+                                            }
+                                            
+                                            if(ttFromData[dataIndex]) {
+                                                var ttTo = ttToData[dataIndex].amount;
+                                            } else {
+                                                ttTo = 0;
+                                            }
+                                            
                                         } else {
                                             ttFrom = ttFromData.amount;
                                             ttTo = ttToData.amount;
@@ -1112,6 +1145,14 @@ var Revenue2 = React.createClass({
                                 </div>
                             </div>
                             <div className={"row details "+this.state.detailsClass}>
+                                <div className="col-xs-12 col-sm-12 descriptors">
+                                    <div className="col-xs-6 col-sm-6" id="data-range">
+                                        <h4>Date Range</h4>
+                                    </div>
+                                    <div className="col-xs-6 col-sm-6" id="compared-to">
+                                        <h4>Compared To</h4>
+                                    </div>
+                                </div>
                                 <div className="col-xs-12 col-sm-12">
                                     <div className="col-xs-6 col-sm-6" id="header">
                                     
@@ -1133,6 +1174,14 @@ var Revenue2 = React.createClass({
                                             selected={this.state.comparePeriodType}
                                             onChange={this.onComparePeriodTypeChange}
                                         />
+                                    </div>
+                                </div>
+                                <div className="col-xs-12 col-sm-12 details-header">
+                                    <div className="col-xs-12 col-sm-6" id="table">
+                                        <DetailsHeader />
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6 hidden-xs" id="table">
+                                        <DetailsHeader />
                                     </div>
                                 </div>
                                 <div className="col-xs-12 col-sm-12">
