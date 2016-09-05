@@ -138,8 +138,8 @@ var global = Function('return this')();
                     if (periodType == "week") {
                         return _date.serverFormatWeek(date);
                     };
-                    var d =date.getUTCDate();
-                    var m =date.getUTCMonth()+1;
+                    var d = _forceDigits(date.getUTCDate(), 2);
+                    var m = _forceDigits(date.getUTCMonth()+1, 2);
                     return date.getUTCFullYear()+"-"+m+"-"+d;
                 },
                 serverFormatWeek:function (date) {
@@ -172,34 +172,51 @@ var global = Function('return this')();
                     return _date.formatFromDate(result);
                 },
                 getWeekNumber:function (d) {
+                    // var d="2016-01-01";
                     var date = new Date(d);
-                    var jan1 = new Date("01/01/"+date.getUTCFullYear());
+                    var jan1 = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
                     var msec = date.getTime() - jan1.getTime(); //diff in milliseconds
-                    var weeks = Math.floor(msec/(1000*60*60*24*7)); //millisecondsasecond*secondsaminute*minutesanhour*hoursaday*weekdays
+                    var weeks = Math.floor(msec/(1000*60*60*24*7)) + 1; //millisecondsasecond*secondsaminute*minutesanhour*hoursaday*weekdays
+                    // [date.toUTCString(),jan1.toUTCString(), msec, weeks];
                     return weeks;
                 },
                 getQuarterNumber:function (d) {
                     var date = new Date(d);
                     var month = date.getUTCMonth();
-                    return Math.floor(month/4) + 1;
+                    return Math.floor(month/3) + 1;
                 },
                 quarterToDates:function(q, y) {            //q,yyyy -> mm/dd/yyyy
-                    
                     // console.log(q, y);
                     
-                    if (q == 0) {
-                        y -= 1;
-                        q = 4;
+                    if (q < 0 || q > 4 ) {
+                        throw "Quarter must be between 1 and 4";
                     }
                     
                     var fromMonth = (q-1)*3 + 1;
-                    var toMonth = (q==4) ? 1 : q*3 + 1;
+                    var toMonth = q*3 + 1;
                     var from = new Date(fromMonth+"/01/"+y);
-                    var to = new Date(toMonth+"/01/"+y);
-                    to.setUTCDate(0);
+                    if(toMonth <=12) {
+                        var to = new Date(toMonth+"/01/"+y);        //pass over 1 day to calculte mar31, jun30, sep30
+                        to.setUTCDate(0);
+                    } else {
+                        var to = new Date("12/31/"+y);
+                    }
+                    
                     var dates = {from: _date.formatFromDate(from), to: _date.formatFromDate(to)};
                     // console.log(q, y, dates);
                     return dates;
+                },
+                weekToDates:function (w, y) { // w, y | YYYY-W -> mm/dd/yyyy
+                    
+                    if (y === undefined) {
+                        var s = w;
+                        var a = s.split("-");
+                        y = parseInt(a[0]);
+                        w = parseInt(a[1]);
+                    };
+                    
+                    var date = new Date("01/01/"+year.toString());
+                    return _date.addDays(date, week*7);
                 },
                 getDateFromWeek:function (s) { //YYYY-W -> mm/dd/yyyy
                     var a = s.split("-");
@@ -217,7 +234,9 @@ var global = Function('return this')();
                     // return n;
                     if(n===null || n===undefined || isNaN(n) || n===0) return "0";
                     
-                    if (Math.abs(n) >= 1000) {
+                    var sign = n<0 ? "-" : "";
+                    n = Math.abs(n);
+                    if ( n >= 1000) {
                         //comma values, no decimals
                         var s = n.toFixed(0);
                         var r = "";
@@ -228,13 +247,13 @@ var global = Function('return this')();
                                 r = ","+r;
                             }
                         };
-                        return r;
-                    } else if (Math.abs(n) > 100) {
+                        return sign+r;
+                    } else if (n > 100) {
                         //one decimal
-                        return n.toFixed(1);
+                        return sign+n.toFixed(1);
                     } else {
                         //2 decimals
-                        return n.toFixed(2);
+                        return sign+n.toFixed(2);
                     }
                 }
             }
@@ -266,6 +285,8 @@ var global = Function('return this')();
 		
 		var _user;
 		
+        var _serverFormatWeek = KUtils.date.serverFormatWeek;
+        
 		function _saveToken(token) {
 			_token = token;
 			KUtils.storeLocal('_token', token);
@@ -353,13 +374,12 @@ var global = Function('return this')();
 					}
 					_postData(route, onSuccess, {venue_id:venueID, queries:queries}, options);
 				},
-                getSimpleQuery:function (period, members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for membres+nonmembers, null for all channels, 'sales', 'detail', 'date'
-                    var query = _stats.getQuery(period, period, members, channel, type, operation, periodType);                    
-                    query.periods = period;
-                    return query;
-                    
-                },
                 getQuery:function (from, to, members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for membres+nonmembers, null for all channels, 'sales', 'detail', 'date'
+                    
+                    if(periodType == 'week') {
+                        from = _serverFormatWeek(from);
+                        to = _serverFormatWeek(to);
+                    }
                     
                     var query = {
                         periods: {
@@ -375,6 +395,8 @@ var global = Function('return this')();
                         }
                     };
                     
+                    
+                    //Don't send defaults to server
                     if (!channel || channel=='ALL')
                         delete query.specs.channel;
                     
@@ -386,7 +408,8 @@ var global = Function('return this')();
 
                     if (!periodType || periodType=='date')
                         delete query.periods.type;
-
+                    
+                    //Members work different if visits or sales
                     if (members === null || members===undefined || type === 'visits')
                         delete query.specs.members;
                     
@@ -397,51 +420,15 @@ var global = Function('return this')();
                             query.specs.kinds = ["ga", "group"];
                     }
                     
+                    //Kinds for ticket type
                     if (typeof type === "object") {
                         query.specs.type = type.type;
                         query.specs.kinds = type.kinds;
                     }
                     
-                    
                     return query;                    
-                },
-                getQueryDays:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
-                    return _stats.getQuery(from, to, members, channel, type);
-                },
-                getQueryWeeks:function(from, to, members, channel, type) {
-                    return _stats.getQuery(from, to, members, channel, type, 'detail', 'week');
-                },
-                getQueryDaysSum:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
-                    return _stats.getQuery(from, to, members, channel, type, 'sum');
-                },
-                getQueryWeeksSum:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
-                    return _stats.getQuery(from, to, members, channel, type, 'sum', 'week');
-                },
-                getQueryDaysAverage:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
-                    return _stats.getQuery(from, to, members, channel, type, 'average');
-                },
-                getQueryWeeksAverage:function (from, to, members, channel, type) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
-                    return _stats.getQuery(from, to, members, channel, type, 'average', 'week');
-                },
-                getQueryDailyWeeksAverage:function (f, t,  members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for all, null for all, 'sales'
-                    //returns {d0w0:{query},d1w1:{query}.. etc}
-                    var queries = {};
-                    var w = 0;
-                    while(1) {
-                        for (var d = 0; d<7; d++) {
-                            var formated = f.getUTCFullYear()+"-"+ (f.getUTCMonth()+1) +"-"+f.getUTCDate();
-                            queries["d"+d+"w"+w] = _stats.getSimpleQuery(formated, members, channel, type, operation, periodType);
-                            f.setUTCDate(f.getDate()+1);
-                        }
-                        if (f.getTime() > t.getTime()) {
-                            break;
-                        } else if( w++ > 1024) {                                        //1024 limit to avoid inf loops
-                            throw new Error("getQueryDailyWeeksAverage: query is getting too big -> "+w);
-                        }
-                    }
-                    return queries;
+                    
                 }
-                
 			},
 			weather:{
 				query:function(venueID, date, onSuccess, hourly){

@@ -367,7 +367,6 @@ var Revenue2 = React.createClass({
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
             channelEmpty:{gate:true, cafe: true, store: true, membership: true},
             periodType:"week",
-            periodTypeForServer:"date",
             members:"totals",
             units:"dollars",
             comparePeriodType:"lastperiod_1",
@@ -382,7 +381,8 @@ var Revenue2 = React.createClass({
             detailsClass:"",
             detailsTitle:"Show Details",
             barEnter:null,
-            ticketTypes:{ga:"General admision", group:"Groups", donation:"Donation", other:"Other"}
+            ticketTypes:{ga:"General admision", group:"Groups", donation:"Donation", other:"Other"},
+            barIntervals:{week:'date', month:'date', quarter:'week'}
         };
     },
     updatePeriod:function (date, periodType) {
@@ -390,10 +390,8 @@ var Revenue2 = React.createClass({
         var addDays = KUtils.date.addDays;
         var getWeekNumber = KUtils.date.getWeekNumber;
         var getQuarterNumber = KUtils.date.getQuarterNumber;
-        var getDateFromWeek = KUtils.date.getDateFromWeek;
         var quarterToDates = KUtils.date.quarterToDates;
         var forceDigits = KUtils.number.forceDigits;
-        var periodTypeForServer = "date";
         
         var sf = KUtils.date.serverFormat;
         
@@ -405,8 +403,7 @@ var Revenue2 = React.createClass({
             var period = quarterToDates(quarter, year);
             
             var periodFrom = period.from;
-            var periodTo = period.to
-            periodTypeForServer = "week";
+            var periodTo = period.to;
             
             var last1 = quarterToDates(quarter-1, year);
             var lastFrom1 = last1.from;
@@ -445,7 +442,6 @@ var Revenue2 = React.createClass({
         state.periodFrom = periodFrom;
         state.periodTo = periodTo;
         state.periodType = periodType;
-        state.periodTypeForServer = periodTypeForServer;
 
         state.lastFrom1 = lastFrom1;
         state.lastTo1 = lastTo1;
@@ -586,13 +582,10 @@ var Revenue2 = React.createClass({
             break;
         }
         
+        var barInterval = this.state.barIntervals[this.state.periodType];
+        
         //GET KAPI stats functions
         var getQuery = KAPI.stats.getQuery; // getQuery(from, to, members, channel, type, operation, periodType)
-        var getQueryDays = KAPI.stats.getQueryDays;
-        var getQueryDaysSum = KAPI.stats.getQueryDaysSum;
-        var getQueryWeeksSum = KAPI.stats.getQueryWeeksSum;
-        var getQueryWeeksAverage = KAPI.stats.getQueryWeeksAverage;
-        var getQueryDailyWeeksAverage = KAPI.stats.getQueryDailyWeeksAverage;
         
         //GET KUtils date functions
         var serverFormat = KUtils.date.serverFormat;
@@ -603,48 +596,42 @@ var Revenue2 = React.createClass({
         
         
         //GENERAL QUERIES -> CURRENT PERIOD
-        var periodFromSf = serverFormat(state.periodFrom, state.periodTypeForServer);
-        var periodToSf = serverFormat(state.periodTo, state.periodTypeForServer);
         var periodFrom = serverFormat(state.periodFrom);
         var periodTo = serverFormat(state.periodTo);
-        var periodFromWeek = serverFormatWeek(state.periodFrom);
-        var periodToWeek = serverFormatWeek(state.periodTo);
 
         var queries = {};
         
-        queries.total_bars = getQuery(periodFromSf, periodToSf, membership, 'ALL', 'sales', 'detail', state.periodTypeForServer);
+        queries.total_bars = getQuery(periodFrom, periodTo, membership, 'ALL', 'sales', 'detail', barInterval);
         
-        queries.visitors = getQuery(periodFromSf, periodToSf, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
+        queries.visitors = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'detail', barInterval);
         
-        queries.visitors_total = getQuery(periodFromSf, periodToSf, membership, 'ALL', 'visits', 'sum', state.periodTypeForServer);
+        queries.visitors_total = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'sum', 'date');
         
 
         //GENERAL QUERIES -> PAST PERIODS
         var from1 =  serverFormat(state.lastFrom1);
         var to1 = serverFormat(state.lastTo1);
-        var from1WeekFormat = serverFormatWeek(state.lastFrom1);
-        var to1WeekFormat = serverFormatWeek(state.lastTo1);
         var from2 = serverFormat(state.lastFrom2);
         var to2 = serverFormat(state.lastTo2);
         var from2WeekFormat = serverFormatWeek(state.lastFrom2);
         var to2WeekFormat = serverFormatWeek(state.lastTo2);
 
-        queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
-        queries.visitors_lastperiod_1_totals = getQueryDaysSum(from1, to1, membership, 'ALL', 'visits');
+        queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits', 'detail', barInterval);
+        queries.visitors_lastperiod_1_totals = getQuery(from1, to1, membership, 'ALL', 'visits', 'sum', 'date');
 
 
         if(state.periodType == "week") {
             
             var visitors_lastperiod_2 = {}; //TODO: How to ask server for day by day last 13 week average visits or sales?
 
-            queries.visitors_lastperiod_2_totals = getQueryWeeksAverage(from2WeekFormat, to2WeekFormat, membership, 'ALL', 'visits');
+            queries.visitors_lastperiod_2_totals = getQuery(from2, to2, membership, 'ALL', 'visits', 'average', 'week');
             // console.log(from2, to2)
             
         } else { 
             //month and quarter
-            queries.visitors_lastperiod_2_totals = getQueryDaysSum(from2, to2, membership, 'ALL', 'visits');
+            queries.visitors_lastperiod_2_totals = getQuery(from2, to2, membership, 'ALL', 'visits', 'sum', 'date');
 
-            queries.visitors_lastperiod_2 = getQuery(from2, to2, membership, 'ALL', 'visits', 'detail', state.periodTypeForServer);
+            queries.visitors_lastperiod_2 = getQuery(from2, to2, membership, 'ALL', 'visits', 'detail', 'date');
             
         }
         
@@ -654,31 +641,21 @@ var Revenue2 = React.createClass({
         for (var channel in state.channelActive) {
             
             //CURRENT PERIOD
-            var query = getQuery(periodFromSf, periodToSf, membership, channel, 'sales', 'detail', state.periodTypeForServer);
+            var query = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'detail', barInterval);
             
-            var totals = getQuery(periodFromSf, periodToSf, membership, channel, 'sales', 'sum', state.periodTypeForServer);
+            var totals = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'sum', 'date');
             
 
             //LAST PERIOD
-            if (state.periodType == "week" || state.periodType == "month" ) {
-                var lastPeriod1 = getQuery(from1, to1, membership, channel);
-            } else {
-                //for quarter
-                var lastPeriod1 = getQuery(from1WeekFormat, to1WeekFormat, membership, channel, 'sales', 'detail', 'week');
-            }
+            var lastPeriod1 = getQuery(from1, to1, membership, channel, 'sales', 'detail', barInterval);
             
-            if (state.periodType == "quarter"){
+            if (state.periodType == "week"){
                 
-                var lastPeriod2 = getQuery(from1WeekFormat, to1WeekFormat, membership, channel, 'sales', 'detail', 'week');;
-                
-            } else if (state.periodType == "week"){ //for week, month
-                
-                var lastPeriod2 = getQuery(from1, to1, membership, channel, 'sales', 'average', 'date');;
-                console.log(lastPeriod2);
+                var lastPeriod2 = {};
                 
             } else {
                 
-                var lastPeriod2 = getQuery(from1, to1, membership, channel);
+                var lastPeriod2 = getQuery(from2, to2, membership, channel, 'sales', 'detail', barInterval);
                 
             }
             
@@ -688,11 +665,11 @@ var Revenue2 = React.createClass({
 
             if (state.periodType == "week") {
                 
-                var lastPeriod2_totals = getQueryWeeksAverage(from2WeekFormat, to2WeekFormat, membership, channel);
+                var lastPeriod2_totals = getQuery(from2, to2, membership, channel, 'sales', 'average', 'week');
                 
             } else {
                 
-                var lastPeriod2_totals = getQueryDaysSum(from2, to2, membership, channel);
+                var lastPeriod2_totals = getQuery(from2, to2, membership, channel, 'sales', 'sum', 'date');
                 
             }
             
@@ -767,11 +744,12 @@ var Revenue2 = React.createClass({
             return;
         }
         var sf = KUtils.date.serverFormat;
+        
 		KAPI.weather.query(
 			wnt.venueID, 
 			{
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)
+                from:sf(state.periodFrom), 
+                to:sf(state.periodTo)
 			},
 			this.onWeatherResult
 		);
@@ -927,9 +905,13 @@ var Revenue2 = React.createClass({
                     fromSufix = "_bars_"+this.state.comparePeriodType;
                 
                     var visitorsDetail = this.state.result["total_bars"][dataIndex];
-
-                    var lastPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
-
+                    
+                    if(this.state.periodType == "quarter") {
+                        var lastPeriodFormattedDate = KUtils.date.weatherFormat (visitorsDetail.period, "quarter" );
+                    } else {
+                        lastPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
+                    }
+                    
                     var visitors = parseInt(result.visitors[dataIndex].units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
                 
