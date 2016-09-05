@@ -91,7 +91,7 @@ var GBar = React.createClass({
         
         
         return(
-            <div id={this.props.id} onMouseLeave={this.props.onMouseLeave} onMouseDown={this.props.onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
+            <div id={this.props.id} onMouseDown={this.props.onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
                     <div ref="barTransition" className="bar-transition">
                         {sections}
@@ -296,8 +296,6 @@ var DetailsRow = React.createClass({
         
         if (details.length) {
             
-            detailsHandler = <div id="filter-caret-wrapper" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
-            
             for (var i in details) {
                 var detail = details[i];
                 detailsRows.push(
@@ -308,6 +306,9 @@ var DetailsRow = React.createClass({
                     />
                 )
             }
+            
+            detailsHandler = <div id="filter-caret-wrapper" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
+            
         }
         
         return (
@@ -470,22 +471,23 @@ var Revenue2 = React.createClass({
         state.lastTo1 = lastTo1;
         state.lastFrom2 = lastFrom2;
         state.lastTo2 = lastTo2;
-
+        
+        state.barEnter = null; //clears selected bar every time date changes
+        
         state.dirty = true;
         this.setState(state);
     },
     onBarMouseDown:function (n) {
         
-        if (this.state.periodType == "week" && this.state.comparePeriodType == "lastperiod_2") {
+        if (this.state.periodType == "week" && this.state.comparePeriodType == "lastperiod_2")
             return;
-        }
         
-        this.setState({barEnter:n})
+        if(this.state.detailsClass == "active")
+            this.setState({barEnter:n});
+        
     },
-    onBarLeave:function (n) {
-        if(n === this.state.barEnter) {
-            this.setState({barEnter:null})
-        }
+    onBarLeave:function () {
+        this.setState({barEnter:null})
     },
     onPeriodTypeChange:function (event) {
         this.updatePeriod(this.state.currentDate, event.target.value);
@@ -514,7 +516,7 @@ var Revenue2 = React.createClass({
     },
     onDetailsClick:function (event) {
         if (this.state.detailsClass == "") {
-            this.setState({detailsClass:"active", detailsTitle:"Hide Details"});
+            this.setState({detailsClass:"active", detailsTitle:"Hide Details", barEnter:null});
         } else {
             this.setState({detailsClass:"", detailsTitle:"Show Details"});
         }
@@ -706,8 +708,8 @@ var Revenue2 = React.createClass({
             queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
         }
         
-        
-        //TICKET TYPE QUERIES
+        // WARNING!!! ->>> Ticket Type should be called Product Type (tickets are only for General Admision)
+        //TICKET TYPE QUERIES 
         var ticketTypes = this.state.ticketTypes;
         for (var ttype in ticketTypes) {
             
@@ -902,7 +904,6 @@ var Revenue2 = React.createClass({
                                 periodType={this.state.periodType}
                                 weather={weather}
                                 onMouseDown={this.onBarMouseDown.bind(this, i)}
-                                onMouseLeave={this.onBarLeave.bind(this, i)}
                             />);
                     } catch(e) {
                         console.log("Create GBars Error -> "+e, this.state);
@@ -914,27 +915,31 @@ var Revenue2 = React.createClass({
             
             //Collect General Data for Details
             try {
+                
+                var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
+                var showPeriodFormattedDate = "";
                 var dataIndex = this.state.barEnter;
-            
+                
                 if(dataIndex === null) {
                     var toSufix = "_bars_totals";
                     var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
-                    var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
                     var visitors = parseInt(result.visitors_total.units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
                     var ttTotals = "_totals";
                 } else {
-                
+                    
                     toSufix = "_bars";
                     fromSufix = "_bars_"+this.state.comparePeriodType;
                 
                     var visitorsDetail = this.state.result["total_bars"][dataIndex];
                     
                     if(this.state.periodType == "quarter") {
-                        var lastPeriodFormattedDate = KUtils.date.weatherFormat (visitorsDetail.period, "quarter" );
+                        showPeriodFormattedDate = KUtils.date.weatherFormat (visitorsDetail.period, "quarter" );
                     } else {
-                        lastPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
+                        showPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
                     }
+                    
+                    lastPeriodFormattedDate = <span><a onClick={this.onBarLeave}>{lastPeriodFormattedDate}</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span>;
                     
                     var visitors = parseInt(result.visitors[dataIndex].units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
@@ -1157,7 +1162,7 @@ var Revenue2 = React.createClass({
                                 <div className="col-xs-12 col-sm-12">
                                     <div className="col-xs-6 col-sm-6" id="header">
                                     
-                                        {lastPeriodFormattedDate}
+                                        {lastPeriodFormattedDate}{showPeriodFormattedDate}
                                     
                                     </div>
                                     <div className="col-xs-6 col-sm-6 text-right">
