@@ -30,8 +30,8 @@ var global = Function('return this')();
 (function(scope) {
 	if (!scope.KUtils) {
 		var _temp = {};
-        function _forceDigits(n, d) {
-            var s = n.toString(); //n must be a number
+        function _forceDigits(n, d) { //n:number, d:number -> string
+            var s = n.toString();
             while (s.length < d) {
                 s = "0"+s;
             }
@@ -40,7 +40,7 @@ var global = Function('return this')();
 		scope.KUtils = {
 			isValidPassword:function(p1, p2) {
 				
-				if (scope.KUtils.isEmpty(p1)) {
+				if (_isEmpty(p1)) {
 					return "Please enter a valid password."
 				};
 				
@@ -92,8 +92,8 @@ var global = Function('return this')();
                 weatherFormat:function(s, periodType) {
                     // Friday, June 3, 2016
                     if(periodType == "quarter") {
-                        var fromDate = new Date(scope.KUtils.date.getDateFromWeek(s));
-                        var toDate = new Date(scope.KUtils.date.addDays(fromDate,6));
+                        var fromDate = new Date(_date.getDateFromWeek(s));
+                        var toDate = new Date(_date.addDays(fromDate,6));
                         // Tue Aug 30 2016
                         //Mar 27 - Apr 2, 2016
                         var from = (fromDate.toDateString()).split(" ");
@@ -122,7 +122,7 @@ var global = Function('return this')();
                 },
                 barFormat:function(s, periodType) {
                     if(periodType == "quarter") {
-                        s = scope.KUtils.date.getDateFromWeek(s);
+                        s = _date.getDateFromWeek(s);
                     }
                     
                     var date = new Date(s);
@@ -136,21 +136,20 @@ var global = Function('return this')();
                 serverFormat:function (date, periodType) {
                     var date = new Date(date);
                     if (periodType == "week") {
-                        var w = scope.KUtils.date.getWeekNumber(date);
-                        return date.getUTCFullYear()+"-"+w;
+                        return _date.serverFormatWeek(date);
                     };
-                    var d =date.getUTCDate();
-                    var m =date.getUTCMonth()+1;
+                    var d = _forceDigits(date.getUTCDate(), 2);
+                    var m = _forceDigits(date.getUTCMonth()+1, 2);
                     return date.getUTCFullYear()+"-"+m+"-"+d;
                 },
                 serverFormatWeek:function (date) {
                     var date = new Date(date);
-                    var w = scope.KUtils.date.getWeekNumber(date);
+                    var w = _date.getWeekNumber(date);
                     return date.getUTCFullYear()+"-"+w;
                 },
-                format:function (isoDate) { //'mm/dd/yyyy'
-                    var date = new Date(isoDate);
-                    return scope.KUtils.date.formatFromDate(date);
+                localFormat:function (serverDate) { //yyyy-mm-dd -> mm/dd/yyy
+                    var date = new Date(serverDate);
+                    return _date.formatFromDate(date);
                 },
                 formatFromDate:function (date) {
                     var d =_forceDigits(date.getUTCDate(),2);
@@ -160,36 +159,71 @@ var global = Function('return this')();
                 addDays:function (date, days) {
                     var result = new Date(date);
                     result.setDate(result.getDate() + days);
-                    return scope.KUtils.date.formatFromDate(result);
+                    return _date.formatFromDate(result);
                 },
                 addMonths:function (date, months) {
                     var result = new Date(date);
                     result.setMonth(result.getMonth() + months);
-                    return scope.KUtils.date.formatFromDate(result);
+                    return _date.formatFromDate(result);
                 },
                 addYears:function (date, years) {
                     var result = new Date(date);
                     result.setUTCFullYear(result.getUTCFullYear() + years);
-                    return scope.KUtils.date.formatFromDate(result);
+                    return _date.formatFromDate(result);
                 },
                 getWeekNumber:function (d) {
+                    // var d="2016-01-01";
                     var date = new Date(d);
-                    var jan1 = new Date("01/01/"+date.getUTCFullYear());
+                    var jan1 = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
                     var msec = date.getTime() - jan1.getTime(); //diff in milliseconds
-                    var weeks = Math.floor(msec/(1000*60*60*24*7)); //millisecondsasecond*secondsaminute*minutesanhour*hoursaday*weekdays
+                    var weeks = Math.floor(msec/(1000*60*60*24*7)) + 1; //millisecondsasecond*secondsaminute*minutesanhour*hoursaday*weekdays
+                    // [date.toUTCString(),jan1.toUTCString(), msec, weeks];
                     return weeks;
                 },
                 getQuarterNumber:function (d) {
                     var date = new Date(d);
                     var month = date.getUTCMonth();
-                    return Math.floor(month/4) + 1;
+                    return Math.floor(month/3) + 1;
                 },
-                getDateFromWeek:function (s) { //YYYY-W
+                quarterToDates:function(q, y) {            //q,yyyy -> mm/dd/yyyy
+                    // console.log(q, y);
+                    
+                    if (q < 0 || q > 4 ) {
+                        throw "Quarter must be between 1 and 4";
+                    }
+                    
+                    var fromMonth = (q-1)*3 + 1;
+                    var toMonth = q*3 + 1;
+                    var from = new Date(fromMonth+"/01/"+y);
+                    if(toMonth <=12) {
+                        var to = new Date(toMonth+"/01/"+y);        //pass over 1 day to calculte mar31, jun30, sep30
+                        to.setUTCDate(0);
+                    } else {
+                        var to = new Date("12/31/"+y);
+                    }
+                    
+                    var dates = {from: _date.formatFromDate(from), to: _date.formatFromDate(to)};
+                    // console.log(q, y, dates);
+                    return dates;
+                },
+                weekToDates:function (w, y) { // w, y | YYYY-W -> mm/dd/yyyy
+                    
+                    if (y === undefined) {
+                        var s = w;
+                        var a = s.split("-");
+                        y = parseInt(a[0]);
+                        w = parseInt(a[1]);
+                    };
+                    
+                    var date = new Date("01/01/"+year.toString());
+                    return _date.addDays(date, week*7);
+                },
+                getDateFromWeek:function (s) { //YYYY-W -> mm/dd/yyyy
                     var a = s.split("-");
                     var year = parseInt(a[0]);
                     var week = parseInt(a[1]);
                     var date = new Date("01/01/"+year.toString());
-                    return scope.KUtils.date.addDays(date, week*7);
+                    return _date.addDays(date, week*7);
                 }
             },
             number:{
@@ -197,21 +231,42 @@ var global = Function('return this')();
                     return _forceDigits(n,d);
                 },
                 formatAmount:function(n) {
-                    var fd = KUtils.number.forceDigits;
-                    if(isNaN(n)) return "0";
-                    var r = "";
-                    if(n > 1000) {
-                        r = Math.floor(n/1000)+","+fd(Math.round(n%1000),3);
-                    } else if(n > 100) {
-                        r = Math.round(10*n)/10;
+                    // return n;
+                    if(n===null || n===undefined || isNaN(n) || n===0) return "0";
+                    
+                    var sign = n<0 ? "-" : "";
+                    n = Math.abs(n);
+                    if ( n >= 1000) {
+                        //comma values, no decimals
+                        var s = n.toFixed(0);
+                        var r = "";
+                        for (var i = s.length - 1; i >= 0; i--) {
+                            r = s.charAt(i) + r;
+                            
+                            if ((s.length-i) % 3 === 0 && i>0 ) {
+                                r = ","+r;
+                            }
+                        };
+                        return sign+r;
+                    } else if (n > 100) {
+                        //one decimal
+                        return sign+n.toFixed(1);
                     } else {
-                        r = Math.round(100*n)/100;
+                        //2 decimals
+                        return sign+n.toFixed(2);
                     }
-                    return r;
                 }
             }
 		};
 		
+        var _date = scope.KUtils.date;
+        var _isValidPassword = scope.KUtils.isValidPassword;
+        var _isEmail = scope.KUtils.isEmail;
+        var _isEmpty = scope.KUtils.isEmpty;
+        var _storeLocal = scope.KUtils.storeLocal;
+        var _clearLocal = scope.KUtils.clearLocal;
+        var _date = scope.KUtils.date;
+        var _number = scope.KUtils.number;
 	}
 })(global);
 
@@ -230,6 +285,8 @@ var global = Function('return this')();
 		
 		var _user;
 		
+        var _serverFormatWeek = KUtils.date.serverFormatWeek;
+        
 		function _saveToken(token) {
 			_token = token;
 			KUtils.storeLocal('_token', token);
@@ -293,9 +350,6 @@ var global = Function('return this')();
 
 		//Public
 		scope.KAPI = {
-			// custom:function (method, route, onSuccess, data, options) {
-			// 	_srdata(method, route, onSuccess, data, options);
-			// },
 			goals:{
 				sales: {
 					get:function (venueID, year, onSuccess) {
@@ -319,7 +373,62 @@ var global = Function('return this')();
 						options.error = onError;
 					}
 					_postData(route, onSuccess, {venue_id:venueID, queries:queries}, options);
-				}
+				},
+                getQuery:function (from, to, members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for membres+nonmembers, null for all channels, 'sales', 'detail', 'date'
+                    
+                    if(periodType == 'week') {
+                        from = _serverFormatWeek(from);
+                        to = _serverFormatWeek(to);
+                    }
+                    
+                    var query = {
+                        periods: {
+                            type: periodType,
+                            from: from,
+                            to: to,
+                            kind:operation
+                        },
+                        specs: {
+                            type: type,
+                            channel:channel,
+                            members:members
+                        }
+                    };
+                    
+                    
+                    //Don't send defaults to server
+                    if (!channel || channel=='ALL')
+                        delete query.specs.channel;
+                    
+                    if (!operation || operation == 'detail')
+                        delete query.periods.kind;
+                    
+                    if (!type)
+                        query.specs.type = 'sales';
+
+                    if (!periodType || periodType=='date')
+                        delete query.periods.type;
+                    
+                    //Members work different if visits or sales
+                    if (members === null || members===undefined || type === 'visits')
+                        delete query.specs.members;
+                    
+                    if (type === 'visits') {
+                        if (members===true) 
+                            query.specs.kinds = ["membership"];
+                        else if (members===false)
+                            query.specs.kinds = ["ga", "group"];
+                    }
+                    
+                    //Kinds for ticket type
+                    if (typeof type === "object") {
+                        query.specs.type = type.type;
+                        query.specs.kinds = type.kinds;
+                    }
+                    
+                    return query;                    
+                    
+                }
 			},
 			weather:{
 				query:function(venueID, date, onSuccess, hourly){
@@ -451,6 +560,12 @@ var global = Function('return this')();
 				}
 			}
 		};
+        var _goals = scope.KAPI.goals;
+        var _stats = scope.KAPI.stats;
+        var _weather = scope.KAPI.weather;
+        var _venue = scope.KAPI.venue;
+        var _users = scope.KAPI.users;
+        var _auth = scope.KAPI.auth;
 	}
 })(jQuery.ajax, global);
 

@@ -1,7 +1,6 @@
 @extends('layout')
 
 @section('content')
-
     <div id="reporting-on"><!-- ReactJS component: ReportingOn --></div>
 
     <div id="visits-blocks-widget"><!-- ReactJS component: VisitsBlocksSet --></div>

@@ -1,3 +1,10 @@
+var CaretHandler = React.createClass({
+    render:function () {
+        return(
+            <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="7px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className={"filter-caret "+this.props.className}><path d="M21.854 0.439l-7.366 7.365L12.523 9.77L10.56 7.804L3.196 0.441C2.425-0.185 1.293-0.147 0.6 0.6 c-0.768 0.768-0.768 2 0 2.778l9.983 9.983l1.964 1.966l1.965-1.966l9.984-9.983c0.383-0.383 0.575-0.886 0.575-1.389 c0-0.502-0.192-1.006-0.575-1.389C23.755-0.146 22.626-0.185 21.9 0.4"/></svg>
+        );
+    }
+});
 var Dropdown = React.createClass({
     render:function () {
 
@@ -84,7 +91,7 @@ var GBar = React.createClass({
         
         
         return(
-            <div id={this.props.id} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
+            <div id={this.props.id} onMouseLeave={this.props.onMouseLeave} onMouseDown={this.props.onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
                     <div ref="barTransition" className="bar-transition">
                         {sections}
@@ -235,7 +242,29 @@ var TabSelector = React.createClass({
     }
 });
 var DetailsRow = React.createClass({
-    
+    getInitialState:function () {
+        return {
+            detailsClass:""
+        };
+    },
+    togleDetails:function (event) {
+        if(this.state.detailsClass == "") {
+            this.setState({detailsClass:"active"});
+        } else {
+            this.setState({detailsClass:""});
+        }
+    },
+    getFontStyle:function (n) { //adjust % to show the whole number
+        var style = {};
+        if (n >= 1e6 ) {
+            style.fontSize = "85%";
+        } else if (n > 1e7) {
+            style.fontSize = "70%";
+        } else if (n > 1e8) {
+            style.fontSize = "60%";
+        }
+        return style;
+    },
     //props
     //from - to - title
     render:function () {
@@ -243,52 +272,114 @@ var DetailsRow = React.createClass({
 
         var from = this.props.from;
         var to = this.props.to;
+        
+        var fromStyle = this.getFontStyle(from);
+        var toStyle = this.getFontStyle(to);
 
         var upDownClass = to > from ? "up" : "down";
-
-        var change = 100*((to/from) - 1);
-        change = Math.abs(Math.round(100*change)/100);
         
+        if(from !== 0 ) {
+            var percent = 100*((to/from) - 1);
+        }
+        if(isNaN(percent) || !isFinite(percent)) {
+            var change = "n/d";
+            var changeStyle = {opacity:0};
+        } else {
+            change = (percent.toFixed(2))+"%";
+            changeStyle = {};
+        }
+        
+        
+        var details = this.props.details;
+        var detailsRows = [];
+        var detailsHandler = <div></div>;
+        
+        if (details.length) {
+            
+            detailsHandler = <div id="filter-caret-wrapper" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
+            
+            for (var i in details) {
+                var detail = details[i];
+                detailsRows.push(
+                    <DetailsRow 
+                        className="child-details"
+                        key={i} from={detail.from} to={detail.to} title={detail.title} 
+                        details={detail.details}
+                    />
+                )
+            }
+        }
         
         return (
-            <div className="col-xs-12 col-sm-6 table-item-wrapper  multicolor-wrapper">
-                <div className="table-item">
-                    <div className="col-md-4 title">
-                        {this.props.title}
-                    </div>
-                    <div className="col-md-8">
-                        <div className="col-md-12 col-lg-4 left-line">
-                            <div className="text-center hidden-lg hidden-xl">
-                                <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                <span className="multicolor" id="change">{change}%</span>
-                            </div>
-                            <div className=" hidden-xs hidden-sm hidden-md">
-                                <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                <span className="multicolor" id="change">{change}%</span>
+            <div className={this.props.className} >
+                <div className="table-item-wrapper">
+                    <div className="table-item">
+                        <div className="col-xs-4 col-sm-12 col-md-4 title">
+                            <div className="title-text">
+                                {this.props.title}
                             </div>
                         </div>
-                        <div className="col-md-12 col-lg-8 left-line" id="from-val">
-                            <div className="text-center hidden-lg hidden-xl">
-                                <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
-                                <LongArrow className="long-arrow" width="21px" />
-                                &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                        <div className="col-xs-8 col-sm-12 col-md-8 title">
+                            <div className="col-xs-4 col-sm-12 col-lg-4 left-line" >
+                                <div className="text-center hidden-xs hidden-lg hidden-xl" style={changeStyle}>
+                                    <ChangeArrow className={"change multicolorfl "+upDownClass} />
+                                    <span className="multicolor" id="change">{change}</span>
+                                </div>
+                                <div className="hidden-sm hidden-md" style={changeStyle}>
+                                    <ChangeArrow className={"change multicolorfl "+upDownClass} />
+                                    <span className="multicolor" id="change">{change}</span>
+                                </div>
                             </div>
-                            <div className=" hidden-xs hidden-sm hidden-md">
-                                <span id="from-val">${formatAmount(from)}</span>&nbsp;&nbsp;
-                                <LongArrow className="long-arrow" width="21px" />
-                                &nbsp;&nbsp;<span className="multicolor" id="to-val" >${formatAmount(to)}</span>
+                            <div className="col-xs-8 col-sm-12 col-lg-8 left-line">
+                                <div className="text-center hidden-xs hidden-lg hidden-xl">
+                                    <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
+                                    <LongArrow className="long-arrow" width="21px" />
+                                    <div className="multicolor" id="to-val" style={toStyle}>${formatAmount(to)}</div>
+                                </div>
+                                <div className="hidden-sm hidden-md">
+                                    <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
+                                    <LongArrow className="long-arrow" width="21px" />
+                                    <div className="multicolor" id="to-val"  style={toStyle}>${formatAmount(to)}</div>
+                                </div>
                             </div>
                         </div>
+                        {detailsHandler}
                     </div>
+                </div>
+                <div className={"child-details-wrapper col-xs-12 "+this.state.detailsClass}>
+                    {detailsRows}
                 </div>
             </div>
         )
     }
 });
+var DetailsHeader = React.createClass({
+    render:function () {
+        return(
+            <div className="table-item-wrapper">
+                <div className="table-item">
+                    <div className="col-xs-4">
+                        <h4>Location</h4>
+                    </div>
+                    <div className="col-xs-8">
+                        <div className="col-xs-4" >
+                            <h4>% Change</h4>
+                        </div>
+                        <div className="col-xs-8">
+                            <div id="from-val"><h4>From</h4></div>
+                            <LongArrow className="long-arrow" width="21px" />
+                            <div id="to-val"><h4>to</h4></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
 var Revenue2 = React.createClass({
     getInitialState:function () {
 
-        var today = new Date(KUtils.date.format(wnt.today));
+        var today = new Date(KUtils.date.localFormat(wnt.today));
         var weekDay = today.getUTCDay();
         var offset = (weekDay==6) ? 0 : weekDay-1;
         var periodTo = KUtils.date.addDays(today, offset);
@@ -299,16 +390,22 @@ var Revenue2 = React.createClass({
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
             channelEmpty:{gate:true, cafe: true, store: true, membership: true},
             periodType:"week",
-            periodTypeForServer:"date",
             members:"totals",
             units:"dollars",
             comparePeriodType:"lastperiod_1",
-            currentDate:periodFrom,
-            periodFrom:periodFrom,
-            periodTo:periodTo,
+            currentDate:periodFrom,     //mm/dd/yyyy
+            periodFrom:periodFrom,      //mm/dd/yyyy
+            periodTo:periodTo,          //mm/dd/yyyy
+            lastFrom1:"",               //mm/dd/yyyy
+            lastTo2:"",                 //mm/dd/yyyy
+            lastFrom2:"",               //mm/dd/yyyy
+            lastTo2:"",                 //mm/dd/yyyy
             dirty:false,
             detailsClass:"",
-            detailsTitle:"Show Details"
+            detailsTitle:"Show Details",
+            barEnter:null,
+            ticketTypes:{ga:"General admision", group:"Groups", donation:"Donation", other:"Other"},
+            barIntervals:{week:'date', month:'date', quarter:'week'}
         };
     },
     updatePeriod:function (date, periodType) {
@@ -316,28 +413,28 @@ var Revenue2 = React.createClass({
         var addDays = KUtils.date.addDays;
         var getWeekNumber = KUtils.date.getWeekNumber;
         var getQuarterNumber = KUtils.date.getQuarterNumber;
-        var getDateFromWeek = KUtils.date.getDateFromWeek;
+        var quarterToDates = KUtils.date.quarterToDates;
         var forceDigits = KUtils.number.forceDigits;
-        var periodTypeForServer = "date";
         
         var sf = KUtils.date.serverFormat;
         
         switch (periodType) {
         case "quarter":
-            var quarter = getQuarterNumber(date); //Math.ceil(week/13);
+            
+            var quarter = getQuarterNumber(date);
             var year = (new Date(date)).getUTCFullYear();
+            var period = quarterToDates(quarter, year);
             
-            var periodFrom = getDateFromWeek(year+"-"+(quarter-1)*13);//->tengo la semana
-            var periodTo = getDateFromWeek(year+"-"+(quarter*13-1));//->tengo la semana
-            periodTypeForServer = "week";
+            var periodFrom = period.from;
+            var periodTo = period.to;
             
-            var lastFrom1 = addDays(periodFrom, -(13*7));
-            var lastTo1 = addDays(periodFrom, -1);
-            var lastFrom2 = (sf(periodFrom, periodTypeForServer)).split("-");  //yyyy-w
-            var lastTo2 = (sf(periodTo, periodTypeForServer)).split("-");    //yyyy-w
-            lastFrom2 = (parseInt(lastFrom2[0])-1)+"-"+lastFrom2[1];
-            lastTo2 = (parseInt(lastTo2[0])-1)+"-"+lastTo2[1];
+            var last1 = quarterToDates(quarter-1, year);
+            var lastFrom1 = last1.from;
+            var lastTo1 = last1.to;
             
+            var last2 = quarterToDates(quarter, year-1);
+            var lastFrom2 = last2.from;
+            var lastTo2 = last2.to;
             
             break;
         case "month":
@@ -368,7 +465,6 @@ var Revenue2 = React.createClass({
         state.periodFrom = periodFrom;
         state.periodTo = periodTo;
         state.periodType = periodType;
-        state.periodTypeForServer = periodTypeForServer;
 
         state.lastFrom1 = lastFrom1;
         state.lastTo1 = lastTo1;
@@ -377,6 +473,19 @@ var Revenue2 = React.createClass({
 
         state.dirty = true;
         this.setState(state);
+    },
+    onBarMouseDown:function (n) {
+        
+        if (this.state.periodType == "week" && this.state.comparePeriodType == "lastperiod_2") {
+            return;
+        }
+        
+        this.setState({barEnter:n})
+    },
+    onBarLeave:function (n) {
+        if(n === this.state.barEnter) {
+            this.setState({barEnter:null})
+        }
     },
     onPeriodTypeChange:function (event) {
         this.updatePeriod(this.state.currentDate, event.target.value);
@@ -496,202 +605,146 @@ var Revenue2 = React.createClass({
             break;
         }
         
+        var barInterval = this.state.barIntervals[this.state.periodType];
         
-        var sf = KUtils.date.serverFormat;
+        //GET KAPI stats functions
+        var getQuery = KAPI.stats.getQuery; // getQuery(from, to, members, channel, type, operation, periodType)
+        
+        //GET KUtils date functions
+        var serverFormat = KUtils.date.serverFormat;
         var addDays = KUtils.date.addDays;
         var addMonths = KUtils.date.addMonths;
         var addYears = KUtils.date.addYears;
         var serverFormatWeek = KUtils.date.serverFormatWeek;
+        
+        
+        //GENERAL QUERIES -> CURRENT PERIOD
+        var periodFrom = serverFormat(state.periodFrom);
+        var periodTo = serverFormat(state.periodTo);
 
         var queries = {};
-        queries.total_bars = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)},
-            specs: {type:"sales", members:membership}
-        };
-        queries.visitors = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)},
-            specs: {type:"visits"}
-        };
-        queries.visitors_total = {
-            periods:{
-                type:state.periodTypeForServer, 
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer),
-                kind:"sum"
-            },
-            specs: {type:"visits"}
-        };
         
-        if (membership === true) {
-            queries.visitors.specs.kinds = ["membership"];
-        } else if (membership === false) {
-            queries.visitors.specs.kinds = ["ga", "group"];
-        }
+        queries.total_bars = getQuery(periodFrom, periodTo, membership, 'ALL', 'sales', 'detail', barInterval);
+        
+        queries.visitors = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'detail', barInterval);
+        
+        queries.visitors_total = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'sum', 'date');
+        
 
-        var from1 =  state.lastFrom1;
-        var to1 = state.lastTo1;
-        var from2 = state.lastFrom2;
-        var to2 = state.lastTo2;
+        //GENERAL QUERIES -> PAST PERIODS
+        var from1 =  serverFormat(state.lastFrom1);
+        var to1 = serverFormat(state.lastTo1);
+        var from2 = serverFormat(state.lastFrom2);
+        var to2 = serverFormat(state.lastTo2);
+        var from2WeekFormat = serverFormatWeek(state.lastFrom2);
+        var to2WeekFormat = serverFormatWeek(state.lastTo2);
+
+        queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits', 'detail', barInterval);
+        queries.visitors_lastperiod_1_totals = getQuery(from1, to1, membership, 'ALL', 'visits', 'sum', 'date');
+
 
         if(state.periodType == "week") {
-            queries.visitors_lastperiod_1 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from1), 
-                    to:sf(to1),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
-            queries.visitors_lastperiod_2 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from2), 
-                    to:sf(to2),
-                    kind:"average"
-                },
-                specs: {type:"visits"}
-            };
             
-        } else if(state.periodType == "month"){
-            queries.visitors_lastperiod_1 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from1), 
-                    to:sf(to1),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
-            queries.visitors_lastperiod_2 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from2), 
-                    to:sf(to2),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
+            var visitors_lastperiod_2 = {}; //TODO: How to ask server for day by day last 13 week average visits or sales?
 
-        } else if(state.periodType == "quarter"){
-            queries.visitors_lastperiod_1 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(from1), 
-                    to:sf(to1),
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
-            queries.visitors_lastperiod_2 = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:from2, 
-                    to:to2,
-                    kind:"sum"
-                },
-                specs: {type:"visits"}
-            };
+            queries.visitors_lastperiod_2_totals = getQuery(from2, to2, membership, 'ALL', 'visits', 'average', 'week');
+            // console.log(from2, to2)
+            
+        } else { 
+            //month and quarter
+            queries.visitors_lastperiod_2_totals = getQuery(from2, to2, membership, 'ALL', 'visits', 'sum', 'date');
+
+            queries.visitors_lastperiod_2 = getQuery(from2, to2, membership, 'ALL', 'visits', 'detail', 'date');
+            
         }
         
         
+        //PER CHANNEL QUERIES
         
         for (var channel in state.channelActive) {
-            var query = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(state.periodFrom, state.periodTypeForServer), 
-                    to:sf(state.periodTo, state.periodTypeForServer)
-                },
-                specs:{type:"sales", channel:channel, members:membership}
-            }
-            var totals = {
-                periods:{
-                    type:state.periodTypeForServer, 
-                    from:sf(state.periodFrom, state.periodTypeForServer), 
-                    to:sf(state.periodTo, state.periodTypeForServer),
-                    kind:"sum"
-                },
-                specs:{type:"sales", channel:channel, members:membership}
-            };
             
-            if(state.periodType == "week" || state.periodType == "month" ) {
-                var lastPeriod1 = {
-                    periods:{
-                        type:"date", 
-                        from:sf(from1, "date"), 
-                        to:sf(to1, "date"),
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            }
+            //CURRENT PERIOD
+            var query = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'detail', barInterval);
             
-            if(state.periodType == "week") {
-                var fromWeek = serverFormatWeek(from2);
-                var toWeek = serverFormatWeek(to2);
-                var lastPeriod2 = {
-                    periods:{
-                        type:"week", 
-                        from:fromWeek, 
-                        to:toWeek,
-                        kind:"average"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            } else if(state.periodType == "month") {
-                var lastPeriod2 = {
-                    periods:{
-                        type:"date", 
-                        from:sf(from2, state.periodTypeForServer), 
-                        to:sf(to2, state.periodTypeForServer),
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            }
+            var totals = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'sum', 'date');
             
-            if(state.periodType == "quarter") {
-                var lastPeriod1 = {
-                    periods:{
-                        type:"week", 
-                        from:sf(from1, state.periodTypeForServer), 
-                        to:sf(to1, state.periodTypeForServer),
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-                var lastPeriod2 = {
-                    periods:{
-                        type:"week", 
-                        from:from2,     //hack already formatted 
-                        to:to2,         //hack already formatted 
-                        kind:"sum"
-                    },
-                    specs:{type:"sales", channel:channel, members:membership}
-                }
-            }
-            
-            // console.log(from1, to1, lastPeriod1);
-            // console.log(from2, to2, lastPeriod2);
 
-            if (membership===undefined) {
-                delete query.specs.members;
-                delete totals.specs.members;
-                delete lastPeriod1.specs.members;
-                delete lastPeriod2.specs.members;
+            //LAST PERIOD
+            var lastPeriod1 = getQuery(from1, to1, membership, channel, 'sales', 'detail', barInterval);
+            
+            if (state.periodType == "week"){
+                
+                var lastPeriod2 = {};
+                
+            } else {
+                
+                var lastPeriod2 = getQuery(from2, to2, membership, channel, 'sales', 'detail', barInterval);
+                
             }
+            
+
+            //LAST PERIOD TOTALS
+            var lastPeriod1_totals = getQuery(from1, to1, membership, channel, 'sales', 'sum');
+
+            if (state.periodType == "week") {
+                
+                var lastPeriod2_totals = getQuery(from2, to2, membership, channel, 'sales', 'average', 'week');
+                
+            } else {
+                
+                var lastPeriod2_totals = getQuery(from2, to2, membership, channel, 'sales', 'sum', 'date');
+                
+            }
+            
+            
+            //WRITE VARS
             queries[channel+"_bars"] = query;
             queries[channel+"_bars_totals"] = totals;
             queries[channel+"_bars_lastperiod_1"] = lastPeriod1;
             queries[channel+"_bars_lastperiod_2"] = lastPeriod2;
+            queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
+            queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
         }
+        
+        
+        //TICKET TYPE QUERIES
+        var ticketTypes = this.state.ticketTypes;
+        for (var ttype in ticketTypes) {
+            
+            //current period
+            queries["gate_bars_by_"+ttype] = getQuery(
+                    periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
+            );
+            // console.log([periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'],queries["gate_bars_by_"+ttype]);
+            queries["gate_bars_by_"+ttype+"_totals"] = getQuery(
+                    periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+            );
+            
+            //Last period I
+            queries["gate_bars_by_"+ttype+"_lastperiod_1"] = getQuery(
+                    from1, to1, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
+            );
+            queries["gate_bars_by_"+ttype+"_lastperiod_1_totals"] = getQuery(
+                    from1, to1, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+            );
+            
+            //Last period II
+            if (state.periodType == "week") {
+                queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
+                        from2WeekFormat, to2WeekFormat, membership, 'gate', {type:"sales", kinds:[ttype]}, 'average', 'week'
+                );
+            } else {
+                queries["gate_bars_by_"+ttype+"_lastperiod_2"] = getQuery(
+                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
+                );
+                queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
+                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+                );
+            }
+        }
+        
+        
+        
         console.log(queries);
         KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
     },
@@ -714,11 +767,12 @@ var Revenue2 = React.createClass({
             return;
         }
         var sf = KUtils.date.serverFormat;
+        
 		KAPI.weather.query(
 			wnt.venueID, 
 			{
-                from:sf(state.periodFrom, state.periodTypeForServer), 
-                to:sf(state.periodTo, state.periodTypeForServer)
+                from:sf(state.periodFrom), 
+                to:sf(state.periodTo)
 			},
 			this.onWeatherResult
 		);
@@ -763,7 +817,9 @@ var Revenue2 = React.createClass({
         return !nextState.dirty;
     },
     render:function () {
+        
         // console.log(this.state);
+        
         var channelTypes = this.state.channelNames;
         var channelActive = this.state.channelActive;
         var channelControls = [];
@@ -790,208 +846,366 @@ var Revenue2 = React.createClass({
         var wResult = this.state.wResult;
         var max = this.state.max;
         if (result) {
-            var total_bars = result.total_bars;
-            var partial_sum = result.partial_sum;
-            var partial_sum_percap = result.partial_sum_percap;
-            var barWidth = 100/total_bars.length;
-            for (var i in total_bars) {
-                var channels = [];
-                for(var k in channelActive) {
-                    if (channelActive[k] == "active") {
-                        channels.push({
-                            name:channelTypes[k],
-                            data:result[k+"_bars"][i]
-                        })
-                    } else {
-                        channels.push({});
+            
+            //Build BARS
+            try {
+                
+                var total_bars = result.total_bars;
+                var partial_sum = result.partial_sum;
+                var partial_sum_percap = result.partial_sum_percap;
+                var barWidth = 100/total_bars.length;
+                
+                for (var i in total_bars) {
+                    
+                    //Collect Bar Data by Channel
+                    var channels = [];
+                    try {
+                        for(var k in channelActive) {
+                            if (channelActive[k] == "active") {
+                                channels.push({
+                                    name:channelTypes[k],
+                                    data:result[k+"_bars"][i]
+                                })
+                            } else {
+                                channels.push({});
+                            }
+                        };
+                    } catch (e) {
+                        console.log("Collect Bar Data by Channel Error -> "+e, this.state);
                     }
-                };
-                
-                var weather;
-                if (this.state.periodType != "quarter" && wResult && wResult.length > i) {
-                    weather = wResult[i];
+                    
+                    //Collect Weather Data
+                    try {
+                        var weather;
+                        if (this.state.periodType != "quarter" && wResult && wResult.length > i) {
+                            weather = wResult[i];
+                        }
+                    } catch (e) {
+                        console.log("Collect Weather Data Error -> "+e, this.state);
+                    }
+                    
+                    //Create GBars
+                    try {
+                    bars.push(<GBar
+                                key={i}
+                                id={"gbar-"+i}
+                                units={this.state.units}
+                                total={total_bars[i].amount}
+                                partial={partial_sum[i]}
+                                partialPercap={partial_sum_percap[i]}
+                                date={total_bars[i].period}
+                                channels={channels}  
+                                max={max}
+                                maxPercap={this.state.maxPercap}
+                                width={barWidth}
+                                periodType={this.state.periodType}
+                                weather={weather}
+                                onMouseDown={this.onBarMouseDown.bind(this, i)}
+                                onMouseLeave={this.onBarLeave.bind(this, i)}
+                            />);
+                    } catch(e) {
+                        console.log("Create GBars Error -> "+e, this.state);
+                    }
                 }
-                
-                bars.push(<GBar
-                            key={i}
-                            id={"gbar-"+i}
-                            units={this.state.units}
-                            total={total_bars[i].amount}
-                            partial={partial_sum[i]}
-                            partialPercap={partial_sum_percap[i]}
-                            date={total_bars[i].period}
-                            channels={channels}  
-                            max={max}
-                            maxPercap={this.state.maxPercap}
-                            width={barWidth}
-                            periodType={this.state.periodType}
-                            weather={weather}
-                        />);
+            } catch(e) {
+               console.log("Build Bars Error -> "+e, this.state);
             }
             
-            var detailsRows = [];
-            var totalSufix = "_bars_totals";
-            var lastSufix = "_bars_"+this.state.comparePeriodType;
+            //Collect General Data for Details
+            try {
+                var dataIndex = this.state.barEnter;
             
-            var visitors = parseInt(result.visitors_total.units);
-            var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType].units);
-            
-            for(var k in channelActive) {
-                if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
+                if(dataIndex === null) {
+                    var toSufix = "_bars_totals";
+                    var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
+                    var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
+                    var visitors = parseInt(result.visitors_total.units);
+                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
+                    var ttTotals = "_totals";
+                } else {
+                
+                    toSufix = "_bars";
+                    fromSufix = "_bars_"+this.state.comparePeriodType;
+                
+                    var visitorsDetail = this.state.result["total_bars"][dataIndex];
                     
-                    var to = result[k+totalSufix].amount;
-                    var from = result[k+lastSufix].amount;
-                    
-                    if(this.state.units == "percap") {
-                        to /= visitors;
-                        from /= lastVisitors;
+                    if(this.state.periodType == "quarter") {
+                        var lastPeriodFormattedDate = KUtils.date.weatherFormat (visitorsDetail.period, "quarter" );
+                    } else {
+                        lastPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
                     }
                     
-                    detailsRows.push(
-                        <DetailsRow key={k} from={from} to={to} title={this.state.channelNames[k]} />
-                    );
-                } else {
-                    detailsRows.push(<div></div>);
-                }
-            };
+                    var visitors = parseInt(result.visitors[dataIndex].units);
+                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
+                
+                    ttTotals = "";
+                };
+            } catch(e) {
+                console.log("Collect General Data for Details Error -> "+e, this.state);
+            }
             
+            
+            //Build Detail Rows
+            try {
+                var count = 0;
+                var detailsRowsLeft = [];
+                var detailsRowsRight = [];
+            
+                for(var k in channelActive) {
+
+                    var detailsRows = (count%2 == 0)? detailsRowsLeft : detailsRowsRight;
+
+                    if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
+                    
+                        count++; //count only displayed channels
+                    
+                        //Collect From/To data for Detail Rows
+                        try {
+                            var fromData = result[k+fromSufix];
+                            var toData = result[k+toSufix];
+                    
+                            if (dataIndex !== null) {
+                                var from = fromData[dataIndex].amount;
+                                var to = toData[dataIndex].amount;
+                            } else {
+                                from = fromData.amount;
+                                to = toData.amount;
+                            }
+                            
+                            if(this.state.units == "percap") {
+                                to /= visitors;
+                                from /= lastVisitors;
+                            }
+                            
+                        } catch (e) {
+                            console.log("Collect From/To data for Detail Rows Error -> "+e, this.state);
+                        }
+                    
+                        //Collect Ticket Type Data for Detail Rows
+                        try {
+                            var subDetails = [];
+                            var ticketTypes = this.state.ticketTypes;
+                            for (var tt in ticketTypes) {
+                        
+                                var ttSufix = k+"_bars_by_"+tt;
+                        
+                                var ttToData = this.state.result[ttSufix+ttTotals];
+                                var ttFromData = this.state.result[ttSufix+"_"+this.state.comparePeriodType+ttTotals];
+
+                                if (ttFromData && ttToData) {
+                                    
+                                    
+                                    //Collect To/From by Ticket Type Detail Rows
+                                    try {
+                                        if (dataIndex !== null) {
+                                            if(ttFromData[dataIndex]) {
+                                                var ttFrom = ttFromData[dataIndex].amount;
+                                            } else {
+                                                ttFrom = 0;
+                                            }
+                                            
+                                            if(ttFromData[dataIndex]) {
+                                                var ttTo = ttToData[dataIndex].amount;
+                                            } else {
+                                                ttTo = 0;
+                                            }
+                                            
+                                        } else {
+                                            ttFrom = ttFromData.amount;
+                                            ttTo = ttToData.amount;
+                                        }
+                            
+                                        var title = ticketTypes[tt];
+                                        subDetails.push({
+                                            title:title,
+                                            from:ttFrom,
+                                            to:ttTo,
+                                            details:[]              //recursive DetailsRow requires details
+                                        });
+                                    } catch (e) {
+                                        console.log("Collect To/From by Ticket Type Detail Rows Error -> "+e, this.state);
+                                    }
+                                }
+                            }
+                        } catch(e) {
+                            console.log("Collect Ticket Type Data for Detail Rows Error -> "+e, this.state);
+                        }
+                        
+                        //Create Detail Rows
+                        try {
+                            detailsRows.push(
+                                <DetailsRow 
+                                    key={k} from={from} to={to} title={this.state.channelNames[k]}
+                                    className="parent-details multicolor-wrapper col-xs-12"
+                                    details={subDetails}
+                                />
+                            );
+                        } catch (e) {
+                            console.log("Create Detail Rows Error -> "+e, this.state);
+                        }
+                    } else {
+                        detailsRows.push(<div key={k} ></div>);
+                    }
+                };
+            } catch(e) {
+                console.log("Build Detail Rows Error -> "+e);
+            }
         }
         
-        return (
-            <div className="row">
-                <div className="col-xs-12 col-sm-12">
-                    <div className="widget" id="revenue2">
-                        <h2>
-                            Earned Revenue
-                        </h2>
-                        <div className="row filters">
-                            <div className="col-xs-8 col-lg-6" id="period-type">
-                                <Dropdown
-                                    className="inline-block"
-                                    ref="periodType"
-                                    optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
-                                    selected={this.state.periodType}
-                                    onChange={this.onPeriodTypeChange}
-                                />
-                                <DatePickerReact defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
-                            </div>
-                            <div className="col-xs-4 col-lg-6 text-right" id="members">
-                                <Dropdown 
-                                    className="inline-block"
-                                    ref="members"
-                                    optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
-                                    onChange={this.onMembersChange}
-                                    selected={this.state.members}
-                                />
-                            </div>
-                        </div>
-                        <div className="row filters">
-                            <div id="channel-filters">
-                                <div className="col-xs-12 col-sm-6">
-                                    <TabSelector 
-                                        selected = {this.state.units}
-                                        id="dollars"
-                                        onClick={this.onUnitsChange.bind(this,"dollars")}
-                                        name="Dollars"
-                                    />
-                                    <TabSelector 
-                                        selected = {this.state.units}
-                                        id="percap"
-                                        onClick={this.onUnitsChange.bind(this,"percap")}
-                                        name="Per Cap"
-                                    />
-                                </div>
-                                <div className="col-xs-12 col-sm-6 text-right">
-                                    {channelControls}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row graphic">
-                            <div id="y-axis" className="inline-block">
-                                <div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(4)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(3)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(2)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        {this.formatY(1)}
-                                    </div>
-                                </div><div className="grow">
-                                    <div className="glabel">
-                                        0
-                                    </div>
-                                </div>
-                            </div><div id="gbody"  className="inline-block">
-                                <div id="gbackground">
-                                    <div className="grow">
-                                    </div>
-                                    <div className="grow">
-                                    </div>
-                                    <div className="grow">
-                                    </div>
-                                    <div className="grow">
-                                    </div>
-                                </div>
-                                <div id="gbars">
-                                    {bars}
-                                </div>
-                            </div>
-                        </div>
-                        <div className={"row details "+this.state.detailsClass}>
-                            <div className="col-xs-12 col-sm-12">
-                                <div className="col-xs-6 col-sm-6" id="header">
-                                    {
-                                        (this.state.comparePeriodType == "lastperiod_1") ?
-                                            KUtils.date.detailsFormat(this.state.lastFrom1, this.state.lastTo1)
-                                        :
-                                            (this.state.periodType=="quarter") ?
-                                                KUtils.date.detailsFormat(
-                                                    KUtils.date.getDateFromWeek(this.state.lastFrom2), 
-                                                    KUtils.date.getDateFromWeek(this.state.lastTo2)
-                                                )
-                                            :
-                                                KUtils.date.detailsFormat(this.state.lastFrom2, this.state.lastTo2)
-                                    }
-                                    
-                                </div>
-                                <div className="col-xs-6 col-sm-6 text-right">
+        if(!result) { console.log("Revenue 2 -> No Result Yet.")};
+        
+        // Build HTML
+        try {
+            return (
+                <div className="row">
+                    <div className="col-xs-12 col-sm-12">
+                        <div className="widget" id="revenue2">
+                            <h2>
+                                Earned Revenue
+                            </h2>
+                            <div className="row filters">
+                                <div className="col-xs-8 col-lg-6" id="period-type">
                                     <Dropdown
                                         className="inline-block"
-                                        ref="comparePeriodType"
-                                        optionList={
-                                            (this.state.periodType == "week") ?
-                                                {lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
-                                            :
-                                                (this.state.periodType == "month") ?
-                                                {lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"}
-                                                : {lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"}
-                                        }
-                                        selected={this.state.comparePeriodType}
-                                        onChange={this.onComparePeriodTypeChange}
+                                        ref="periodType"
+                                        optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
+                                        selected={this.state.periodType}
+                                        onChange={this.onPeriodTypeChange}
+                                    />
+                                    <DatePickerReact defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
+                                </div>
+                                <div className="col-xs-4 col-lg-6 text-right" id="members">
+                                    <Dropdown 
+                                        className="inline-block"
+                                        ref="members"
+                                        optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
+                                        onChange={this.onMembersChange}
+                                        selected={this.state.members}
                                     />
                                 </div>
                             </div>
-                            <div className="col-xs-12 col-sm-12" id="table">
-                                {detailsRows}
+                            <div className="row filters">
+                                <div id="channel-filters">
+                                    <div className="col-xs-12 col-sm-6">
+                                        <TabSelector 
+                                            selected = {this.state.units}
+                                            id="dollars"
+                                            onClick={this.onUnitsChange.bind(this,"dollars")}
+                                            name="Dollars"
+                                        />
+                                        <TabSelector 
+                                            selected = {this.state.units}
+                                            id="percap"
+                                            onClick={this.onUnitsChange.bind(this,"percap")}
+                                            name="Per Cap"
+                                        />
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6 text-right">
+                                        {channelControls}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row graphic">
+                                <div id="y-axis" className="inline-block">
+                                    <div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(4)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(3)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(2)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            {this.formatY(1)}
+                                        </div>
+                                    </div><div className="grow">
+                                        <div className="glabel">
+                                            0
+                                        </div>
+                                    </div>
+                                </div><div id="gbody"  className="inline-block">
+                                    <div id="gbackground">
+                                        <div className="grow">
+                                        </div>
+                                        <div className="grow">
+                                        </div>
+                                        <div className="grow">
+                                        </div>
+                                        <div className="grow">
+                                        </div>
+                                    </div>
+                                    <div id="gbars">
+                                        {bars}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={"row details "+this.state.detailsClass}>
+                                <div className="col-xs-12 col-sm-12 descriptors">
+                                    <div className="col-xs-6 col-sm-6" id="data-range">
+                                        <h4>Date Range</h4>
+                                    </div>
+                                    <div className="col-xs-6 col-sm-6" id="compared-to">
+                                        <h4>Compared To</h4>
+                                    </div>
+                                </div>
+                                <div className="col-xs-12 col-sm-12">
+                                    <div className="col-xs-6 col-sm-6" id="header">
+                                    
+                                        {lastPeriodFormattedDate}
+                                    
+                                    </div>
+                                    <div className="col-xs-6 col-sm-6 text-right">
+                                        <Dropdown
+                                            className="inline-block"
+                                            ref="comparePeriodType"
+                                            optionList={
+                                                (this.state.periodType == "week") ?
+                                                    {lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
+                                                :
+                                                    (this.state.periodType == "month") ?
+                                                    {lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"}
+                                                    : {lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"}
+                                            }
+                                            selected={this.state.comparePeriodType}
+                                            onChange={this.onComparePeriodTypeChange}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-xs-12 col-sm-12 details-header">
+                                    <div className="col-xs-12 col-sm-6" id="table">
+                                        <DetailsHeader />
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6 hidden-xs" id="table">
+                                        <DetailsHeader />
+                                    </div>
+                                </div>
+                                <div className="col-xs-12 col-sm-12">
+                                        <div className="col-xs-12 col-sm-6" id="table">
+                                            {detailsRowsLeft}
+                                        </div>
+                                        <div className="col-xs-12 col-sm-6" id="table">
+                                            {detailsRowsRight}
+                                        </div>
+                                </div>
+                            </div>
+                            <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
+                                <CaretHandler />
+                                {this.state.detailsTitle}
                             </div>
                         </div>
-                        <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="7px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className="filter-caret"><path d="M21.854 0.439l-7.366 7.365L12.523 9.77L10.56 7.804L3.196 0.441C2.425-0.185 1.293-0.147 0.6 0.6 c-0.768 0.768-0.768 2 0 2.778l9.983 9.983l1.964 1.966l1.965-1.966l9.984-9.983c0.383-0.383 0.575-0.886 0.575-1.389 c0-0.502-0.192-1.006-0.575-1.389C23.755-0.146 22.626-0.185 21.9 0.4"/></svg>
-                            {this.state.detailsTitle}
-                        </div>
                     </div>
+                    <div className="clearFix"></div>
                 </div>
-                <div className="clearFix"></div>
-            </div>
-        );
+            );
+        } catch(e) {
+            console.log("Build HTML Error -> "+e, this.state);
+            return (<div></div>);
+        }
     }
 });
 
