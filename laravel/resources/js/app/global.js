@@ -557,7 +557,23 @@ var global = Function('return this')();
 					}
 					
 					return _user;
-				}
+				},
+                getUserPermissions:function() {
+					if(!_user) {
+						throw new Error("Please call first KAPI.auth.getLoggedUser() function.");
+					};
+                    var permissions = {};
+                    for ( var i=0; i< _user.permissions.length; i++ ) {
+
+                        var permission = _user.permissions[i];
+
+                        if(permission && permission.length)
+                            permissions[permission] = true;
+            
+                    }
+                    
+                    return permissions;
+                }
 			}
 		};
         var _goals = scope.KAPI.goals;

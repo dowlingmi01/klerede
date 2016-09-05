@@ -2,6 +2,17 @@
 /******** HEADER ********/
 /************************/
 var DarkenBackground = React.createClass({
+    componentWillUnmount: function(){
+        $('body').removeClass("darken-background-active");
+    },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.active == "active") {
+            window.scrollTo(0,0);
+            $('body').addClass("darken-background-active");
+        } else {
+            $('body').removeClass("darken-background-active");
+        }
+    },
 	render:function () {
 		return (
 			<div id="darken-background" className={"modal-backdrop fade in "+this.props.active}> </div>
@@ -149,8 +160,16 @@ var Roles = React.createClass({
 
 var Header = React.createClass({
     getInitialState: function() {
+		var user = KAPI.auth.getUser();
         var state = {
             clientName: wnt.venue.name,
+            permissions: KAPI.auth.getUserPermissions(),
+            userID: user.id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            name: user.name,
+            email: user.email,
+            roleID: user.role_id,
             pwdCurrent: '',
             pwdNew: '',
             pwdMatch: '',
@@ -167,26 +186,9 @@ var Header = React.createClass({
 			currentUser:-1,
 			utilitiesClass:"",
 			addUserMessage:"",
-			darkenBackgroundActive:""
+			darkenBackgroundActive:"",
         };
         
-		var user = KAPI.auth.getUser();
-        state.userID = user.id;
-        state.firstName = user.first_name;
-        state.lastName = user.last_name;
-        state.name = user.name;
-        state.email = user.email;
-        state.roleID = user.role_id;
-        state.permissions = {};
-        for ( var i=0; i< user.permissions.length; i++ ) {
-
-            var permission = user.permissions[i];
-
-            if(permission && permission.length)
-                state.permissions[permission] = true;
-            
-        }
-        console.log(state);
         return state;
     },
 	componentDidMount:function () {
@@ -267,7 +269,6 @@ var Header = React.createClass({
         }
     },
     closeUtilities: function(event) {
-		console.log(event);
 		var state = this.state;
 		state.darkenBackgroundActive = "";
 		state.currentUtilitiesSet = "";
