@@ -2,6 +2,17 @@
 /******** HEADER ********/
 /************************/
 var DarkenBackground = React.createClass({
+    componentWillUnmount: function(){
+        $('body').removeClass("darken-background-active");
+    },
+    componentWillReceiveProps: function(nextProps){
+        if(nextProps.active == "active") {
+            window.scrollTo(0,0);
+            $('body').addClass("darken-background-active");
+        } else {
+            $('body').removeClass("darken-background-active");
+        }
+    },
 	render:function () {
 		return (
 			<div id="darken-background" className={"modal-backdrop fade in "+this.props.active}> </div>
@@ -150,17 +161,18 @@ var Roles = React.createClass({
 var Header = React.createClass({
     getInitialState: function() {
 		var user = KAPI.auth.getUser();
-        return {
+        var state = {
             clientName: wnt.venue.name,
+            permissions: KAPI.auth.getUserPermissions(),
             userID: user.id,
             firstName: user.first_name,
             lastName: user.last_name,
             name: user.name,
             email: user.email,
+            roleID: user.role_id,
             pwdCurrent: '',
             pwdNew: '',
             pwdMatch: '',
-            roleID: user.role_id,
             accountType: '',
             planTitle: 'Professional',
             planDescription: 'Unlimited Accounts',
@@ -168,14 +180,16 @@ var Header = React.createClass({
             cardLastName: 'Tribec',
             cardNumber: '**** **** **** 1234',
             users: [],
-            usersEmail: ['michael@klerede.com', 'matt@klerede.com', 'hfinney@klerede.com', 'sdaicz@klerede.com', 'webninjataylor@gmail.com', 'libbykjohsnon@gmail.com'],
+            usersEmail: [],
 			roleNames:{},
 			currentUtilitiesSet:"",
 			currentUser:-1,
 			utilitiesClass:"",
 			addUserMessage:"",
-			darkenBackgroundActive:""
+			darkenBackgroundActive:"",
         };
+        
+        return state;
     },
 	componentDidMount:function () {
 		KAPI.roles(this.onRolesGet);
@@ -255,7 +269,6 @@ var Header = React.createClass({
         }
     },
     closeUtilities: function(event) {
-		console.log(event);
 		var state = this.state;
 		state.darkenBackgroundActive = "";
 		state.currentUtilitiesSet = "";
@@ -540,6 +553,30 @@ var Header = React.createClass({
 				roleList={this.state.roleNames} 
 			/>);
 		}
+        var manageUsers = "";
+        var manageUsersMenu = "";
+        if (this.state.permissions["users-manage"] === true) {
+            
+            manageUsersMenu = <div className="utility last" onClick={this.toggleUtility.bind(this,"manage-users","modal")}>
+                                    Manage Users
+                                    <Caret className="utilities-caret" />
+                              </div>;
+                            
+            manageUsers = <div id="manage-users" className={"utilities-set" + (this.state.currentUtilitiesSet=="manage-users"? " active" : "") } onClick={this.activateField}>
+                            <h3>Manage Users <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
+                            <div className="utility-group">
+                                {users}
+                            </div>
+                            <form ref="addUserForm" className="utility-group form-group" onFocus={this.closeUser}>
+                                <h4>Add a User</h4>
+                                <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
+                                <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
+                                <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
+                                <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
+                                <div className="message">{this.state.addUserMessage}</div>
+                            </form>
+                        </div>;
+        }
 		// console.log(this.state.currentUser);
 		// console.log(users);
         // for (var i = 0; i < this.state.users.length; i++) {
@@ -570,10 +607,7 @@ var Header = React.createClass({
                         User Profile
                         <Caret className="utilities-caret" />
                     </div>
-                    <div className="utility last" onClick={this.toggleUtility.bind(this,"manage-users","modal")}>
-                        Manage Users
-                        <Caret className="utilities-caret" />
-                    </div>
+                    {manageUsersMenu}
                     <h3>General</h3>
                     <div className="utility" data-utility="faq" data-type="page" onClick={this.toggleUtility.bind(this,"faq","page")}>
                         FAQs
@@ -617,20 +651,7 @@ var Header = React.createClass({
                         </div>
                     </form>
                 </div>
-                <div id="manage-users" className={"utilities-set" + (this.state.currentUtilitiesSet=="manage-users"? " active" : "") }  onClick={this.activateField}>
-                    <h3>Manage Users <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
-                    <div className="utility-group">
-                        {users}
-                    </div>
-                    <form ref="addUserForm" className="utility-group form-group" onFocus={this.closeUser}>
-                        <h4>Add a User</h4>
-                        <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
-                        <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
-                        <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
-                        <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
-                        <div className="message">{this.state.addUserMessage}</div>
-                    </form>
-                </div>
+                {manageUsers}
             </header>
 			<DarkenBackground active={this.state.darkenBackgroundActive}/>
 		    </div>

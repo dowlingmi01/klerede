@@ -5,6 +5,8 @@
 var MembershipGoals = React.createClass({
     getInitialState: function() {
         return {
+            permissions:KAPI.auth.getUserPermissions(),
+            
             goalTotal: 0,
             goalIndividual: 0,
             goalFamily: 0,
@@ -209,12 +211,21 @@ var MembershipGoals = React.createClass({
         this.fillMeters();
         $('#membership-goals').height($('#sales-goals').height());
     },
+    componentWillUpdate: function(nextProps, nextState){
+        console.log(this.state.permissions, nextState.permissions);
+    },
     render: function() {
+        
+        var actionEdit = "";
+        if (this.state.permissions["goals-set"]) {
+            actionEdit = <ActionMenu />;
+        }
+        
         return (
             <div>
                 <div className="widget" id="membership-goals">
                     <h2>Membership Goals</h2>
-                    <ActionMenu />
+                    {actionEdit}
                     <form>
                         <select className="form-control" onChange={this.filterPeriod}>
                             <option value="year">Current Year ({wnt.thisYear})</option>
