@@ -36,6 +36,5 @@ class Kernel extends ConsoleKernel {
 		$schedule->command('kl:weatherimport')->dailyAt('12:00')->environments('production');
 		$schedule->command('kl:stats_compute')->dailyAt('06:30')->environments('test');
 		$schedule->command('kl:stats_members_compute')->dailyAt('06:31')->environments('test');
-		$schedule->command('kl:importfromprod')->dailyAt('13:40')->environments('test');
 	}
 }
