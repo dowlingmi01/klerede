@@ -116,14 +116,24 @@ var User = React.createClass({
         // $('.user').eq(this.state.editUserIndex).toggleClass('active');
     },
     render: function() {
+        
+        // Role selector removed:
+        // <Roles ref="roleSelect" onChange={this.onRoleChange} roleList={this.props.roleList} roleID={this.props.roleID}/>
+        var roleName = this.props.roleList[this.props.roleID];
+        
+        var deleteUser = "";
+        if (this.props.roleLevel > 10 ) {
+            deleteUser = <a className="stop" onClick={this.deleteUser}>Delete User</a>;
+        }
+        
         return (
             <div className={this.props.className} >
 				<div className="name" onClick={this.props.onClose}>{this.props.name} <Caret className="utilities-caret" /></div>
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
-                    <Roles ref="roleSelect" onChange={this.onRoleChange} roleList={this.props.roleList} roleID={this.props.roleID}/>
-                    <a className="stop" onClick={this.deleteUser}>Delete User</a>
-                    <a className="stop" onClick={this.passwordReset}>Password Reset</a>
+                        <div className="inline-block role">{roleName} user</div>&nbsp; 
+                        {deleteUser}&nbsp; 
+                        <a className="stop" onClick={this.passwordReset}>Password Reset</a>
                     <div className="message">{this.state.message}</div>
                     <div className="confirm" ref='confirm'>
                         <span className="message">Are you sure you want to delete this user?</span>
@@ -182,6 +192,7 @@ var Header = React.createClass({
             users: [],
             usersEmail: [],
 			roleNames:{},
+            roleLevels:{},
 			currentUtilitiesSet:"",
 			currentUser:-1,
 			utilitiesClass:"",
@@ -196,7 +207,9 @@ var Header = React.createClass({
 		this.getUsers();
 	},
 	getUsers:function () {
-		KAPI.users.get(wnt.venueID, this.onUsersGet);
+        if (this.state.permissions["users-manage"] === true) {
+		    KAPI.users.get(wnt.venueID, this.onUsersGet);
+        }
 	},
 	onUsersGet:function (users) {
 		// console.log(users);
@@ -212,10 +225,12 @@ var Header = React.createClass({
 
 		var newState = this.state;
 		newState.roleNames = {};
+		newState.roleLevels = {};
 
 		for (var i = 0; i < roles.length; i++) {
 			var rol = roles[i];
 			newState.roleNames[rol.id] = rol.name;
+            newState.roleLevels[rol.id] = rol.level;
 		};
 		
 		newState.accountType = newState.roleNames[newState.roleID];
@@ -530,32 +545,39 @@ var Header = React.createClass({
     render: function() {
 		// console.log(this.state);
         // LOOP FOR USERS
-        var users = [];
-		var usersData = this.state.users;
-		for (var i = 0; i < usersData.length; i++) {
-			// console.log(usersData[i]);
-			var data = usersData[i];
-			
-			if (data.id == this.state.userID) {
-				continue;
-			}
-			users.push(<User 
-				onClose={this.onUserClose.bind(this,i)}
-				className={"user" + (this.state.currentUser===i?" active":"")}
-				onDeleteSuccess={this.getUsers} 
-				key={data.id} 
-				id={data.id} 
-				name={data.name} 
-				firstName={data.first_name} 
-				lastName={data.last_name} 
-				email={data.email} 
-				roleID={data.role_id} 
-				roleList={this.state.roleNames} 
-			/>);
-		}
         var manageUsers = "";
         var manageUsersMenu = "";
-        if (this.state.permissions["users-manage"] === true) {
+        
+        if (this.state.users.length > 0) {
+            
+            var users = [];
+    		var usersData = this.state.users;
+    		for (var i = 0; i < usersData.length; i++) {
+    			// console.log(usersData[i]);
+    			var data = usersData[i];
+                
+			
+    			if (data.id == this.state.userID) {
+    				continue;
+    			}
+                
+                var level = this.state.roleLevels[data.role_id];
+                
+    			users.push(<User 
+    				onClose={this.onUserClose.bind(this,i)}
+    				className={"user" + (this.state.currentUser===i?" active":"")}
+    				onDeleteSuccess={this.getUsers} 
+    				key={data.id} 
+    				id={data.id} 
+    				name={data.name} 
+    				firstName={data.first_name} 
+    				lastName={data.last_name} 
+    				email={data.email} 
+    				roleID={data.role_id} 
+    				roleList={this.state.roleNames}
+                    roleLevel={level}
+    			/>);
+    		}
             
             manageUsersMenu = <div className="utility last" onClick={this.toggleUtility.bind(this,"manage-users","modal")}>
                                     Manage Users

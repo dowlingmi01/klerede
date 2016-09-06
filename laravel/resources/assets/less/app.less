@@ -355,13 +355,13 @@ div.user-wrapper {
                     display: block;
                     font-size: 11px;
                     text-transform: lowercase;
-                    margin: 10px 0 5px 0;
+                    margin: 10px 0 3px 0;
                 }
                 a {
-                    margin-left: 6px;
-                    position: relative;
+                    // margin-left: 6px;
+                    // position: relative;
                     text-transform: capitalize;
-                    top: 7px;
+                    // top: 7px;
                 }
                 .message {
                     clear: both;
@@ -3217,17 +3217,21 @@ a.dp-choose-date {
 #revenue2 .details #table .child-details-wrapper .table-item .title-text {
     margin-left:10%;
 }
-#revenue2  #filter-caret-wrapper {
+#revenue2 .details #table .table-item #filter-caret-wrapper {
     position:absolute;
-    right:0;
-    top:-12px;
+    right:12px;
+    top:6px;
+    width:30px;
+    text-align:center;
+    padding-top:12px;
 }
-#revenue2 #filter-caret-wrapper .filter-caret.active {
-    transform: rotate(180deg);
+#revenue2 .details #table .table-item #filter-caret-wrapper .filter-caret {
+    position:static;
+    transform: rotate(0);
     transition: .3s;
 }
-#revenue2 #filter-caret-wrapper .filter-caret {
-    transform: rotate(0);
+#revenue2 .details #table .table-item #filter-caret-wrapper .filter-caret.active {
+    transform: rotate(180deg);
     transition: .3s;
 }
 #revenue2 .details .details-header {
