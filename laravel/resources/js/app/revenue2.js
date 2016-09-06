@@ -405,7 +405,8 @@ var Revenue2 = React.createClass({
             detailsTitle:"Show Details",
             barEnter:null,
             ticketTypes:{ga:"General admision", group:"Groups", donation:"Donation", other:"Other"},
-            barIntervals:{week:'date', month:'date', quarter:'week'}
+            barIntervals:{week:'date', month:'date', quarter:'week'},
+            lastSaturday:periodTo
         };
     },
     updatePeriod:function (date, periodType) {
@@ -459,6 +460,31 @@ var Revenue2 = React.createClass({
         }
         
         //date should not be greater than wnt.today;
+        if (new Date(periodTo) > new Date(wnt.today)) {
+
+            var dayLimit = wnt.today;
+            
+            if(periodType == "quarter") {
+                dayLimit = this.state.lastSaturday;
+            }
+            
+            var offset = new Date(periodTo) - new Date(dayLimit);
+            periodTo = KUtils.date.localFormat(dayLimit);
+            
+            lastTo1 = KUtils.date.formatFromDate( 
+                        new Date( 
+                            (new Date(lastTo1)) - offset
+                        ) 
+                    );
+            if (periodType != "week") {
+                lastTo2 = KUtils.date.formatFromDate( 
+                            new Date(
+                                (new Date(lastTo2)) - offset 
+                            )
+                        );
+            }
+            
+        }
         
         var state = this.state;
         state.currentDate = date;
@@ -474,6 +500,7 @@ var Revenue2 = React.createClass({
         state.barEnter = null; //clears selected bar every time date changes
         
         state.dirty = true;
+        console.log(state);
         this.setState(state);
     },
     onBarMouseDown:function (n) {
@@ -537,12 +564,20 @@ var Revenue2 = React.createClass({
     },
     //receives state, so it can be called outside react lifecyle
     singleResultsToArray:function (state){
-        for (var k in state.channelActive) {
-            var bars = state.result[k+"_bars"];
-            if (Object.prototype.toString.call( bars ) === "[object Object]") {
-                state.result[k+"_bars"] = [bars];
-            };
+        for (var k in state.result) {
+            if (k.indexOf("totals") < 0) {
+                var r = state.result[k];
+                if (Object.prototype.toString.call( r ) === "[object Object]") {
+                    state.result[k] = [r];
+                };
+            }
         }
+        // for (var k in state.channelActive) {
+        //     var bars = state.result[k+"_bars"];
+        //     if (Object.prototype.toString.call( bars ) === "[object Object]") {
+        //         state.result[k+"_bars"] = [bars];
+        //     };
+        // }
     },
     updateSums:function (state) {
         
@@ -616,7 +651,7 @@ var Revenue2 = React.createClass({
         var addDays = KUtils.date.addDays;
         var addMonths = KUtils.date.addMonths;
         var addYears = KUtils.date.addYears;
-        var serverFormatWeek = KUtils.date.serverFormatWeek;
+        // var serverFormatWeek = KUtils.date.serverFormatWeek;
         
         
         //GENERAL QUERIES -> CURRENT PERIOD
@@ -629,7 +664,7 @@ var Revenue2 = React.createClass({
         
         queries.visitors = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'detail', barInterval);
         
-        queries.visitors_total = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'sum', 'date');
+        queries.visitors_totals = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'sum', 'date');
         
 
         //GENERAL QUERIES -> PAST PERIODS
@@ -637,8 +672,8 @@ var Revenue2 = React.createClass({
         var to1 = serverFormat(state.lastTo1);
         var from2 = serverFormat(state.lastFrom2);
         var to2 = serverFormat(state.lastTo2);
-        var from2WeekFormat = serverFormatWeek(state.lastFrom2);
-        var to2WeekFormat = serverFormatWeek(state.lastTo2);
+        // var from2WeekFormat = serverFormatWeek(state.lastFrom2);
+        // var to2WeekFormat = serverFormatWeek(state.lastTo2);
 
         queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits', 'detail', barInterval);
         queries.visitors_lastperiod_1_totals = getQuery(from1, to1, membership, 'ALL', 'visits', 'sum', 'date');
@@ -922,7 +957,7 @@ var Revenue2 = React.createClass({
                 if(dataIndex === null) {
                     var toSufix = "_bars_totals";
                     var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
-                    var visitors = parseInt(result.visitors_total.units);
+                    var visitors = parseInt(result.visitors_totals.units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
                     var ttTotals = "_totals";
                 } else {
@@ -964,26 +999,39 @@ var Revenue2 = React.createClass({
                     
                         count++; //count only displayed channels
                     
-                        //Collect From/To data for Detail Rows
+                        //Collect To data for Detail Rows
                         try {
-                            var fromData = result[k+fromSufix];
                             var toData = result[k+toSufix];
-                    
+                            
                             if (dataIndex !== null) {
-                                var from = fromData[dataIndex].amount;
                                 var to = toData[dataIndex].amount;
                             } else {
-                                from = fromData.amount;
                                 to = toData.amount;
                             }
                             
                             if(this.state.units == "percap") {
                                 to /= visitors;
+                            }
+                            
+                        } catch (e) {
+                            console.log("Collect To data for Detail Rows Error -> "+e, this.state);
+                        }
+                        //Collect From data for Detail Rows
+                        try {
+                            var fromData = result[k+fromSufix];
+                            
+                            if (dataIndex !== null) {
+                                var from = fromData[dataIndex].amount;
+                            } else {
+                                from = fromData.amount;
+                            }
+                            
+                            if(this.state.units == "percap") {
                                 from /= lastVisitors;
                             }
                             
                         } catch (e) {
-                            console.log("Collect From/To data for Detail Rows Error -> "+e, this.state);
+                            console.log("Collect From data for Detail Rows Error -> "+e, this.state);
                         }
                     
                         //Collect Ticket Type Data for Detail Rows
