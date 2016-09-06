@@ -211,9 +211,6 @@ var MembershipGoals = React.createClass({
         this.fillMeters();
         $('#membership-goals').height($('#sales-goals').height());
     },
-    componentWillUpdate: function(nextProps, nextState){
-        console.log(this.state.permissions, nextState.permissions);
-    },
     render: function() {
         
         var actionEdit = "";

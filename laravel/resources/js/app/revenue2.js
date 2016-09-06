@@ -379,11 +379,10 @@ var DetailsHeader = React.createClass({
 });
 var Revenue2 = React.createClass({
     getInitialState:function () {
-
         var today = new Date(KUtils.date.localFormat(wnt.today));
         var weekDay = today.getUTCDay();
-        var offset = (weekDay==6) ? 0 : weekDay-1;
-        var periodTo = KUtils.date.addDays(today, offset);
+        var offset = (weekDay==6) ? 0 : weekDay+1;
+        var periodTo = KUtils.date.addDays(today, -offset);
         var periodFrom = KUtils.date.addDays(periodTo, -6);
         
         return {
@@ -416,9 +415,6 @@ var Revenue2 = React.createClass({
         var getQuarterNumber = KUtils.date.getQuarterNumber;
         var quarterToDates = KUtils.date.quarterToDates;
         var forceDigits = KUtils.number.forceDigits;
-        
-        //date should not be greater than wnt.today;
-        
         
         switch (periodType) {
         case "quarter":
@@ -461,6 +457,8 @@ var Revenue2 = React.createClass({
             var lastFrom2 = addDays(periodFrom, -(13*7));
             var lastTo2 = addDays(periodFrom, -7);
         }
+        
+        //date should not be greater than wnt.today;
         
         var state = this.state;
         state.currentDate = date;
@@ -522,7 +520,7 @@ var Revenue2 = React.createClass({
             this.setState({detailsClass:"", detailsTitle:"Show Details"});
         }
     },
-    //receives state, so it can be called outside react lyfecyle
+    //receives state, so it can be called outside react lifecyle
     updateEmptyChannels:function (state) {
         var channelEmpty = state.channelEmpty;
         var result = state.result;
@@ -537,7 +535,7 @@ var Revenue2 = React.createClass({
         
         return state;
     },
-    //receives state, so it can be called outside react lyfecyle
+    //receives state, so it can be called outside react lifecyle
     singleResultsToArray:function (state){
         for (var k in state.channelActive) {
             var bars = state.result[k+"_bars"];
