@@ -417,7 +417,8 @@ var Revenue2 = React.createClass({
         var quarterToDates = KUtils.date.quarterToDates;
         var forceDigits = KUtils.number.forceDigits;
         
-        var sf = KUtils.date.serverFormat;
+        //date should not be greater than wnt.today;
+        
         
         switch (periodType) {
         case "quarter":

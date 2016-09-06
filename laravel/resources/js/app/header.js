@@ -131,7 +131,7 @@ var User = React.createClass({
 				<div className="name" onClick={this.props.onClose}>{this.props.name} <Caret className="utilities-caret" /></div>
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
-                        <div className="inline-block role">{roleName} user</div>&nbsp; 
+                        <div className="inline-block role">{roleName}</div>&nbsp; 
                         {deleteUser}&nbsp; 
                         <a className="stop" onClick={this.passwordReset}>Password Reset</a>
                     <div className="message">{this.state.message}</div>
