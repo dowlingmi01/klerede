@@ -60,6 +60,11 @@ body, p, td, label, .checkbox label {
 /*************************/
 /******** GLOBALS ********/
 /*************************/
+html, body, div#login-component {
+    height: 100%;
+    overflow-y:scroll;
+}
+
 body {
     background-color: @bg_page;
     /* Setting base font size to work with expected font unit conversion (pt --> %) for Raleway font family */
@@ -3205,10 +3210,17 @@ a.dp-choose-date {
     padding:0;
 }
 
+#revenue2 .details #table .child-details-wrapper .table-item svg {
+    height:12px;
+}
+
 #revenue2 .details #table .child-details-wrapper .table-item  {
     text-transform: none;
-    border-top: 1px solid #CCC;
+    border-top: none;
     height:30px;
+}
+#revenue2 .details #table .child-details-wrapper.active .table-item  {
+    border-top: 1px solid #CCC;
 }
 #revenue2 .details #table .child-details-wrapper .table-item div {
     height:20px;
@@ -3353,7 +3365,7 @@ a.dp-choose-date {
     padding-bottom:0;
 }
 .topics > div > ul > li .svgcaret {
-    background-image: url('img/caret.svg');
+    background-image: url('../img/caret.svg');
     background-repeat: no-repeat;
     width:30px;
     height:7px;

@@ -304,7 +304,7 @@ var DetailsRow = React.createClass({
                 )
             }
             
-            detailsHandler = <div id="filter-caret-wrapper" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
+            detailsHandler = <div id="filter-caret-wrapper" className="left-line" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
             
         }
         
@@ -401,7 +401,7 @@ var Revenue2 = React.createClass({
             detailsClass:"",
             detailsTitle:"Show Details",
             barEnter:null,
-            ticketTypes:{ga:"General admision", group:"Groups", donation:"Donation", other:"Other"},
+            ticketTypes:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"},
             barIntervals:{week:'date', month:'date', quarter:'week'},
             lastSaturday:periodTo
         };
@@ -991,6 +991,7 @@ var Revenue2 = React.createClass({
                 for(var k in channelActive) {
 
                     var detailsRows = (count%2 == 0)? detailsRowsLeft : detailsRowsRight;
+                    var theOtherDetailsRows = (count%2 != 0)? detailsRowsLeft : detailsRowsRight;
 
                     if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
                     
@@ -1090,11 +1091,13 @@ var Revenue2 = React.createClass({
                                     details={subDetails}
                                 />
                             );
+                            theOtherDetailsRows.push(<div key={k} ></div>);
                         } catch (e) {
                             console.log("Create Detail Rows Error -> "+e, this.state);
                         }
                     } else {
                         detailsRows.push(<div key={k} ></div>);
+                        theOtherDetailsRows.push(<div key={k} ></div>);
                     }
                 };
             } catch(e) {
