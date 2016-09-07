@@ -73,8 +73,7 @@ var GBar = React.createClass({
                 sectionH = (100*channel.data.percap/this.props.partialPercap) + "%";
             }
             sections.push(
-                <div key={i} className="gbar-section multicolorbg" style={{height:sectionH}} >
-                </div>
+                <div key={i} className="gbar-section multicolorbg" style={{height:sectionH}} ></div>
             );
         }
         
@@ -93,9 +92,7 @@ var GBar = React.createClass({
         return(
             <div id={this.props.id} onMouseDown={this.props.onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
                 <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
-                    <div ref="barTransition" className="bar-transition">
                         {sections}
-                    </div>
                 </div>
                 <div className="glabel">
                     {KUtils.date.barFormat(this.props.date, this.props.periodType)}
