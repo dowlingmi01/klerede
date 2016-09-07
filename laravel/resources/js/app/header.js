@@ -631,7 +631,7 @@ var Header = React.createClass({
                     </div>
                     {manageUsersMenu}
                     <h3>General</h3>
-                    <div className="utility" data-utility="faq" data-type="page" onClick={this.toggleUtility.bind(this,"faq","page")}>
+                    <div className="utility" data-utility="faqs" data-type="page" onClick={this.toggleUtility.bind(this,"faqs","page")}>
                         FAQs
                         <ChangeArrow className="utility-arrow" />
                     </div>

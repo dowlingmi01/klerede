@@ -3103,14 +3103,14 @@ a.dp-choose-date {
 }
 #revenue2 #details-handle.active .filter-caret {
     transform: rotate(180deg);
-    left:14px;
     transition: .3s;
 }
 #revenue2 #details-handle  .filter-caret {
     transform: rotate(0);
     transition: .3s;
     top:11px;
-    left:12px;
+    left:7px;
+    width:auto;
 }
 
 
@@ -3223,12 +3223,12 @@ a.dp-choose-date {
     top:6px;
     width:30px;
     text-align:center;
-    padding-top:12px !important;
 }
 #revenue2 .details #table .table-item #filter-caret-wrapper .filter-caret {
     position:static;
     transform: rotate(0);
     transition: .3s;
+    width:inherit;
 }
 #revenue2 .details #table .table-item #filter-caret-wrapper .filter-caret.active {
     transform: rotate(180deg);
@@ -3311,4 +3311,60 @@ a.dp-choose-date {
     #revenue2 .details #table .child-details-wrapper .table-item {
         height:30px;
     }
+}
+
+
+
+/******************************************************/
+/********************** FAQs Section ******************/
+/******************************************************/
+
+.faqs-page .faq-title {
+    cursor:pointer;
+}
+.faqs-page strong {
+    font-weight:800;
+}
+.faqs-page h4 {
+    margin-top:34px;
+    margin-bottom:34px;
+}
+.topics > div > ul {
+    list-style: none;
+    padding:0;
+}
+.topics > div > ul li {
+    margin-top:23px;
+}
+.topics > div > ul > li > ul {
+    list-style-type: disc;
+    max-height:0px;
+    overflow:hidden;
+    transition: .3s;
+}
+.topics > div > ul > li.active > ul {
+    transition: 1s;
+    max-height:1024px;
+}
+.topics > div > ul > li > div {
+    display:inline-block;
+}
+.topics > div > ul > li > ul > li {
+    padding-bottom:0;
+}
+.topics > div > ul > li .svgcaret {
+    background-image: url('img/caret.svg');
+    background-repeat: no-repeat;
+    width:30px;
+    height:7px;
+    background-size:contain;
+    background-position: 0% 0%;
+    transform: rotate(-90deg);
+    transition: .3s;
+    display:inline-block;
+    cursor:pointer;
+}
+.topics > div > ul > li.active .svgcaret {
+    transform: rotate(0deg);
+    transition: .3s;
 }

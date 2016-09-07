@@ -91,9 +91,9 @@ Route::get('goals', function()
     return View::make('goals');
 });
 
-Route::get('help', function()
+Route::get('faqs', function()
 {
-    return View::make('help');
+    return View::make('faqs');
 });
 
 Route::get('login', function()
