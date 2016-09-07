@@ -62,7 +62,8 @@ body, p, td, label, .checkbox label {
 /*************************/
 html, body, div#login-component {
     height: 100%;
-    overflow-y:scroll;
+    overflow-x:hidden;
+    overflow-y:auto;
 }
 
 body {
@@ -244,14 +245,14 @@ div#darken-background {
 	display:none;
 }
 div.user-wrapper {
-	z-index:2;
+	z-index:12;
 }
 
 #utilities,
 .utilities-set {
     background-color: @black;
     display: block;
-    min-height: 100vh;
+    height:100%;
     overflow: hidden;
     position: absolute;
     right: -250px;
@@ -454,6 +455,16 @@ div.user-wrapper {
 #utilities .utility-group div, .utilities-set .utility-group div.user div.name {
 	font-size:118%;
 }
+
+.a-mask-to-fix-height {
+    width: 250px;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    right: 0px;
+    top: 0;
+}
+
 #change-plan.utilities-set .utility-group {
     margin: 15px;
 }
@@ -3344,11 +3355,13 @@ a.dp-choose-date {
 .topics > div > ul {
     list-style: none;
     padding:0;
+    font-size:15px;
 }
 .topics > div > ul li {
     margin-top:23px;
 }
 .topics > div > ul > li > ul {
+    font-size:13px;
     list-style-type: disc;
     max-height:0px;
     overflow:hidden;

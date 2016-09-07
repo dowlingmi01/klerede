@@ -623,57 +623,59 @@ var Header = React.createClass({
                         </div>
                     </div>
                 </div>
-                <div id="utilities" className={this.state.utilitiesClass}>
-                    <h3>Settings <div className="glyphicon glyphicon-remove close" id="close-utilities" aria-hidden="true" onClick={this.closeUtilities}></div></h3>
-                    <div className="utility" onClick={this.toggleUtility.bind(this,"user-profile","modal")}>
-                        User Profile
-                        <Caret className="utilities-caret" />
+                <div id="utilities-background" className="a-mask-to-fix-height">
+                    <div id="utilities" className={this.state.utilitiesClass}>
+                        <h3>Settings <div className="glyphicon glyphicon-remove close" id="close-utilities" aria-hidden="true" onClick={this.closeUtilities}></div></h3>
+                        <div className="utility" onClick={this.toggleUtility.bind(this,"user-profile","modal")}>
+                            User Profile
+                            <Caret className="utilities-caret" />
+                        </div>
+                        {manageUsersMenu}
+                        <h3>General</h3>
+                        <div className="utility" data-utility="faqs" data-type="page" onClick={this.toggleUtility.bind(this,"faqs","page")}>
+                            FAQs
+                            <ChangeArrow className="utility-arrow" />
+                        </div>
+                        <div className="utility" data-utility="logout" data-type="tbd" onClick={this.logout}>Logout</div>
                     </div>
-                    {manageUsersMenu}
-                    <h3>General</h3>
-                    <div className="utility" data-utility="faqs" data-type="page" onClick={this.toggleUtility.bind(this,"faqs","page")}>
-                        FAQs
-                        <ChangeArrow className="utility-arrow" />
+                    <div id="user-profile" className={"utilities-set" + (this.state.currentUtilitiesSet=="user-profile"? " active" : "") } onClick={this.activateField}>
+                        <h3>User Profile <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
+                        <form className="settings">
+                            <div className="form-group">
+                                <label htmlFor="up-firstName">First Name:</label>
+                                <input type="text" id="up-firstName" defaultValue={this.state.firstName} data-field="firstName" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="up-lastName">Last Name:</label>
+                                <input type="text" id="up-lastName" defaultValue={this.state.lastName} data-field="lastName" onChange={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="up-email">Email:</label>
+                                <input type="text" id="up-email" defaultValue={this.state.email} value={this.state.email} data-field="email" disabled />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="up-pwd-current">Current Password:</label>
+                                <input type="password" id="up-pwd-current" data-field="pwdCurrent" onBlur={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="up-pwd-new">New Password:</label>
+                                <input type="password" id="up-pwd-new" data-field="pwdNew" onBlur={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="up-pwd-confirm">Confirm Password:</label>
+                                <input type="password" id="up-pwd-confirm" data-field="pwdMatch" onBlur={this.changeField} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="up-type">Account Type:</label>
+                                <input type="text" id="up-type" defaultValue={this.state.accountType} value={this.state.accountType} disabled/>
+                            </div>
+                            <div className="form-group">
+                                <input type="submit" defaultValue="Save" className="btn" onClick={this.saveCurrentUserChanges} />
+                            </div>
+                        </form>
                     </div>
-                    <div className="utility" data-utility="logout" data-type="tbd" onClick={this.logout}>Logout</div>
+                    {manageUsers}
                 </div>
-                <div id="user-profile" className={"utilities-set" + (this.state.currentUtilitiesSet=="user-profile"? " active" : "") } onClick={this.activateField}>
-                    <h3>User Profile <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
-                    <form className="settings">
-                        <div className="form-group">
-                            <label htmlFor="up-firstName">First Name:</label>
-                            <input type="text" id="up-firstName" defaultValue={this.state.firstName} data-field="firstName" onChange={this.changeField} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="up-lastName">Last Name:</label>
-                            <input type="text" id="up-lastName" defaultValue={this.state.lastName} data-field="lastName" onChange={this.changeField} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="up-email">Email:</label>
-                            <input type="text" id="up-email" defaultValue={this.state.email} value={this.state.email} data-field="email" disabled />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="up-pwd-current">Current Password:</label>
-                            <input type="password" id="up-pwd-current" data-field="pwdCurrent" onBlur={this.changeField} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="up-pwd-new">New Password:</label>
-                            <input type="password" id="up-pwd-new" data-field="pwdNew" onBlur={this.changeField} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="up-pwd-confirm">Confirm Password:</label>
-                            <input type="password" id="up-pwd-confirm" data-field="pwdMatch" onBlur={this.changeField} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="up-type">Account Type:</label>
-                            <input type="text" id="up-type" defaultValue={this.state.accountType} value={this.state.accountType} disabled/>
-                        </div>
-                        <div className="form-group">
-                            <input type="submit" defaultValue="Save" className="btn" onClick={this.saveCurrentUserChanges} />
-                        </div>
-                    </form>
-                </div>
-                {manageUsers}
             </header>
 			<DarkenBackground active={this.state.darkenBackgroundActive}/>
 		    </div>
