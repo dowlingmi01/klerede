@@ -6,7 +6,6 @@
 	<div class="row">
         <div class="col-xs-12 col-md-12">
             <h2 class="page-title">FAQs</h2>
-            <div id="time-date"><!-- ReactJS component: TimeDate --></div>
         </div>
     </div>
 
@@ -94,11 +93,9 @@
     </div>
 </div>
 
-<div class="page footer-box help-page">
-	<h4>Need our assistance?<h4>
-	<button type="button" href="mailto:support@klerede.com" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-		CONTACT US
-	</button>
+<div class="page footer-box faqs-page">
+	<h4 class="inline-block">Need our assistance?</h4>
+    <div class="form-group inline-block" data-reactid=".0.0.1.1.1.7"> <a class="btn inline-block" href="mailto:support@klerede.com" >CONTACT US</a></div>
 </div>
 
 @stop
