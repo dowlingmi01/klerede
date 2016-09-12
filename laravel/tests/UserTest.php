@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class UserTest extends TestCase
 {
+    //use DatabaseMigrations;
     /**
      * A basic test example.
      *
@@ -30,6 +31,9 @@ class UserTest extends TestCase
 
     public function testLogin()
     {
+
+
+
         $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@klerede.com','password'=>'secretowner'])
              ->seeJsonStructure([
                  'token'
@@ -38,16 +42,23 @@ class UserTest extends TestCase
 
     public function testLogged()
     {
-        $result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@klerede.com','password'=>'secretowner'])
-             ->seeJsonStructure([
+        //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@klerede.com','password'=>'secretowner']);
+        
+
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+owner@klerede.com','password'=>'secretowner'])
+                ->seeJsonStructure([
                  'token'
-             ]);
+         ]);
+       
 
-        print_r($result->getBody());
-
+        $token = '';
+        
+       $responseData = json_decode($this->response->getContent(), true);
+       $token = $responseData['token'];
+       
         $this->json('GET', 'api/v1/auth/logged?token='.$token)
              ->seeJson([
                  'error'=>'token_not_provided'
              ]);
-    }
+             }
 }
