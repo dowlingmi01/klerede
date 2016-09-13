@@ -378,9 +378,10 @@ var Revenue2 = React.createClass({
     getInitialState:function () {
         var today = new Date(KUtils.date.localFormat(wnt.today));
         var weekDay = today.getUTCDay();
-        var offset = (weekDay==6) ? 0 : weekDay+1;
-        var periodTo = KUtils.date.addDays(today, -offset);
-        var periodFrom = KUtils.date.addDays(periodTo, -6);
+        var offset = (weekDay==6) ? -7 : -weekDay -7;
+        var periodFrom = KUtils.date.addDays(today, offset);
+        var date = this.buildDateDetails(periodFrom);
+        // var periodTo = KUtils.date.addDays(today, -offset);
         
         return {
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
@@ -390,23 +391,121 @@ var Revenue2 = React.createClass({
             members:"totals",
             units:"dollars",
             comparePeriodType:"lastperiod_1",
-            currentDate:periodFrom,     //mm/dd/yyyy
-            periodFrom:periodFrom,      //mm/dd/yyyy
-            periodTo:periodTo,          //mm/dd/yyyy
-            lastFrom1:"",               //mm/dd/yyyy
-            lastTo2:"",                 //mm/dd/yyyy
-            lastFrom2:"",               //mm/dd/yyyy
-            lastTo2:"",                 //mm/dd/yyyy
+            date:date,
+            // currentDate:periodFrom,     //mm/dd/yyyy
+            periodFrom:date.thisWeekStart,      //mm/dd/yyyy
+            periodTo:date.thisWeekEnd,          //mm/dd/yyyy
+            // lastFrom1:"",               //mm/dd/yyyy
+            // lastTo2:"",                 //mm/dd/yyyy
+            // lastFrom2:"",               //mm/dd/yyyy
+            // lastTo2:"",                 //mm/dd/yyyy
             dirty:false,
             detailsClass:"",
             detailsTitle:"Show Details",
             barEnter:null,
-            ticketTypes:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"},
-            barIntervals:{week:'date', month:'date', quarter:'week'},
-            lastSaturday:periodTo
+            compareLists:{
+                week:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"},
+                weekBar:{lastperiod_1:"Last Year", lastperiod_2:"13 Week Average (Day)"},
+                month:{lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"},
+                monthBar:{lastperiod_1:"Last Year", lastperiod_2:"13 Week Average (Day)"},
+                quarter:{lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"},
+                quarterBar:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
+            },
+            ticketTypes:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"}
+            // barIntervals:{week:'date', month:'date', quarter:'week'},
+            // lastSaturday:periodTo
         };
     },
-    updatePeriod:function (date, periodType) {
+    buildDateDetails:function (d) {
+        var du = KUtils.date; //date utilities
+        
+        var date = new Date(d);
+        var dateLimit = new Date(wnt.today);
+        var weekDay = date.getUTCDay();
+        var monthDay = date.getUTCDate();
+        var thisMonth = date.getUTCMonth();
+        var thisYear = date.getUTCFullYear();
+        var thisQuarter = du.getQuarterNumber(date);
+
+        function applyLimit(d) {
+            var date = new Date(d);
+            if(date>dateLimit) {
+                date = dateLimit;
+            }
+            return du.localFormat(date);
+        }
+        
+        var p = {};
+        
+        p.currentDate = d;
+        //WEEK Calculations
+        p.thisWeekStart = du.addDays(date, -weekDay);
+        p.thisWeekEnd = applyLimit( du.addDays(date, 6 - weekDay) );
+        
+        p.thisWeekStartMinusOneYear = du.addYears(p.thisWeekStart, -1);
+        p.thisWeekEndMinusOneYear = du.addYears(p.thisWeekEnd, -1);
+        
+        p.lastWeekEnd = du.addDays(p.thisWeekEnd, -7);
+        p.lastWeekStart = du.addDays(p.thisWeekStart, -7);
+
+        p.weekStart13weekAgo = du.addDays(p.thisWeekStart, -7*13);
+        
+        //MONTH Calculations
+        p.thisMonthStart = du.addDays(date, -monthDay + 1);
+        p.thisMonthEnd = applyLimit( du.addDays(du.addMonths(p.thisMonthStart,1), -1) );
+        p.lastMonthEnd = du.addDays(date, -monthDay);         //date 0 is last day of prev month
+        p.lastMonthStart = du.addMonths(p.thisMonthStart, -1);
+
+        p.lastYearSameMonthStart = du.addYears(p.thisMonthStart, -1);
+        p.lastYearSameMonthEnd = du.addYears(p.thisMonthEnd, -1);
+        
+        //QUARTER Calculations
+        var thisQuarterLimits = du.quarterToDates(thisQuarter, thisYear);
+        p.thisQuarterStart = thisQuarterLimits.from;
+        p.thisQuarterEnd = applyLimit( thisQuarterLimits.to );
+        
+        // var thisQuarterLength = new Date(p.thisQuarterEnd) - new Date(p.thisQuarterStart) ;
+
+        var lastQuarterLimits = du.quarterToDates(thisQuarter-1, thisYear);
+        p.lastQuarterStart = lastQuarterLimits.from;
+        
+        //if this quarter is not whole, so limit last quarter
+        if (p.thisQuarterEnd != thisQuarterLimits.to) {
+            var thisQuarterLength = new Date(p.thisQuarterEnd) - new Date(p.thisQuarterStart) ;
+            p.lastQuarterEnd = du.localFormat(new Date( (new Date(p.lastQuarterStart)).getTime() + thisQuarterLength));
+        } else {
+            p.lastQuarterEnd = lastQuarterLimits.to;
+        }
+        
+
+        p.lastYearSameQuarterStart = du.addYears(p.thisQuarterStart, -1);
+        p.lastYearSameQuarterEnd = du.addYears(p.thisQuarterEnd, -1);
+        
+        //INDIVIDUAL DAYS Calculations
+        // for week
+        p.thisWeekStartMinusOneYear = du.addYears(p.thisWeekStart, -1);
+        p.thisWeekEndMinusOneYear = du.addYears(p.thisWeekEnd, -1);
+        
+        //for month 
+        p.thisMonthEndMinusOneWeek = du.addDays(p.thisMonthEnd, -7);
+        p.thisMonthStart13WeekAgo = du.addDays(p.thisMonthStart, -7*13);
+        
+        //for quarter -> use real ends (lastQuarterLimits) not limited  (p.lastQuarterEnd)
+        var lastQuartersLastWeekDay = (new Date(lastQuarterLimits.to)).getUTCDay();
+        p.lastQuartersWholeWeekStart = du.addDays(lastQuarterLimits.to, - lastQuartersLastWeekDay - 7);
+        
+        var thisQuartersLastWeekDay = (new Date(p.thisQuarterEnd)).getUTCDay();
+        p.thisQuartersWholeWeekEnd = du.addDays(p.thisQuarterEnd, - (thisQuartersLastWeekDay+1)%7 );
+        // p.lastQuartersWholeWeekEnd = du.addDays(p.lastQuarterEnd, - (lastQuarterWeekDay+1)%7 );
+        
+        //for all 13week average get all weeks from last quarter and calculate them
+        
+        console.log(p);
+        
+        return p;
+        
+    },
+    updatePeriodOld:function (date, periodType) {
         var addMonths = KUtils.date.addMonths;
         var addDays = KUtils.date.addDays;
         var getWeekNumber = KUtils.date.getWeekNumber;
@@ -502,24 +601,38 @@ var Revenue2 = React.createClass({
     },
     onBarMouseDown:function (n) {
         
-        if (this.state.periodType == "week" && this.state.comparePeriodType == "lastperiod_2")
-            return;
         
-        if(this.state.detailsClass == "active")
+        if(this.state.detailsClass == "active") {
+            // if (this.state.periodType != "quarter" && this.state.comparePeriodType == "lastperiod_2")
+            //     this.setState({comparePeriodType:"lastperiod_1"});
+            
             this.setState({barEnter:n});
+        }
         
     },
     onBarLeave:function () {
         this.setState({barEnter:null})
     },
     onPeriodTypeChange:function (event) {
-        this.updatePeriod(this.state.currentDate, event.target.value);
+        // this.buildDateDetails(this.state.currentDate);
+        // console.log(event);
+        this.setState({periodType:event.target.value, dirty:true});
     },
     onDateSelect:function (event) {
         if (this.state.periodFrom === event.target.value) {
             return;
         }
-        this.updatePeriod(event.target.value, this.state.periodType);
+        var date = this.buildDateDetails(event.target.value);
+        this.setState({date:date, dirty:true});
+    },
+    getCompareList:function () {
+        var barEnter = (this.state.barEnter !== null);
+        var compareLists = this.state.compareLists;
+        var periodType = this.state.periodType;
+        if (barEnter) {
+            return compareLists[periodType+"Bar"];
+        }
+        return compareLists[periodType];
     },
     onMembersChange:function (event) {
         this.setState({members:event.target.value, dirty:true});
@@ -569,15 +682,74 @@ var Revenue2 = React.createClass({
                 };
             }
         }
-        // for (var k in state.channelActive) {
-        //     var bars = state.result[k+"_bars"];
-        //     if (Object.prototype.toString.call( bars ) === "[object Object]") {
-        //         state.result[k+"_bars"] = [bars];
-        //     };
-        // }
+        return state;
+    },
+    updateQuarter13WeekAverage:function (state) {
+        if (state.periodType != "quarter")
+            return;
+        
+        var result = state.result;
+        for (var query in result) {
+            if ( (/lastperiod_2$/).test(query) ) {
+                var r = result[query];
+                var w13av = [];
+                for (var i=0; i <= r.length-13; i++) {
+                    var usum = 0;
+                    var asum = 0;
+                    for(var j=0; j<13; j++) {
+                        usum += parseInt(r[i+j].units);
+                        asum += r[i+j].amount;
+                    }
+                    w13av.push({units:usum/13, amount:asum/13});
+                }
+                result[query] = w13av;
+            }
+        }
+        return state;
+    },
+    update13WeekDayAverage:function (state) {
+        if (state.periodType == "quarter")
+            return;
+        
+        var result = state.result;
+        for (var query in result) {
+            if ( (/lastperiod_2$/).test(query) ) {
+                var r = result[query];
+                
+                if (r.length==0) continue;
+
+                //first fill with 0 if any date is missing
+                var lastDate = new Date(r[0].period);
+                for (var k=0; k<r.length; k++) {
+                    var thisDate = new Date(r[k].period);
+                    var diff = (thisDate - lastDate)/86400000;
+                    while(diff >= 2) {
+                        r.splice(k, 0, {period:"empty", units:"0", amount:0});
+                        k++;
+                        diff--;
+                    }
+                    lastDate = thisDate;
+                }
+                
+                var w13av = [];
+                for (var i=0; i < r.length - (12*7); i++) {
+                    var from = r[i].period;
+                    var usum = 0;
+                    var asum = 0;
+                    for (var j=0; j<13; j++) {
+                        var sub = i+(j*7);
+                         usum += parseInt(r[sub].units);
+                        asum += r[sub].amount;
+                    }
+                    w13av.push({periodFrom:from, periodTo:r[sub].period , units:usum/13, amount:asum/13});
+                }
+                // console.log(query, w13av);
+                result[query] = w13av;
+            }
+        }
+        return state;
     },
     updateSums:function (state) {
-        
         var result = state.result;
         
         var total_bars = result.total_bars;
@@ -587,7 +759,7 @@ var Revenue2 = React.createClass({
         var max = 0;
         var maxPercap = 0;
         for (var i in total_bars) {
-
+            
             //Save sum, only active channels
             //And calculate percaps
             var barSum = 0;
@@ -595,8 +767,9 @@ var Revenue2 = React.createClass({
             for (var k in state.channelActive) {
                 if(state.channelActive[k] == "active") {
                     if(result[k+"_bars"].length > i) {
-                        barSum += result[k+"_bars"][i].amount;
                         
+                        barSum += result[k+"_bars"][i].amount;
+
                         if (visitors[i]) {
                             var v = parseInt(visitors[i].units);
                             result[k+"_bars"][i].percap = result[k+"_bars"][i].amount/v;
@@ -608,6 +781,7 @@ var Revenue2 = React.createClass({
                     }
                 }
             }
+            
             partial_sum.push(barSum);
             partial_sum_percap.push(percapSum);
 
@@ -621,10 +795,206 @@ var Revenue2 = React.createClass({
         result.partial_sum_percap = partial_sum_percap;
         state.max = max;
         state.maxPercap = maxPercap;
-        state.result = result;
         return state;
     },
     updateData:function (state) {
+
+        var membership = (state.members == "members") ? true : (state.members == "nonmembers") ? false : null ;
+        
+        var p = state.date;
+        
+        
+        switch (state.periodType) {
+        case "week":
+            
+            var barInterval = 'date';
+            var from = p.thisWeekStart;
+            var to = p.thisWeekEnd;
+            var operation = 'detail';
+            
+            var lastFrom1 = p.lastWeekStart;
+            var lastTo1 = p.lastWeekEnd;
+            var lastOperation1 = 'sum';
+            var lastInterval1 = 'date';
+
+            var lastFrom2 = p.weekStart13weekAgo;
+            var lastTo2 = p.lastWeekEnd;
+            var lastOperation2 = 'average';
+            var lastInterval2 = 'week';
+            
+            var lastBarFrom1 = p.thisWeekStartMinusOneYear;
+            var lastBarTo1 = p.thisWeekEndMinusOneYear;
+            var lastBarOperation1 = 'detail';
+            var lastBarInterval1 = 'date';
+            
+            var lastBarFrom2 = p.weekStart13weekAgo;
+            var lastBarTo2 = p.lastWeekEnd;
+            var lastBarOperation2 = 'detail';
+            var lastBarInterval2 = 'date';
+            
+            break;
+        case "month":
+            
+            var barInterval = 'date';
+            var from = p.thisMonthStart;
+            var to = p.thisMonthEnd;
+            var operation = 'detail';
+            
+            var lastFrom1 = p.lastMonthStart;
+            var lastTo1 = p.lastMonthEnd;
+            var lastOperation1 = 'sum';
+            var lastInterval1 = 'date';
+
+            var lastFrom2 = p.lastYearSameMonthStart;
+            var lastTo2 = p.lastYearSameMonthEnd;
+            var lastOperation2 = 'sum';
+            var lastInterval2 = 'date';
+            
+            var lastBarFrom1 = p.lastYearSameMonthStart;
+            var lastBarTo1 = p.lastYearSameMonthEnd;
+            var lastBarOperation1 = 'detail';
+            var lastBarInterval1 = 'date';
+            
+            var lastBarFrom2 = p.thisMonthStart13WeekAgo;
+            var lastBarTo2 = p.thisMonthEndMinusOneWeek;
+            var lastBarOperation2 = 'detail';
+            var lastBarInterval2 = 'date';
+            
+            break;
+            
+        case "quarter":
+            
+            var barInterval = 'week';
+            var from = p.thisQuarterStart;
+            var to = p.thisQuarterEnd;
+            var operation = 'detail';
+            
+            var lastFrom1 = p.lastQuarterStart;
+            var lastTo1 = p.lastQuarterEnd;
+            var lastOperation1 = 'sum';
+            var lastInterval1 = 'date';
+
+            var lastFrom2 = p.lastYearSameQuarterStart;
+            var lastTo2 = p.lastYearSameQuarterEnd;
+            var lastOperation2 = 'sum';
+            var lastInterval2 = 'date';
+            
+            var lastBarFrom1 = p.lastQuartersWholeWeekStart;
+            var lastBarTo1 = p.thisQuartersWholeWeekEnd;
+            var lastBarOperation1 = 'detail';
+            var lastBarInterval1 = 'week';
+            
+            var lastBarFrom2 = p.lastQuarterStart;
+            var lastBarTo2 = p.thisQuarterEnd;
+            var lastBarOperation2 = 'detail';
+            var lastBarInterval2 = 'week';
+            
+            break;
+            
+        default:
+            
+        }
+        //for weather and other uses
+        state.periodFrom = from;
+        state.periodTo = to;
+        state.barEnter = null;
+        state.comparePeriodType = "lastperiod_1";
+        
+        //
+        //barInterval
+        
+        
+        var getQuery = KAPI.stats.getQuery;
+        // getQuery(from, to, members, channel, type, operation, periodType)
+        
+        var queries = {};
+        
+        //GENERAL QUERIES -> CURRENT PERIOD
+        
+        queries.total_bars = getQuery(from, to, membership, 'ALL', 'sales', 'detail', barInterval);
+        
+        queries.visitors = getQuery(from, to, membership, 'ALL', 'visits', 'detail', barInterval);
+        
+        queries.visitors_totals = getQuery(from, to, membership, 'ALL', 'visits', 'sum', 'date');
+        
+        //GENERAL QUERIES -> PAST PERIODS
+
+        queries.visitors_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'visits', 'detail', lastBarInterval1);
+        
+        queries.visitors_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'visits', 'sum', 'date');
+
+        queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
+
+        queries.visitors_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', 'sum', 'date');
+
+        //PER CHANNEL QUERIES
+        
+        for (var channel in state.channelActive) {
+            
+            //CURRENT PERIOD
+            var query = getQuery(from, to, membership, channel, 'sales', 'detail', barInterval);
+            
+            var totals = getQuery(from, to, membership, channel, 'sales', 'sum', 'date');
+            
+
+            //LAST PERIOD
+            var lastBar1 = getQuery(lastBarFrom1, lastBarTo1, membership, channel, 'sales', lastBarOperation1, lastBarInterval1);
+            
+            //this results will be processed on client 13-Week-Average-(Day for week and month and Week for quarter)
+            var lastBar2 = getQuery(lastBarFrom2, lastBarTo2, membership, channel, 'sales', lastBarOperation2, lastBarInterval2);
+
+
+            
+            //LAST PERIOD TOTALS
+            var lastPeriod1_totals = getQuery(lastFrom1, lastTo1, membership, channel, 'sales', lastOperation1, lastInterval1);
+
+            var lastPeriod2_totals = getQuery(lastFrom2, lastTo2, membership, channel, 'sales', lastOperation2, lastInterval2);
+            
+            
+            //WRITE VARS
+            queries[channel+"_bars"] = query;
+            queries[channel+"_bars_totals"] = totals;
+            queries[channel+"_bars_lastperiod_1"] = lastBar1;
+            queries[channel+"_bars_lastperiod_2"] = lastBar2;
+            queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
+            queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
+        }
+        
+        // WARNING!!! ->>> Ticket Type should be called Product Type (tickets are only for General Admision)
+        //TICKET TYPE QUERIES 
+        var ticketTypes = this.state.ticketTypes;
+        for (var ttype in ticketTypes) {
+            
+            //current period
+            queries["gate_bars_by_"+ttype] = getQuery(
+                    from, to, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', barInterval
+            );
+            queries["gate_bars_by_"+ttype+"_totals"] = getQuery(
+                    from, to, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+            );
+            
+            //Last period I
+            queries["gate_bars_by_"+ttype+"_lastperiod_1"] = getQuery(
+                    lastBarFrom1, lastBarTo1, membership, 'gate', {type:"sales", kinds:[ttype]}, lastBarOperation1, lastBarInterval1
+            );
+            queries["gate_bars_by_"+ttype+"_lastperiod_1_totals"] = getQuery(
+                    lastFrom1, lastTo1, membership, 'gate', {type:"sales", kinds:[ttype]}, lastOperation1, lastInterval1
+            );
+            
+            //Last period II
+            queries["gate_bars_by_"+ttype+"_lastperiod_2"] = getQuery(
+                    lastBarFrom2, lastBarTo2, membership, 'gate', {type:"sales", kinds:[ttype]}, lastBarOperation2, lastBarInterval2
+            );
+            queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
+                    lastFrom2, lastTo2, membership, 'gate', {type:"sales", kinds:[ttype]}, lastOperation2, lastInterval2
+            );
+        }
+        
+        console.log(queries);
+        KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);        
+                
+    },
+    updateDataOld:function (state) {
         
         var membership;
         switch (state.members) {
@@ -792,14 +1162,19 @@ var Revenue2 = React.createClass({
         this.singleResultsToArray(state);
         this.updateEmptyChannels(state);
         this.updateSums(state);
+        this.updateQuarter13WeekAverage(state);
+        this.update13WeekDayAverage(state);
         state.dirty = false;
+        
+        console.log(state);
+        
         this.setState(state);
     },
     updateWeather: function(state) {
         console.log("UpdateWeather");
-        if (state.periodType == "quarter") {
-            return;
-        }
+        if (state.periodType == "quarter")
+             return;
+
         var sf = KUtils.date.serverFormat;
         
 		KAPI.weather.query(
@@ -840,19 +1215,18 @@ var Revenue2 = React.createClass({
         return r;
     },
     componentDidMount:function () {
-        this.updatePeriod(this.state.currentDate, this.state.periodType);
+        // this.updatePeriod(this.state.currentDate, this.state.periodType);
+        this.setState({dirty:true});
     },
     shouldComponentUpdate:function (nextProps, nextState) {
-        // console.log(nextState.dirty);
         if (nextState.dirty) {
-            this.updateWeather(nextState);
             this.updateData(nextState);
+            this.updateWeather(nextState);
         };
         return !nextState.dirty;
     },
     render:function () {
         
-        // console.log(this.state);
         
         var channelTypes = this.state.channelNames;
         var channelActive = this.state.channelActive;
@@ -987,6 +1361,8 @@ var Revenue2 = React.createClass({
                 var count = 0;
                 var detailsRowsLeft = [];
                 var detailsRowsRight = [];
+                var detailsLeftHeader = <div></div>;
+                var detailsRightHeader = <div></div>;
             
                 for(var k in channelActive) {
 
@@ -1065,7 +1441,12 @@ var Revenue2 = React.createClass({
                                             ttFrom = ttFromData.amount;
                                             ttTo = ttToData.amount;
                                         }
-                            
+                                        
+                                        if(this.state.units == "percap") {
+                                            ttFrom /= lastVisitors;
+                                            ttTo /= visitors;
+                                        }
+                                        
                                         var title = ticketTypes[tt];
                                         subDetails.push({
                                             title:title,
@@ -1100,6 +1481,14 @@ var Revenue2 = React.createClass({
                         theOtherDetailsRows.push(<div key={k} ></div>);
                     }
                 };
+                
+                if (count>0) {
+                    detailsLeftHeader = <DetailsHeader />;
+                }
+                if (count>1) {
+                    detailsRightHeader = <DetailsHeader />;
+                }
+                
             } catch(e) {
                 console.log("Build Detail Rows Error -> "+e);
             }
@@ -1217,12 +1606,7 @@ var Revenue2 = React.createClass({
                                             className="inline-block"
                                             ref="comparePeriodType"
                                             optionList={
-                                                (this.state.periodType == "week") ?
-                                                    {lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
-                                                :
-                                                    (this.state.periodType == "month") ?
-                                                    {lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"}
-                                                    : {lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"}
+                                                this.getCompareList()
                                             }
                                             selected={this.state.comparePeriodType}
                                             onChange={this.onComparePeriodTypeChange}
@@ -1231,10 +1615,10 @@ var Revenue2 = React.createClass({
                                 </div>
                                 <div className="col-xs-12 col-sm-12 details-header">
                                     <div className="col-xs-12 col-sm-6" id="table">
-                                        <DetailsHeader />
+                                        {detailsLeftHeader}
                                     </div>
                                     <div className="col-xs-12 col-sm-6 hidden-xs" id="table">
-                                        <DetailsHeader />
+                                        {detailsRightHeader}
                                     </div>
                                 </div>
                                 <div className="col-xs-12 col-sm-12">

@@ -301,6 +301,7 @@ var global = Function('return this')();
 		var _user;
 		
         var _serverFormatWeek = KUtils.date.serverFormatWeek;
+        var _serverFormat = KUtils.date.serverFormat;
         
 		function _saveToken(token) {
 			_token = token;
@@ -394,6 +395,9 @@ var global = Function('return this')();
                     if(periodType == 'week') {
                         from = _serverFormatWeek(from);
                         to = _serverFormatWeek(to);
+                    } else {
+                        from = _serverFormat(from);
+                        to = _serverFormat(to);
                     }
                     
                     var query = {
