@@ -405,9 +405,9 @@ var Revenue2 = React.createClass({
             barEnter:null,
             compareLists:{
                 week:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"},
-                weekBar:{lastperiod_1:"Last Year"},
+                weekBar:{lastperiod_1:"Last Year", lastperiod_2:"13 Week Average (Day)"},
                 month:{lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"},
-                monthBar:{lastperiod_1:"Last Year"},
+                monthBar:{lastperiod_1:"Last Year", lastperiod_2:"13 Week Average (Day)"},
                 quarter:{lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"},
                 quarterBar:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
             },
@@ -487,7 +487,7 @@ var Revenue2 = React.createClass({
         p.thisWeekEndMinusOneYear = du.addYears(p.thisWeekEnd, -1);
         
         //for month 
-        p.thisMonthEnd13WeekAgo = du.addDays(p.thisMonthEnd, -7*13);
+        p.thisMonthEndMinusOneWeek = du.addDays(p.thisMonthEnd, -7);
         p.thisMonthStart13WeekAgo = du.addDays(p.thisMonthStart, -7*13);
         
         //for quarter -> use real ends (lastQuarterLimits) not limited  (p.lastQuarterEnd)
@@ -603,8 +603,8 @@ var Revenue2 = React.createClass({
         
         
         if(this.state.detailsClass == "active") {
-            if (this.state.periodType != "quarter" && this.state.comparePeriodType == "lastperiod_2")
-                this.setState({comparePeriodType:"lastperiod_1"});
+            // if (this.state.periodType != "quarter" && this.state.comparePeriodType == "lastperiod_2")
+            //     this.setState({comparePeriodType:"lastperiod_1"});
             
             this.setState({barEnter:n});
         }
@@ -707,6 +707,48 @@ var Revenue2 = React.createClass({
         }
         return state;
     },
+    update13WeekDayAverage:function (state) {
+        if (state.periodType == "quarter")
+            return;
+        
+        var result = state.result;
+        for (var query in result) {
+            if ( (/lastperiod_2$/).test(query) ) {
+                var r = result[query];
+                
+                if (r.length==0) continue;
+
+                //first fill with 0 if any date is missing
+                var lastDate = new Date(r[0].period);
+                for (var k=0; k<r.length; k++) {
+                    var thisDate = new Date(r[k].period);
+                    var diff = (thisDate - lastDate)/86400000;
+                    while(diff >= 2) {
+                        r.splice(k, 0, {period:"empty", units:"0", amount:0});
+                        k++;
+                        diff--;
+                    }
+                    lastDate = thisDate;
+                }
+                
+                var w13av = [];
+                for (var i=0; i < r.length - (12*7); i++) {
+                    var from = r[i].period;
+                    var usum = 0;
+                    var asum = 0;
+                    for (var j=0; j<13; j++) {
+                        var sub = i+(j*7);
+                         usum += parseInt(r[sub].units);
+                        asum += r[sub].amount;
+                    }
+                    w13av.push({periodFrom:from, periodTo:r[sub].period , units:usum/13, amount:asum/13});
+                }
+                // console.log(query, w13av);
+                result[query] = w13av;
+            }
+        }
+        return state;
+    },
     updateSums:function (state) {
         var result = state.result;
         
@@ -787,8 +829,8 @@ var Revenue2 = React.createClass({
             
             var lastBarFrom2 = p.weekStart13weekAgo;
             var lastBarTo2 = p.lastWeekEnd;
-            var lastBarOperation2 = 'average_date';
-            var lastBarInterval2 = 'week';
+            var lastBarOperation2 = 'detail';
+            var lastBarInterval2 = 'date';
             
             break;
         case "month":
@@ -813,10 +855,10 @@ var Revenue2 = React.createClass({
             var lastBarOperation1 = 'detail';
             var lastBarInterval1 = 'date';
             
-            var lastBarFrom2 = p.thisMonthStart13weekAgo;
-            var lastBarTo2 = p.thisMonthEnd13weekAgo;
-            var lastBarOperation2 = 'average_date';
-            var lastBarInterval2 = 'week';
+            var lastBarFrom2 = p.thisMonthStart13WeekAgo;
+            var lastBarTo2 = p.thisMonthEndMinusOneWeek;
+            var lastBarOperation2 = 'detail';
+            var lastBarInterval2 = 'date';
             
             break;
             
@@ -898,7 +940,7 @@ var Revenue2 = React.createClass({
             //LAST PERIOD
             var lastBar1 = getQuery(lastBarFrom1, lastBarTo1, membership, channel, 'sales', lastBarOperation1, lastBarInterval1);
             
-            //this will work for week only when server is able to calculate 13-Week-Average-(Day)
+            //this results will be processed on client 13-Week-Average-(Day for week and month and Week for quarter)
             var lastBar2 = getQuery(lastBarFrom2, lastBarTo2, membership, channel, 'sales', lastBarOperation2, lastBarInterval2);
 
 
@@ -1121,6 +1163,7 @@ var Revenue2 = React.createClass({
         this.updateEmptyChannels(state);
         this.updateSums(state);
         this.updateQuarter13WeekAverage(state);
+        this.update13WeekDayAverage(state);
         state.dirty = false;
         
         console.log(state);
