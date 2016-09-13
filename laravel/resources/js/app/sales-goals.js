@@ -16,14 +16,14 @@ var SalesGoals = React.createClass({
             cafe: 0,
             giftstore: 0,
 
-            markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365)
+            markerPosition: this.markerPosition(wnt.yearStart, wnt.today, 365)
         };
     },
 	onGoalsResult:function(goals) {
         console.log('Sales Goals onGoalsResult using KAPI...');
 		
         var periodStart = wnt.yearStart;
-        var periodEnd = wnt.yesterday;
+        var periodEnd = wnt.today;
         var periodDays = 365;
         if(wnt.filter.sgPeriod === 'quarter'){
             periodStart = wnt.quarterStart;
@@ -86,7 +86,7 @@ var SalesGoals = React.createClass({
                 boxoffice: result.boxoffice.amount,
                 cafe: result.cafe.amount,
                 giftstore: result.giftstore.amount,
-                markerPosition: this.markerPosition(periodStart, wnt.yesterday, periodDays)
+                markerPosition: this.markerPosition(periodStart, wnt.today, periodDays)
             });
             this.formatNumbers();
         }
@@ -99,7 +99,7 @@ var SalesGoals = React.createClass({
     callAPI: function(){
         var self = this;
         var periodStart = wnt.yearStart;
-        var periodEnd = wnt.yesterday;
+        var periodEnd = wnt.today;
         var periodDays = 365;
         if(wnt.filter.sgPeriod === 'quarter'){
             periodStart = wnt.quarterStart;

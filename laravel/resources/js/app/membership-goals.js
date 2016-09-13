@@ -14,14 +14,14 @@ var MembershipGoals = React.createClass({
             individual: 0,
             family: 0,
 
-            markerPosition: this.markerPosition(wnt.yearStart, wnt.yesterday, 365)
+            markerPosition: this.markerPosition(wnt.yearStart, wnt.today, 365)
         };
     },
 	onGoalsResult:function(goals) {
    		console.log('Membership Goals onGoalsResult using KAPI...');
 		
         var periodStart = wnt.yearStart;
-        var periodEnd = wnt.yesterday;
+        var periodEnd = wnt.today;
         var periodDays = 365;
         if(wnt.filter.sgPeriod === 'quarter'){
             periodStart = wnt.quarterStart;
@@ -77,7 +77,7 @@ var MembershipGoals = React.createClass({
                 memberships: result.memberships[wnt.filter.mgUnits],
                 individual: result.individual[wnt.filter.mgUnits],
                 family: result.family[wnt.filter.mgUnits],
-                markerPosition: this.markerPosition(periodStart, wnt.yesterday, periodDays)
+                markerPosition: this.markerPosition(periodStart, wnt.today, periodDays)
             });
             this.formatNumbers();
         }
@@ -89,7 +89,7 @@ var MembershipGoals = React.createClass({
     },
 	callAPI:function () {
         var periodStart = wnt.yearStart;
-        var periodEnd = wnt.yesterday;
+        var periodEnd = wnt.today;
         var periodDays = 365;
         if(wnt.filter.mgPeriod === 'quarter'){
             periodStart = wnt.quarterStart;
