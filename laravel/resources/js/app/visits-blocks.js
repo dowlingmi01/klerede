@@ -79,8 +79,8 @@ var VisitsBlocksSet = React.createClass({
 	},
     componentDidMount: function() {
 		var queries = {
-	        visits_total: { specs: { type: 'visits' }, periods: wnt.yesterday },
-	        visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
+	        visits_total: { specs: { type: 'visits' }, periods: wnt.today },
+	        visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.yesterday },
 	        visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },            
 	        visits_total_compareto_rolling: { specs: { type: 'visits'},
 	            periods: {
@@ -90,8 +90,8 @@ var VisitsBlocksSet = React.createClass({
 	            }
 	        },
 
-	        visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterday },
-	        visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.daybeforeyesterday },
+	        visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.today },
+	        visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterday },
 	        visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterdaylastyear },
 	        visits_ga_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] }, 
 	            periods: {
@@ -101,8 +101,8 @@ var VisitsBlocksSet = React.createClass({
 	            }
 	        },
 
-	        visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterday },
-	        visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.daybeforeyesterday },
+	        visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.today },
+	        visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterday },
 	        visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterdaylastyear },
 	        visits_groups_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] }, 
 	            periods: {
@@ -112,8 +112,8 @@ var VisitsBlocksSet = React.createClass({
 	            }
 	        },
 
-	        visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterday },
-	        visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.daybeforeyesterday },
+	        visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.today },
+	        visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterday },
 	        visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterdaylastyear },
 	        visits_members_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
 	            periods: {
@@ -123,8 +123,8 @@ var VisitsBlocksSet = React.createClass({
 	            }
 	        },
 
-	        visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterday },
-	        visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.daybeforeyesterday },
+	        visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.today },
+	        visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterday },
 	        visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterdaylastyear },
 	        visits_nonmembers_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] }, 
 	            periods: {
@@ -134,8 +134,8 @@ var VisitsBlocksSet = React.createClass({
 	            }
 	        },
 
-	        sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterday },
-	        sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.daybeforeyesterday },
+	        sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.today },
+	        sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterday },
 	        sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterdaylastyear },
 	        sales_gate_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
 	            periods: {
