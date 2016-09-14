@@ -40,7 +40,6 @@ var MembersBlocksSet = React.createClass({
         };
     },
 	onStatsResult:function(result) {
-        console.log('Members data loaded using KAPI...');
         // Abbreviate numbers for total members block
         result.members_total_frequency_recency.current_members = this.abbrNumber(result.members_total_frequency_recency.current_members);
         result.members_total_frequency_recency_compareto_daybefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_daybefore.current_members);
@@ -207,6 +206,11 @@ var MembersBlocksSet = React.createClass({
                 }
                 $(newstat).formatNumber({format:"#,##0.0", locale:"us"});
                 $(oldstat).formatNumber({format:"#,##0.0", locale:"us"});
+
+                if($(statblock).parent().hasClass("dollars")) {
+                    $(newstat).html("<span style='font-size:50%'>$</span>"+$(newstat).html());
+                    $(oldstat).html("$"+$(oldstat).html());
+                };
             }
         });
     },
@@ -275,7 +279,7 @@ var MembersBlocksSet = React.createClass({
                             stat={this.state.membersCaptured} 
                             comparedTo={this.state.membersCapturedCompareTo} />
                     </div>
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-percap">
+                    <div className="col-xs-6 col-sm-4 col-lg-2 dollars" id="members-percap">
                         <MembersBlock
                             label="Per Cap"
                             stat={this.state.membersPercap}
