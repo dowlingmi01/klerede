@@ -40,27 +40,26 @@ var VisitsBlocksSet = React.createClass({
         };
     },
 	onStatsResult:function (result) {
-        console.log('Visits data loaded using KAPI...');
         wnt.visits = result;
         if(this.isMounted()) {
             this.setState({
                 visitsTotal: result.visits_total.units,
-                visitsTotalCompareTo: result.visits_total_compareto_daybefore.units,
+                visitsTotalCompareTo: result.visits_total_compareto_weekbefore.units,
 
                 visitsGA: result.visits_ga.units,
-                visitsGACompareTo: result.visits_ga_compareto_daybefore.units,
+                visitsGACompareTo: result.visits_ga_compareto_weekbefore.units,
 
                 visitsGroups: result.visits_groups.units,
-                visitsGroupsCompareTo: result.visits_groups_compareto_daybefore.units,
+                visitsGroupsCompareTo: result.visits_groups_compareto_weekbefore.units,
 
                 visitsMembers: result.visits_members.units,
-                visitsMembersCompareTo: result.visits_members_compareto_daybefore.units,
+                visitsMembersCompareTo: result.visits_members_compareto_weekbefore.units,
 
                 visitsNonmembers: result.visits_nonmembers.units,
-                visitsNonmembersCompareTo: result.visits_nonmembers_compareto_daybefore.units,
+                visitsNonmembersCompareTo: result.visits_nonmembers_compareto_weekbefore.units,
 
                 salesGate: result.sales_gate.amount,
-                salesGateCompareTo: result.sales_gate_compareto_daybefore.amount
+                salesGateCompareTo: result.sales_gate_compareto_weekbefore.amount
             });
             // Set null data to '-'
             var self = this;
@@ -78,9 +77,12 @@ var VisitsBlocksSet = React.createClass({
         }
 	},
     componentDidMount: function() {
+        var du = KUtils.date;
+        var sameDayWeekBefore = du.serverFormat(du.addDays(wnt.today, -7));
+
 		var queries = {
 	        visits_total: { specs: { type: 'visits' }, periods: wnt.today },
-	        visits_total_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.yesterday },
+	        visits_total_compareto_weekbefore: { specs: { type: 'visits' }, periods: sameDayWeekBefore },
 	        visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },            
 	        visits_total_compareto_rolling: { specs: { type: 'visits'},
 	            periods: {
@@ -91,7 +93,7 @@ var VisitsBlocksSet = React.createClass({
 	        },
 
 	        visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.today },
-	        visits_ga_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterday },
+	        visits_ga_compareto_weekbefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: sameDayWeekBefore },
 	        visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterdaylastyear },
 	        visits_ga_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] }, 
 	            periods: {
@@ -102,7 +104,7 @@ var VisitsBlocksSet = React.createClass({
 	        },
 
 	        visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.today },
-	        visits_groups_compareto_daybefore: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterday },
+	        visits_groups_compareto_weekbefore: { specs: { type: 'visits', kinds: ['group'] }, periods: sameDayWeekBefore },
 	        visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterdaylastyear },
 	        visits_groups_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] }, 
 	            periods: {
@@ -113,7 +115,7 @@ var VisitsBlocksSet = React.createClass({
 	        },
 
 	        visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.today },
-	        visits_members_compareto_daybefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterday },
+	        visits_members_compareto_weekbefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: sameDayWeekBefore },
 	        visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterdaylastyear },
 	        visits_members_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
 	            periods: {
@@ -124,7 +126,7 @@ var VisitsBlocksSet = React.createClass({
 	        },
 
 	        visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.today },
-	        visits_nonmembers_compareto_daybefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterday },
+	        visits_nonmembers_compareto_weekbefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: sameDayWeekBefore },
 	        visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterdaylastyear },
 	        visits_nonmembers_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] }, 
 	            periods: {
@@ -135,7 +137,7 @@ var VisitsBlocksSet = React.createClass({
 	        },
 
 	        sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.today },
-	        sales_gate_compareto_daybefore: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterday },
+	        sales_gate_compareto_weekbefore: { specs: { type: 'sales', channel: 'gate' }, periods: sameDayWeekBefore },
 	        sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterdaylastyear },
 	        sales_gate_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
 	            periods: {
@@ -174,12 +176,12 @@ var VisitsBlocksSet = React.createClass({
             });
         } else {
             this.setState({
-                visitsTotalCompareTo: wnt.visits.visits_total_compareto_daybefore.units,
-                visitsGACompareTo: wnt.visits.visits_ga_compareto_daybefore.units,
-                visitsGroupsCompareTo: wnt.visits.visits_groups_compareto_daybefore.units,
-                visitsMembersCompareTo: wnt.visits.visits_members_compareto_daybefore.units,
-                visitsNonmembersCompareTo: wnt.visits.visits_nonmembers_compareto_daybefore.units,
-                salesGateCompareTo: wnt.visits.sales_gate_compareto_daybefore.amount
+                visitsTotalCompareTo: wnt.visits.visits_total_compareto_weekbefore.units,
+                visitsGACompareTo: wnt.visits.visits_ga_compareto_weekbefore.units,
+                visitsGroupsCompareTo: wnt.visits.visits_groups_compareto_weekbefore.units,
+                visitsMembersCompareTo: wnt.visits.visits_members_compareto_weekbefore.units,
+                visitsNonmembersCompareTo: wnt.visits.visits_nonmembers_compareto_weekbefore.units,
+                salesGateCompareTo: wnt.visits.sales_gate_compareto_weekbefore.amount
             });
         }
         event.target.blur();
@@ -248,9 +250,9 @@ var VisitsBlocksSet = React.createClass({
                         <div className="filter">
                             <form>
                                 <select className="form-control" onChange={this.handleChange}>
-                                    <option value="twoDays">Trend over last two days</option>
-                                    <option value="lastYear">Yesterday compared to same day last year</option>
-                                    <option value="lastYearAverage">Yesterday compared to average for the past year</option>
+                                    <option value="prevWeek">Compared to same day previous week</option>
+                                    <option value="lastYear">Compared to same day last year</option>
+                                    <option value="lastYearAverage">Compared to average for the past year</option>
                                 </select>
                                 <Caret className="filter-caret" />
                             </form>
