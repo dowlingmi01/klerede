@@ -58,7 +58,6 @@ var GBar = React.createClass({
         });
     },
     render:function () {
-        // console.log(this.props);
         var channels = this.props.channels;
         var sections = [];
         for (var i in channels) {
@@ -381,7 +380,6 @@ var Revenue2 = React.createClass({
         var offset = (weekDay==6) ? -7 : -weekDay -7;
         var periodFrom = KUtils.date.addDays(today, offset);
         var date = this.buildDateDetails(periodFrom);
-        // var periodTo = KUtils.date.addDays(today, -offset);
         
         return {
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
@@ -392,28 +390,21 @@ var Revenue2 = React.createClass({
             units:"dollars",
             comparePeriodType:"lastperiod_1",
             date:date,
-            // currentDate:periodFrom,     //mm/dd/yyyy
             periodFrom:date.thisWeekStart,      //mm/dd/yyyy
             periodTo:date.thisWeekEnd,          //mm/dd/yyyy
-            // lastFrom1:"",               //mm/dd/yyyy
-            // lastTo2:"",                 //mm/dd/yyyy
-            // lastFrom2:"",               //mm/dd/yyyy
-            // lastTo2:"",                 //mm/dd/yyyy
             dirty:false,
             detailsClass:"",
             detailsTitle:"Show Details",
             barEnter:null,
             compareLists:{
                 week:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"},
-                weekBar:{lastperiod_1:"Last Year", lastperiod_2:"13 Week Average (Day)"},
+                weekBar:{lastperiod_1:"Same Day Last Year", lastperiod_2:"13 Week Average (Day)"},
                 month:{lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"},
-                monthBar:{lastperiod_1:"Last Year", lastperiod_2:"13 Week Average (Day)"},
+                monthBar:{lastperiod_1:"Same Day Last Year", lastperiod_2:"13 Week Average (Day)"},
                 quarter:{lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"},
                 quarterBar:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
             },
             ticketTypes:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"}
-            // barIntervals:{week:'date', month:'date', quarter:'week'},
-            // lastSaturday:periodTo
         };
     },
     buildDateDetails:function (d) {
@@ -496,126 +487,18 @@ var Revenue2 = React.createClass({
         
         var thisQuartersLastWeekDay = (new Date(p.thisQuarterEnd)).getUTCDay();
         p.thisQuartersWholeWeekEnd = du.addDays(p.thisQuarterEnd, - (thisQuartersLastWeekDay+1)%7 );
-        // p.lastQuartersWholeWeekEnd = du.addDays(p.lastQuarterEnd, - (lastQuarterWeekDay+1)%7 );
-        
-        //for all 13week average get all weeks from last quarter and calculate them
-        
-        console.log(p);
         
         return p;
         
     },
-    updatePeriodOld:function (date, periodType) {
-        var addMonths = KUtils.date.addMonths;
-        var addDays = KUtils.date.addDays;
-        var getWeekNumber = KUtils.date.getWeekNumber;
-        var getQuarterNumber = KUtils.date.getQuarterNumber;
-        var quarterToDates = KUtils.date.quarterToDates;
-        var forceDigits = KUtils.number.forceDigits;
-        
-        switch (periodType) {
-        case "quarter":
-            
-            var quarter = getQuarterNumber(date);
-            var year = (new Date(date)).getUTCFullYear();
-            var period = quarterToDates(quarter, year);
-            
-            var periodFrom = period.from;
-            var periodTo = period.to;
-            
-            var last1 = quarterToDates(quarter-1, year);
-            var lastFrom1 = last1.from;
-            var lastTo1 = last1.to;
-            
-            var last2 = quarterToDates(quarter, year-1);
-            var lastFrom2 = last2.from;
-            var lastTo2 = last2.to;
-            
-            break;
-        case "month":
-            var monthDay = (new Date(date)).getUTCDate();
-            var periodFrom = addDays(date, -monthDay+1); //first day of month
-            var nextMonthDate = addMonths(periodFrom, 1);
-            var periodTo = addDays(nextMonthDate, -1); //last day of month
-
-            var lastFrom1 = addMonths(periodFrom, -1);
-            var lastTo1 = addDays(periodFrom, -1);
-            var lastFrom2 = addMonths(periodFrom, -12);
-            var lastTo2 = addMonths(periodTo, -12);
-
-            break;
-        case "week":
-        default:
-            var periodFrom = date;
-            var periodTo = addDays(periodFrom, +6);
-
-            var lastFrom1 = addDays(periodFrom, -7);
-            var lastTo1 = addDays(periodFrom, -1);
-            var lastFrom2 = addDays(periodFrom, -(13*7));
-            var lastTo2 = addDays(periodFrom, -7);
-        }
-        
-        //date should not be greater than wnt.today;
-        if (new Date(periodTo) > new Date(wnt.today)) {
-
-            var dayLimit = wnt.today;
-            
-            if(periodType == "quarter") {
-                dayLimit = this.state.lastSaturday;
-            }
-            
-            var offset = new Date(periodTo) - new Date(dayLimit);
-            periodTo = KUtils.date.localFormat(dayLimit);
-            
-            lastTo1 = KUtils.date.formatFromDate( 
-                        new Date( 
-                            (new Date(lastTo1)) - offset
-                        ) 
-                    );
-            if (periodType != "week") {
-                lastTo2 = KUtils.date.formatFromDate( 
-                            new Date(
-                                (new Date(lastTo2)) - offset 
-                            )
-                        );
-            }
-            
-        }
-        
-        var state = this.state;
-        state.currentDate = date;
-        state.periodFrom = periodFrom;
-        state.periodTo = periodTo;
-        state.periodType = periodType;
-
-        state.lastFrom1 = lastFrom1;
-        state.lastTo1 = lastTo1;
-        state.lastFrom2 = lastFrom2;
-        state.lastTo2 = lastTo2;
-        
-        state.barEnter = null; //clears selected bar every time date changes
-        
-        state.dirty = true;
-        console.log(state);
-        this.setState(state);
-    },
     onBarMouseDown:function (n) {
-        
-        
-        if(this.state.detailsClass == "active") {
-            // if (this.state.periodType != "quarter" && this.state.comparePeriodType == "lastperiod_2")
-            //     this.setState({comparePeriodType:"lastperiod_1"});
-            
+        if(this.state.detailsClass == "active")
             this.setState({barEnter:n});
-        }
-        
     },
     onBarLeave:function () {
         this.setState({barEnter:null})
     },
     onPeriodTypeChange:function (event) {
-        // this.buildDateDetails(this.state.currentDate);
-        // console.log(event);
         this.setState({periodType:event.target.value, dirty:true});
     },
     onDateSelect:function (event) {
@@ -743,7 +626,6 @@ var Revenue2 = React.createClass({
                     }
                     w13av.push({periodFrom:from, periodTo:r[sub].period , units:usum/13, amount:asum/13});
                 }
-                // console.log(query, w13av);
                 result[query] = w13av;
             }
         }
@@ -990,172 +872,12 @@ var Revenue2 = React.createClass({
             );
         }
         
-        console.log(queries);
+        console.log("Revenue2 sending queries...", queries);
         KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);        
                 
     },
-    updateDataOld:function (state) {
-        
-        var membership;
-        switch (state.members) {
-        case "members":
-            membership = true;
-            break;
-        case "nonmembers":
-            membership = false;
-            break;
-        default:
-            break;
-        }
-        
-        var barInterval = this.state.barIntervals[this.state.periodType];
-        
-        //GET KAPI stats functions
-        var getQuery = KAPI.stats.getQuery; // getQuery(from, to, members, channel, type, operation, periodType)
-        
-        //GET KUtils date functions
-        var serverFormat = KUtils.date.serverFormat;
-        var addDays = KUtils.date.addDays;
-        var addMonths = KUtils.date.addMonths;
-        var addYears = KUtils.date.addYears;
-        // var serverFormatWeek = KUtils.date.serverFormatWeek;
-        
-        
-        //GENERAL QUERIES -> CURRENT PERIOD
-        var periodFrom = serverFormat(state.periodFrom);
-        var periodTo = serverFormat(state.periodTo);
-
-        var queries = {};
-        
-        queries.total_bars = getQuery(periodFrom, periodTo, membership, 'ALL', 'sales', 'detail', barInterval);
-        
-        queries.visitors = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'detail', barInterval);
-        
-        queries.visitors_totals = getQuery(periodFrom, periodTo, membership, 'ALL', 'visits', 'sum', 'date');
-        
-
-        //GENERAL QUERIES -> PAST PERIODS
-        var from1 =  serverFormat(state.lastFrom1);
-        var to1 = serverFormat(state.lastTo1);
-        var from2 = serverFormat(state.lastFrom2);
-        var to2 = serverFormat(state.lastTo2);
-        // var from2WeekFormat = serverFormatWeek(state.lastFrom2);
-        // var to2WeekFormat = serverFormatWeek(state.lastTo2);
-
-        queries.visitors_lastperiod_1 = getQuery(from1, to1, membership, 'ALL', 'visits', 'detail', barInterval);
-        queries.visitors_lastperiod_1_totals = getQuery(from1, to1, membership, 'ALL', 'visits', 'sum', 'date');
-
-
-        if(state.periodType == "week") {
-            
-            var visitors_lastperiod_2 = {}; //TODO: How to ask server for day by day last 13 week average visits or sales?
-
-            queries.visitors_lastperiod_2_totals = getQuery(from2, to2, membership, 'ALL', 'visits', 'average', 'week');
-            // console.log(from2, to2)
-            
-        } else { 
-            //month and quarter
-            queries.visitors_lastperiod_2_totals = getQuery(from2, to2, membership, 'ALL', 'visits', 'sum', 'date');
-
-            queries.visitors_lastperiod_2 = getQuery(from2, to2, membership, 'ALL', 'visits', 'detail', 'date');
-            
-        }
-        
-        
-        //PER CHANNEL QUERIES
-        
-        for (var channel in state.channelActive) {
-            
-            //CURRENT PERIOD
-            var query = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'detail', barInterval);
-            
-            var totals = getQuery(periodFrom, periodTo, membership, channel, 'sales', 'sum', 'date');
-            
-
-            //LAST PERIOD
-            var lastPeriod1 = getQuery(from1, to1, membership, channel, 'sales', 'detail', barInterval);
-            
-            if (state.periodType == "week"){
-                
-                var lastPeriod2 = {};
-                
-            } else {
-                
-                var lastPeriod2 = getQuery(from2, to2, membership, channel, 'sales', 'detail', barInterval);
-                
-            }
-            
-
-            //LAST PERIOD TOTALS
-            var lastPeriod1_totals = getQuery(from1, to1, membership, channel, 'sales', 'sum');
-
-            if (state.periodType == "week") {
-                
-                var lastPeriod2_totals = getQuery(from2, to2, membership, channel, 'sales', 'average', 'week');
-                
-            } else {
-                
-                var lastPeriod2_totals = getQuery(from2, to2, membership, channel, 'sales', 'sum', 'date');
-                
-            }
-            
-            
-            //WRITE VARS
-            queries[channel+"_bars"] = query;
-            queries[channel+"_bars_totals"] = totals;
-            queries[channel+"_bars_lastperiod_1"] = lastPeriod1;
-            queries[channel+"_bars_lastperiod_2"] = lastPeriod2;
-            queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
-            queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
-        }
-        
-        // WARNING!!! ->>> Ticket Type should be called Product Type (tickets are only for General Admision)
-        //TICKET TYPE QUERIES 
-        var ticketTypes = this.state.ticketTypes;
-        for (var ttype in ticketTypes) {
-            
-            //current period
-            queries["gate_bars_by_"+ttype] = getQuery(
-                    periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
-            );
-            // console.log([periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'],queries["gate_bars_by_"+ttype]);
-            queries["gate_bars_by_"+ttype+"_totals"] = getQuery(
-                    periodFrom, periodTo, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
-            );
-            
-            //Last period I
-            queries["gate_bars_by_"+ttype+"_lastperiod_1"] = getQuery(
-                    from1, to1, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
-            );
-            queries["gate_bars_by_"+ttype+"_lastperiod_1_totals"] = getQuery(
-                    from1, to1, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
-            );
-            
-            //Last period II
-            if (state.periodType == "week") {
-                queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
-                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'average', 'week'
-                );
-                
-            } else {
-                queries["gate_bars_by_"+ttype+"_lastperiod_2"] = getQuery(
-                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', 'date'
-                );
-                queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
-                        from2, to2, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
-                );
-            }
-        }
-        
-        
-        
-        console.log(queries);
-        KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);
-    },
     onDataUpdate:function (result) {
 
-        console.log(result);
-        
         var state = this.state;
         
         state.result = result;
@@ -1166,12 +888,12 @@ var Revenue2 = React.createClass({
         this.update13WeekDayAverage(state);
         state.dirty = false;
         
-        console.log(state);
-        
         this.setState(state);
+        
+        console.log("Revenue2 Data Updated", state);
+        
     },
     updateWeather: function(state) {
-        console.log("UpdateWeather");
         if (state.periodType == "quarter")
              return;
 
@@ -1187,7 +909,6 @@ var Revenue2 = React.createClass({
 		);
     },
     onWeatherResult:function (wResult) {
-        console.log(wResult);
         var state = this.state;
         state.wResult = wResult;
         state.dirty = false;
@@ -1215,7 +936,6 @@ var Revenue2 = React.createClass({
         return r;
     },
     componentDidMount:function () {
-        // this.updatePeriod(this.state.currentDate, this.state.periodType);
         this.setState({dirty:true});
     },
     shouldComponentUpdate:function (nextProps, nextState) {
@@ -1493,8 +1213,6 @@ var Revenue2 = React.createClass({
                 console.log("Build Detail Rows Error -> "+e);
             }
         }
-        
-        if(!result) { console.log("Revenue 2 -> No Result Yet.")};
         
         // Build HTML
         try {
