@@ -24,6 +24,7 @@ elixir.config.sourcemaps = false;
 elixir(function(mix) {
     // Compile LESS, compile JS libraries, and compile custom JS
     mix.less('app.less')
+        .less('new.less')
         .task('libs')
         .task('app');
 });

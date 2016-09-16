@@ -1,0 +1,106 @@
+@import "colors";
+
+@media print {
+    
+    body .unprintable {
+        display: none;
+    }
+
+    html, body {
+        height: auto;
+    }
+    
+    body {
+        display: block;
+        -webkit-print-color-adjust: exact;
+        font-size:8.5px;
+    }
+    
+    section.container-fluid div.main-row div.menu {
+        display:none;
+    }
+    section.container-fluid div.main-row div.main-content {
+        width:100%;
+        border-left: 15px solid white;
+        border-right: 15px solid white;
+        background-color: white;
+    }
+
+    .widget,
+    #members-blocks-widget
+    {
+        page-break-inside:avoid;
+    }
+
+    
+    .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6,
+    .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12,
+    .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7,
+    .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-sm-1,
+    .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8,
+    .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-xs-1, .col-xs-2,
+    .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9,
+    .col-xs-10, .col-xs-11, .col-xs-12 {
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+
+
+    header .klerede-logo img {
+         width: 111px;
+    }
+
+    div#sales-goals-widget,
+    div#membership-goals-widget
+    {
+        overflow-y:hidden;
+        height:350px;
+    }
+    div#sales-goals-widget select.form-control,
+    div#membership-goals-widget select.form-control
+    {
+        width:50%;
+    }
+    
+    div.plus-sign-menu
+    {
+        display:none;
+    }
+    
+    #revenue2 div#period-type {
+        width:66.66%;
+    }
+    #revenue2 div#members {
+        width:33.33%;
+    }
+    
+    #revenue2 #details-handle {
+        display:none;
+    }    
+    
+    #revenue2 .details #table {
+        width:100%;
+    }
+    #revenue2 .details #table.hidden-xs {
+        display:none;
+    }
+    #revenue2 .details #table .table-item div.title {
+        text-align:left;
+    }
+    #revenue2 .details #table .table-item div.title {
+        text-align:left;
+    }
+    #revenue2 .details #table .child-details-wrapper .table-item {
+        height:30px;
+    }
+
+    
+    .stat-block.stats-bottom {
+        border:1px solid @lightmediumgrey;
+    }
+    .stat-block.stats-bottom .stat {
+        font-size: 300%;
+    }
+    
+
+}
