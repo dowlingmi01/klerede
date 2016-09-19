@@ -67,13 +67,30 @@ var TimeDate = React.createClass({
 });
 
 var ActionMenu = React.createClass({
-    componentDidMount: function() {
-        $('.plus-sign-menu').popover();
+    getInitialState:function () {
+        return {in:""}
+    },
+    onClick:function (e) {
+        if(this.state.in === "") {
+            this.setState({in:"in"});
+        } else {
+            this.setState({in:""});
+        }
     },
     render: function() {
+        if (this.props.actions.length==0) return (<div></div>);
+        var actions = [];
+        for (var k in this.props.actions) {
+            var a = this.props.actions[k];
+            actions.push(<div key={k} className="action"><a onClick={a.handler} href={a.href}>{a.text}</a></div>);
+        }
         return (
             <div className="plus-sign-menu" data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a>" data-placement="top">
-                <PlusSign className="plus-sign-button" />
+                <PlusSign onClick={this.onClick}  className="plus-sign-button" />
+                <div className={"menu-content fade "+this.state.in} role="tooltip">
+                    <div className="arrow"></div>
+                    {actions}
+                </div>
             </div>
         );
     }

@@ -88,6 +88,15 @@ var global = Function('return this')();
 					return false;
 				}
 			},
+            print:function (selector) {
+                if (window) {
+                    $(".printable-block").addClass('unprintable');
+                    $(selector).addClass('solo');
+                    window.print();
+                    $(selector).removeClass('solo');
+                    $(".printable-block").removeClass('unprintable');
+                }
+            },
             date: {
                 weatherFormat:function(s, periodType) {
                     // Friday, June 3, 2016

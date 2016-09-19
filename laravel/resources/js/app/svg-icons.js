@@ -42,9 +42,13 @@ var Caret = React.createClass({
 
 var PlusSign = React.createClass({
     render: function() {
+        var onClick = this.props.onClick;
+        if (!onClick) {
+            onClick = "";
+        }
         return (
             /* width is 100% of height */
-            <svg width="24.598px" height="24.598px" viewBox="0 0 24.598 24.598" preserveAspectRatio="xMidYMid meet" className={this.props.className}>
+            <svg onClick={onClick} width="24.598px" height="24.598px" viewBox="0 0 24.598 24.598" preserveAspectRatio="xMidYMid meet" className={this.props.className}>
                 <path d="M22.376 10.076h-2.528h-5.327V4.75V2.221C14.521 1 13.5 0 12.3 0c-1.228 0-2.223 0.993-2.223 2.22v2.53v5.326H4.75 H2.221C0.994 10.1 0 11.1 0 12.299s0.994 2.2 2.2 2.221H4.75h5.327v5.328v2.529c0 1.2 1 2.2 2.2 2.2 s2.221-0.995 2.221-2.221v-2.529V14.52h5.328h2.528c1.228 0 2.222-0.995 2.222-2.222S23.604 10.1 22.4 10.1"/>
             </svg>
         );
