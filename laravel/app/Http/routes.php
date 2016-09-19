@@ -78,25 +78,25 @@ Route::group(['prefix'=>'api/v1'], function() {
 
 Route::get('dashboard', function()
 {
-    return View::make('dashboard');
+    return View::make('dashboard', ['ga_id'=>config('app.ga_id')]);
 });
 
 Route::get('settings', function()
 {
-    return View::make('settings');
+    return View::make('settings', ['ga_id'=>config('app.ga_id')]);
 });
 
 Route::get('goals', function()
 {
-    return View::make('goals');
+    return View::make('goals', ['ga_id'=>config('app.ga_id')]);
 });
 
 Route::get('faqs', function()
 {
-    return View::make('faqs');
+    return View::make('faqs', ['ga_id'=>config('app.ga_id')]);
 });
 
 Route::get('login', function()
 {
-    return View::make('login');
+    return View::make('login', ['ga_id'=>config('app.ga_id')]);
 });
