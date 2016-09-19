@@ -6,6 +6,7 @@
         <link href="//fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800" rel="stylesheet" type="text/css">
     </head>
     <body>
+
         <div id="header"><!-- ReactJS component: Header --></div>
         <section class="container-fluid">
             <div class="row main-row">
@@ -31,6 +32,7 @@
                 </div>
             </div>
         </section>
+        <script>var global_ga_id ='{{$ga_id}}'</script>
         <script src="js/libs.js"></script>
         <script src="js/app.js"></script>
 		@yield('scripts')

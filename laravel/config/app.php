@@ -120,6 +120,8 @@ return [
 	|
 	*/
 
+	'ga_id' => env('GA_ID'),
+
 	'providers' => [
 
 		/*
