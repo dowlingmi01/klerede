@@ -29,9 +29,6 @@ elixir(function(mix) {
         .task('app');
 });
 
-gulp.task('less', function () {
-    elixir(function(mix){mix.less('app.less')});
-});
 // Lint JavaScript
 gulp.task('lint', function() {
     /* Array for multiple directories */
