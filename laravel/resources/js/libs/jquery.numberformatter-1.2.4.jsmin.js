@@ -29,7 +29,7 @@ if(options.isPercentage==true||(options.autoDetectPercentage&&suffix.charAt(suff
 var returnString="";if(options.format.indexOf(".")>-1){var decimalPortion=dec;var decimalFormat=options.format.substring(options.format.lastIndexOf(".")+1);if(options.round==true)
 number=new Number(number.toFixed(decimalFormat.length));else{var numStr=number.toString();if(numStr.lastIndexOf('.')>0){numStr=numStr.substring(0,numStr.lastIndexOf('.')+decimalFormat.length+1);}
 number=new Number(numStr);}
-var decimalValue=new Number(number.toString().substring(number.toString().indexOf('.')));decimalString=new String(decimalValue.toFixed(decimalFormat.length));decimalString=decimalString.substring(decimalString.lastIndexOf('.')+1);for(var i=0;i<decimalFormat.length;i++){if(decimalFormat.charAt(i)=='#'&&decimalString.charAt(i)!='0'){decimalPortion+=decimalString.charAt(i);continue;}else if(decimalFormat.charAt(i)=='#'&&decimalString.charAt(i)=='0'){var notParsed=decimalString.substring(i);if(notParsed.match('[1-9]')){decimalPortion+=decimalString.charAt(i);continue;}else
+var decimalValue=new Number(number.toString().substring(number.toString().indexOf('.')));var decimalString=new String(decimalValue.toFixed(decimalFormat.length));var decimalString=decimalString.substring(decimalString.lastIndexOf('.')+1);for(var i=0;i<decimalFormat.length;i++){if(decimalFormat.charAt(i)=='#'&&decimalString.charAt(i)!='0'){decimalPortion+=decimalString.charAt(i);continue;}else if(decimalFormat.charAt(i)=='#'&&decimalString.charAt(i)=='0'){var notParsed=decimalString.substring(i);if(notParsed.match('[1-9]')){decimalPortion+=decimalString.charAt(i);continue;}else
 break;}else if(decimalFormat.charAt(i)=="0")
 decimalPortion+=decimalString.charAt(i);}
 returnString+=decimalPortion}else

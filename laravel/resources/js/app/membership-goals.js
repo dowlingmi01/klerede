@@ -45,7 +45,7 @@ var MembershipGoals = React.createClass({
         wnt.filter.mgGoalFamily = 0;
         if(wnt.filter.mgPeriod === 'quarter'){
             // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
-            for(i=0; i<3; i++){
+            for(var i=0; i<3; i++){
                 var month = wnt.thisQuarterMonths[i];
                 var monthTotal;
                 // Individual
@@ -64,7 +64,7 @@ var MembershipGoals = React.createClass({
         } else {
             // ELSE: Set goals to year totals
             // Loop through months to calculate goal totals
-            for(i=1; i<13; i++){
+            for(var i=1; i<13; i++){
                 var month = i;
                 wnt.filter.mgGoalIndividual += goals['membership/'+wnt.filter.mgUnits].sub_channels.individual.months[month];
                 wnt.filter.mgGoalFamily += goals['membership/'+wnt.filter.mgUnits].sub_channels.family.months[month];

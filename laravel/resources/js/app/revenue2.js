@@ -11,7 +11,7 @@ var Dropdown = React.createClass({
         var optionList = this.props.optionList;
         var options = [];
 
-        for (v in optionList) {
+        for (var v in optionList) {
             var option = <option key={v} value={v} >{optionList[v]}</option>;
             options.push(option);
         }
@@ -952,7 +952,7 @@ var Revenue2 = React.createClass({
         var channelActive = this.state.channelActive;
         var channelControls = [];
 
-        for (k in channelTypes) {
+        for (var k in channelTypes) {
             
             var onClick;
             var empty;

@@ -77,7 +77,7 @@ var wnt = {
         var days = wnt.daysInMonth(thisMonth, dateObj.getFullYear());
         thisMonth = wnt.doubleDigits(thisMonth);
         var month = [];
-        for(i=0; i<days; i++){
+        for(var i=0; i<days; i++){
             month.push(thisYear + '/' + thisMonth + '/' + wnt.doubleDigits(i+1));
         }
         return month;

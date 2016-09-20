@@ -49,7 +49,7 @@ var SalesGoals = React.createClass({
         wnt.filter.sgGoalGift = 0;
         if(wnt.filter.sgPeriod === 'quarter'){
             // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
-            for(i=0; i<3; i++){
+            for(var i=0; i<3; i++){
                 var month = wnt.thisQuarterMonths[i];
                 var monthTotal;
                 // Gate / Box Office
@@ -72,7 +72,7 @@ var SalesGoals = React.createClass({
         } else {
             // ELSE: Set goals to year totals
             // Loop through months to calculate goal totals
-            for(i=1; i<13; i++){
+            for(var i=1; i<13; i++){
                 var month = i;
                 wnt.filter.sgGoalBox += goals['gate/amount'].months[month];
                 wnt.filter.sgGoalCafe += goals['cafe/amount'].months[month];
