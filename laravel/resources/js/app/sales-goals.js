@@ -2,15 +2,27 @@
 /******** SALES GOALS ROW ********/
 /*********************************/
 
+require ('./wnt');
+
+
+var ActionMenu = require('./reusable-parts').ActionMenu;
+var Meter = require('./reusable-parts').Meter;
+var Caret = require('./svg-icons').Caret;
+var ChangeArrow = require('./svg-icons').ChangeArrow;
+
 var SalesGoals = React.createClass({
     
     getInitialState: function() {
-        var actions = [{href:"#print", text:"Print", handler:this.onActionClick}];
+        var actions = [];
         var permissions = KAPI.auth.getUserPermissions();
         if (permissions["goals-set"]) {
             actions.push({href:"goals", text:"Edit Goals", handler:this.onActionClick});
         };
-    
+        
+        actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        actions.push({href:"#print", text:"Print", handler:this.onActionClick});
+        
+        
         return {
             actions:actions,
             
@@ -203,9 +215,18 @@ var SalesGoals = React.createClass({
         });
     },
     onActionClick:function (event) {
-        if($(event.target).attr('href') === "#print"){
+        event.preventDefault();
+        
+        switch($(event.target).attr('href')) {
+        case "#save":
+            KUtils.saveImage("#sales-goals-widget");
+            break;
+        case "#print":
             KUtils.print("#sales-goals-widget");
-        };
+            break;
+        default:
+            //nothing
+        }
     },
     componentDidUpdate: function(){
         this.formatNumbers();

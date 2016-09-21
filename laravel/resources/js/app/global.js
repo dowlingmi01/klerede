@@ -3,6 +3,8 @@
 /*******************************************************************/
 
 
+var saveAs = require("file-saver").saveAs;
+
 var global = Function('return this')();
 
 
@@ -24,7 +26,6 @@ var global = Function('return this')();
 		
 	}
 })(global);
-
 
 //Kutils functions
 (function(scope) {
@@ -97,7 +98,50 @@ var global = Function('return this')();
                     $(".printable-block").removeClass('unprintable');
                 }
             },
+            saveImage:function (selector) {
+                var imageName = selector.substr(1).replace(/#|-widget/ig, '');
+
+                if (!window.safari) {
+                    imageName = prompt("Enter a file name for your image", imageName);
+                } else {
+                    if (!confirm("Please use CMD+S to save your image")) {
+                        return;
+                    };
+                }
+                
+                if (!imageName) return;
+                
+                if ( ! (/.png$/i).test(imageName) )
+                    imageName = imageName + ".png";
+                
+                $(selector).addClass("saving");
+                
+                html2canvas($(selector).get(0), {
+                    onrendered: function(canvas) {
+                        
+                        $(selector).removeClass("saving");
+                        
+                        canvas.toBlob(function(blob) {
+                            saveAs(blob, imageName);
+                        });
+                    }
+                });
+            },
             date: {
+                months: [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December'
+                ],
                 weatherFormat:function(s, periodType) {
                     // Friday, June 3, 2016
                     if(periodType == "quarter") {
@@ -114,7 +158,7 @@ var global = Function('return this')();
                     
                     var date = new Date(s);
                     var d = weekDays[date.getUTCDay()];
-                    var m = wnt.months[date.getUTCMonth()];
+                    var m = _date.months[date.getUTCMonth()];
                     
                     return d+", "+m+" "+date.getUTCDate()+", "+date.getUTCFullYear();
                 },

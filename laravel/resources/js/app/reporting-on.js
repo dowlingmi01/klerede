@@ -2,6 +2,10 @@
 /******** WELCOME TEXT WITH USER'S NAME AND LOCAL TIME/DATE ********/
 /*******************************************************************/
 
+require ('./wnt');
+
+
+
 var ReportingOn = React.createClass({
     getInitialState: function() {
 		var date = new Date(wnt.today);

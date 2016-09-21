@@ -2,7 +2,7 @@
 /************************* LOGIN COMPONENT *************************/
 /*******************************************************************/
 
-
+var CheckMark = require('./svg-icons').CheckMark;
 
 var RememberCheckMark = React.createClass({
 	getInitialState:function() {

@@ -2,6 +2,12 @@
 /******** TOP ROW OF STAT BLOCKS FOR VISITS ********/
 /***************************************************/
 
+require ('./wnt');
+
+
+var ChangeArrow = require('./svg-icons').ChangeArrow;
+var Caret = require('./svg-icons').Caret;
+
 var VisitsBlock = React.createClass({
     render: function() {
         return (

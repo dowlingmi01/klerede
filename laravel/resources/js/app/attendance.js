@@ -2,6 +2,10 @@
 /******** HOURLY ATTENDANCE ********/
 /***********************************/
 
+require ('./wnt');
+
+
+
 var Attendance = React.createClass({
     getInitialState: function() {
         return {

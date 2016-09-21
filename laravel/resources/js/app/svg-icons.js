@@ -90,4 +90,12 @@ var NoteIcon = React.createClass({
     }
 });
 
+module.exports.ChangeArrow = ChangeArrow;
+module.exports.Caret = Caret;
+module.exports.LongArrow = LongArrow;
+module.exports.PlusSign = PlusSign;
+module.exports.CheckMark = CheckMark;
+module.exports.CalendarIcon = CalendarIcon;
+module.exports.NoteIcon = NoteIcon;
+
 console.log('SVG icons loaded...');

@@ -2,6 +2,13 @@
 /******** MEMBERSHIP GOALS ROW ********/
 /**************************************/
 
+require ('./wnt');
+
+var ActionMenu = require('./reusable-parts').ActionMenu;
+var Meter = require('./reusable-parts').Meter;
+var Caret = require('./svg-icons').Caret;
+var ChangeArrow = require('./svg-icons').ChangeArrow;
+
 var MembershipGoals = React.createClass({
     getInitialState: function() {
         var actions = [{href:"#print", text:"Print", handler:this.onActionClick}];

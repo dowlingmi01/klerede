@@ -2,6 +2,10 @@
 /******** REUSABLE PARTS ICONS ********/
 /**************************************/
 
+require ('./wnt');
+
+
+
 var GoalsMonths = React.createClass({
 	setGoals: function (data, year, channel, type, subChannel) {
 

@@ -2,6 +2,10 @@
 /******** REVENUE ROW ********/
 /*****************************/
 
+require ('./wnt');
+
+
+
 var BarSet = React.createClass({
     convertDate: function(date) {
         if(date !== undefined){

@@ -18,8 +18,8 @@ ga('send', 'pageview');
 /********************************/
 /******** GLOBAL HELPERS ********/
 /********************************/
-
-var wnt = {
+var global = Function('return this')();
+var wnt = global.wnt = {
     getVenue: function(deferredObj){
 		throw new Error('GLOBAL HELPER wnt.getVenue: please use KAPI call');
         // TO DO: Abstract venue ID for API call...
@@ -484,7 +484,9 @@ wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
 // Set global deffered object for components to use.
 wnt.gettingVenueData = $.Deferred();
 
-function loadUser() {
+var global = Function('return this')();
+
+global.loadUser = function() {
 	KAPI.auth.getLoggedUser(onUserGet, onUserError);
 }
 

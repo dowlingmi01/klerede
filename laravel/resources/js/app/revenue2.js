@@ -1,3 +1,9 @@
+require ('./wnt');
+
+
+var LongArrow = require('./svg-icons').LongArrow;
+var ChangeArrow = require('./svg-icons').ChangeArrow;
+
 var CaretHandler = React.createClass({
     render:function () {
         return(

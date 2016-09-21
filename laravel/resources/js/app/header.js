@@ -1,6 +1,14 @@
 /************************/
 /******** HEADER ********/
 /************************/
+
+require ('./wnt');
+
+
+var Caret = require('./svg-icons').Caret;
+var ChangeArrow = require('./svg-icons').ChangeArrow;
+var LongArrow = require('./svg-icons').LongArrow;
+
 var DarkenBackground = React.createClass({
     componentWillUnmount: function(){
         $('body').removeClass("darken-background-active");

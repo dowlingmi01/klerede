@@ -2,6 +2,8 @@
 /******** REUSABLE PARTS ICONS ********/
 /**************************************/
 
+var PlusSign = require('./svg-icons').PlusSign;
+
 var TimeDate = React.createClass({
     getInitialState: function() {
         return {
@@ -85,8 +87,8 @@ var ActionMenu = React.createClass({
             actions.push(<div key={k} className="action"><a onClick={a.handler} href={a.href}>{a.text}</a></div>);
         }
         return (
-            <div className="plus-sign-menu" data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a>" data-placement="top">
-                <PlusSign onClick={this.onClick}  className="plus-sign-button" />
+            <div onClick={this.onClick} className="plus-sign-menu unsavable" data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a>" data-placement="top">
+                <PlusSign className="plus-sign-button" />
                 <div className={"menu-content fade "+this.state.in} role="tooltip">
                     <div className="arrow"></div>
                     {actions}
@@ -150,6 +152,10 @@ var Meter = React.createClass({
 });
 
 console.log('Reusable parts loaded...');
+
+module.exports.ActionMenu = ActionMenu;
+module.exports.Meter = Meter;
+
 
 // Loading just time and date instead of full welcome message
 if(document.getElementById('time-date')){
