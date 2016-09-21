@@ -8,7 +8,7 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
 ga('create', global_ga_id, 'auto');
-ga('send', 'pageview');
+
 //console.log("venue es ="+wnt.venueID );
 //'UA-61932959-2'
 
@@ -498,6 +498,11 @@ function onUserGet (user) {
 		wnt.venueID,
 		onVenueDataGet
 	);
+  
+    ga('send', 'pageview', {
+          'dimension1':  wnt.venueID
+        });
+
 };
 
 function onUserError(error) {
