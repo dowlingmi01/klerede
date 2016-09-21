@@ -500,7 +500,7 @@ function onUserGet (user) {
     ga('send', 'pageview', {
           'dimension1':  wnt.venueID
         });
-
+    
 };
 
 function onUserError(error) {
