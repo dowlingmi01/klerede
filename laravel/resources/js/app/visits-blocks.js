@@ -163,6 +163,7 @@ var VisitsBlocksSet = React.createClass({
     handleChange: function(event) {
         var filter = event.target.value;
         if(filter === 'lastYear'){
+            console.log('last year');
             this.setState({
                 visitsTotalCompareTo: wnt.visits.visits_total_compareto_lastyear.units,
                 visitsGACompareTo: wnt.visits.visits_ga_compareto_lastyear.units,
@@ -172,6 +173,7 @@ var VisitsBlocksSet = React.createClass({
                 salesGateCompareTo: wnt.visits.sales_gate_compareto_lastyear.amount
             });
         } else if(filter === 'lastYearAverage'){
+            console.log('lastYearAverage');
             this.setState({
                 visitsTotalCompareTo: wnt.visits.visits_total_compareto_rolling.units,
                 visitsGACompareTo: wnt.visits.visits_ga_compareto_rolling.units,
@@ -181,6 +183,7 @@ var VisitsBlocksSet = React.createClass({
                 salesGateCompareTo: wnt.visits.sales_gate_compareto_rolling.amount
             });
         } else {
+            console.log('otro');
             this.setState({
                 visitsTotalCompareTo: wnt.visits.visits_total_compareto_weekbefore.units,
                 visitsGACompareTo: wnt.visits.visits_ga_compareto_weekbefore.units,
