@@ -7,6 +7,7 @@ var saveAs = require("file-saver").saveAs;
 
 var global = Function('return this')();
 
+global.Promise = require("es6-promise").Promise;
 
 (function(scope){
 	if(!scope._l) {
@@ -98,15 +99,18 @@ var global = Function('return this')();
                     $(".printable-block").removeClass('unprintable');
                 }
             },
-            saveImage:function (selector) {
+            saveImage:function (selector, options) {
                 var imageName = selector.substr(1).replace(/#|-widget/ig, '');
 
-                if (!window.safari) {
-                    imageName = prompt("Enter a file name for your image", imageName);
-                } else {
+                if (window.safari) {
                     if (!confirm("Please use CMD+S to save your image")) {
                         return;
                     };
+                } else if( window.opera ){
+                    alert("Save not supported in Opera Browser yet.");
+                    return;
+                } else {
+                    imageName = prompt("Enter a file name for your image", imageName);
                 }
                 
                 if (!imageName) return;
@@ -116,15 +120,14 @@ var global = Function('return this')();
                 
                 $(selector).addClass("saving");
                 
-                html2canvas($(selector).get(0), {
-                    onrendered: function(canvas) {
-                        
-                        $(selector).removeClass("saving");
-                        
-                        canvas.toBlob(function(blob) {
-                            saveAs(blob, imageName);
-                        });
-                    }
+                if (!options) options = {};
+                // options.logging = true;
+                
+                html2canvas( $(selector).get(0), options ).then(function(canvas) {
+                    $(selector).removeClass("saving");
+                    canvas.toBlob(function(blob) {
+                        saveAs(blob, imageName);
+                    });
                 });
             },
             date: {

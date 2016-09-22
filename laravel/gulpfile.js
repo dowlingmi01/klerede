@@ -20,7 +20,8 @@ elixir(function(mix) {
             //  './resources/js/libs/d3.min.js',
                 './resources/js/libs/radialProgress.js',
                 './resources/js/libs/bootstrap.js',
-                './resources/js/libs/html2canvas.min.js',
+                './resources/js/libs/html2canvas.js',
+                './resources/js/libs/html2canvas.svg.js',
                 './resources/js/libs/canvas-toBlob.js'
             ],
             './public/js/libs.js')
