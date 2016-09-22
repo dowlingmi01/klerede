@@ -4,6 +4,7 @@
 
 require ('./wnt');
 
+var ButtonExpand = require('./reusable-parts').ButtonExpand;
 
 
 var GoalsMonths = React.createClass({
@@ -498,6 +499,7 @@ var GoalSetting = React.createClass({
 
 if(document.getElementById('goal-setting')){
     $.when(wnt.gettingVenueData).done(function(data) {
+	    console.log('Goal setting load...');
 	    React.render(
 	        <GoalSetting />,
 	        document.getElementById('goal-setting')

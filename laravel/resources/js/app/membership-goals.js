@@ -11,11 +11,14 @@ var ChangeArrow = require('./svg-icons').ChangeArrow;
 
 var MembershipGoals = React.createClass({
     getInitialState: function() {
-        var actions = [{href:"#print", text:"Print", handler:this.onActionClick}];
+        var actions = [];
         var permissions = KAPI.auth.getUserPermissions();
         if (permissions["goals-set"]) {
             actions.push({href:"goals", text:"Edit Goals", handler:this.onActionClick});
         };
+        
+        actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        actions.push({href:"#print", text:"Print", handler:this.onActionClick});
     
         return {
             actions:actions,
@@ -213,10 +216,19 @@ var MembershipGoals = React.createClass({
         });
     },
     onActionClick:function (action) {
-        if($(event.target).attr('href') === "#print"){
-            action.preventDefault();
+        switch($(event.target).attr('href')) {
+        case "#save":
+            KUtils.saveImage("#membership-goals-widget");
+            break;
+        case "#print":
             KUtils.print("#membership-goals-widget");
-        };
+            break;
+        default:
+            //nothing
+            return;
+        }
+        event.preventDefault();
+        
     },
     componentDidUpdate: function(){
         this.formatNumbers();

@@ -215,8 +215,6 @@ var SalesGoals = React.createClass({
         });
     },
     onActionClick:function (event) {
-        event.preventDefault();
-        
         switch($(event.target).attr('href')) {
         case "#save":
             KUtils.saveImage("#sales-goals-widget");
@@ -225,8 +223,11 @@ var SalesGoals = React.createClass({
             KUtils.print("#sales-goals-widget");
             break;
         default:
-            //nothing
+            return;
         }
+        
+        event.preventDefault();
+        
     },
     componentDidUpdate: function(){
         this.formatNumbers();

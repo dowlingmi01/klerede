@@ -3,6 +3,7 @@
 /**************************************/
 
 var PlusSign = require('./svg-icons').PlusSign;
+var Caret = require('./svg-icons').Caret;
 
 var TimeDate = React.createClass({
     getInitialState: function() {
@@ -155,6 +156,7 @@ console.log('Reusable parts loaded...');
 
 module.exports.ActionMenu = ActionMenu;
 module.exports.Meter = Meter;
+module.exports.ButtonExpand = ButtonExpand;
 
 
 // Loading just time and date instead of full welcome message
