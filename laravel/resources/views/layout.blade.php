@@ -12,7 +12,7 @@
             <div class="row main-row">
                 <div class="col-xs-12 col-sm-2 menu">
                     <ul>
-                        <li class="active"><a href="/dashboard"><span class="ops">OPS</span>RELAY</a>
+                        <li class="active"><a href="/dashboard"><span class="ops">OPS</span><span class"relay">Relay</span></a>
                             <!--<ul>
                                 <li><a href="/toolbox">Tool Box</a></li>
                                 <li><a href="/members">Members</a></li>

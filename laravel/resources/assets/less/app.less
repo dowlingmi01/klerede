@@ -15,7 +15,8 @@ body, p, td, label, .checkbox label {
 /*************************/
 /******** GLOBALS ********/
 /*************************/
-html, body, div#login-component {
+
+body, div#login-component {
     height: 100%;
     overflow-x:hidden;
     overflow-y:auto;
@@ -46,24 +47,31 @@ header {
     color: @white;
     height: 108px;
     .klerede-logo {
+        background-color:@lightblack;
         height: 108px;
         @media (max-width: 767px) {
             text-align: left;
+            background-color:inherit;
         }
         img {
             position: relative;
-            left: 22px;
+            left: 50%;
             top: 50%;
-            transform: translateY(-50%);
             width: 111px;
+            margin-top:-16px;
+            margin-left:-55px;
             @media (max-width: 991px) {
                 width: 11vw;
+                margin-top:-1.6vw;
+                margin-left:-5.5vw;
             }
             @media (max-width: 767px) {
-                left: 0;
-                top: 0;
-                transform: rotate(270deg) translateX(-50%) translateY(-100%);
-                width: 80px;
+                left: 12px;
+                margin-left:0;
+                width:84px;
+                // top: 0;
+                // transform: rotate(270deg) translateX(-50%) translateY(-100%);
+                // width: 80px;
             }
         }
     }
@@ -469,6 +477,7 @@ div.user-wrapper {
 /******** MENU ********/
 /**********************/
 .menu {
+    line-height:0;
     padding: 0;
     text-align: right;
     @media (max-width: 767px) {
@@ -479,20 +488,21 @@ div.user-wrapper {
         list-style: none;
         margin-top: 51px;
         padding: 0;
+        line-height:120%;
         @media (max-width: 767px) {
             margin-bottom: 0;
             margin-top: 0;
         }
         li {
             font-size: 120%;
-            font-weight: 600;
+            font-weight:300;
             padding: 22px 37px 22px 0;
             position: relative;
             text-align: left;
             @media (max-width: 767px) {
                 float: left;
                 font-size: 100%;
-                padding: 0 0 15px 20px;
+                padding: 0 0 20px 20px;
             }
             a {
                 color: @white;
@@ -502,6 +512,7 @@ div.user-wrapper {
                 }
                 .ops {
                     color: @cobalt;
+                    font-weight:600;
                 }
                 .membership {
                     color: @green;
@@ -516,6 +527,9 @@ div.user-wrapper {
             a:hover {
                 color: @mediumgrey;
                 text-decoration: none;
+                .ops {
+                    color: @darkcobalt;
+                }
             }
         }
         li.active:after {

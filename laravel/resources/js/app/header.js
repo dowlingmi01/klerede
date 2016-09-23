@@ -697,7 +697,6 @@ if(document.getElementById('header')){
             <Header />,
             document.getElementById('header')
         );
-        console.log('2) Header loaded...');
     });
 }
 
