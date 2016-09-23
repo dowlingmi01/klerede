@@ -29,7 +29,6 @@ var ReportingOn = React.createClass({
 
 if(document.getElementById('reporting-on')){
     $.when(wnt.gettingVenueData).done(function(data) {
-		console.log(wnt.today);
 	    React.render(
 	        <ReportingOn />,
 	        document.getElementById('reporting-on')

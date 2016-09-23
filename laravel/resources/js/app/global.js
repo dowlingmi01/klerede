@@ -131,6 +131,17 @@ global.Promise = require("es6-promise").Promise;
                 });
             },
             date: {
+                firstDayOfWeek:1,
+                getWeekDay:function (d) {
+                    
+                    //monday/sunday correction
+                    var date = new Date(d);
+                    var weekDay = date.getUTCDay() -  _date.firstDayOfWeek;
+                    
+                    if (weekDay<0) weekDay += 7;
+                    
+                    return weekDay;
+                },
                 months: [
                     'January',
                     'February',

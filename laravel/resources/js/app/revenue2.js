@@ -211,7 +211,7 @@ var WeatherPopup = React.createClass({
 
 var DatePickerReact = React.createClass({
     componentDidMount: function() {
-        Date.firstDayOfWeek = 0;
+        Date.firstDayOfWeek = KUtils.date.firstDayOfWeek;
         Date.format = 'mm/dd/yyyy';
         // var dp = $('#'+this.props.id).datePicker({
         var dp = $('#'+this.props.id).datePicker({
@@ -382,8 +382,11 @@ var DetailsHeader = React.createClass({
 var Revenue2 = React.createClass({
     getInitialState:function () {
         var today = new Date(KUtils.date.localFormat(wnt.today));
-        var weekDay = today.getUTCDay();
-        var offset = (weekDay==6) ? -7 : -weekDay -7;
+        var weekDay = KUtils.date.getWeekDay(wnt.today);
+
+        var offset = -weekDay -7;
+        if (offset < -12) offset = -6;
+        
         var periodFrom = KUtils.date.addDays(today, offset);
         var date = this.buildDateDetails(periodFrom);
         
@@ -418,7 +421,9 @@ var Revenue2 = React.createClass({
         
         var date = new Date(d);
         var dateLimit = new Date(wnt.today);
-        var weekDay = date.getUTCDay();
+        var weekDay = du.getWeekDay(date);
+
+        
         var monthDay = date.getUTCDate();
         var thisMonth = date.getUTCMonth();
         var thisYear = date.getUTCFullYear();
@@ -487,11 +492,11 @@ var Revenue2 = React.createClass({
         p.thisMonthEndMinusOneWeek = du.addDays(p.thisMonthEnd, -7);
         p.thisMonthStart13WeekAgo = du.addDays(p.thisMonthStart, -7*13);
         
-        //for quarter -> use real ends (lastQuarterLimits) not limited  (p.lastQuarterEnd)
-        var lastQuartersLastWeekDay = (new Date(lastQuarterLimits.to)).getUTCDay();
+        //for quarter -> use real ends (lastQuarterLimits -> not limited: p.lastQuarterEnd)
+        var lastQuartersLastWeekDay = du.getWeekDay(lastQuarterLimits.to);
         p.lastQuartersWholeWeekStart = du.addDays(lastQuarterLimits.to, - lastQuartersLastWeekDay - 7);
         
-        var thisQuartersLastWeekDay = (new Date(p.thisQuarterEnd)).getUTCDay();
+        var thisQuartersLastWeekDay = du.getWeekDay(p.thisQuarterEnd);
         p.thisQuartersWholeWeekEnd = du.addDays(p.thisQuarterEnd, - (thisQuartersLastWeekDay+1)%7 );
         
         return p;
