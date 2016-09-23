@@ -164,6 +164,7 @@ var MembersBlocksSet = React.createClass({
 	},
     handleChange: function(event) {
         var filter = event.target.value;
+        ga('send', 'event', 'Members Blocks', 'Filter Changed', filter);
         if(filter === 'lastYear'){
             this.setState({
                 membersConversionCompareTo: wnt.members.members_conversion_compareto_lastyear,
