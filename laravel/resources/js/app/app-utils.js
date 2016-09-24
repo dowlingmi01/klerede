@@ -498,11 +498,12 @@ function onUserGet (user) {
 		wnt.venueID,
 		onVenueDataGet
 	);
+ 
     ga('set', {
-          'dimension1': user.venue_id,
-          'metric1': user.venue_id
+          'dimension1': user.venue_id
     });
     ga('send', 'pageview');
+ 
     
 };
 
