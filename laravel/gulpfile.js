@@ -26,6 +26,7 @@ elixir(function(mix) {
             ],
             './public/js/libs.js')
             .browserify([
+            './resources/js/app/analytics.js',
             './resources/js/app/global.js',
             './resources/js/app/app-utils.js',
             './resources/js/app/header.js',

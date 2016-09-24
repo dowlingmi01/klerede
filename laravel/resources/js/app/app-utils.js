@@ -7,10 +7,12 @@
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-ga('create', global_ga_id, 'auto');
+var analytics = require("./analytics.js");
 
-//console.log("venue es ="+wnt.venueID );
-//'UA-61932959-2'
+//ga('create', global_ga_id, 'auto');
+analytics.analyze('create', global_ga_id, 'auto');
+
+ 
 
 
 
