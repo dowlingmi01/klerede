@@ -14,11 +14,9 @@ class DatabaseSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		//$this->call('StatsSeeder');
-		//$this->call('WeatherSeeder');
-		echo "voy a crear usuarios";
+		$this->call('StatsSeeder');
+		$this->call('WeatherSeeder');
 		$this->call('UserSeeder');
-		echo "los cree";
 	}
 
 }
