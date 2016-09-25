@@ -155,6 +155,7 @@ var MembershipGoals = React.createClass({
         $.each($('#mg-units .filter-units'), function(index, item){
             $(item).toggleClass('selected');
         });
+        analytics.analyze('send', 'event', 'Membership Goals', 'Units Changed', wnt.filter.mgUnits);  
         this.callAPI();
         event.target.blur();
     },
