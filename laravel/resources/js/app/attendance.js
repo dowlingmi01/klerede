@@ -3,7 +3,7 @@
 /***********************************/
 
 require ('./wnt');
-
+var analytics = require("./analytics.js");
 
 
 var Attendance = React.createClass({
@@ -288,6 +288,7 @@ var Attendance = React.createClass({
         this.callAPI(filter);
         // Reset filters
         $('.line-graph-legend-item').find('.legend-check-circle').addClass('active');
+        analytics.analyze('send', 'event', 'Attendance', 'Filter Changed', filter);
     },
     render: function() {
         return (

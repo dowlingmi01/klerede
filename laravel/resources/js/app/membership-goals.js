@@ -8,6 +8,7 @@ var ActionMenu = require('./reusable-parts').ActionMenu;
 var Meter = require('./reusable-parts').Meter;
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
+var analytics = require("./analytics.js");
 
 var MembershipGoals = React.createClass({
     getInitialState: function() {
@@ -146,6 +147,7 @@ var MembershipGoals = React.createClass({
         wnt.filter.mgPeriod = event.target.value;
         this.callAPI();
         event.target.blur();
+        analytics.analyze('send', 'event', 'Membership Goals', 'Period Changed', wnt.filter.mgPeriod);
     },
     filterUnits: function(event){
         // amount, units

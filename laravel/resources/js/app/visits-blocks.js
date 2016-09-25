@@ -3,7 +3,7 @@
 /***************************************************/
 
 require ('./wnt');
-
+var analytics = require("./analytics.js");
 
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var Caret = require('./svg-icons').Caret;
@@ -162,7 +162,7 @@ var VisitsBlocksSet = React.createClass({
     },
     handleChange: function(event) {
         var filter = event.target.value;
-        ga('send', 'event', 'Visits Blocks', 'Filter Changed', filter);
+        analytics.analyze('send', 'event', 'Visits Blocks', 'Filter Changed', filter);
         if(filter === 'lastYear'){
             this.setState({
                 visitsTotalCompareTo: wnt.visits.visits_total_compareto_lastyear.units,

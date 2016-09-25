@@ -1,5 +1,11 @@
 module.exports = {
+ 
+
     analyze: function() {
-        console.log("Hello world, I am capturing your usage data");
-        }
-    }; 
+        //console.log("Calling ga...");
+        //console.log(arguments);
+        ga.apply(null, arguments);
+    },
+    
+   
+}; 
