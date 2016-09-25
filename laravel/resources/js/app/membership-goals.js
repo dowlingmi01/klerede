@@ -218,7 +218,8 @@ var MembershipGoals = React.createClass({
         });
     },
     onActionClick:function (action) {
-        switch($(event.target).attr('href')) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
         case "#save":
             KUtils.saveImage("#membership-goals-widget");
             break;
@@ -229,6 +230,7 @@ var MembershipGoals = React.createClass({
             //nothing
             return;
         }
+        analytics.analyze('send', 'event', 'Membership Goals', 'Plus Button Clicked', eventAction);
         event.preventDefault();
         
     },

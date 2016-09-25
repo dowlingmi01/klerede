@@ -217,8 +217,10 @@ var SalesGoals = React.createClass({
         });
     },
     onActionClick:function (event) {
-        switch($(event.target).attr('href')) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
         case "#save":
+
             KUtils.saveImage("#sales-goals-widget");
             break;
         case "#print":
@@ -227,7 +229,7 @@ var SalesGoals = React.createClass({
         default:
             return;
         }
-        
+        analytics.analyze('send', 'event', 'Sales Goals', 'plus click', eventAction);
         event.preventDefault();
         
     },
