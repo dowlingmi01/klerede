@@ -18,5 +18,4 @@ class DatabaseSeeder extends Seeder {
 		$this->call('WeatherSeeder');
 		$this->call('UserSeeder');
 	}
-
 }

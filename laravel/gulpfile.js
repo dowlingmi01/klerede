@@ -26,6 +26,7 @@ elixir(function(mix) {
             ],
             './public/js/libs.js')
             .browserify([
+            './resources/js/app/analytics.js',
             './resources/js/app/global.js',
             './resources/js/app/app-utils.js',
             './resources/js/app/header.js',
@@ -39,6 +40,10 @@ elixir(function(mix) {
             './resources/js/app/goal-setting.js',
             './resources/js/app/login.js'
             ], 
-            './public/js/app.js');
+            './public/js/app.js')
+            .browserify([
+            './resources/js/app/trackna.js',
+            ], 
+            './public/js/appna.js');
             
 });

@@ -15,7 +15,9 @@
 			var email = "<?php echo isSet($_GET['email']) ? $_GET['email'] : "";?>";
 		</script>
 
-       <script src="js/app.js"></script>
+        <script>var global_ga_id ='{{$ga_id}}'</script>
+        <script src="js/app.js"></script>
+        <script src="js/appna.js"></script>
 
     </body>
 </html>

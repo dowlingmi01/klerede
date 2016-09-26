@@ -7,6 +7,7 @@ require ('./wnt');
 
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
+var analytics = require("./analytics.js");
 
 var MembersBlock = React.createClass({
     render: function() {
@@ -164,6 +165,7 @@ var MembersBlocksSet = React.createClass({
 	},
     handleChange: function(event) {
         var filter = event.target.value;
+        analytics.addEvent('Members Blocks', 'Filter Changed', filter);
         if(filter === 'lastYear'){
             this.setState({
                 membersConversionCompareTo: wnt.members.members_conversion_compareto_lastyear,

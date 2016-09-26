@@ -9,6 +9,7 @@ var ActionMenu = require('./reusable-parts').ActionMenu;
 var Meter = require('./reusable-parts').Meter;
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
+var analytics = require("./analytics.js");
 
 var SalesGoals = React.createClass({
     
@@ -161,6 +162,7 @@ var SalesGoals = React.createClass({
         wnt.filter.sgPeriod = event.target.value;
         this.callAPI();
         event.target.blur();
+        analytics.addEvent('Sales Goals', 'Period Changed', wnt.filter.sgPeriod);
     },
     formatNumbers: function(){
         $('#meter-sales-total .goal-amount').parseNumber({format:"$#,###", locale:"us"});
@@ -215,8 +217,10 @@ var SalesGoals = React.createClass({
         });
     },
     onActionClick:function (event) {
-        switch($(event.target).attr('href')) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
         case "#save":
+
             KUtils.saveImage("#sales-goals-widget");
             break;
         case "#print":
@@ -225,7 +229,7 @@ var SalesGoals = React.createClass({
         default:
             return;
         }
-        
+        analytics.addEvent('Sales Goals', 'Plus Button Clicked', eventAction);
         event.preventDefault();
         
     },

@@ -8,6 +8,7 @@ var ActionMenu = require('./reusable-parts').ActionMenu;
 var Meter = require('./reusable-parts').Meter;
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
+var analytics = require("./analytics.js");
 
 var MembershipGoals = React.createClass({
     getInitialState: function() {
@@ -146,6 +147,7 @@ var MembershipGoals = React.createClass({
         wnt.filter.mgPeriod = event.target.value;
         this.callAPI();
         event.target.blur();
+        analytics.addEvent('Membership Goals', 'Period Changed', wnt.filter.mgPeriod);
     },
     filterUnits: function(event){
         // amount, units
@@ -153,6 +155,7 @@ var MembershipGoals = React.createClass({
         $.each($('#mg-units .filter-units'), function(index, item){
             $(item).toggleClass('selected');
         });
+        analytics.addEvent('Membership Goals', 'Units Changed', wnt.filter.mgUnits);  
         this.callAPI();
         event.target.blur();
     },
@@ -216,7 +219,8 @@ var MembershipGoals = React.createClass({
         });
     },
     onActionClick:function (action) {
-        switch($(event.target).attr('href')) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
         case "#save":
             KUtils.saveImage("#membership-goals-widget");
             break;
@@ -227,6 +231,7 @@ var MembershipGoals = React.createClass({
             //nothing
             return;
         }
+        analytics.addEvent('Membership Goals', 'Plus Button Clicked', eventAction);
         event.preventDefault();
         
     },
