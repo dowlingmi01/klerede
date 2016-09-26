@@ -40,6 +40,10 @@ elixir(function(mix) {
             './resources/js/app/goal-setting.js',
             './resources/js/app/login.js'
             ], 
-            './public/js/app.js');
+            './public/js/app.js')
+            .browserify([
+            './resources/js/app/trackna.js',
+            ], 
+            './public/js/appna.js');
             
 });

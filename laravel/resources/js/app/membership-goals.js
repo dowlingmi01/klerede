@@ -147,7 +147,7 @@ var MembershipGoals = React.createClass({
         wnt.filter.mgPeriod = event.target.value;
         this.callAPI();
         event.target.blur();
-        analytics.analyze('send', 'event', 'Membership Goals', 'Period Changed', wnt.filter.mgPeriod);
+        analytics.addEvent('Membership Goals', 'Period Changed', wnt.filter.mgPeriod);
     },
     filterUnits: function(event){
         // amount, units
@@ -155,7 +155,7 @@ var MembershipGoals = React.createClass({
         $.each($('#mg-units .filter-units'), function(index, item){
             $(item).toggleClass('selected');
         });
-        analytics.analyze('send', 'event', 'Membership Goals', 'Units Changed', wnt.filter.mgUnits);  
+        analytics.addEvent('Membership Goals', 'Units Changed', wnt.filter.mgUnits);  
         this.callAPI();
         event.target.blur();
     },
@@ -231,7 +231,7 @@ var MembershipGoals = React.createClass({
             //nothing
             return;
         }
-        analytics.analyze('send', 'event', 'Membership Goals', 'Plus Button Clicked', eventAction);
+        analytics.addEvent('Membership Goals', 'Plus Button Clicked', eventAction);
         event.preventDefault();
         
     },

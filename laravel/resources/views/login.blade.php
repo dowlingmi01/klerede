@@ -17,7 +17,7 @@
 
         <script>var global_ga_id ='{{$ga_id}}'</script>
         <script src="js/app.js"></script>
-        <script>ga('send', 'pageview');</script>
+        <script src="js/appna.js"></script>
 
     </body>
 </html>

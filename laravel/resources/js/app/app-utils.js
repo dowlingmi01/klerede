@@ -2,16 +2,7 @@
 /******** GOOGLE ANALYTICS ********/
 /**********************************/
 var analytics = require("./analytics.js");
-
-//FIXME: Move initialization code to module
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-
- 
-analytics.analyze('create', global_ga_id, 'auto');
+analytics.create(global_ga_id);
  
  
 
@@ -501,11 +492,9 @@ function onUserGet (user) {
 		wnt.venueID,
 		onVenueDataGet
 	);
-    analytics.analyze('set', {
-          'dimension1': user.venue_id,
-          'dimension2': user.id
-    });
-    analytics.analyze('send', 'pageview');
+    
+
+    analytics.addView(user.venue_id, user.id);
  
     
 };

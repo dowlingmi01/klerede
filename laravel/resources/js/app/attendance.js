@@ -288,7 +288,7 @@ var Attendance = React.createClass({
         this.callAPI(filter);
         // Reset filters
         $('.line-graph-legend-item').find('.legend-check-circle').addClass('active');
-        analytics.analyze('send', 'event', 'Attendance', 'Filter Changed', filter);
+        analytics.addEvent('Attendance', 'Filter Changed', filter);
     },
     render: function() {
         return (

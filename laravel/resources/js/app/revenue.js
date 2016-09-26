@@ -884,20 +884,20 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         //$('#bg-compare').val(wnt.filter.bgCompare+'-'+wnt.filter.bgPeriod);   // Does NOT trigger other event!  :D
         this.callAPI();
         event.target.blur();
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Period Changed', wnt.filter.bgPeriod);
+        analytics.addEvent('Earned Revenue', 'Period Changed', wnt.filter.bgPeriod);
     },
     filterDates: function(event) {
         $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         wnt.filter.bgDates = wnt.formatDate(new Date(event.target.value));
         this.callAPI();
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Date Changed', wnt.filter.bgDates);
+        analytics.addEvent('Earned Revenue', 'Date Changed', wnt.filter.bgDates);
     },
     filterVisitors: function(event) {
         $('.bar-set').popover('destroy');  // Needed to fix issue with unreliable popovers
         wnt.filter.bgVisitors = event.target.value;
         // Set the global channels variable for proper processng before callAPI, and ...
         // ...turn off the active class on the proper channel
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Visitors Changed', wnt.filter.bgVisitors);
+        analytics.addEvent('Earned Revenue', 'Visitors Changed', wnt.filter.bgVisitors);
         if(wnt.filter.bgVisitors === 'members'){
             wnt.filter.bgChannels = {box: 0, cafe: 1, gift: 1, mem: 1};
             $('.bar-graph-legend-item .legend-check-circle').addClass('active');
@@ -963,7 +963,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
         // LEFT OFF HERE: Splitting value of filter properly, but why is it reverting when week is changed now?!
         this.callAPI();
         event.target.blur();
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Compare to Changed', wnt.filter.bgPeriod);
+        analytics.addEvent('Earned Revenue', 'Compare to Changed', wnt.filter.bgPeriod);
         console.log('END OF FILTER-COMPARE METHOD', wnt.filter.bgCompare, wnt.filter.bgPeriod);
 
         /*

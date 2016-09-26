@@ -162,7 +162,7 @@ var VisitsBlocksSet = React.createClass({
     },
     handleChange: function(event) {
         var filter = event.target.value;
-        analytics.analyze('send', 'event', 'Visits Blocks', 'Filter Changed', filter);
+        analytics.addEvent('Visits Blocks', 'Filter Changed', filter);
         if(filter === 'lastYear'){
             this.setState({
                 visitsTotalCompareTo: wnt.visits.visits_total_compareto_lastyear.units,

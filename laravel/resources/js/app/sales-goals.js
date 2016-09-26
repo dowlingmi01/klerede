@@ -162,7 +162,7 @@ var SalesGoals = React.createClass({
         wnt.filter.sgPeriod = event.target.value;
         this.callAPI();
         event.target.blur();
-        analytics.analyze('send', 'event', 'Sales Goals', 'Period Changed', wnt.filter.sgPeriod);
+        analytics.addEvent('Sales Goals', 'Period Changed', wnt.filter.sgPeriod);
     },
     formatNumbers: function(){
         $('#meter-sales-total .goal-amount').parseNumber({format:"$#,###", locale:"us"});
@@ -229,7 +229,7 @@ var SalesGoals = React.createClass({
         default:
             return;
         }
-        analytics.analyze('send', 'event', 'Sales Goals', 'plus click', eventAction);
+        analytics.addEvent('Sales Goals', 'Plus Button Clicked', eventAction);
         event.preventDefault();
         
     },

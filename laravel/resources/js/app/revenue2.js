@@ -512,7 +512,7 @@ var Revenue2 = React.createClass({
         this.setState({barEnter:null})
     },
     onPeriodTypeChange:function (event) {
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Period Type Changed', event.target.value);
+        analytics.addEvent('Earned Revenue', 'Period Type Changed', event.target.value);
         this.setState({periodType:event.target.value, dirty:true});
     },
     onDateSelect:function (event) {
@@ -521,7 +521,7 @@ var Revenue2 = React.createClass({
         }
         var date = this.buildDateDetails(event.target.value);
         var formatedDate = wnt.formatDate(new Date(event.target.value));
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Date Changed', formatedDate);
+        analytics.addEvent('Earned Revenue', 'Date Changed', formatedDate);
         this.setState({date:date, dirty:true});
     },
     getCompareList:function () {
@@ -534,11 +534,11 @@ var Revenue2 = React.createClass({
         return compareLists[periodType];
     },
     onMembersChange:function (event) {
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Member Changed', event.target.value);
+        analytics.addEvent('Earned Revenue', 'Member Changed', event.target.value);
         this.setState({members:event.target.value, dirty:true});
     },
     onUnitsChange:function (units) {
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Units Changed', units);
+        analytics.addEvent('Earned Revenue', 'Units Changed', units);
         this.setState({units:units})
     },
     onChannelClick:function (channel) {
@@ -549,7 +549,7 @@ var Revenue2 = React.createClass({
         this.setState(state);
     },
     onComparePeriodTypeChange:function (event) {
-        analytics.analyze('send', 'event', 'Earned Revenue', 'Comparte To', event.target.value);
+        analytics.addEvent('Earned Revenue', 'Comparte To', event.target.value);
         this.setState({comparePeriodType:event.target.value});
     },
     onDetailsClick:function (event) {
