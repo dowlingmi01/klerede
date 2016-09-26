@@ -17,5 +17,5 @@ class DatabaseSeeder extends Seeder {
 		$this->call('StatsSeeder');
 		$this->call('WeatherSeeder');
 		$this->call('UserSeeder');
-
+	}
 }
