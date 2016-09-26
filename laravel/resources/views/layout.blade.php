@@ -33,7 +33,10 @@
                 </div>
             </div>
         </section>
-        <script>var global_ga_id ='{{$ga_id}}'</script>
+        <script>
+            var global_ga_id ='{{$ga_id}}';
+            var features = {!! json_encode(config('features')) !!};
+        </script>
         <script src="js/libs.js"></script>
         <script src="js/app.js"></script>
 		@yield('scripts')
