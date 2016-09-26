@@ -19,9 +19,13 @@ var SalesGoals = React.createClass({
             actions.push({href:"goals", text:"Edit Goals", handler:this.onActionClick});
         };
         
-        actions.push({href:"#save", text:"Save", handler:this.onActionClick});
-        actions.push({href:"#print", text:"Print", handler:this.onActionClick});
-        
+        if(features.saveEnabled) {
+            actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        }
+        if (features.printingEnabled) {
+            actions.push({href:"#print", text:"Print", handler:this.onActionClick});
+        }
+    
         
         return {
             actions:actions,

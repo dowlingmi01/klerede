@@ -10,6 +10,7 @@
 	    <div id="login-component"><!-- ReactJS component: LoginComponent --></div>
         <script src="js/libs.js"></script>
 		<script type="text/javascript">
+			var env = "{{ App::environment()}}";
 			var action = "<?php echo isSet($_GET['action']) ? $_GET['action'] : "";?>";
 			var token = "<?php echo isSet($_GET['token']) ? $_GET['token'] : "";?>";
 			var email = "<?php echo isSet($_GET['email']) ? $_GET['email'] : "";?>";
