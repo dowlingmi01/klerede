@@ -59,7 +59,7 @@
 			Dear {{$user->first_name}} {{$user->last_name}}
 			<br />
 			<br />
-			A request to reset your password has been submitted to Klerede. Please click on the link below to go to the change password page. After logging in, you may change your password at any time from the Settings Panel in the upper right corner of the page.
+			A request to reset your password has been submitted to Klerede. Please click on the link below to go to the change password page. After logging in, you may change your password at any time from the Settings Panel in the upper right corner of the page. Link will expire in 24 hours.
 
 			<br />
 			<br />

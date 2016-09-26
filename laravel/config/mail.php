@@ -54,7 +54,7 @@ return [
 	|
 	*/
 
-	'from' => ['address' => 'noreply@klerede.com', 'name' => 'Password Reset'],
+	'from' => ['address' => 'noreply@klerede.com', 'name' => 'Relay by Klerede'],
 
 	/*
 	|--------------------------------------------------------------------------

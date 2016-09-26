@@ -2,7 +2,7 @@
 
 return [
 
-	'new_user_email_subject' => 'Welcome to Klerede',
+	'new_user_email_subject' => 'Welcome to Relay by Klerede',
 
 	'recovery_email_subject' => 'Reset password',
 
