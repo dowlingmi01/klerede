@@ -35,6 +35,8 @@
  *
 */
 
+var jQuery = require('jquery');
+
 // t: current time, b: begInnIng value, c: change In value, d: duration
 jQuery.easing['jswing'] = jQuery.easing['swing'];
 

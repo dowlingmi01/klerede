@@ -2,6 +2,7 @@
 /******** WELCOME TEXT WITH USER'S NAME AND LOCAL TIME/DATE ********/
 /*******************************************************************/
 
+var $ = require('jquery');
 var wnt = require ('./wnt.js');
 
 

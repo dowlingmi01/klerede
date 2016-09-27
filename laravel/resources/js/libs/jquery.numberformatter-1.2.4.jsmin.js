@@ -1,3 +1,4 @@
+var jQuery = require('jquery');
 
 (function(jQuery){var nfLocales=new Hashtable();var nfLocalesLikeUS=['ae','au','ca','cn','eg','gb','hk','il','in','jp','sk','th','tw','us'];var nfLocalesLikeDE=['at','br','de','dk','es','gr','it','nl','pt','tr','vn'];var nfLocalesLikeFR=['bg','cz','fi','fr','no','pl','ru','se'];var nfLocalesLikeCH=['ch'];var nfLocaleFormatting=[[".",","],[",","."],[","," "],[".","'"]];var nfAllLocales=[nfLocalesLikeUS,nfLocalesLikeDE,nfLocalesLikeFR,nfLocalesLikeCH]
 function FormatData(dec,group,neg){this.dec=dec;this.group=group;this.neg=neg;};function init(){for(var localeGroupIdx=0;localeGroupIdx<nfAllLocales.length;localeGroupIdx++){var localeGroup=nfAllLocales[localeGroupIdx];for(var i=0;i<localeGroup.length;i++){nfLocales.put(localeGroup[i],localeGroupIdx);}}};function formatCodes(locale,isFullLocale){if(nfLocales.size()==0)

@@ -1,4 +1,7 @@
+$ = require('jquery');
+
 var wnt = {
+    gettingVenueData:$.Deferred(),
     getVenue: function(deferredObj){
 		throw new Error('GLOBAL HELPER wnt.getVenue: please use KAPI call');
         // TO DO: Abstract venue ID for API call...

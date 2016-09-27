@@ -1,9 +1,16 @@
 /************************/
 /******** HEADER ********/
 /************************/
-
+var $ = require('jquery');
 var wnt = require ('./wnt.js');
+var _l = require("./lang/lang.js");
 
+var KAPI = {};
+KAPI.auth = require("./kapi/auth.js");
+KAPI.users = require("./kapi/users.js");
+KAPI.roles = require("./kapi/roles.js");
+
+var KForms = require("./kutils/form-validations.js");
 
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
@@ -373,8 +380,8 @@ var Header = React.createClass({
             // pwdCurrent: '',
             // pwdNew: '',
             // pwdMatch: '',
-		if ( !KUtils.isEmpty(this.state.pwdCurrent) ) {
-			var isValidResult = KUtils.isValidPassword(this.state.pwdNew, this.state.pwdMatch);
+		if ( !KForms.isEmpty(this.state.pwdCurrent) ) {
+			var isValidResult = KForms.isValidPassword(this.state.pwdNew, this.state.pwdMatch);
 			if( isValidResult === true ) {
 				
 				KAPI.users.pass(this.state.userID, this.state.pwdCurrent, this.state.pwdNew, this.onPasswordSave, this.onPasswordSaveError);
@@ -383,7 +390,7 @@ var Header = React.createClass({
 				alert("New Password: "+isValidResult);
 				return;
 			};
-		} else if( !KUtils.isEmpty(this.state.pwdNew) ) {
+		} else if( !KForms.isEmpty(this.state.pwdNew) ) {
 			alert("New Password: Please enter your current password.");
 			return;
 		}
@@ -439,16 +446,16 @@ var Header = React.createClass({
 		var lastName = this.state.addUserLastName;
 
 		var errors = [];
-		if (KUtils.isEmpty(email)) {
+		if (KForms.isEmpty(email)) {
 			errors.push("Please enter your email.")
-		} else if(!KUtils.isEmail(email)) {
+		} else if(!KForms.isEmail(email)) {
 			errors.push("Your email is not valid.")
 		}
 		
-		if (KUtils.isEmpty(firstName)) {
+		if (KForms.isEmpty(firstName)) {
 			errors.push("Please enter first name.")
 		}
-		if (KUtils.isEmpty(lastName)) {
+		if (KForms.isEmpty(lastName)) {
 			errors.push("Please enter last name.")
 		}
 		

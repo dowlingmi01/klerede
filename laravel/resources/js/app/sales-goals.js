@@ -2,7 +2,15 @@
 /******** SALES GOALS ROW ********/
 /*********************************/
 
+var $ = require('jquery');
 var wnt = require ('./wnt.js');
+
+var KAPI = {};
+KAPI.auth = require("./kapi/auth.js");
+KAPI.stats = require("./kapi/stats.js");
+KAPI.goals = require("./kapi/goals.js");
+
+
 var printDiv = require ('./kutils/print-div.js');
 var saveImage = require ('./kutils/save-image.js');
 

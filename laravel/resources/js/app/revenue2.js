@@ -1,6 +1,13 @@
+var $ = require('jquery');
 var wnt = require ('./wnt.js');
 
+var KAPI = {};
+KAPI.stats = require("./kapi/stats.js");
+KAPI.weather = require("./kapi/weather.js");
 
+var KUtils = {};
+KUtils.date = require("./kutils/date-utils.js");
+KUtils.number = require("./kutils/number-utils.js");
 
 var LongArrow = require('./svg-icons').LongArrow;
 var ChangeArrow = require('./svg-icons').ChangeArrow;

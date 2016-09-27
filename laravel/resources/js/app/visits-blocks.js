@@ -8,6 +8,13 @@ var analytics = require("./analytics.js");
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var Caret = require('./svg-icons').Caret;
 
+var KAPI = {
+    stats:require("./kapi/stats.js")
+};
+var KUtils = {
+    date:require("./kutils/date-utils.js")
+}
+
 var VisitsBlock = React.createClass({
     render: function() {
         return (

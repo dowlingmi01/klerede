@@ -5,6 +5,7 @@
  * .
  * $Id$
  **/
+var jQuery = require("jquery");
 
 (function($){
     
@@ -641,7 +642,7 @@
 			},
 			setDisabled : function(s)
 			{
-				$e = $(this.ele);
+				var $e = $(this.ele);
 				$e[s ? 'addClass' : 'removeClass']('dp-disabled');
 				if (this.button) {
 					$but = $(this.button);
@@ -744,7 +745,7 @@
 				if (dispatchEvents)
 				{
 					var s = this.isSelected(d);
-					$e = $(this.ele);
+					var $e = $(this.ele);
 					var dClone = Date.fromString(d.asString());
 					$e.trigger('dateSelected', [dClone, $td, s]);
 					$e.trigger('change');

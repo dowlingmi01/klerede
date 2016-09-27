@@ -2,6 +2,9 @@
 /************************* LOGIN COMPONENT *************************/
 /*******************************************************************/
 var CheckMark = require('./svg-icons').CheckMark;
+var KForms = require('./kutils/form-validations.js');
+var KStorage = require('./kutils/local-storage.js');
+var _l = require("./lang/lang.js");
 
 var RememberCheckMark = React.createClass({
 	getInitialState:function() {
@@ -60,13 +63,13 @@ var LoginComponent = React.createClass({
 		var email = this.refs.email.getDOMNode().value;
 		var password = this.refs.password.getDOMNode().value;
 		var errors = [];
-		if (KUtils.isEmpty(email)) {
+		if (KForms.isEmpty(email)) {
 			errors.push("Please enter your email.")
-		} else if(!KUtils.isEmail(email)) {
+		} else if(!KForms.isEmail(email)) {
 			errors.push("Your email is not valid.")
 		}
 		
-		if (KUtils.isEmpty(password)) {
+		if (KForms.isEmpty(password)) {
 			errors.push("Please enter your password.")
 		}
 		
@@ -77,9 +80,9 @@ var LoginComponent = React.createClass({
 		} else {
 			
 			if (this.refs["remember-checkmark"].isActive()) {
-				KUtils.storeLocal("user", {email:email, password:password, remember:true});
+				KStorage.storeLocal("user", {email:email, password:password, remember:true});
 			} else {
-				KUtils.storeLocal("user", {email:"", password:"", remember:false});
+				KStorage.storeLocal("user", {email:"", password:"", remember:false});
 			}
 			
 			KAPI.auth.login(email, password,this.onSuccess, this.onError);
@@ -131,10 +134,10 @@ var LoginComponent = React.createClass({
 
 		var email = this.refs.emailReset.getDOMNode().value;
 
-		if (KUtils.isEmpty(email)) {
+		if (KForms.isEmpty(email)) {
 			alert("Please enter your email.");
 			return;
-		} else if(!KUtils.isEmail(email)) {
+		} else if(!KForms.isEmail(email)) {
 			alert("Your email is not valid.");
 			return;
 		}
@@ -171,7 +174,7 @@ var LoginComponent = React.createClass({
 		var new1 = this.refs.newPassword1.getDOMNode().value;
 		var new2 = this.refs.newPassword2.getDOMNode().value;
 		
-		var isValidResponse = KUtils.isValidPassword(new1, new2);
+		var isValidResponse = KForms.isValidPassword(new1, new2);
 		if(isValidResponse === true) {
 			KAPI.auth.reset(this.props.token, this.props.email, new1, this.onNewPasswordSet, this.onNewPasswordError);
 			return;
@@ -201,7 +204,7 @@ var LoginComponent = React.createClass({
 		alert("Error setting your password, please check your email address: \n"+this.props.email);
 	},
 	render:function () {
-		var user = KUtils.getLocal("user");
+		var user = KStorage.getLocal("user");
 		
 		if (!user) {
 			user = {email:"", password:"", remember:true};

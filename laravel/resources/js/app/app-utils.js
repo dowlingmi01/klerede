@@ -13,6 +13,8 @@ analytics.create(global_ga_id);
 /********************************/
 /******** GLOBAL HELPERS ********/
 /********************************/
+var $ = require('jquery');
+
 var wnt = require("./wnt.js");
 
 
@@ -28,19 +30,19 @@ wnt.venueZip = '84020,us';   // TEMPORARY OVERRIDE
 /************************************************************************************************************/
 //wnt.gettingData;
 
-// Set global deffered object for components to use.
-wnt.gettingVenueData = $.Deferred();
+var getLoggedUser = require("./kapi/auth.js").getLoggedUser;
+var venue = require("./kapi/venue.js");
 
 var global = Function('return this')();
 
 global.loadUser = function() {
-	KAPI.auth.getLoggedUser(onUserGet, onUserError);
+	getLoggedUser(onUserGet, onUserError);
 }
 
 function onUserGet (user) {
 	// console.log(user);
 	wnt.venueID  = user.venue_id+"";
-	KAPI.venue(
+	venue(
 		wnt.venueID,
 		onVenueDataGet
 	);
@@ -128,162 +130,12 @@ $(function(){
     $.when(wnt.gettingVenueData).done(function(data) {
         $('#copyright-year').text(wnt.thisYear);
     });
-    $('circle').popover();
-    // $(event.target).closest('.accordion-sub-item').toggleClass('open').find('ul').eq(0).toggle();
+
     $('.accordion-sub-item').on('click', function(){
         $(this).toggleClass('open').find('ul').toggle();
     });
 });
 
 console.log('App utilities loaded...');
-
-
-
-
-
-
-/***********************************************************************************/
-/***********************************************************************************/
-/***********************************************************************************/
-$(function(){    
-    /*************************************/
-    /******** TEST BAR GRAPH WAVE ********/
-    /*************************************/
-    /* HOLD: PROJECTED AREA GRAPH
-    var barGraphWidth = $('#bar-graph').width();
-    var barSegmentArea = barGraphWidth / 7;
-    //The data for our line
-    var lineData = [
-      { "x": 0,   "y": 250},
-      { "x": 0,   "y": 0},
-      { "x": barSegmentArea/2,   "y": 5},
-      { "x": barSegmentArea*1.5, "y": 100},
-      { "x": barSegmentArea*2.5, "y": 80},
-      { "x": barSegmentArea*3.5, "y": 120},
-      { "x": barSegmentArea*4.5, "y": 100},
-      { "x": barSegmentArea*5.5, "y": 5},
-      { "x": barGraphWidth,    "y": 60},
-      { "x": barGraphWidth,    "y": 250}
-    ];
-
-    //This is the accessor function we talked about above
-    var lineFunction = d3.svg.line()
-          .x(function(d) { return d.x; })
-          .y(function(d) { return d.y; })
-          .interpolate("monotone");
-
-    //The SVG Container
-    var svgContainer = d3.select("#bar-graph").append("svg")
-          .attr("width", "100%")
-          .attr("height", 250);
-
-    //The line SVG Path we draw
-    var lineGraph = svgContainer.append("path")
-          .attr("d", lineFunction(lineData))
-          .attr("fill", "rgba(236,234,231,1)");
-    */
-
-    /*****************************/
-    /******** TEST SLIDER ********/
-    /*****************************/
-    /*$( "#slider" ).slider({
-        value: 100,
-        min: 0,
-        max: 500,
-        step: 50,
-        slide: function( event, ui ) {
-            console.log( ui.value );
-        }
-    });*/
-
-    //scrollpane parts
-    var scrollPane = $('#bar-graph-scroll-pane'),
-        scrollContent = $('#bar-graph');
-
-    //build slider
-    var scrollbar = $('#bar-graph-slider').slider({
-        /*value: 0,
-        min: 0,
-        max: 31,
-        step: 1,*/
-        slide: function( event, ui ) {
-            if ( scrollContent.width() > scrollPane.width() ) {
-                scrollContent.css( "margin-left", Math.round(
-                    ui.value / 100 * ( scrollPane.width() - scrollContent.width() )
-                ) + "px" );
-            } else {
-                scrollContent.css( "margin-left", 0 );
-            }
-        },
-        // Setting change method to handle programmatic changes to slider value
-        change: function( event, ui ) {
-            if ( scrollContent.width() > scrollPane.width() ) {
-                scrollContent.css( "margin-left", Math.round(
-                    ui.value / 100 * ( scrollPane.width() - scrollContent.width() )
-                ) + "px" );
-            } else {
-                scrollContent.css( "margin-left", 0 );
-            }
-        }
-    });
-
-    //append icon to handle
-    var handleHelper = scrollbar.find( ".ui-slider-handle" )
-        .mousedown(function() {
-            scrollbar.width( handleHelper.width() );
-        })
-        .mouseup(function() {
-            scrollbar.width( "100%" );
-        })
-        .append( "<span class='ui-icon ui-icon-grip-dotted-vertical'></span>" )
-        .wrap( "<div class='ui-handle-helper-parent'></div>" ).parent();
-
-    //change overflow to hidden now that slider handles the scrolling
-    scrollPane.css( "overflow", "hidden" );
-
-    //size scrollbar and handle proportionally to scroll distance
-    function sizeScrollbar() {
-        var remainder = scrollContent.width() - scrollPane.width();
-        var proportion = remainder / scrollContent.width();
-        var handleSize = scrollPane.width() - ( proportion * scrollPane.width() );
-        scrollbar.find( ".ui-slider-handle" ).css({
-            width: handleSize,
-            "margin-left": -handleSize / 2
-        });
-        handleHelper.width( "" ).width( scrollbar.width() - handleSize );
-    }
-
-    //reset slider value based on scroll content position
-    function resetValue() {
-        var remainder = scrollPane.width() - scrollContent.width();
-        var leftVal = scrollContent.css( "margin-left" ) === "auto" ? 0 :
-            parseInt( scrollContent.css( "margin-left" ) );
-        var percentage = Math.round( leftVal / remainder * 100 );
-        scrollbar.slider( "value", percentage );
-    }
-
-    //if the slider is 100% and window gets larger, reveal content
-    function reflowContent() {
-        var showing = scrollContent.width() + parseInt( scrollContent.css( "margin-left" ), 10 );
-        var gap = scrollPane.width() - showing;
-        if ( gap > 0 ) {
-            scrollContent.css( "margin-left", parseInt( scrollContent.css( "margin-left" ), 10 ) + gap );
-        }
-    }
-
-    //change handle position on window resize
-    $( window ).resize(function() {
-        resetValue();
-        sizeScrollbar();
-        reflowContent();
-    });
-    //init scrollbar size
-    setTimeout( sizeScrollbar, 10 );//safari wants a timeout
-
-
-
-
-});
-
 
 

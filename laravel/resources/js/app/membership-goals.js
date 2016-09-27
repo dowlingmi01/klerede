@@ -2,8 +2,17 @@
 /******** MEMBERSHIP GOALS ROW ********/
 /**************************************/
 
+var $ = require('jquery');
 var wnt = require ('./wnt.js');
 
+var KAPI = {};
+KAPI.auth = require("./kapi/auth.js");
+KAPI.stats = require("./kapi/stats.js");
+KAPI.goals = require("./kapi/goals.js");
+
+var KUtils = {};
+KUtils.saveImage = require("./kutils/save-image.js");
+KUtils.printDiv = require("./kutils/print-div.js");
 
 var ActionMenu = require('./reusable-parts').ActionMenu;
 var Meter = require('./reusable-parts').Meter;
@@ -230,7 +239,7 @@ var MembershipGoals = React.createClass({
             KUtils.saveImage("#membership-goals-widget");
             break;
         case "#print":
-            KUtils.print("#membership-goals-widget");
+            KUtils.printDiv("#membership-goals-widget");
             break;
         default:
             //nothing

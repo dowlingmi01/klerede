@@ -4,6 +4,12 @@
 
 var wnt = require ('./wnt.js');
 
+var KAPI = {
+    stats:require("./kapi/stats.js")
+};
+
+var du = require("./kutils/date-utils.js");
+
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var analytics = require("./analytics.js");
@@ -108,7 +114,6 @@ var MembersBlocksSet = React.createClass({
         }
     },
 	componentDidMount:function () {
-        var du = KUtils.date;
         var sameDayWeekBefore = du.serverFormat(du.addDays(wnt.today, -7));
 		
 		var queries = {
