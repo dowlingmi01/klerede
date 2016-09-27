@@ -222,7 +222,7 @@ var MembershipGoals = React.createClass({
             );
         });
     },
-    onActionClick:function (action) {
+    onActionClick:function (event) {
         var eventAction = $(event.target).attr('href');
         switch(eventAction) {
         case "#save":
