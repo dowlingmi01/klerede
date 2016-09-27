@@ -49,7 +49,7 @@ var MembersBlocksSet = React.createClass({
 	onStatsResult:function(result) {
         // Abbreviate numbers for total members block
         result.members_total_frequency_recency.current_members = this.abbrNumber(result.members_total_frequency_recency.current_members);
-        result.members_total_frequency_recency_compareto_daybefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_daybefore.current_members);
+        result.members_total_frequency_recency_compareto_weekbefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_weekbefore.current_members);
         result.members_total_frequency_recency_compareto_lastyear.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_lastyear.current_members);
         result.members_total_frequency_recency_compareto_rolling.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_rolling.current_members);
 
@@ -57,17 +57,17 @@ var MembersBlocksSet = React.createClass({
 
         // Calculate Member Conversion
         wnt.members.members_conversion = (result.membership_sales.units / result.total_admissions.units) * 100;
-        wnt.members.members_conversion_compareto_daybefore = (result.membership_sales_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units) * 100;
+        wnt.members.members_conversion_compareto_weekbefore = (result.membership_sales_compareto_weekbefore.units / result.total_admissions_compareto_weekbefore.units) * 100;
         wnt.members.members_conversion_compareto_lastyear = (result.membership_sales_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
         wnt.members.members_conversion_compareto_rolling = (result.membership_sales_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
         // Calculate Capture Rate
         wnt.members.capture_rate = (result.transactions.units / result.total_admissions.units) * 100;
-        wnt.members.capture_rate_compareto_daybefore = (result.transactions_compareto_daybefore.units / result.total_admissions_compareto_daybefore.units) * 100;
+        wnt.members.capture_rate_compareto_weekbefore = (result.transactions_compareto_weekbefore.units / result.total_admissions_compareto_weekbefore.units) * 100;
         wnt.members.capture_rate_compareto_lastyear = (result.transactions_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
         wnt.members.capture_rate_compareto_rolling = (result.transactions_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
         // Calculate Per Cap
         wnt.members.per_cap = result.transactions.amount / result.total_admissions.units;
-        wnt.members.per_cap_compareto_daybefore = result.transactions_compareto_daybefore.amount / result.total_admissions_compareto_daybefore.units;
+        wnt.members.per_cap_compareto_weekbefore = result.transactions_compareto_weekbefore.amount / result.total_admissions_compareto_weekbefore.units;
         wnt.members.per_cap_compareto_lastyear = result.transactions_compareto_lastyear.amount / result.total_admissions_compareto_lastyear.units;
         wnt.members.per_cap_compareto_rolling = result.transactions_compareto_rolling.amount / result.total_admissions_compareto_rolling.units;
 
@@ -75,22 +75,22 @@ var MembersBlocksSet = React.createClass({
             this.setState({
 
                 membersConversion: wnt.members.members_conversion,
-                membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore,
+                membersConversionCompareTo: wnt.members.members_conversion_compareto_weekbefore,
 
                 membersFrequency: result.members_total_frequency_recency.frequency,
-                membersFrequencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.frequency,
+                membersFrequencyCompareTo: result.members_total_frequency_recency_compareto_weekbefore.frequency,
 
                 membersRecency: result.members_total_frequency_recency.recency,
-                membersRecencyCompareTo: result.members_total_frequency_recency_compareto_daybefore.recency,
+                membersRecencyCompareTo: result.members_total_frequency_recency_compareto_weekbefore.recency,
 
                 membersTotal: result.members_total_frequency_recency.current_members,
-                membersTotalCompareTo: result.members_total_frequency_recency_compareto_daybefore.current_members,
+                membersTotalCompareTo: result.members_total_frequency_recency_compareto_weekbefore.current_members,
 
                 membersCaptured: wnt.members.capture_rate,
-                membersCapturedCompareTo: wnt.members.capture_rate_compareto_daybefore,
+                membersCapturedCompareTo: wnt.members.capture_rate_compareto_weekbefore,
 
                 membersPercap: wnt.members.per_cap,
-                membersPercapCompareTo: wnt.members.per_cap_compareto_daybefore
+                membersPercapCompareTo: wnt.members.per_cap_compareto_weekbefore
 
             });
             // Set null data to '-'
@@ -109,12 +109,14 @@ var MembersBlocksSet = React.createClass({
         }
     },
 	componentDidMount:function () {
+        var du = KUtils.date;
+        var sameDayWeekBefore = du.serverFormat(du.addDays(wnt.today, -7));
 		
 		var queries = {
 
             // Member Conversion = (Memberships Sold / Total Visitors) * 100
-            membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterday},
-            membership_sales_compareto_daybefore: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.daybeforeyesterday},
+            membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.today},
+            membership_sales_compareto_weekbefore: { specs: { type: 'sales', channel: 'membership' }, periods: sameDayWeekBefore},
             membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterdaylastyear},
             membership_sales_compareto_rolling: { specs: { type: 'sales', channel: 'membership' },
                 periods: {
@@ -126,8 +128,8 @@ var MembersBlocksSet = React.createClass({
 
             // Capture Rate = (Transactions / Total Visitors) * 100
             // Per Cap = Store Sales / Total Visitors
-            transactions: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterday},
-            transactions_compareto_daybefore: { specs: { type: 'sales', channel: 'store' }, periods: wnt.daybeforeyesterday},
+            transactions: { specs: { type: 'sales', channel: 'store' }, periods: wnt.today},
+            transactions_compareto_weekbefore: { specs: { type: 'sales', channel: 'store' }, periods: sameDayWeekBefore},
             transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterdaylastyear},
             transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store' },
                 periods: {
@@ -137,8 +139,8 @@ var MembersBlocksSet = React.createClass({
                 }
             },
 
-            total_admissions: { specs: { type: 'visits' }, periods: wnt.yesterday },
-            total_admissions_compareto_daybefore: { specs: { type: 'visits' }, periods: wnt.daybeforeyesterday },
+            total_admissions: { specs: { type: 'visits' }, periods: wnt.today },
+            total_admissions_compareto_weekbefore: { specs: { type: 'visits' }, periods: sameDayWeekBefore },
             total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },
             total_admissions_compareto_rolling: { specs: { type: 'visits' },
                 periods: {
@@ -148,8 +150,8 @@ var MembersBlocksSet = React.createClass({
                 }
             },
 
-            members_total_frequency_recency: { specs: { type: 'members' }, periods: wnt.yesterday },
-            members_total_frequency_recency_compareto_daybefore: { specs: { type: 'members' }, periods: wnt.daybeforeyesterday },
+            members_total_frequency_recency: { specs: { type: 'members' }, periods: wnt.today },
+            members_total_frequency_recency_compareto_weekbefore: { specs: { type: 'members' }, periods: sameDayWeekBefore },
             members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: wnt.yesterdaylastyear },
             members_total_frequency_recency_compareto_rolling: { specs: { type: 'members'},
                 periods: {
@@ -186,12 +188,12 @@ var MembersBlocksSet = React.createClass({
             });
         } else {
             this.setState({
-                membersConversionCompareTo: wnt.members.members_conversion_compareto_daybefore,
-                membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.frequency,
-                membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.recency,
-                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_daybefore.current_members,
-                membersCapturedCompareTo: wnt.members.capture_rate_compareto_daybefore,
-                membersPercapCompareTo: wnt.members.per_cap_compareto_daybefore
+                membersConversionCompareTo: wnt.members.members_conversion_compareto_weekbefore,
+                membersFrequencyCompareTo: wnt.members.members_total_frequency_recency_compareto_weekbefore.frequency,
+                membersRecencyCompareTo: wnt.members.members_total_frequency_recency_compareto_weekbefore.recency,
+                membersTotalCompareTo: wnt.members.members_total_frequency_recency_compareto_weekbefore.current_members,
+                membersCapturedCompareTo: wnt.members.capture_rate_compareto_weekbefore,
+                membersPercapCompareTo: wnt.members.per_cap_compareto_weekbefore
             });
         }
         event.target.blur();
@@ -247,9 +249,9 @@ var MembersBlocksSet = React.createClass({
                         <div className="filter">
                             <form>
                                 <select className="form-control" onChange={this.handleChange}>
-                                    <option value="twoDays">Trend over last two days</option>
-                                    <option value="lastYear">Yesterday compared to same day last year</option>
-                                    <option value="lastYearAverage">Yesterday compared to average for the past year</option>
+                                    <option value="prevWeek">Compared to same day previous week</option>
+                                    <option value="lastYear">Compared to same day last year</option>
+                                    <option value="lastYearAverage">Compared to average for the past year</option>
                                 </select>
                                 <Caret className="filter-caret" />
                             </form>
