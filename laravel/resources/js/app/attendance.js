@@ -2,7 +2,7 @@
 /******** HOURLY ATTENDANCE ********/
 /***********************************/
 
-require ('./wnt');
+var wnt = require ('./wnt.js');
 var analytics = require("./analytics.js");
 
 

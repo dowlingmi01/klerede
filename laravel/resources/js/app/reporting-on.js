@@ -2,7 +2,8 @@
 /******** WELCOME TEXT WITH USER'S NAME AND LOCAL TIME/DATE ********/
 /*******************************************************************/
 
-require ('./wnt');
+var wnt = require ('./wnt.js');
+
 
 
 

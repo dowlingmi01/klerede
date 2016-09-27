@@ -2,8 +2,7 @@
 /******** BOTTOM ROW OF STAT BLOCKS FOR MEMBERSHIPS ********/
 /***********************************************************/
 
-require ('./wnt');
-
+var wnt = require ('./wnt.js');
 
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;

@@ -2,7 +2,8 @@
 /******** MEMBERSHIP GOALS ROW ********/
 /**************************************/
 
-require ('./wnt');
+var wnt = require ('./wnt.js');
+
 
 var ActionMenu = require('./reusable-parts').ActionMenu;
 var Meter = require('./reusable-parts').Meter;

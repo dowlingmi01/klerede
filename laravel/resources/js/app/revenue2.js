@@ -1,4 +1,5 @@
-require ('./wnt');
+var wnt = require ('./wnt.js');
+
 
 
 var LongArrow = require('./svg-icons').LongArrow;

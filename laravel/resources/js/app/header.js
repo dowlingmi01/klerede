@@ -2,7 +2,7 @@
 /******** HEADER ********/
 /************************/
 
-require ('./wnt');
+var wnt = require ('./wnt.js');
 
 
 var Caret = require('./svg-icons').Caret;

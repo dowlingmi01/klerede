@@ -2,7 +2,7 @@
 /******** TOP ROW OF STAT BLOCKS FOR VISITS ********/
 /***************************************************/
 
-require ('./wnt');
+var wnt = require ('./wnt.js');
 var analytics = require("./analytics.js");
 
 var ChangeArrow = require('./svg-icons').ChangeArrow;

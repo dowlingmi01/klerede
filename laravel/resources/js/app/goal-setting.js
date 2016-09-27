@@ -2,7 +2,8 @@
 /******** REUSABLE PARTS ICONS ********/
 /**************************************/
 
-require ('./wnt');
+var wnt = require ('./wnt.js');
+
 
 var ButtonExpand = require('./reusable-parts').ButtonExpand;
 

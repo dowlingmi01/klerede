@@ -2,8 +2,9 @@
 /******** SALES GOALS ROW ********/
 /*********************************/
 
-require ('./wnt');
-
+var wnt = require ('./wnt.js');
+var printDiv = require ('./kutils/print-div.js');
+var saveImage = require ('./kutils/save-image.js');
 
 var ActionMenu = require('./reusable-parts').ActionMenu;
 var Meter = require('./reusable-parts').Meter;
@@ -225,10 +226,10 @@ var SalesGoals = React.createClass({
         switch(eventAction) {
         case "#save":
 
-            KUtils.saveImage("#sales-goals-widget");
+            saveImage("#sales-goals-widget");
             break;
         case "#print":
-            KUtils.print("#sales-goals-widget");
+            printDiv("#sales-goals-widget");
             break;
         default:
             return;
