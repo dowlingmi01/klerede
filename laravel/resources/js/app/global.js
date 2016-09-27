@@ -122,8 +122,13 @@ global.Promise = require("es6-promise").Promise;
                 
                 if (!options) options = {};
                 // options.logging = true;
-                
+                var scrollTop = $(window).scrollTop();
+                $(window).scrollTop(0);
+
                 html2canvas( $(selector).get(0), options ).then(function(canvas) {
+                    
+                    $(window).scrollTop(scrollTop);
+                    
                     $(selector).removeClass("saving");
                     canvas.toBlob(function(blob) {
                         saveAs(blob, imageName);

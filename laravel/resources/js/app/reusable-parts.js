@@ -76,9 +76,17 @@ var ActionMenu = React.createClass({
     onClick:function (e) {
         if(this.state.in === "") {
             this.setState({in:"in"});
-        } else {
-            this.setState({in:""});
+            e.stopPropagation();
         }
+    },
+    onClickOutside:function (e) {
+        this.setState({in:""});
+    },
+    componentDidMount:function () {
+        $(window).on("click", this.onClickOutside); 
+    },
+    componentWillUnmout:function () {
+        $(window).off("click", this.onClickOutside); 
     },
     render: function() {
         if (this.props.actions.length==0) return (<div></div>);
