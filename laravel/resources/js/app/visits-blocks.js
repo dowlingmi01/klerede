@@ -2,6 +2,12 @@
 /******** TOP ROW OF STAT BLOCKS FOR VISITS ********/
 /***************************************************/
 
+var React = require('react');
+
+var $ = require("jquery");
+require('../libs/jquery.easing.1.3.js');
+require('../libs/jquery.numberformatter-1.2.4.jsmin.js');
+
 var wnt = require ('./wnt.js');
 var analytics = require("./analytics.js");
 

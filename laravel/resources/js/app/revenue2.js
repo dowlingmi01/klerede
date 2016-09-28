@@ -1,4 +1,8 @@
+
+var React = require('react');
+
 var $ = require('jquery');
+require('../libs/jquery.datePicker.js');
 var wnt = require ('./wnt.js');
 
 var KAPI = {};

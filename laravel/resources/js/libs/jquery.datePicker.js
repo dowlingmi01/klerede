@@ -6,6 +6,7 @@
  * $Id$
  **/
 var jQuery = require("jquery");
+require('./date.js');
 
 (function($){
     

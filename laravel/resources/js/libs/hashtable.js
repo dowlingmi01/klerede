@@ -400,3 +400,4 @@ var Hashtable = (function(UNDEFINED) {
 
     return Hashtable;
 })();
+module.exports = Hashtable;

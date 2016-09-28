@@ -2,6 +2,8 @@
 /******** HOURLY ATTENDANCE ********/
 /***********************************/
 
+var React = require('react');
+
 var wnt = require ('./wnt.js');
 var analytics = require("./analytics.js");
 

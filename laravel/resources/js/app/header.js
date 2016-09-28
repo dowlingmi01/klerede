@@ -1,6 +1,9 @@
 /************************/
 /******** HEADER ********/
 /************************/
+
+var React = require('react');
+
 var $ = require('jquery');
 var wnt = require ('./wnt.js');
 var _l = require("./lang/lang.js");

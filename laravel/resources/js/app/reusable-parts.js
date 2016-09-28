@@ -2,6 +2,9 @@
 /******** REUSABLE PARTS ICONS ********/
 /**************************************/
 
+var React = require('react');
+
+var $ = require("jquery");
 var wnt = require("./wnt.js");
 var PlusSign = require('./svg-icons').PlusSign;
 var Caret = require('./svg-icons').Caret;

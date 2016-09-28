@@ -2,11 +2,10 @@
 /******** WELCOME TEXT WITH USER'S NAME AND LOCAL TIME/DATE ********/
 /*******************************************************************/
 
+var React = require('react');
+
 var $ = require('jquery');
 var wnt = require ('./wnt.js');
-
-
-
 
 var ReportingOn = React.createClass({
     getInitialState: function() {

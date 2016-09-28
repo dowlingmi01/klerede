@@ -2,6 +2,8 @@
 /******** WELCOME TEXT WITH USER'S NAME AND LOCAL TIME/DATE ********/
 /*******************************************************************/
 
+var React = require('react');
+
 var WelcomeText = React.createClass({
     getInitialState: function() {
         return {

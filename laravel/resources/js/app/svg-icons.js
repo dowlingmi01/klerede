@@ -2,6 +2,8 @@
 /******** SVG ICONS ********/
 /***************************/
 
+var React = require('react');
+
 var ChangeArrow = React.createClass({
     render: function() {
         return (

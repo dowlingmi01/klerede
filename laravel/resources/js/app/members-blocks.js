@@ -2,6 +2,12 @@
 /******** BOTTOM ROW OF STAT BLOCKS FOR MEMBERSHIPS ********/
 /***********************************************************/
 
+
+var React = require('react');
+
+var $ = require ("jquery");
+require('../libs/jquery.easing.1.3.js');
+
 var wnt = require ('./wnt.js');
 
 var KAPI = {

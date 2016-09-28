@@ -1,6 +1,11 @@
 /*******************************************************************/
 /************************* LOGIN COMPONENT *************************/
 /*******************************************************************/
+
+
+var React = require('react');
+
+
 var CheckMark = require('./svg-icons').CheckMark;
 var KForms = require('./kutils/form-validations.js');
 var KStorage = require('./kutils/local-storage.js');

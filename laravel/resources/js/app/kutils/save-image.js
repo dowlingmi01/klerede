@@ -2,6 +2,9 @@ var $ = require("jquery");
 var html2canvas = require("html2canvas");
 var saveAs = require("file-saver").saveAs;
 
+var toBlob = require('canvas-to-blob');
+toBlob.init();
+
 var global = Function('return this')();
 global.Promise = require("es6-promise").Promise;
 
