@@ -421,7 +421,7 @@ var Revenue2 = React.createClass({
             barEnter:null,
             compareLists:{
                 week:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"},
-                weekBar:{lastperiod_1:"Same Day Last Year", lastperiod_2:"13 Week Average (Day)"},
+                weekBar:{lastperiod_1:"Same Day Previous Week", lastperiod_2:"Same Day Last Year", lastperiod_3:"13 Week Average (Day)"},
                 month:{lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"},
                 monthBar:{lastperiod_1:"Same Day Last Year", lastperiod_2:"13 Week Average (Day)"},
                 quarter:{lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"},
@@ -624,10 +624,12 @@ var Revenue2 = React.createClass({
     update13WeekDayAverage:function (state) {
         if (state.periodType == "quarter")
             return;
+
+        var periodTypeReg = /lastperiod_3$/;
         
         var result = state.result;
         for (var query in result) {
-            if ( (/lastperiod_2$/).test(query) ) {
+            if ( (periodTypeReg).test(query) ) {
                 var r = result[query];
                 
                 if (r.length==0) continue;
@@ -735,15 +737,20 @@ var Revenue2 = React.createClass({
             var lastOperation2 = 'average';
             var lastInterval2 = 'week';
             
-            var lastBarFrom1 = p.thisWeekStartMinusOneYear;
-            var lastBarTo1 = p.thisWeekEndMinusOneYear;
+            var lastBarFrom1 = p.lastWeekStart;
+            var lastBarTo1 = p.lastWeekEnd;
             var lastBarOperation1 = 'detail';
             var lastBarInterval1 = 'date';
-            
-            var lastBarFrom2 = p.weekStart13weekAgo;
-            var lastBarTo2 = p.lastWeekEnd;
+
+            var lastBarFrom2 = p.thisWeekStartMinusOneYear;
+            var lastBarTo2 = p.thisWeekEndMinusOneYear;
             var lastBarOperation2 = 'detail';
             var lastBarInterval2 = 'date';
+            
+            var lastBarFrom3 = p.weekStart13weekAgo;
+            var lastBarTo3 = p.lastWeekEnd;
+            var lastBarOperation3 = 'detail';
+            var lastBarInterval3 = 'date';
             
             break;
         case "month":
@@ -839,7 +846,9 @@ var Revenue2 = React.createClass({
         queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
 
         queries.visitors_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', 'sum', 'date');
-
+        
+        if (lastBarFrom3) 
+            queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
         //PER CHANNEL QUERIES
         
         for (var channel in state.channelActive) {
@@ -851,10 +860,14 @@ var Revenue2 = React.createClass({
             
 
             //LAST PERIOD
+            //this results will be processed on client 13-Week-Average-(Day for week and month and Week for quarter)
+        
             var lastBar1 = getQuery(lastBarFrom1, lastBarTo1, membership, channel, 'sales', lastBarOperation1, lastBarInterval1);
             
-            //this results will be processed on client 13-Week-Average-(Day for week and month and Week for quarter)
             var lastBar2 = getQuery(lastBarFrom2, lastBarTo2, membership, channel, 'sales', lastBarOperation2, lastBarInterval2);
+            
+            if(lastBarFrom3)
+                var lastBar3 = getQuery(lastBarFrom3, lastBarTo3, membership, channel, 'sales', lastBarOperation3, lastBarInterval3);
 
 
             
@@ -867,10 +880,16 @@ var Revenue2 = React.createClass({
             //WRITE VARS
             queries[channel+"_bars"] = query;
             queries[channel+"_bars_totals"] = totals;
+
             queries[channel+"_bars_lastperiod_1"] = lastBar1;
             queries[channel+"_bars_lastperiod_2"] = lastBar2;
+            if(lastBarFrom3)
+                queries[channel+"_bars_lastperiod_3"] = lastBar3;
+
             queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
             queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
+            
+                
         }
         
         // WARNING!!! ->>> Ticket Type should be called Product Type (tickets are only for General Admision)
@@ -901,6 +920,12 @@ var Revenue2 = React.createClass({
             queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
                     lastFrom2, lastTo2, membership, 'gate', {type:"sales", kinds:[ttype]}, lastOperation2, lastInterval2
             );
+            
+            //Last period III (only for bars nowadays)
+            queries["gate_bars_by_"+ttype+"_lastperiod_3"] = getQuery(
+                    lastBarFrom3, lastBarTo3, membership, 'gate', {type:"sales", kinds:[ttype]}, lastBarOperation3, lastBarInterval3
+            );
+            
         }
         
         console.log("Revenue2 sending queries...", queries);
