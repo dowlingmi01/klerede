@@ -21,7 +21,9 @@ elixir(function(mix) {
                 './resources/js/app/members-blocks.js',
                 './resources/js/app/goal-setting.js',
                 './resources/js/app/footer-copyright.js',
-                './resources/js/app/login.js'
+                './resources/js/app/login.js',
+                './resources/js/app/load-user.js',
+                './resources/js/app/faqs.js'
                 ], 
             './public/js/app.js')
             .browserify([

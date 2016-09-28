@@ -695,7 +695,9 @@ var Header = React.createClass({
                     {manageUsers}
                 </div>
             </header>
-			<DarkenBackground active={this.state.darkenBackgroundActive}/>
+            <div onClick={this.closeUtilities}>
+    			<DarkenBackground active={this.state.darkenBackgroundActive}/>
+            </div>
 		    </div>
         );
     }

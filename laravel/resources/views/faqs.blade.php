@@ -98,13 +98,7 @@
     <div class="form-group inline-block" data-reactid=".0.0.1.1.1.7"> <a class="btn inline-block" href="mailto:support@klerede.com" >CONTACT US</a></div>
 </div>
 
-@stop
+<div id="faqs-js"><!-- calls FAQs js --></div>
+<div id="load-user-js"><!-- calls js loadUser() --></div>
 
-@section('scripts')
-<script type="text/javascript">
-$(".topics > div > ul > li .svgcaret, .topics > div > ul > li .faq-title").on("click", function (event) {
-    $(event.currentTarget).parent().toggleClass("active");
-});
-loadUser();
-</script>
 @stop

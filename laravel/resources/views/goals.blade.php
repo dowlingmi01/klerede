@@ -14,13 +14,7 @@
 
         <div id="goal-setting"><!-- ReactJS component: GoalSetting --></div>
     </div>
-
-@stop
-
-@section('scripts')
-<script type="text/javascript">
-
-loadUser();
-
-</script>
+    
+    <div id="load-user-js"><!-- calls js loadUser() --></div>
+    
 @stop

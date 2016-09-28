@@ -15,13 +15,7 @@
 
 
     <div id="members-blocks-widget" class="printable-block"><!-- ReactJS component: MembersBlocksSet --></div>
+    
+    <div id="load-user-js"><!-- calls js loadUser() --></div>
 
-@stop
-
-@section('scripts')
-<script type="text/javascript">
-
-loadUser();
-
-</script>
 @stop
