@@ -5,6 +5,7 @@ var CheckMark = require('./svg-icons').CheckMark;
 var KForms = require('./kutils/form-validations.js');
 var KStorage = require('./kutils/local-storage.js');
 var _l = require("./lang/lang.js");
+var auth = require("./kapi/auth.js");
 
 var RememberCheckMark = React.createClass({
 	getInitialState:function() {
@@ -85,7 +86,7 @@ var LoginComponent = React.createClass({
 				KStorage.storeLocal("user", {email:"", password:"", remember:false});
 			}
 			
-			KAPI.auth.login(email, password,this.onSuccess, this.onError);
+			auth.login(email, password,this.onSuccess, this.onError);
 			
 		}
 	},
@@ -141,7 +142,7 @@ var LoginComponent = React.createClass({
 			alert("Your email is not valid.");
 			return;
 		}
-		KAPI.auth.recovery(email, this.onResetSuccess, this.onResetError);
+		auth.recovery(email, this.onResetSuccess, this.onResetError);
 	},
 	onResetSuccess:function (response) {
 		console.log(response);
@@ -176,7 +177,7 @@ var LoginComponent = React.createClass({
 		
 		var isValidResponse = KForms.isValidPassword(new1, new2);
 		if(isValidResponse === true) {
-			KAPI.auth.reset(this.props.token, this.props.email, new1, this.onNewPasswordSet, this.onNewPasswordError);
+			auth.reset(this.props.token, this.props.email, new1, this.onNewPasswordSet, this.onNewPasswordError);
 			return;
 		}
 		

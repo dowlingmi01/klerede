@@ -28,7 +28,8 @@ exports.isEmail = function (email) {
   return regex.test(email);
 }
 
-exports.isEmpty = function (field) {
+
+var _isEmpty = exports.isEmpty = function (field) {
 	if(!field) return true;
 
 	return (field.length==0);

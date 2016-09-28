@@ -3,7 +3,7 @@
 /**************************************/
 
 var wnt = require ('./wnt.js');
-
+var goals = require("./kapi/goals.js");
 
 var ButtonExpand = require('./reusable-parts').ButtonExpand;
 
@@ -11,7 +11,7 @@ var ButtonExpand = require('./reusable-parts').ButtonExpand;
 var GoalsMonths = React.createClass({
 	setGoals: function (data, year, channel, type, subChannel) {
 
-		KAPI.goals.sales.put(wnt.venueID, year, this.onGoalsSet, data, channel, type, subChannel);
+		goals.sales.put(wnt.venueID, year, this.onGoalsSet, data, channel, type, subChannel);
 
         // var url = wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type;
         // url = !subchannel ? url : url+'/'+subchannel;
@@ -148,7 +148,7 @@ var GoalSetting = React.createClass({
 	
 	setGoals: function (data, year, channel, type, subChannel) {
 
-		KAPI.goals.sales.put(wnt.venueID, year, this.onGoalsSet, data, channel, type, subChannel);
+		goals.sales.put(wnt.venueID, year, this.onGoalsSet, data, channel, type, subChannel);
 
         // var url = wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type;
         // url = !subchannel ? url : url+'/'+subchannel;
@@ -231,7 +231,7 @@ var GoalSetting = React.createClass({
         });
     },
     componentDidMount: function(){
-		KAPI.goals.sales.get(wnt.venueID, wnt.thisYear, this.onGoalsGet);
+		goals.sales.get(wnt.venueID, wnt.thisYear, this.onGoalsGet);
 	},
     componentDidMountOLD: function(){
         var self = this;

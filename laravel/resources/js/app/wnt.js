@@ -2,21 +2,63 @@ $ = require('jquery');
 
 var wnt = {
     gettingVenueData:$.Deferred(),
-    getVenue: function(deferredObj){
-		throw new Error('GLOBAL HELPER wnt.getVenue: please use KAPI call');
-        // TO DO: Abstract venue ID for API call...
-        $.get('/api/v1/venue/'+wnt.venueID)
-        .done(function(result){
-            deferredObj.resolve(result);
-        })
-        .fail(function(result){
-            console.log('VENUE DATA ERROR! ... ' + result.statusText);
-            console.log(result);
-            // If there's a deferred set for the data call, resolve it
-            if(deferredObj !== undefined){
-                deferredObj.resolve(result);
-            }
-        });
+    onVenueDataGet: function(data) {
+        console.log('1) Venue data loaded...', data);
+        wnt.venue = data;
+        wnt.venue.stats_last_date = wnt.dateArray(wnt.venue.stats_last_date);
+        wnt.today = new Date(wnt.venue.stats_last_date[0], wnt.venue.stats_last_date[1], wnt.venue.stats_last_date[2]);
+        // ********
+        // All date manipulation after pulling date from API for venue
+        // ********
+        wnt.thisYear = wnt.today.getFullYear();
+        wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
+        wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
+        wnt.thisDate = wnt.today.getDate();
+        if(wnt.thisMonthNum < 3){
+            wnt.thisQuarterNum = [0,3];
+            wnt.thisQuarterText = 'Q1';
+            wnt.thisQuarterStart = '01';
+            wnt.thisQuarterMonths = [1,2,3];   // For goals
+        } else if(wnt.thisMonthNum < 6){
+            wnt.thisQuarterNum = [3,6];
+            wnt.thisQuarterText = 'Q2';
+            wnt.thisQuarterStart = '04';
+            wnt.thisQuarterMonths = [4,5,6];   // For goals
+        } else if(wnt.thisMonthNum < 9){
+            wnt.thisQuarterNum = [6,9];
+            wnt.thisQuarterText = 'Q3';
+            wnt.thisQuarterStart = '07';
+            wnt.thisQuarterMonths = [7,8,9];   // For goals
+        } else {
+            wnt.thisQuarterNum = [9,12];
+            wnt.thisQuarterText = 'Q4';
+            wnt.thisQuarterStart = '10';
+            wnt.thisQuarterMonths = [10,11,12];   // For goals
+        }
+        wnt.yesterday = new Date(wnt.today);
+        wnt.yesterday.setDate(wnt.today.getDate() - 1);
+        wnt.yesterdaylastyear = new Date(wnt.today);
+        wnt.yesterdaylastyear.setDate(wnt.today.getDate() - 366);
+        wnt.daybeforeyesterday = new Date(wnt.today);
+        wnt.daybeforeyesterday.setDate(wnt.today.getDate() - 2);
+        wnt.today = wnt.formatDate(wnt.today, 'double');
+        wnt.yesterday = wnt.formatDate(wnt.yesterday, 'double');
+        wnt.daybeforeyesterday = wnt.formatDate(wnt.daybeforeyesterday, 'double');
+        wnt.yesterdaylastyear = wnt.formatDate(wnt.yesterdaylastyear, 'double');
+        wnt.yearStart = wnt.thisYear+'-1-1';
+        wnt.quarterStart = wnt.thisYear+'-'+wnt.thisQuarterStart+'-1';
+        wnt.monthStart = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-1';   // e.g. 2015-12-1
+        wnt.monthEnd = wnt.thisYear+'-'+(wnt.thisMonthNum+1)+'-'+wnt.daysInMonth(wnt.thisMonthNum+1,wnt.thisYear);
+        wnt.filter.bgDates = wnt.doubleDigits(wnt.thisMonthNum+1)+'/01/'+wnt.thisYear;
+        wnt.weekago = new Date(wnt.yesterday);
+        wnt.weekago.setDate(wnt.weekago.getDate() - 6);
+        wnt.weekago = wnt.formatDate(wnt.weekago, 'double');
+        wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
+        wnt.barDates = wnt.getMonth(wnt.today);
+	
+    	// Resolve deffered object.
+        console.log('Resolve deferred wnt.gettingVenueData');
+    	wnt.gettingVenueData.resolve(data);
     },
     // NOTE: To just change dates with slashes to dates with dashes (or vice versa) use   ...   str.replace(/\//g,'-')
     formatDate: function(dateObj, digits) {   // Pass in 'double' as second paramter for yyyy-mm-dd, default is yyyy-m-d
@@ -220,146 +262,6 @@ var wnt = {
             }
         }
         return selectedMonths;
-    },
-    getData: function(query, type, channel, from, to){
-		throw new Error('GLOBAL HELPER wnt.getData: please use KAPI call');
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
-                    query: { 
-                        specs: { 
-                            type: type, 
-                            channel: channel 
-                        }, 
-                        periods: { 
-                            from: from, 
-                            to: to
-                        } 
-                    }
-                }
-            }
-        )
-        .done(function(result) {
-            console.log(query + ' data loaded...');
-            wnt[query] = result.query;
-            wnt.gettingData.resolve(result.query);
-        }.bind(this))   // .bind() gives context to 'this'
-        .fail(function(result) {
-            console.log(query + ' DATA ERROR! ... ' + result.statusText);
-            console.log(result);
-        });
-    },
-    getWeather: function(dateFrom, dateTo){
-		throw new Error('GLOBAL HELPER wnt.getWeather: please use KAPI call');
-        var query = {};
-        if(!dateTo){
-            query = $.extend({}, {
-                venue_id: wnt.venueID,
-                date: dateFrom
-            });
-        } else {
-            query = $.extend({}, {
-                venue_id: wnt.venueID,
-                from: dateFrom,
-                to: dateTo
-            });
-        }
-        $.get(wnt.apiWeather, query)
-        .done(function(result){
-            wnt.weatherPeriod = result;
-            wnt.gettingWeatherData.resolve(result);
-            console.log('Weather data loaded...');
-        })
-        .fail(function(result){
-            var noData = {
-                icon_1: 'blank',
-                temp_1: '...',
-                summary_1: '...'
-            };
-            wnt.weatherPeriod = noData;
-            wnt.gettingWeatherData.resolve(noData);
-            console.log('WEATHER BARS DATA ERROR! ... ' + result.statusText);
-        });
-    },
-    getComparison: function(type, priorPeriod, deferredObj){
-		throw new Error('GLOBAL HELPER wnt.getComparison: please use KAPI call');
-        console.log('REQUEST =', type, priorPeriod);
-        // type = 'date' or 'week'
-        // priorPeriod = ['yyyy-mm-dd','yyyy-mm-dd']
-        $.post(
-            wnt.apiMain,
-            {
-                venue_id: wnt.venueID,
-                queries: {
-                    bo: { specs: { type: 'sales', channel: 'gate' }, 
-                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-                    c: { specs: { type: 'sales', channel: 'cafe' }, 
-                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },                    
-                    gs: { specs: { type: 'sales', channel: 'store' }, 
-                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } },
-                    m: { specs: { type: 'sales', channel: 'membership' }, 
-                        periods: { type: type, from: priorPeriod[0], to: priorPeriod[1], kind: 'sum' } }
-                }
-            }
-        )
-        .done(function(result){
-            // If there's a deferred set for the data call, resolve it
-            if(deferredObj !== undefined){
-                deferredObj.resolve(result);
-            }
-            console.log('Comparison data loaded...');
-        })
-        .fail(function(result){
-            console.log('COMPARISON DATA ERROR! ... ' + result.statusText);
-            console.log(result);
-            // If there's a deferred set for the data call, resolve it
-            if(deferredObj !== undefined){
-                deferredObj.resolve(result);
-            }
-        });
-    },
-    getGoals: function(year, deferredObj){        
-		throw new Error('GLOBAL HELPER wnt.getGoals: use KAPI call');
-        $.get(wnt.apiGoals+'/'+wnt.venueID+'/'+year)
-        .done(function(result){
-            // If there's a deferred set for the data call, resolve it
-            if(deferredObj !== undefined){
-                deferredObj.resolve(result);
-            }
-            console.log('Goals data loaded...');
-        })
-        .fail(function(result){
-            console.log('GOALS DATA ERROR! ... ' + result.statusText);
-            console.log(result);
-            // If there's a deferred set for the data call, resolve it
-            if(deferredObj !== undefined){
-                deferredObj.resolve(result);
-            }
-        });
-    },
-    setGoals: function(data, year, channel, type, subchannel){
-		throw new Error('GLOBAL HELPER wnt.setGoals: use KAPI call');
-        // PUT api/v1/goals/sales     /{venue_id}/{year}/{channel}/{type}[/{sub_channel}]
-        // e.g. 2015/cafe/amount ... or ... 2015/membership/units/family
-        // request body = { "months": { 1: XXX, 2: XXX, 3: XXX, ... } }
-        // NOTE: All 12 months must be present in the request
-        // NOTE: sub_channel must be specified only for the membership channel
-        var url = wnt.apiGoals+'/'+wnt.venueID+'/'+year+'/'+channel+'/'+type;
-        url = !subchannel ? url : url+'/'+subchannel;
-        $.ajax({
-            url: url,
-            type: 'PUT',
-            dataType: 'json',
-            data: data,
-            success: function(result) {
-                console.log('Goals have been updated on the server.');
-            },
-            error: function(result) {
-                console.log('ERROR');
-            }
-        });
     },
     print: function(link){
         var widget = $(link).closest('.widget');

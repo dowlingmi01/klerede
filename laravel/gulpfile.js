@@ -28,7 +28,6 @@ elixir(function(mix) {
             './resources/js/libs/jquery.datePicker.js',
             './resources/js/app/analytics.js',
             './resources/js/app/global.js',
-            './resources/js/app/app-utils.js',
             './resources/js/app/header.js',
             './resources/js/app/reporting-on.js',
             './resources/js/app/visits-blocks.js',
@@ -38,6 +37,7 @@ elixir(function(mix) {
             './resources/js/app/attendance.js',
             './resources/js/app/members-blocks.js',
             './resources/js/app/goal-setting.js',
+            './resources/js/app/footer-copyright.js',
             './resources/js/app/login.js'
             ], 
             './public/js/app.js')

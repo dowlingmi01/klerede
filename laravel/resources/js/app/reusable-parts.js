@@ -2,6 +2,7 @@
 /******** REUSABLE PARTS ICONS ********/
 /**************************************/
 
+var wnt = require("./wnt.js");
 var PlusSign = require('./svg-icons').PlusSign;
 var Caret = require('./svg-icons').Caret;
 
