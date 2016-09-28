@@ -5,6 +5,9 @@
 var React = require('react');
 
 var $ = require("jquery");
+
+require("../libs/bootstrap.js");
+
 var wnt = require ('./wnt.js');
 var goals = require("./kapi/goals.js");
 
