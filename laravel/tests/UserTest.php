@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+
 class UserTest extends TestCase
 {
 
@@ -94,8 +95,6 @@ class UserTest extends TestCase
 
     public function testCreateUser()
     {
-        //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
-        
 
         $result = $this->post('api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner'])
                 ->seeJsonStructure([
@@ -107,12 +106,50 @@ class UserTest extends TestCase
         
        $responseData = json_decode($this->response->getContent(), true);
        $token = $responseData['token'];
-       
-        $this->json('GET', 'api/v1/auth/logged?token='.$token)
-             ->seeJsonStructure([
-                 'user' => [
-                     'id', 'name', 'email'
-                 ]
-             ]);
+    
+
+        $result = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJsonStructure( 
+                             [
+                                 'result', 'id'
+                             ]
+                          );
+                
+
+        $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1588
+                                                    ]); //->seeJson(['error'=>'token_invalid']);
+                
+        $this->assertEquals('Invalid venue id', $this->response->getContent());
+
+        //test create user with insuficient priviledges
+    
+    }
+
+
+
+    public function testUpdateUser()
+    {
+        //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
+        echo "OK!";
+    }
+
+    public function testDeleteUser()
+    {
+        //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
+        echo "OK!";
+    }
+
+    public function testListUsers()
+    {
+        //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
+        echo "OK!";
     }
 }
