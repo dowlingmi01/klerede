@@ -7,7 +7,7 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false"
+         stopOnFailure="true"
          syntaxCheck="false">
     <testsuites>
         <testsuite name="Application Test Suite">
@@ -15,14 +15,15 @@
         </testsuite>
     </testsuites>
     <php>
-        <env name="JWT_ACTIVE" value="true"/>
+        
         <env name="APP_ENV" value="testing"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>
         <env name="DB_HOST" value="localhost"/>
-        <env name="DB_DATABASE" value="klerede_dev"/>
-        <env name="DB_USERNAME" value="klerede_dev"/>
-        <env name="DB_PASSWORD" value="secret"/>
+        <env name="DB_DATABASE" value="klerede_test"/>
+        <env name="DB_USERNAME" value="klerede_test"/>
+        <env name="DB_PASSWORD" value="klerede_test"/>
+        <env name="JWT_ACTIVE" value="true"/>
     </php>
 </phpunit>
