@@ -92,10 +92,13 @@ var firstDayOfWeek = 1,
         var m =_forceDigits(date.getUTCMonth()+1,2);
         return m+"/"+d+"/"+date.getUTCFullYear();
     },
-    addDays = function (date, days) {
+    addDays = function (date, days, dateObject) {
         var result = new Date(date);
         result.setDate(result.getDate() + days);
-        return formatFromDate(result);
+        if(dateObject)
+            return result;
+        else
+            return formatFromDate(result);
     },
     addMonths = function (date, months) {
         var result = new Date(date);

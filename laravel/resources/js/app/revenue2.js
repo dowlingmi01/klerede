@@ -67,6 +67,8 @@ var GBar = React.createClass({
         // $(this.refs.barTransition.getDOMNode()).addClass("activate");
     },
     componentDidMount:function () {
+        if (!this.refs.popup)  return;
+        
         var popup = this.refs.popup.getDOMNode();
         
         $(this.refs.gbarSections.getDOMNode()).on("mouseover", function(event){
@@ -78,6 +80,7 @@ var GBar = React.createClass({
         });
     },
     render:function () {
+        var isEmpty = (this.props.total<=0);
         var channels = this.props.channels;
         var sections = [];
         for (var i in channels) {
@@ -107,16 +110,20 @@ var GBar = React.createClass({
             height = Math.round(300*this.props.partialPercap/this.props.maxPercap);
         }
         
+        var onMouseDown = isEmpty ? "" : this.props.onMouseDown;
+        
+        
+        var weatherDiv = isEmpty? <div></div> : <WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />;
         
         return(
-            <div id={this.props.id} onMouseDown={this.props.onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%"}}>
+            <div id={this.props.id} onMouseDown={onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%", cursor: isEmpty?'initial':'pointer'}}>
                 <div ref="gbarSections" className="gbar-sections" style={{height:height+"px"}}>
                         {sections}
                 </div>
                 <div className="glabel">
                     {KUtils.date.barFormat(this.props.date, this.props.periodType)}
                 </div>
-                <WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />
+                {weatherDiv}
             </div>
         );
     }
@@ -398,11 +405,11 @@ var Revenue2 = React.createClass({
         var today = new Date(KUtils.date.localFormat(wnt.today));
         var weekDay = KUtils.date.getWeekDay(wnt.today);
 
-        var offset = -weekDay -7;
-        if (offset < -12) offset = -6;
-        
-        var periodFrom = KUtils.date.addDays(today, offset);
-        var date = this.buildDateDetails(periodFrom);
+        // var offset = -weekDay -7;
+        // if (offset < -12) offset = -6;
+        //
+        // var periodFrom = KUtils.date.addDays(today, offset);
+        var date = this.buildDateDetails(today);
         
         return {
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
@@ -414,7 +421,7 @@ var Revenue2 = React.createClass({
             comparePeriodType:"lastperiod_1",
             date:date,
             periodFrom:date.thisWeekStart,      //mm/dd/yyyy
-            periodTo:date.thisWeekEnd,          //mm/dd/yyyy
+            periodTo:date.thisWeekLimit,          //mm/dd/yyyy
             dirty:false,
             detailsClass:"",
             detailsTitle:"Show Details",
@@ -453,15 +460,16 @@ var Revenue2 = React.createClass({
         
         var p = {};
         
-        p.currentDate = d;
+        p.currentDate = du.localFormat(d);
         //WEEK Calculations
         p.thisWeekStart = du.addDays(date, -weekDay);
-        p.thisWeekEnd = applyLimit( du.addDays(date, 6 - weekDay) );
+        p.thisWeekEnd = du.addDays(date, 6 - weekDay);
+        p.thisWeekLimit = applyLimit( p.thisWeekEnd );
         
         p.thisWeekStartMinusOneYear = du.addYears(p.thisWeekStart, -1);
-        p.thisWeekEndMinusOneYear = du.addYears(p.thisWeekEnd, -1);
+        p.thisWeekLimitMinusOneYear = du.addYears(p.thisWeekLimit, -1);
         
-        p.lastWeekEnd = du.addDays(p.thisWeekEnd, -7);
+        p.lastWeekLimit = du.addDays(p.thisWeekLimit, -7);
         p.lastWeekStart = du.addDays(p.thisWeekStart, -7);
 
         p.weekStart13weekAgo = du.addDays(p.thisWeekStart, -7*13);
@@ -500,7 +508,7 @@ var Revenue2 = React.createClass({
         //INDIVIDUAL DAYS Calculations
         // for week
         p.thisWeekStartMinusOneYear = du.addDays(p.thisWeekStart, -(52*7));
-        p.thisWeekEndMinusOneYear = du.addDays(p.thisWeekEnd, -(52*7));
+        p.thisWeekLimitMinusOneYear = du.addDays(p.thisWeekLimit, -(52*7));
         
         //for month 
         p.thisMonthEndMinusOneWeek = du.addDays(p.thisMonthEnd, -7);
@@ -712,6 +720,30 @@ var Revenue2 = React.createClass({
         state.maxPercap = maxPercap;
         return state;
     },
+    updatePartialPeriod:function(state) {
+        var du = KUtils.date;
+        
+        var result = state.result;
+        var total_bars = result.total_bars;
+        
+        switch (state.periodType) {
+        case "week":
+            var end = new Date(state.date.thisWeekEnd);
+            var lastDay = du.addDays(state.date.thisWeekLimit, 1, true);
+            
+            if (end==lastDay) break;
+            
+            while(lastDay <= end) {
+                total_bars.push({period:du.serverFormat(lastDay), units:0, amount:0})
+                lastDay = du.addDays(lastDay, 1, true);
+            }
+            
+            break;
+            
+        default:
+            return;
+        }
+    },
     updateData:function (state) {
 
         var membership = (state.members == "members") ? true : (state.members == "nonmembers") ? false : null ;
@@ -724,31 +756,31 @@ var Revenue2 = React.createClass({
             
             var barInterval = 'date';
             var from = p.thisWeekStart;
-            var to = p.thisWeekEnd;
+            var to = p.thisWeekLimit;
             var operation = 'detail';
             
             var lastFrom1 = p.lastWeekStart;
-            var lastTo1 = p.lastWeekEnd;
+            var lastTo1 = p.lastWeekLimit;
             var lastOperation1 = 'sum';
             var lastInterval1 = 'date';
 
             var lastFrom2 = p.weekStart13weekAgo;
-            var lastTo2 = p.lastWeekEnd;
+            var lastTo2 = p.lastWeekLimit;
             var lastOperation2 = 'average';
             var lastInterval2 = 'week';
             
             var lastBarFrom1 = p.lastWeekStart;
-            var lastBarTo1 = p.lastWeekEnd;
+            var lastBarTo1 = p.lastWeekLimit;
             var lastBarOperation1 = 'detail';
             var lastBarInterval1 = 'date';
 
             var lastBarFrom2 = p.thisWeekStartMinusOneYear;
-            var lastBarTo2 = p.thisWeekEndMinusOneYear;
+            var lastBarTo2 = p.thisWeekLimitMinusOneYear;
             var lastBarOperation2 = 'detail';
             var lastBarInterval2 = 'date';
             
             var lastBarFrom3 = p.weekStart13weekAgo;
-            var lastBarTo3 = p.lastWeekEnd;
+            var lastBarTo3 = p.lastWeekLimit;
             var lastBarOperation3 = 'detail';
             var lastBarInterval3 = 'date';
             
@@ -942,6 +974,7 @@ var Revenue2 = React.createClass({
         this.updateSums(state);
         this.updateQuarter13WeekAverage(state);
         this.update13WeekDayAverage(state);
+        this.updatePartialPeriod(state);
         state.dirty = false;
         
         this.setState(state);
@@ -1041,11 +1074,13 @@ var Revenue2 = React.createClass({
                 
                 for (var i in total_bars) {
                     
+                    var total_bar = total_bars[i];
+                    var barIsEmpty = (total_bar.amount <= 0);
                     //Collect Bar Data by Channel
                     var channels = [];
                     try {
                         for(var k in channelActive) {
-                            if (channelActive[k] == "active") {
+                            if (!barIsEmpty && channelActive[k] == "active" ) {
                                 channels.push({
                                     name:channelTypes[k],
                                     data:result[k+"_bars"][i]
@@ -1061,7 +1096,7 @@ var Revenue2 = React.createClass({
                     //Collect Weather Data
                     try {
                         var weather;
-                        if (this.state.periodType != "quarter" && wResult && wResult.length > i) {
+                        if (!barIsEmpty &&  this.state.periodType != "quarter" && wResult && wResult.length > i) {
                             weather = wResult[i];
                         }
                     } catch (e) {
@@ -1074,10 +1109,10 @@ var Revenue2 = React.createClass({
                                 key={i}
                                 id={"gbar-"+i}
                                 units={this.state.units}
-                                total={total_bars[i].amount}
+                                total={total_bar.amount}
                                 partial={partial_sum[i]}
                                 partialPercap={partial_sum_percap[i]}
-                                date={total_bars[i].period}
+                                date={total_bar.period}
                                 channels={channels}  
                                 max={max}
                                 maxPercap={this.state.maxPercap}
