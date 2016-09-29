@@ -472,8 +472,8 @@ var Revenue2 = React.createClass({
         p.lastMonthEnd = du.addDays(date, -monthDay);         //date 0 is last day of prev month
         p.lastMonthStart = du.addMonths(p.thisMonthStart, -1);
 
-        p.lastYearSameMonthStart = du.addYears(p.thisMonthStart, -1);
-        p.lastYearSameMonthEnd = du.addYears(p.thisMonthEnd, -1);
+        p.lastYearSameMonthStart = du.addDays(p.thisMonthStart, -(7*52));
+        p.lastYearSameMonthEnd = du.addDays(p.thisMonthEnd, -(7*52));
         
         //QUARTER Calculations
         var thisQuarterLimits = du.quarterToDates(thisQuarter, thisYear);
@@ -499,8 +499,8 @@ var Revenue2 = React.createClass({
         
         //INDIVIDUAL DAYS Calculations
         // for week
-        p.thisWeekStartMinusOneYear = du.addYears(p.thisWeekStart, -1);
-        p.thisWeekEndMinusOneYear = du.addYears(p.thisWeekEnd, -1);
+        p.thisWeekStartMinusOneYear = du.addDays(p.thisWeekStart, -(52*7));
+        p.thisWeekEndMinusOneYear = du.addDays(p.thisWeekEnd, -(52*7));
         
         //for month 
         p.thisMonthEndMinusOneWeek = du.addDays(p.thisMonthEnd, -7);

@@ -98,11 +98,12 @@ var VisitsBlocksSet = React.createClass({
     componentDidMount: function() {
         var du = KUtils.date;
         var sameDayWeekBefore = du.serverFormat(du.addDays(wnt.today, -7));
+        var sameDayLastYear = du.serverFormat(du.addDays(wnt.today, -(7*52) ));
 
 		var queries = {
 	        visits_total: { specs: { type: 'visits' }, periods: wnt.today },
 	        visits_total_compareto_weekbefore: { specs: { type: 'visits' }, periods: sameDayWeekBefore },
-	        visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },            
+	        visits_total_compareto_lastyear: { specs: { type: 'visits' }, periods: sameDayLastYear },            
 	        visits_total_compareto_rolling: { specs: { type: 'visits'},
 	            periods: {
 	                from: wnt.yesterdaylastyear,
@@ -113,7 +114,7 @@ var VisitsBlocksSet = React.createClass({
 
 	        visits_ga: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.today },
 	        visits_ga_compareto_weekbefore: { specs: { type: 'visits', kinds: ['ga'] }, periods: sameDayWeekBefore },
-	        visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: wnt.yesterdaylastyear },
+	        visits_ga_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga'] }, periods: sameDayLastYear },
 	        visits_ga_compareto_rolling: { specs: { type: 'visits', kinds: ['ga'] }, 
 	            periods: {
 	                from: wnt.yesterdaylastyear,
@@ -124,7 +125,7 @@ var VisitsBlocksSet = React.createClass({
 
 	        visits_groups: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.today },
 	        visits_groups_compareto_weekbefore: { specs: { type: 'visits', kinds: ['group'] }, periods: sameDayWeekBefore },
-	        visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: wnt.yesterdaylastyear },
+	        visits_groups_compareto_lastyear: { specs: { type: 'visits', kinds: ['group'] }, periods: sameDayLastYear },
 	        visits_groups_compareto_rolling: { specs: { type: 'visits', kinds: ['group'] }, 
 	            periods: {
 	                from: wnt.yesterdaylastyear,
@@ -135,7 +136,7 @@ var VisitsBlocksSet = React.createClass({
 
 	        visits_members: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.today },
 	        visits_members_compareto_weekbefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: sameDayWeekBefore },
-	        visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: wnt.yesterdaylastyear },
+	        visits_members_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: sameDayLastYear },
 	        visits_members_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
 	            periods: {
 	                from: wnt.yesterdaylastyear,
@@ -146,7 +147,7 @@ var VisitsBlocksSet = React.createClass({
 
 	        visits_nonmembers: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.today },
 	        visits_nonmembers_compareto_weekbefore: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: sameDayWeekBefore },
-	        visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: wnt.yesterdaylastyear },
+	        visits_nonmembers_compareto_lastyear: { specs: { type: 'visits', kinds: ['ga', 'group'] }, periods: sameDayLastYear },
 	        visits_nonmembers_compareto_rolling: { specs: { type: 'visits', kinds: ['ga', 'group'] }, 
 	            periods: {
 	                from: wnt.yesterdaylastyear,
@@ -157,7 +158,7 @@ var VisitsBlocksSet = React.createClass({
 
 	        sales_gate: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.today },
 	        sales_gate_compareto_weekbefore: { specs: { type: 'sales', channel: 'gate' }, periods: sameDayWeekBefore },
-	        sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: wnt.yesterdaylastyear },
+	        sales_gate_compareto_lastyear: { specs: { type: 'sales', channel: 'gate' }, periods: sameDayLastYear },
 	        sales_gate_compareto_rolling: { specs: { type: 'sales', channel: 'gate' },
 	            periods: {
 	                from: wnt.yesterdaylastyear,

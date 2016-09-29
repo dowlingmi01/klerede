@@ -121,13 +121,14 @@ var MembersBlocksSet = React.createClass({
     },
 	componentDidMount:function () {
         var sameDayWeekBefore = du.serverFormat(du.addDays(wnt.today, -7));
+        var sameDayLastYear = du.serverFormat(du.addDays(wnt.today, -(7*52) ));
 		
 		var queries = {
 
             // Member Conversion = (Memberships Sold / Total Visitors) * 100
             membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.today},
             membership_sales_compareto_weekbefore: { specs: { type: 'sales', channel: 'membership' }, periods: sameDayWeekBefore},
-            membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.yesterdaylastyear},
+            membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: sameDayLastYear},
             membership_sales_compareto_rolling: { specs: { type: 'sales', channel: 'membership' },
                 periods: {
                     from: wnt.yesterdaylastyear,
@@ -140,7 +141,7 @@ var MembersBlocksSet = React.createClass({
             // Per Cap = Store Sales / Total Visitors
             transactions: { specs: { type: 'sales', channel: 'store' }, periods: wnt.today},
             transactions_compareto_weekbefore: { specs: { type: 'sales', channel: 'store' }, periods: sameDayWeekBefore},
-            transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: wnt.yesterdaylastyear},
+            transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: sameDayLastYear},
             transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store' },
                 periods: {
                     from: wnt.yesterdaylastyear,
@@ -151,7 +152,7 @@ var MembersBlocksSet = React.createClass({
 
             total_admissions: { specs: { type: 'visits' }, periods: wnt.today },
             total_admissions_compareto_weekbefore: { specs: { type: 'visits' }, periods: sameDayWeekBefore },
-            total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: wnt.yesterdaylastyear },
+            total_admissions_compareto_lastyear: { specs: { type: 'visits' }, periods: sameDayLastYear },
             total_admissions_compareto_rolling: { specs: { type: 'visits' },
                 periods: {
                     from: wnt.yesterdaylastyear,
@@ -162,7 +163,7 @@ var MembersBlocksSet = React.createClass({
 
             members_total_frequency_recency: { specs: { type: 'members' }, periods: wnt.today },
             members_total_frequency_recency_compareto_weekbefore: { specs: { type: 'members' }, periods: sameDayWeekBefore },
-            members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: wnt.yesterdaylastyear },
+            members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: sameDayLastYear },
             members_total_frequency_recency_compareto_rolling: { specs: { type: 'members'},
                 periods: {
                     from: wnt.yesterdaylastyear,
