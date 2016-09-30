@@ -476,34 +476,38 @@ var Revenue2 = React.createClass({
         
         //MONTH Calculations
         p.thisMonthStart = du.addDays(date, -monthDay + 1);
-        p.thisMonthEnd = applyLimit( du.addDays(du.addMonths(p.thisMonthStart,1), -1) );
+        p.thisMonthEnd = du.addDays(du.addMonths(p.thisMonthStart,1), -1);
+        p.thisMonthLimit = applyLimit( p.thisMonthEnd );
+
         p.lastMonthEnd = du.addDays(date, -monthDay);         //date 0 is last day of prev month
+        p.lastMonthLimit = du.addMonths(p.thisMonthLimit, -1);
         p.lastMonthStart = du.addMonths(p.thisMonthStart, -1);
 
         p.lastYearSameMonthStart = du.addDays(p.thisMonthStart, -(7*52));
-        p.lastYearSameMonthEnd = du.addDays(p.thisMonthEnd, -(7*52));
+        p.lastYearSameMonthLimit = du.addDays(p.thisMonthLimit, -(7*52));
         
         //QUARTER Calculations
         var thisQuarterLimits = du.quarterToDates(thisQuarter, thisYear);
         p.thisQuarterStart = thisQuarterLimits.from;
-        p.thisQuarterEnd = applyLimit( thisQuarterLimits.to );
+        p.thisQuarterEnd = thisQuarterLimits.to;
+        p.thisQuarterLimit = applyLimit( thisQuarterLimits.to );
         
-        // var thisQuarterLength = new Date(p.thisQuarterEnd) - new Date(p.thisQuarterStart) ;
+        // var thisQuarterLength = new Date(p.thisQuarterLimit) - new Date(p.thisQuarterStart) ;
 
         var lastQuarterLimits = du.quarterToDates(thisQuarter-1, thisYear);
         p.lastQuarterStart = lastQuarterLimits.from;
         
         //if this quarter is not whole, so limit last quarter
-        if (p.thisQuarterEnd != thisQuarterLimits.to) {
-            var thisQuarterLength = new Date(p.thisQuarterEnd) - new Date(p.thisQuarterStart) ;
-            p.lastQuarterEnd = du.localFormat(new Date( (new Date(p.lastQuarterStart)).getTime() + thisQuarterLength));
+        if (p.thisQuarterLimit != p.thisQuarterEnd) {
+            var thisQuarterLength = new Date(p.thisQuarterLimit) - new Date(p.thisQuarterStart) ;
+            p.lastQuarterLimit = du.localFormat(new Date( (new Date(p.lastQuarterStart)).getTime() + thisQuarterLength));
         } else {
-            p.lastQuarterEnd = lastQuarterLimits.to;
+            p.lastQuarterLimit = lastQuarterLimits.to;
         }
         
 
         p.lastYearSameQuarterStart = du.addYears(p.thisQuarterStart, -1);
-        p.lastYearSameQuarterEnd = du.addYears(p.thisQuarterEnd, -1);
+        p.lastYearSameQuarterLimit = du.addYears(p.thisQuarterLimit, -1);
         
         //INDIVIDUAL DAYS Calculations
         // for week
@@ -511,15 +515,15 @@ var Revenue2 = React.createClass({
         p.thisWeekLimitMinusOneYear = du.addDays(p.thisWeekLimit, -(52*7));
         
         //for month 
-        p.thisMonthEndMinusOneWeek = du.addDays(p.thisMonthEnd, -7);
+        p.thisMonthLimitMinusOneWeek = du.addDays(p.thisMonthLimit, -7);
         p.thisMonthStart13WeekAgo = du.addDays(p.thisMonthStart, -7*13);
         
-        //for quarter -> use real ends (lastQuarterLimits -> not limited: p.lastQuarterEnd)
+        //for quarter -> use real ends (lastQuarterLimits -> not limited: p.lastQuarterLimit)
         var lastQuartersLastWeekDay = du.getWeekDay(lastQuarterLimits.to);
         p.lastQuartersWholeWeekStart = du.addDays(lastQuarterLimits.to, - lastQuartersLastWeekDay - 7);
         
-        var thisQuartersLastWeekDay = du.getWeekDay(p.thisQuarterEnd);
-        p.thisQuartersWholeWeekEnd = du.addDays(p.thisQuarterEnd, - (thisQuartersLastWeekDay+1)%7 );
+        var thisQuartersLastWeekDay = du.getWeekDay(p.thisQuarterLimit);
+        p.thisQuartersWholeWeekEnd = du.addDays(p.thisQuarterLimit, - (thisQuartersLastWeekDay+1)%7 );
         
         return p;
         
@@ -720,29 +724,44 @@ var Revenue2 = React.createClass({
         state.maxPercap = maxPercap;
         return state;
     },
-    updatePartialPeriod:function(state) {
+    fillPartialPeriod:function(state) {
         var du = KUtils.date;
         
         var result = state.result;
         var total_bars = result.total_bars;
         
         switch (state.periodType) {
-        case "week":
-            var end = new Date(state.date.thisWeekEnd);
-            var lastDay = du.addDays(state.date.thisWeekLimit, 1, true);
+        case "quarter":
+            var end = new Date(state.date.thisQuarterEnd);
+            var lastDay = du.addDays(state.date.thisQuarterLimit, 1, true);
             
-            if (end==lastDay) break;
+            if (end == lastDay) return;
             
             while(lastDay <= end) {
-                total_bars.push({period:du.serverFormat(lastDay), units:0, amount:0})
-                lastDay = du.addDays(lastDay, 1, true);
+                lastDay = du.addDays(lastDay, 7, true);
+                total_bars.push({period:du.dateToWeek(lastDay), units:0, amount:0})
             }
             
             break;
-            
+        case "week":
+            var end = new Date(state.date.thisWeekEnd);
+            var lastDay = du.addDays(state.date.thisWeekLimit, 1, true);
+            break;
+        case "month":
+            var end = new Date(state.date.thisMonthEnd);
+            var lastDay = du.addDays(state.date.thisMonthLimit, 1, true);
+            break;
         default:
             return;
         }
+        
+        if (end==lastDay) return;
+        
+        while(lastDay <= end) {
+            total_bars.push({period:du.serverFormat(lastDay), units:0, amount:0})
+            lastDay = du.addDays(lastDay, 1, true);
+        }
+        
     },
     updateData:function (state) {
 
@@ -789,26 +808,26 @@ var Revenue2 = React.createClass({
             
             var barInterval = 'date';
             var from = p.thisMonthStart;
-            var to = p.thisMonthEnd;
+            var to = p.thisMonthLimit;
             var operation = 'detail';
             
             var lastFrom1 = p.lastMonthStart;
-            var lastTo1 = p.lastMonthEnd;
+            var lastTo1 = p.lastMonthLimit;
             var lastOperation1 = 'sum';
             var lastInterval1 = 'date';
 
             var lastFrom2 = p.lastYearSameMonthStart;
-            var lastTo2 = p.lastYearSameMonthEnd;
+            var lastTo2 = p.lastYearSameMonthLimit;
             var lastOperation2 = 'sum';
             var lastInterval2 = 'date';
             
             var lastBarFrom1 = p.lastYearSameMonthStart;
-            var lastBarTo1 = p.lastYearSameMonthEnd;
+            var lastBarTo1 = p.lastYearSameMonthLimit;
             var lastBarOperation1 = 'detail';
             var lastBarInterval1 = 'date';
             
             var lastBarFrom2 = p.thisMonthStart13WeekAgo;
-            var lastBarTo2 = p.thisMonthEndMinusOneWeek;
+            var lastBarTo2 = p.thisMonthLimitMinusOneWeek;
             var lastBarOperation2 = 'detail';
             var lastBarInterval2 = 'date';
             
@@ -818,16 +837,16 @@ var Revenue2 = React.createClass({
             
             var barInterval = 'week';
             var from = p.thisQuarterStart;
-            var to = p.thisQuarterEnd;
+            var to = p.thisQuarterLimit;
             var operation = 'detail';
             
             var lastFrom1 = p.lastQuarterStart;
-            var lastTo1 = p.lastQuarterEnd;
+            var lastTo1 = p.lastQuarterLimit;
             var lastOperation1 = 'sum';
             var lastInterval1 = 'date';
 
             var lastFrom2 = p.lastYearSameQuarterStart;
-            var lastTo2 = p.lastYearSameQuarterEnd;
+            var lastTo2 = p.lastYearSameQuarterLimit;
             var lastOperation2 = 'sum';
             var lastInterval2 = 'date';
             
@@ -837,7 +856,7 @@ var Revenue2 = React.createClass({
             var lastBarInterval1 = 'week';
             
             var lastBarFrom2 = p.lastQuarterStart;
-            var lastBarTo2 = p.thisQuarterEnd;
+            var lastBarTo2 = p.thisQuarterLimit;
             var lastBarOperation2 = 'detail';
             var lastBarInterval2 = 'week';
             
@@ -974,7 +993,7 @@ var Revenue2 = React.createClass({
         this.updateSums(state);
         this.updateQuarter13WeekAverage(state);
         this.update13WeekDayAverage(state);
-        this.updatePartialPeriod(state);
+        this.fillPartialPeriod(state);
         state.dirty = false;
         
         this.setState(state);

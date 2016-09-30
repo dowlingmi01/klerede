@@ -165,6 +165,13 @@ var firstDayOfWeek = 1,
         var date = new Date("01/01/"+year.toString());
         return addDays(date, week*7);
     },
+    dateToWeek = function (d) { // mm/dd/yyyy -> YYYY-W
+        
+        var w = getWeekNumber(d);
+        var y = (new Date(d)).getUTCFullYear();
+        
+        return y+"-"+_forceDigits(w, 2);
+    },
     getDateFromWeek = function (s) { //YYYY-W -> mm/dd/yyyy
         //week 0 means week 52 of prev year
         var a = s.split("-");
@@ -197,5 +204,6 @@ var firstDayOfWeek = 1,
         getWeekNumber:getWeekNumber,
         getQuarterNumber:getQuarterNumber,
         quarterToDates:quarterToDates,
+        dateToWeek:dateToWeek,
         getDateFromWeek:getDateFromWeek
     }
