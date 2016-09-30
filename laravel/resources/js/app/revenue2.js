@@ -113,7 +113,7 @@ var GBar = React.createClass({
         var onMouseDown = isEmpty ? "" : this.props.onMouseDown;
         
         
-        var weatherDiv = isEmpty? <div></div> : <WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} />;
+        var weatherDiv = isEmpty? <div></div> : <WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} attendance={this.props.attendance} />;
         
         return(
             <div id={this.props.id} onMouseDown={onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%", cursor: isEmpty?'initial':'pointer'}}>
@@ -198,6 +198,9 @@ var WeatherPopupView = React.createClass({
 
 var WeatherPopup = React.createClass({
     render:function () {
+        
+        var formatAmount = KUtils.number.formatAmount;
+        
         var popupChannels = [];
         var channels = this.props.channels;
         for (var i in channels) {
@@ -210,7 +213,9 @@ var WeatherPopup = React.createClass({
         }
         
         var formattedDate = KUtils.date.weatherFormat(this.props.date, this.props.periodType);
-        
+
+        var attendance = formatAmount(this.props.attendance);
+
         return(
             <div id={this.props.id} className="weather-popup" style={{bottom:this.props.bottom+"px"}}>
                 <div id="weather" className="row">
@@ -219,6 +224,7 @@ var WeatherPopup = React.createClass({
                     </div>
                     <WeatherPopupView data={this.props.data} />
                 </div>
+                <div className="attendance row" >Attendance: {attendance}</div>
                 <div id="details" className="row">
                     {popupChannels}
                 </div>
@@ -737,8 +743,9 @@ var Revenue2 = React.createClass({
             
             if (end == lastDay) return;
             
-            while(lastDay <= end) {
+            while(1) {
                 lastDay = du.addDays(lastDay, 7, true);
+                if (lastDay > end) break;
                 total_bars.push({period:du.dateToWeek(lastDay), units:0, amount:0})
             }
             
@@ -1055,7 +1062,6 @@ var Revenue2 = React.createClass({
     },
     render:function () {
         
-        
         var channelTypes = this.state.channelNames;
         var channelActive = this.state.channelActive;
         var channelControls = [];
@@ -1087,6 +1093,7 @@ var Revenue2 = React.createClass({
             try {
                 
                 var total_bars = result.total_bars;
+                var visitors = result.visitors;
                 var partial_sum = result.partial_sum;
                 var partial_sum_percap = result.partial_sum_percap;
                 var barWidth = 100/total_bars.length;
@@ -1122,6 +1129,16 @@ var Revenue2 = React.createClass({
                         console.log("Collect Weather Data Error -> "+e, this.state);
                     }
                     
+                    //Collect Attendance Data
+                    try {
+                        var attendance = 0;
+                        if (!barIsEmpty && visitors[i]) {
+                            attendance = visitors[i].units;
+                        }
+                    } catch (e) {
+                        console.log("Collect Weather Data Error -> "+e, this.state);
+                    }
+                    
                     //Create GBars
                     try {
                     bars.push(<GBar
@@ -1129,6 +1146,7 @@ var Revenue2 = React.createClass({
                                 id={"gbar-"+i}
                                 units={this.state.units}
                                 total={total_bar.amount}
+                                attendance={attendance}
                                 partial={partial_sum[i]}
                                 partialPercap={partial_sum_percap[i]}
                                 date={total_bar.period}
@@ -1417,7 +1435,7 @@ var Revenue2 = React.createClass({
                             <div className={"row details "+this.state.detailsClass}>
                                 <div className="col-xs-12 col-sm-12 descriptors">
                                     <div className="col-xs-6 col-sm-6" id="data-range">
-                                        <h4>Date Range</h4>
+                                        <h4 className="add-left-padding" >Date Range</h4>
                                     </div>
                                     <div className="col-xs-6 col-sm-6" id="compared-to">
                                         <h4>Compared To</h4>
@@ -1425,9 +1443,13 @@ var Revenue2 = React.createClass({
                                 </div>
                                 <div className="col-xs-12 col-sm-12">
                                     <div className="col-xs-6 col-sm-6" id="header">
-                                    
-                                        {lastPeriodFormattedDate}{showPeriodFormattedDate}
-                                    
+                                        <div id="period" className="add-left-padding" >
+                                            {lastPeriodFormattedDate}{showPeriodFormattedDate}
+                                        </div>
+                                        <div className="col-xs-12" id="attendance-detail">
+                                            <h4>Attendance</h4>
+                                            <div>{KUtils.number.formatAmount(visitors)}</div>
+                                        </div>
                                     </div>
                                     <div className="col-xs-6 col-sm-6 text-right">
                                         <Dropdown
