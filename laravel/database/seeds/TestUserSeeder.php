@@ -20,6 +20,7 @@ class TestUserSeeder extends Seeder {
                 ['first_name' => 'LLPA Test', 'last_name' => 'Owner', 'email' => 'llpa+owner@test.com', 'password' => Hash::make('secretowner'), 'venue_id' => 1588, 'role_id' => 1],
                 ['first_name' => 'Aqua Test', 'last_name' => 'Admin', 'email' => 'aqua+admin@test.com', 'password' => Hash::make('secretadmin'), 'venue_id' => 1518, 'role_id' => 2],
                 ['first_name' => 'LLPA Test', 'last_name' => 'Admin', 'email' => 'llpa+admin@test.com', 'password' => Hash::make('secretadmin'), 'venue_id' => 1588, 'role_id' => 2],
+                ['first_name' => 'Aqua Test', 'last_name' => 'Admin', 'email' => 'aqua+basic@test.com', 'password' => Hash::make('secretbasic'), 'venue_id' => 1518, 'role_id' => 4],
         );
 
         // Loop through each user above and create the record for them in the database

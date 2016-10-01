@@ -133,6 +133,38 @@ class UserTest extends TestCase
     
     }
 
+    public function testCreateUserBasicUser()
+    {
+
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+basic@test.com','password'=>'secretbasic'])
+                ->seeJsonStructure([
+                 'token'
+         ]);
+       
+
+        $token = '';
+        
+       $responseData = json_decode($this->response->getContent(), true);
+       $token = $responseData['token'];
+    
+
+       
+
+       $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['error'=>'Insufficient privileges']);
+                
+        
+        echo $this->response->getContent();
+        //$this->assertEquals('Invalid venue id', $this->response->getContent());
+
+        //test create user with insuficient priviledges
+    
+    }
+
 
 
     public function testUpdateUser()
