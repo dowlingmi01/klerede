@@ -19,6 +19,8 @@ var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var LongArrow = require('./svg-icons').LongArrow;
 
+var customerLogos = require("./customer-logo.js").logos;
+
 var DarkenBackground = React.createClass({
     componentWillUnmount: function(){
         $('body').removeClass("darken-background-active");
@@ -617,6 +619,12 @@ var Header = React.createClass({
                             </form>
                         </div>;
         }
+        
+        if (! customerLogos[wnt.venue.id] ){
+            var clientName = <div className="client-name">{this.state.clientName}</div>;
+        } else {
+            var clientName = <div></div>;
+        }
 		// console.log(this.state.currentUser);
 		// console.log(users);
         // for (var i = 0; i < this.state.users.length; i++) {
@@ -628,7 +636,7 @@ var Header = React.createClass({
                 <div className="row">
                     <div className="col-xs-2 col-sm-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.svg" /></a></div>
                     <div className="col-xs-10 col-sm-10 user-info">
-                        <div className="client-name">{this.state.clientName}</div>
+                        {clientName}
                         <div className="user-wrapper" onClick={this.toggleSettings}>
                             <div className="user-image"></div>
                             <div className="utilities-wrapper">

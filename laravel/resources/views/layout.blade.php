@@ -28,6 +28,8 @@
                     </ul>
                 </div>
                 <div class="col-xs-12 col-sm-10 main-content">
+                    <div id="customer-logo"><!-- ReactJS component: CustomerLogo --></div>
+                    
                     @yield('content')
                     <footer>&copy; <span id="copyright-year">2015</span> <a href="//klerede.com/" target="_blank">Klerede</a>. All rights reserved.</footer>
                 </div>

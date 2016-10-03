@@ -12,6 +12,7 @@ elixir(function(mix) {
                 './resources/js/app/analytics.js',
                 './resources/js/app/global.js',
                 './resources/js/app/header.js',
+                './resources/js/app/customer-logo.js',
                 './resources/js/app/reporting-on.js',
                 './resources/js/app/visits-blocks.js',
                 './resources/js/app/sales-goals.js',
