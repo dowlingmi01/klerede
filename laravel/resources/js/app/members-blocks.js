@@ -20,6 +20,13 @@ var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var analytics = require("./analytics.js");
 
+
+var ActionMenu = require('./reusable-parts').ActionMenu;
+var printDiv = require ('./kutils/print-div.js');
+var saveImage = require ('./kutils/save-image.js');
+
+
+
 var MembersBlock = React.createClass({
     render: function() {
         return (
@@ -37,7 +44,19 @@ var MembersBlock = React.createClass({
 
 var MembersBlocksSet = React.createClass({
     getInitialState: function() {
+        var actions = [];
+        
+        if(features.save) {
+            actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        }
+        if (features.print) {
+            actions.push({href:"#print", text:"Print", handler:this.onActionClick});
+        }
+        
         return {            
+            
+            actions:actions,
+            
             membersConversion: '...',
             membersConversionCompareTo: '...',
 
@@ -56,6 +75,21 @@ var MembersBlocksSet = React.createClass({
             membersPercap: '...',
             membersPercapCompareTo: '...'
         };
+    },
+    onActionClick:function (event) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
+        case "#save":
+            saveImage("#members-blocks-widget",{});
+            break;
+        case "#print":
+            printDiv("#members-blocks-widget");
+            break;
+        default:
+            return;
+        }
+        analytics.addEvent('Members Blocks', 'Plus Button Clicked', eventAction);
+        event.preventDefault();
     },
 	onStatsResult:function(result) {
         // Abbreviate numbers for total members block
@@ -264,6 +298,7 @@ var MembersBlocksSet = React.createClass({
         return (
             <div>
                 <div className="row">
+                    <div className="position-relative"><ActionMenu className="widget-plus-menu" actions={this.state.actions}/></div>
                     <div className="col-xs-12 col-sm-8 col-lg-4">
                         <div className="filter">
                             <form>

@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="css/new.css">
         <link href="//fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800" rel="stylesheet" type="text/css">
     </head>
-    <body>
+    <body class="printable-block">
 
         <div id="header"><!-- ReactJS component: Header --></div>
         <section class="container-fluid">

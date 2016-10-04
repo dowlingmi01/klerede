@@ -14,6 +14,11 @@ var analytics = require("./analytics.js");
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var Caret = require('./svg-icons').Caret;
 
+var ActionMenu = require('./reusable-parts').ActionMenu;
+var printDiv = require ('./kutils/print-div.js');
+var saveImage = require ('./kutils/save-image.js');
+
+
 var KAPI = {
     stats:require("./kapi/stats.js")
 };
@@ -38,7 +43,18 @@ var VisitsBlock = React.createClass({
 
 var VisitsBlocksSet = React.createClass({
     getInitialState: function() {
+        var actions = [];
+        
+        if(features.save) {
+            actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        }
+        if (features.print) {
+            actions.push({href:"#print", text:"Print", handler:this.onActionClick});
+        }
         return {
+            
+            actions:actions,
+            
             visitsTotal: '...',
             visitsTotalCompareTo: '...',
             
@@ -57,6 +73,21 @@ var VisitsBlocksSet = React.createClass({
             salesGate: '...',
             salesGateCompareTo: '...',
         };
+    },
+    onActionClick:function (event) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
+        case "#save":
+            saveImage("#visits-blocks-widget",{});
+            break;
+        case "#print":
+            printDiv("#visits-blocks-widget");
+            break;
+        default:
+            return;
+        }
+        analytics.addEvent('Visit Blocks', 'Plus Button Clicked', eventAction);
+        event.preventDefault();
     },
 	onStatsResult:function (result) {
         wnt.visits = result;
@@ -267,6 +298,7 @@ var VisitsBlocksSet = React.createClass({
         return (
             <div>
                 <div className="row">
+                    <div className="position-relative"><ActionMenu className="widget-plus-menu" actions={this.state.actions}/></div>
                     <div className="col-xs-12 col-sm-8 col-lg-4">
                         <div className="filter">
                             <form>

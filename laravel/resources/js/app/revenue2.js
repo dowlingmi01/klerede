@@ -18,6 +18,10 @@ var LongArrow = require('./svg-icons').LongArrow;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var analytics = require("./analytics.js");
 
+var ActionMenu = require('./reusable-parts').ActionMenu;
+var printDiv = require ('./kutils/print-div.js');
+var saveImage = require ('./kutils/save-image.js');
+
 
 var CaretHandler = React.createClass({
     render:function () {
@@ -405,14 +409,18 @@ var Revenue2 = React.createClass({
     getInitialState:function () {
         var today = new Date(KUtils.date.localFormat(wnt.today));
         var weekDay = KUtils.date.getWeekDay(wnt.today);
-
-        // var offset = -weekDay -7;
-        // if (offset < -12) offset = -6;
-        //
-        // var periodFrom = KUtils.date.addDays(today, offset);
         var date = this.buildDateDetails(today);
+
+        var actions = [];
+        if(features.save) {
+            actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        }
+        if (features.print) {
+            actions.push({href:"#print", text:"Print", handler:this.onActionClick});
+        }
         
         return {
+            actions:actions,
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
             channelEmpty:{gate:true, cafe: true, store: true, membership: true},
@@ -437,6 +445,21 @@ var Revenue2 = React.createClass({
             },
             ticketTypes:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"}
         };
+    },
+    onActionClick:function (event) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
+        case "#save":
+            saveImage("#revenue-row-widget2",{}, "earned-revenue");
+            break;
+        case "#print":
+            printDiv("#revenue-row-widget2");
+            break;
+        default:
+            return;
+        }
+        analytics.addEvent('Earned Revenue', 'Plus Button Clicked', eventAction);
+        event.preventDefault();
     },
     buildDateDetails:function (d) {
         var du = KUtils.date; //date utilities
@@ -1341,6 +1364,7 @@ var Revenue2 = React.createClass({
         try {
             return (
                 <div className="row">
+                    <div className="position-relative"><ActionMenu className="widget-plus-menu" actions={this.state.actions}/></div>
                     <div className="col-xs-12 col-sm-12">
                         <div className="widget" id="revenue2">
                             <h2>
@@ -1475,7 +1499,7 @@ var Revenue2 = React.createClass({
                                         </div>
                                 </div>
                             </div>
-                            <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
+                            <div className={"text-center unsavable "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
                                 <CaretHandler />
                                 {this.state.detailsTitle}
                             </div>
