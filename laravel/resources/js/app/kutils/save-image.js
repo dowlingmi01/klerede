@@ -9,9 +9,10 @@ var global = Function('return this')();
 global.Promise = require("es6-promise").Promise;
 
 
-module.exports = function (selector, options) {
+module.exports = function (selector, options, imageName) {
 
-    var imageName = selector.substr(1).replace(/#|-widget/ig, '');
+    if (!imageName) 
+        imageName = selector.substr(1).replace(/#|-widget/ig, '');
 
     if (window.safari) {
         if (!confirm("Please use CMD+S to save your image")) {

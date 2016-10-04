@@ -348,29 +348,20 @@ var DetailsRow = React.createClass({
             <div className={this.props.className} >
                 <div className="table-item-wrapper">
                     <div className="table-item">
-                        <div className="col-xs-4 col-sm-12 col-md-4 title">
+                        <div className="col-xs-4 title">
                             <div className="title-text">
                                 {this.props.title}
                             </div>
                         </div>
-                        <div className="col-xs-8 col-sm-12 col-md-8 title">
-                            <div className="col-xs-4 col-sm-12 col-lg-4 left-line" >
-                                <div className="text-center hidden-xs hidden-lg hidden-xl" style={changeStyle}>
-                                    <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                    <span className="multicolor" id="change">{change}</span>
-                                </div>
-                                <div className="hidden-sm hidden-md" style={changeStyle}>
+                        <div className="col-xs-8 title">
+                            <div className="col-xs-4 left-line" >
+                                <div className="" style={changeStyle}>
                                     <ChangeArrow className={"change multicolorfl "+upDownClass} />
                                     <span className="multicolor" id="change">{change}</span>
                                 </div>
                             </div>
-                            <div className="col-xs-8 col-sm-12 col-lg-8 left-line">
-                                <div className="text-center hidden-xs hidden-lg hidden-xl">
-                                    <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
-                                    <LongArrow className="long-arrow" width="21px" />
-                                    <div className="multicolor" id="to-val" style={toStyle}>${formatAmount(to)}</div>
-                                </div>
-                                <div className="hidden-sm hidden-md">
+                            <div className="col-xs-8 left-line">
+                                <div className="">
                                     <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
                                     <LongArrow className="long-arrow" width="21px" />
                                     <div className="multicolor" id="to-val"  style={toStyle}>${formatAmount(to)}</div>
@@ -1457,7 +1448,7 @@ var Revenue2 = React.createClass({
                                     </div>
                                     <div className="col-xs-6 col-sm-6 text-right">
                                         <Dropdown
-                                            className="inline-block"
+                                            className="inline-block revenue-dropdown"
                                             ref="comparePeriodType"
                                             optionList={
                                                 this.getCompareList()
@@ -1468,18 +1459,18 @@ var Revenue2 = React.createClass({
                                     </div>
                                 </div>
                                 <div className="col-xs-12 col-sm-12 details-header">
-                                    <div className="col-xs-12 col-sm-6" id="table">
+                                    <div className="col-xs-12 col-lg-6" id="table">
                                         {detailsLeftHeader}
                                     </div>
-                                    <div className="col-xs-12 col-sm-6 hidden-xs" id="table">
+                                    <div className="col-xs-12 col-lg-6 hidden-xs hidden-sm hidden-md" id="table">
                                         {detailsRightHeader}
                                     </div>
                                 </div>
                                 <div className="col-xs-12 col-sm-12">
-                                        <div className="col-xs-12 col-sm-6" id="table">
+                                        <div className="col-xs-12 col-lg-6" id="table">
                                             {detailsRowsLeft}
                                         </div>
-                                        <div className="col-xs-12 col-sm-6" id="table">
+                                        <div className="col-xs-12 col-lg-6" id="table">
                                             {detailsRowsRight}
                                         </div>
                                 </div>

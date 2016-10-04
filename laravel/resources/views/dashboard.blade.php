@@ -1,10 +1,9 @@
 @extends('layout')
 
 @section('content')
-    <div class="row" id="reporting-on-action-menu" >
-        <div id="reporting-on" class="printable-block"><!-- ReactJS component: ReportingOn --></div>
-        <div id="main-action-menu" class="main-action-menu"><!-- ReactJS component: ReportingOn --></div>
-    </div>
+    <div id="main-action-menu" class="main-action-menu"><!-- ReactJS component: ReportingOn --></div>
+    
+    <div id="reporting-on" class="printable-block"><!-- ReactJS component: ReportingOn --></div>
 
     <div id="visits-blocks-widget"  class="printable-block"><!-- ReactJS component: VisitsBlocksSet --></div>
 

@@ -31,8 +31,7 @@ var MainActionMenu = React.createClass({
         var eventAction = $(event.target).attr('href');
         switch(eventAction) {
         case "#save":
-
-            saveImage("body");
+            saveImage("body",{}, "klerede-dashboard");
             break;
         case "#print":
             printDiv("body");
