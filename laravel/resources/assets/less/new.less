@@ -51,7 +51,7 @@
 }
 
 .saving .unsavable{
-    display:none;
+    display:none !important;
 }
 
 .weather-popup .attendance
@@ -80,6 +80,82 @@
     width:330px;
     margin-bottom:24px;
 }
+
+#main-action-menu {
+    position:absolute;
+    top:24px;
+    right:24px;
+    cursor:pointer;
+}
+
+#main-action-menu svg.plus-sign-button {
+    width:16px;
+    height:16px;
+}
+
+#main-action-menu .plus-sign-menu .menu-content {
+    top:-10px;
+    right:22px;
+}
+
+#main-action-menu .plus-sign-menu .menu-content .arrow {
+    top:50%;
+    right:-12px;
+    margin-right:0px;
+    margin-top:-6px;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid @white;
+    border-top: 6px solid transparent;
+}
+
+.position-relative {
+    position:relative;
+}
+.widget-plus-menu {
+    position:absolute;
+    top:8px;
+    right:12px;
+    cursor:pointer;
+}
+
+.widget-plus-menu svg.plus-sign-button {
+    width:8px;
+    height:8px;
+}
+
+.widget-plus-menu .plus-sign-menu .menu-content {
+    top:-10px;
+    right:22px;
+}
+
+.widget-plus-menu .plus-sign-menu .menu-content .arrow {
+    top:50%;
+    right:-12px;
+    margin-right:0px;
+    margin-top:-6px;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid @white;
+    border-top: 6px solid transparent;
+}
+
+.saving .stat-block .label {
+    // font-size:80%;
+    font-family:'Raleway', sans-serif;
+}
+.saving .stat-block .label:after {
+    font-size:100%;
+}
+.saving  .stat-block.stats-bottom {
+    border:1px solid @lightmediumgrey;
+}
+.saving .stat-block.stats-bottom .stat {
+    font-size: 330%;
+}
+
+.saving div.kilo .stat-block.stats-bottom .stat {
+    font-size:270%;
+}
+
 
 @media print {
     
@@ -118,6 +194,9 @@
         width:100%;
         display:block;
     }
+    .solo .unprintable {
+        display:block !important;
+    }
     
     .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6,
     .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12,
@@ -132,8 +211,11 @@
     }
 
 
-    header .klerede-logo img {
-         width: 111px;
+    header .klerede-logo svg {
+         width: 80px;
+         position: static;
+         margin-left:15px;
+         margin-top:30px;
     }
 
     div#sales-goals-widget,

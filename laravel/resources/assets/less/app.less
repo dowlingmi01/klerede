@@ -56,7 +56,7 @@ header {
             text-align: left;
             background-color:inherit;
         }
-        img {
+        svg {
             position: relative;
             left: 50%;
             top: 50%;
@@ -1793,15 +1793,15 @@ body > .popover.top>.arrow:after {
             fill: @rust;
         }
     }
-    .stat:after {
-        content: '%';
-        font-size: 50%;
-        position: relative;
-        top: -7px;
-    }
-    .change:after {
-        content: '%';
-    }
+    // .stat:after {
+    //     content: '%';
+    //     font-size: 50%;
+    //     position: relative;
+    //     top: -7px;
+    // }
+    // .change:after {
+    //     content: '%';
+    // }
 }
 #members-captured {
     .stat,
@@ -1815,15 +1815,15 @@ body > .popover.top>.arrow:after {
             fill: rgba(56,21,77,1);
         }
     }
-    .stat:after {
-        content: '%';
-        font-size: 50%;
-        position: relative;
-        top: -7px;
-    }
-    .change:after {
-        content: '%';
-    }
+    // .stat:after {
+    //     content: '%';
+    //     font-size: 50%;
+    //     position: relative;
+    //     top: -7px;
+    // }
+    // .change:after {
+    //     content: '%';
+    // }
 }
 #members-frequency {
     .stat,
@@ -1887,13 +1887,13 @@ body > .popover.top>.arrow:after {
         padding-top: 6px;
         text-transform: initial;
     }
-    .stat:after {
-        content: 'k';
-        font-size: 50%;
-    }
-    .change:after {
-        content: 'k';
-    }
+    // .stat:after {
+    //     content: 'k';
+    //     font-size: 50%;
+    // }
+    // .change:after {
+    //     content: 'k';
+    // }
 }
 #members-percap {
     .stat,
@@ -2804,9 +2804,16 @@ form.inline-block {
 }
 
 #revenue2 select.form-control {
-    background-image: url('../img/caret.svg');
-    background-repeat: no-repeat;
-    background-position: 100% 50%;
+    // background-image: url('../img/caret.svg');
+    // background-repeat: no-repeat;
+    // background-position: 100% 50%;
+}
+#revenue2 .revenue-dropdown {
+    position:relative;
+}
+#revenue2 .revenue-dropdown .filter-caret {
+    top:50%;
+    margin-top:-2px;
 }
 
 form.datepicker-form {
@@ -3248,44 +3255,44 @@ a.dp-choose-date {
                                                                         //@MEDIA QUERIES
                                                                         
 @media (max-width: 1199px) {
-    #revenue2 .details #table .table-item {
-/*        margin-top:10px;*/
-    }
-    #revenue2 .details #table .table-item div {
-        height:auto;
-        line-height:auto;
-    }
-    
-    #revenue2 .details .details-header #table .table-item {
-        height:30px;
-    }
-    
-    #revenue2 .details #table .child-details-wrapper .table-item {
-        height:48px;
-    }
-}
-@media (max-width: 991px) {
-    #revenue2 .details #table .table-item {
-        height:auto;
-    }
-    #revenue2 .details #table .table-item .left-line {
-        border-left: none;
-    }
-    #revenue2 .details #table .table-item .left-line div {
-        margin-left:0;
-    }
-
-    #revenue2 .details #table .table-item div.title {
-        text-align:center;
-        margin-bottom:5px;
-    }
-    
-    #revenue2 .details #table .child-details-wrapper .table-item {
-        height:72px;
-    }
-
-}
-@media (max-width: 767px) {
+//     #revenue2 .details #table .table-item {
+// /*        margin-top:10px;*/
+//     }
+//     #revenue2 .details #table .table-item div {
+//         height:auto;
+//         line-height:auto;
+//     }
+//
+//     #revenue2 .details .details-header #table .table-item {
+//         height:30px;
+//     }
+//
+//     #revenue2 .details #table .child-details-wrapper .table-item {
+//         height:48px;
+//     }
+// }
+// @media (max-width: 991px) {
+//     #revenue2 .details #table .table-item {
+//         height:auto;
+//     }
+//     #revenue2 .details #table .table-item .left-line {
+//         border-left: none;
+//     }
+//     #revenue2 .details #table .table-item .left-line div {
+//         margin-left:0;
+//     }
+//
+//     #revenue2 .details #table .table-item div.title {
+//         text-align:center;
+//         margin-bottom:5px;
+//     }
+//
+//     #revenue2 .details #table .child-details-wrapper .table-item {
+//         height:72px;
+//     }
+//
+// }
+// @media (max-width: 767px) {
     #revenue2 .details #table .table-item div.title {
         text-align:left;
     }

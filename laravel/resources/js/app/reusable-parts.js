@@ -99,8 +99,12 @@ var ActionMenu = React.createClass({
             var a = this.props.actions[k];
             actions.push(<div key={k} className="action"><a onClick={a.handler} href={a.href}>{a.text}</a></div>);
         }
+        var className = "plus-sign-menu unsavable";
+        if (this.props.className) {
+            className = className + " " +this.props.className; 
+        }
         return (
-            <div onClick={this.onClick} className="plus-sign-menu unsavable" data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a>" data-placement="top">
+            <div onClick={this.onClick} className={className} data-toggle="popover" data-html="true" data-content="<a href='goals'>Edit</a>" data-placement="top">
                 <PlusSign className="plus-sign-button" />
                 <div className={"menu-content fade "+this.state.in} role="tooltip">
                     <div className="arrow"></div>

@@ -20,6 +20,13 @@ var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var analytics = require("./analytics.js");
 
+
+var ActionMenu = require('./reusable-parts').ActionMenu;
+var printDiv = require ('./kutils/print-div.js');
+var saveImage = require ('./kutils/save-image.js');
+
+
+
 var MembersBlock = React.createClass({
     render: function() {
         return (
@@ -37,7 +44,19 @@ var MembersBlock = React.createClass({
 
 var MembersBlocksSet = React.createClass({
     getInitialState: function() {
+        var actions = [];
+        
+        if(features.save) {
+            actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        }
+        if (features.print) {
+            actions.push({href:"#print", text:"Print", handler:this.onActionClick});
+        }
+        
         return {            
+            
+            actions:actions,
+            
             membersConversion: '...',
             membersConversionCompareTo: '...',
 
@@ -56,6 +75,21 @@ var MembersBlocksSet = React.createClass({
             membersPercap: '...',
             membersPercapCompareTo: '...'
         };
+    },
+    onActionClick:function (event) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
+        case "#save":
+            saveImage("#members-blocks-widget",{});
+            break;
+        case "#print":
+            printDiv("#members-blocks-widget");
+            break;
+        default:
+            return;
+        }
+        analytics.addEvent('Members Blocks', 'Plus Button Clicked', eventAction);
+        event.preventDefault();
     },
 	onStatsResult:function(result) {
         // Abbreviate numbers for total members block
@@ -232,6 +266,14 @@ var MembersBlocksSet = React.createClass({
                     $(newstat).html("<span style='font-size:50%'>$</span>"+$(newstat).html());
                     $(oldstat).html("$"+$(oldstat).html());
                 };
+                if($(statblock).parent().hasClass("percent")) {
+                    $(newstat).html($(newstat).html()+"<span style='font-size:50%'>%</span>");
+                    $(oldstat).html($(oldstat).html()+"%");
+                };
+                if($(statblock).parent().hasClass("kilo")) {
+                    $(newstat).html($(newstat).html()+"<span style='font-size:50%'>k</span>");
+                    $(oldstat).html($(oldstat).html()+"k");
+                };
             }
         });
     },
@@ -256,6 +298,7 @@ var MembersBlocksSet = React.createClass({
         return (
             <div>
                 <div className="row">
+                    <div className="position-relative"><ActionMenu className="widget-plus-menu" actions={this.state.actions}/></div>
                     <div className="col-xs-12 col-sm-8 col-lg-4">
                         <div className="filter">
                             <form>
@@ -270,7 +313,7 @@ var MembersBlocksSet = React.createClass({
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-conversion">
+                    <div className="col-xs-6 col-sm-4 col-lg-2 percent" id="members-conversion">
                         <MembersBlock 
                             label="Member Conversion" 
                             stat={this.state.membersConversion} 
@@ -288,13 +331,13 @@ var MembersBlocksSet = React.createClass({
                             stat={this.state.membersRecency}
                             comparedTo={this.state.membersRecencyCompareTo} />
                     </div>
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-total">
+                    <div className="col-xs-6 col-sm-4 col-lg-2 kilo" id="members-total">
                         <MembersBlock
                             label="Members"
                             stat={this.state.membersTotal}
                             comparedTo={this.state.membersTotalCompareTo} />
                     </div>
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-captured">
+                    <div className="col-xs-6 col-sm-4 col-lg-2 percent" id="members-captured">
                         <MembersBlock 
                             label="Capture Rate" 
                             stat={this.state.membersCaptured} 

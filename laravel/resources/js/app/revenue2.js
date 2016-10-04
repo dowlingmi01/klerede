@@ -13,9 +13,14 @@ var KUtils = {};
 KUtils.date = require("./kutils/date-utils.js");
 KUtils.number = require("./kutils/number-utils.js");
 
+var Caret = require('./svg-icons').Caret;
 var LongArrow = require('./svg-icons').LongArrow;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var analytics = require("./analytics.js");
+
+var ActionMenu = require('./reusable-parts').ActionMenu;
+var printDiv = require ('./kutils/print-div.js');
+var saveImage = require ('./kutils/save-image.js');
 
 
 var CaretHandler = React.createClass({
@@ -37,11 +42,14 @@ var Dropdown = React.createClass({
         }
         
         return (
-            <form className={this.props.className}>
-                <select className="form-control" onChange={this.props.onChange} value={this.props.selected} >
-                    {options}
-                </select>
-            </form>
+            <div className={this.props.className}>
+                <Caret className="filter-caret" />
+                <form >
+                    <select className="form-control" onChange={this.props.onChange} value={this.props.selected} >
+                        {options}
+                    </select>
+                </form>
+            </div>
         );
     }
 });
@@ -344,29 +352,20 @@ var DetailsRow = React.createClass({
             <div className={this.props.className} >
                 <div className="table-item-wrapper">
                     <div className="table-item">
-                        <div className="col-xs-4 col-sm-12 col-md-4 title">
+                        <div className="col-xs-4 title">
                             <div className="title-text">
                                 {this.props.title}
                             </div>
                         </div>
-                        <div className="col-xs-8 col-sm-12 col-md-8 title">
-                            <div className="col-xs-4 col-sm-12 col-lg-4 left-line" >
-                                <div className="text-center hidden-xs hidden-lg hidden-xl" style={changeStyle}>
-                                    <ChangeArrow className={"change multicolorfl "+upDownClass} />
-                                    <span className="multicolor" id="change">{change}</span>
-                                </div>
-                                <div className="hidden-sm hidden-md" style={changeStyle}>
+                        <div className="col-xs-8 title">
+                            <div className="col-xs-4 left-line" >
+                                <div className="" style={changeStyle}>
                                     <ChangeArrow className={"change multicolorfl "+upDownClass} />
                                     <span className="multicolor" id="change">{change}</span>
                                 </div>
                             </div>
-                            <div className="col-xs-8 col-sm-12 col-lg-8 left-line">
-                                <div className="text-center hidden-xs hidden-lg hidden-xl">
-                                    <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
-                                    <LongArrow className="long-arrow" width="21px" />
-                                    <div className="multicolor" id="to-val" style={toStyle}>${formatAmount(to)}</div>
-                                </div>
-                                <div className="hidden-sm hidden-md">
+                            <div className="col-xs-8 left-line">
+                                <div className="">
                                     <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
                                     <LongArrow className="long-arrow" width="21px" />
                                     <div className="multicolor" id="to-val"  style={toStyle}>${formatAmount(to)}</div>
@@ -410,14 +409,18 @@ var Revenue2 = React.createClass({
     getInitialState:function () {
         var today = new Date(KUtils.date.localFormat(wnt.today));
         var weekDay = KUtils.date.getWeekDay(wnt.today);
-
-        // var offset = -weekDay -7;
-        // if (offset < -12) offset = -6;
-        //
-        // var periodFrom = KUtils.date.addDays(today, offset);
         var date = this.buildDateDetails(today);
+
+        var actions = [];
+        if(features.save) {
+            actions.push({href:"#save", text:"Save", handler:this.onActionClick});
+        }
+        if (features.print) {
+            actions.push({href:"#print", text:"Print", handler:this.onActionClick});
+        }
         
         return {
+            actions:actions,
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
             channelEmpty:{gate:true, cafe: true, store: true, membership: true},
@@ -442,6 +445,21 @@ var Revenue2 = React.createClass({
             },
             ticketTypes:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"}
         };
+    },
+    onActionClick:function (event) {
+        var eventAction = $(event.target).attr('href');
+        switch(eventAction) {
+        case "#save":
+            saveImage("#revenue-row-widget2",{}, "earned-revenue");
+            break;
+        case "#print":
+            printDiv("#revenue-row-widget2");
+            break;
+        default:
+            return;
+        }
+        analytics.addEvent('Earned Revenue', 'Plus Button Clicked', eventAction);
+        event.preventDefault();
     },
     buildDateDetails:function (d) {
         var du = KUtils.date; //date utilities
@@ -1346,6 +1364,7 @@ var Revenue2 = React.createClass({
         try {
             return (
                 <div className="row">
+                    <div className="position-relative"><ActionMenu className="widget-plus-menu" actions={this.state.actions}/></div>
                     <div className="col-xs-12 col-sm-12">
                         <div className="widget" id="revenue2">
                             <h2>
@@ -1354,7 +1373,7 @@ var Revenue2 = React.createClass({
                             <div className="row filters">
                                 <div className="col-xs-8 col-lg-6" id="period-type">
                                     <Dropdown
-                                        className="inline-block"
+                                        className="inline-block revenue-dropdown"
                                         ref="periodType"
                                         optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
                                         selected={this.state.periodType}
@@ -1364,7 +1383,7 @@ var Revenue2 = React.createClass({
                                 </div>
                                 <div className="col-xs-4 col-lg-6 text-right" id="members">
                                     <Dropdown 
-                                        className="inline-block"
+                                        className="inline-block revenue-dropdown"
                                         ref="members"
                                         optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
                                         onChange={this.onMembersChange}
@@ -1453,7 +1472,7 @@ var Revenue2 = React.createClass({
                                     </div>
                                     <div className="col-xs-6 col-sm-6 text-right">
                                         <Dropdown
-                                            className="inline-block"
+                                            className="inline-block revenue-dropdown"
                                             ref="comparePeriodType"
                                             optionList={
                                                 this.getCompareList()
@@ -1464,23 +1483,23 @@ var Revenue2 = React.createClass({
                                     </div>
                                 </div>
                                 <div className="col-xs-12 col-sm-12 details-header">
-                                    <div className="col-xs-12 col-sm-6" id="table">
+                                    <div className="col-xs-12 col-lg-6" id="table">
                                         {detailsLeftHeader}
                                     </div>
-                                    <div className="col-xs-12 col-sm-6 hidden-xs" id="table">
+                                    <div className="col-xs-12 col-lg-6 hidden-xs hidden-sm hidden-md" id="table">
                                         {detailsRightHeader}
                                     </div>
                                 </div>
                                 <div className="col-xs-12 col-sm-12">
-                                        <div className="col-xs-12 col-sm-6" id="table">
+                                        <div className="col-xs-12 col-lg-6" id="table">
                                             {detailsRowsLeft}
                                         </div>
-                                        <div className="col-xs-12 col-sm-6" id="table">
+                                        <div className="col-xs-12 col-lg-6" id="table">
                                             {detailsRowsRight}
                                         </div>
                                 </div>
                             </div>
-                            <div className={"text-center "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
+                            <div className={"text-center unsavable "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
                                 <CaretHandler />
                                 {this.state.detailsTitle}
                             </div>

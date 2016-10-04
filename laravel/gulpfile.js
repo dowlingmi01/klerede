@@ -14,6 +14,7 @@ elixir(function(mix) {
                 './resources/js/app/header.js',
                 './resources/js/app/customer-logo.js',
                 './resources/js/app/reporting-on.js',
+                './resources/js/app/main-action-menu.js',
                 './resources/js/app/visits-blocks.js',
                 './resources/js/app/sales-goals.js',
                 './resources/js/app/membership-goals.js',

@@ -15,6 +15,8 @@ KAPI.roles = require("./kapi/roles.js");
 
 var KForms = require("./kutils/form-validations.js");
 
+var KleredeLogo = require('./svg-icons').KleredeLogo;
+
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var LongArrow = require('./svg-icons').LongArrow;
@@ -634,7 +636,7 @@ var Header = React.createClass({
 			<div>
             <header className="container-fluid">
                 <div className="row">
-                    <div className="col-xs-2 col-sm-2 klerede-logo"><a href="/dashboard"><img src="img/logo-klerede.svg" /></a></div>
+                    <div className="col-xs-2 col-sm-2 klerede-logo"><a href="/dashboard"><KleredeLogo /></a></div>
                     <div className="col-xs-10 col-sm-10 user-info">
                         {clientName}
                         <div className="user-wrapper" onClick={this.toggleSettings}>
