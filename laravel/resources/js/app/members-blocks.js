@@ -232,6 +232,14 @@ var MembersBlocksSet = React.createClass({
                     $(newstat).html("<span style='font-size:50%'>$</span>"+$(newstat).html());
                     $(oldstat).html("$"+$(oldstat).html());
                 };
+                if($(statblock).parent().hasClass("percent")) {
+                    $(newstat).html($(newstat).html()+"<span style='font-size:50%'>%</span>");
+                    $(oldstat).html($(oldstat).html()+"%");
+                };
+                if($(statblock).parent().hasClass("kilo")) {
+                    $(newstat).html($(newstat).html()+"<span style='font-size:50%'>k</span>");
+                    $(oldstat).html($(oldstat).html()+"k");
+                };
             }
         });
     },
@@ -270,7 +278,7 @@ var MembersBlocksSet = React.createClass({
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-conversion">
+                    <div className="col-xs-6 col-sm-4 col-lg-2 percent" id="members-conversion">
                         <MembersBlock 
                             label="Member Conversion" 
                             stat={this.state.membersConversion} 
@@ -288,13 +296,13 @@ var MembersBlocksSet = React.createClass({
                             stat={this.state.membersRecency}
                             comparedTo={this.state.membersRecencyCompareTo} />
                     </div>
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-total">
+                    <div className="col-xs-6 col-sm-4 col-lg-2 kilo" id="members-total">
                         <MembersBlock
                             label="Members"
                             stat={this.state.membersTotal}
                             comparedTo={this.state.membersTotalCompareTo} />
                     </div>
-                    <div className="col-xs-6 col-sm-4 col-lg-2" id="members-captured">
+                    <div className="col-xs-6 col-sm-4 col-lg-2 percent" id="members-captured">
                         <MembersBlock 
                             label="Capture Rate" 
                             stat={this.state.membersCaptured} 

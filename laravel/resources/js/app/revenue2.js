@@ -13,6 +13,7 @@ var KUtils = {};
 KUtils.date = require("./kutils/date-utils.js");
 KUtils.number = require("./kutils/number-utils.js");
 
+var Caret = require('./svg-icons').Caret;
 var LongArrow = require('./svg-icons').LongArrow;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var analytics = require("./analytics.js");
@@ -37,11 +38,14 @@ var Dropdown = React.createClass({
         }
         
         return (
-            <form className={this.props.className}>
-                <select className="form-control" onChange={this.props.onChange} value={this.props.selected} >
-                    {options}
-                </select>
-            </form>
+            <div className={this.props.className}>
+                <Caret className="filter-caret" />
+                <form >
+                    <select className="form-control" onChange={this.props.onChange} value={this.props.selected} >
+                        {options}
+                    </select>
+                </form>
+            </div>
         );
     }
 });
@@ -1354,7 +1358,7 @@ var Revenue2 = React.createClass({
                             <div className="row filters">
                                 <div className="col-xs-8 col-lg-6" id="period-type">
                                     <Dropdown
-                                        className="inline-block"
+                                        className="inline-block revenue-dropdown"
                                         ref="periodType"
                                         optionList={{week:"Week containing", month:"Month containing", quarter:"Quarter containing"}}
                                         selected={this.state.periodType}
@@ -1364,7 +1368,7 @@ var Revenue2 = React.createClass({
                                 </div>
                                 <div className="col-xs-4 col-lg-6 text-right" id="members">
                                     <Dropdown 
-                                        className="inline-block"
+                                        className="inline-block revenue-dropdown"
                                         ref="members"
                                         optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
                                         onChange={this.onMembersChange}

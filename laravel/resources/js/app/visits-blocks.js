@@ -85,7 +85,7 @@ var VisitsBlocksSet = React.createClass({
             $.each(this.state, function(stat, value){
                 if(value === null){
                     var stateObject = function() {
-                        returnObj = {};
+                        var returnObj = {};
                         returnObj[stat] = '-';
                         return returnObj;
                     };
