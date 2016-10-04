@@ -254,6 +254,9 @@ class UserController extends Controller
      */
     public function updatePassword(Request $request, $id)
     {
+        if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
+            return ["error"=>"Insufficient privileges"];
+        }   
         $user = User::find($id);
         if(!$user){
             return ['result'=> 'error', 'message'=>'User not found'];

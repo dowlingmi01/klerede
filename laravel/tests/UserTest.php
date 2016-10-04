@@ -241,7 +241,55 @@ class UserTest extends TestCase
 
     public function testUpdatOwnPasswordUser()
     {
+        
+        $result2 = $this->post('api/v1/auth/login', ['email'=>'llpa+basic@test.com','password'=>'secretbasic'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
 
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+
+        $result4 = $this->post('api/v1/users/5/pass?token='.$token, [
+                            'oldPassword'=>'secretbasic',
+                            'oldPassword'=>'secretbasic2',
+                            ])->seeJson(["error"=>"Insufficient privileges"]);
+    }
+
+    public function testUpdatOwnPasswordAdminUser()
+    {
+        
+        $result2 = $this->post('api/v1/auth/login', ['email'=>'llpa+admin@test.com','password'=>'secretadmin'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+
+        $result3 = $this->post('api/v1/users/7/pass?token='.$token, [
+                            'oldPassword'=>'secretbasic2',
+                            'password'=>'secretbasic2',
+                            ]);
+
+        $this->assertEquals('Invalid venue id', $this->response->getContent());
+
+        $result4 = $this->post('api/v1/users/6/pass?token='.$token, [
+                            'oldPassword'=>'secretbasic2',
+                            'password'=>'secretbasic2',
+                            ])->seeJson(["result"=>"error","message"=>"Invalid password"]);
+
+        $result4 = $this->post('api/v1/users/6/pass?token='.$token, [
+                            'oldPassword'=>'secretbasic',
+                            'password'=>'secretbasic2',
+                            ])->seeJson(["result"=>"ok"]);
+        
+        $result5 = $this->post('api/v1/auth/login', ['email'=>'llpa+basic@test.com','password'=>'secretbasic2'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+         
     }
 
     public function testDeleteUser()
