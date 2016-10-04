@@ -46,7 +46,7 @@ class UserController extends Controller
     {
         $input = (object) $request->all();
         if (Gate::denies('validate-venue', $input->venue_id)) {
-            return "Invalid venue id";
+            return "Invalid venue id".$input->venue_id.'#' ;
         }
         
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
@@ -283,7 +283,7 @@ class UserController extends Controller
         //check $id distinct to logged user
         //check venue_id
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return Response::json(["error"=>"Insufficient privileges"]);
+            return ["error"=>"Insufficient privileges"];
         }
         $user = User::find($id);
         if(!$user){

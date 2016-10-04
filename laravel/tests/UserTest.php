@@ -158,10 +158,8 @@ class UserTest extends TestCase
                                                     ])->seeJson(['error'=>'Insufficient privileges']);
                 
         
-        echo $this->response->getContent();
-        //$this->assertEquals('Invalid venue id', $this->response->getContent());
-
-        //test create user with insuficient priviledges
+        //echo $this->response->getContent();
+  
     
     }
 
@@ -169,19 +167,166 @@ class UserTest extends TestCase
 
     public function testUpdateUser()
     {
+
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+basic@test.com','password'=>'secretbasic'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+        $token = '';
+        
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+        //echo $token."\n\r";
+
+        $result2 = $this->put('api/v1/users/10?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=> 'error', 'message'=>'User not found']);
+                
+        $result3 = $this->put('api/v1/users/2?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ]);
+
+        $this->assertEquals('Invalid venue id', $this->response->getContent());        
+
+
+        $result3 = $this->put('api/v1/users/1?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(["error"=>"Insufficient privileges"]);
+
+
+        $result31 = $this->put('api/v1/users/5?token='.$token, [ 
+                                                    'role_id'=>1 
+                                                    ])->seeJson(["error"=>"Can't set role"]);
+
+         $result4 = $this->put('api/v1/users/5?token='.$token, [
+                                                    'last_name'=>'Test Modify LastN'
+                                                   
+                                                    ])->seeJson(['result'=>'ok']);
+
+ 
+    }
+
+    public function testUpdateAdminUser()
+    {
+
+        $result2 = $this->post('api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+        $token2 = '';
+        
+        $responseData2 = json_decode($this->response->getContent(), true);
+        $token2 = $responseData2['token'];
+        //echo $token2."\n\r";
+       
+        $result3 = $this->put('api/v1/users/7?token='.$token2, [ 
+                                                    'email'=>'aqua+admin+mod@test.com',
+                                                     
+                                                    ])->seeJson(['result'=>'ok']);
+
         //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
-        echo "OK!";
+        
+    }
+
+    public function testUpdatOwnPasswordUser()
+    {
+
     }
 
     public function testDeleteUser()
     {
-        //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
-        echo "OK!";
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+basic@test.com','password'=>'secretbasic'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+        $token = '';
+        
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+        
+        $result2 = $this->delete('api/v1/users/3?token='.$token)->seeJson(["error"=>"Insufficient privileges"]);
+    
+       
+  
+    
+
+    }
+
+
+   public function testDeleteAdminUser()
+    {
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+admin@test.com','password'=>'secretadmin'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+        $token = '';
+        
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+
+         $result2 = $this->delete('api/v1/users/1?token='.$token);
+
+        $this->assertEquals('Can\'t delete', $this->response->getContent());    
+        
+        $result2 = $this->delete('api/v1/users/7?token='.$token)->seeJson(['result'=>'ok']);
+
+         $result2 = $this->delete('api/v1/users/6?token='.$token);
+
+        $this->assertEquals('Invalid venue id', $this->response->getContent());   
+
+        $result2 = $this->delete('api/v1/users/3?token='.$token);
+
+        $this->assertEquals('Can\'t delete', $this->response->getContent());    
+
+
+        
     }
 
     public function testListUsers()
     {
-        //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
-        echo "OK!";
+         $result = $this->post('api/v1/auth/login', ['email'=>'aqua+basic@test.com','password'=>'secretbasic'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+        $token = '';
+        
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+        
+        $result2 = $this->get('api/v1/users/?venue_id=1518&token='.$token)->seeJson(["error"=>"Insufficient privileges"]);
+    }
+
+    public function testListAdminUsers()
+    {
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+admin@test.com','password'=>'secretadmin'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+
+        $token = '';
+        
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+        
+        $result2 = $this->get('api/v1/users/?venue_id=1518&token='.$token);
+
+         $responseList = json_decode($this->response->getContent(), true);
+
+        $this->assertNotEmpty($responseList);
     }
 }
