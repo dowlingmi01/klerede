@@ -623,6 +623,7 @@ var Revenue2 = React.createClass({
         newState.units = units;
         
         if (units == 'attendance-tab') {
+            newState.members = "totals";
             newState.dirty = 1;
         } else if( this.state.units == 'attendance-tab' ) {
             newState.dirty = 1;
@@ -757,7 +758,7 @@ var Revenue2 = React.createClass({
                         d.amount = d.units;
                 }
             } catch (e) {
-                console.error(i, e.message, r);
+                // console.error(i, e.message, r);
             }
         }
 
