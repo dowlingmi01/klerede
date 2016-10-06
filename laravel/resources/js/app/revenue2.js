@@ -691,7 +691,7 @@ var Revenue2 = React.createClass({
                     var asum = 0;
                     for(var j=0; j<13; j++) {
                         usum += parseInt(r[i+j].units);
-                        asum += r[i+j].amount;
+                        asum += parseFloat(r[i+j].amount);
                     }
                     w13av.push({units:usum/13, amount:asum/13});
                 }
