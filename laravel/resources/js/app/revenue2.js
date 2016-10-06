@@ -1197,7 +1197,7 @@ var Revenue2 = React.createClass({
         return !(nextState.dirty >= 0 || nextState.dirtyWeather >=0);
     },
     render:function () {
-        
+        var isNotAttendanceTab = this.state.units != 'attendance-tab';
         var unitsData = this.state[this.state.units];
         var channelTypes = unitsData.channelNames;
         var channelActive = unitsData.channelActive;
@@ -1272,7 +1272,7 @@ var Revenue2 = React.createClass({
                         var attendance = 0;
                         var formatAmount = KUtils.number.formatAmount;
                         if (!barIsEmpty) {
-                            attendance = this.state.units != 'attendance-tab' ? 
+                            attendance = isNotAttendanceTab ? 
                                 "Attendance: "+formatAmount(visitors[i].units) 
                                     : 
                                 "Revenue: $"+formatAmount(result.visitors_revenue[i].amount) ;
@@ -1348,7 +1348,7 @@ var Revenue2 = React.createClass({
                 console.log("Collect General Data for Details Error -> "+e, this.state);
             }
             
-            var attendanceDetailData = this.state.units != 'attendance-tab' ?
+            var attendanceDetailData = isNotAttendanceTab ?
                                                     KUtils.number.formatInteger(visitors)
                                                 :
                                                     <span><small>$</small> {KUtils.number.formatAmount(revenue)}</span>
@@ -1363,8 +1363,8 @@ var Revenue2 = React.createClass({
                 var detailsRowsRight = [];
                 var detailsLeftHeader = <div></div>;
                 var detailsRightHeader = <div></div>;
-                var sign = this.state.units != "attendance-tab" ? "$" : "";
-                var detailsFormatNumber = this.state.units != "attendance-tab" ?  KUtils.number.formatAmount: KUtils.number.formatInteger;
+                var sign = isNotAttendanceTab ? "$" : "";
+                var detailsFormatNumber = isNotAttendanceTab ?  KUtils.number.formatAmount: KUtils.number.formatInteger;
             
                 for(var k in channelActive) {
 
@@ -1499,6 +1499,18 @@ var Revenue2 = React.createClass({
             }
         }
         
+        //Membership option
+        
+        var membersDropDown = isNotAttendanceTab ? 
+                <Dropdown 
+                    className="inline-block revenue-dropdown"
+                    ref="members"
+                    optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
+                    onChange={this.onMembersChange}
+                    selected={this.state.members}
+                />
+                :<div></div>    ;
+        
         // Build HTML
         try {
             return (
@@ -1521,13 +1533,7 @@ var Revenue2 = React.createClass({
                                     <DatePickerReact defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
                                 </div>
                                 <div className="col-xs-4 col-lg-6 text-right" id="members">
-                                    <Dropdown 
-                                        className="inline-block revenue-dropdown"
-                                        ref="members"
-                                        optionList={{totals:"Totals", members:"Members", nonmembers:"Non-members"}}
-                                        onChange={this.onMembersChange}
-                                        selected={this.state.members}
-                                    />
+                                    {membersDropDown}
                                 </div>
                             </div>
                             <div className="row filters">
