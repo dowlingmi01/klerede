@@ -14,7 +14,15 @@ module.exports = {
             queries: queries
         }, options);
     },
-    getQuery: function(from, to, members, channel, type, operation, periodType) { //yyyy-mm-dd, yyyy-mm-dd, null for membres+nonmembers, null for all channels, 'sales', 'detail', 'date'
+    getQuery: function(
+        from,       //yyyy-mm-dd
+        to,         //yyyy-mm-dd
+        members,    //null for membres+nonmembers | true | false | 'ga' | 'group' | 'visitors_members' -> true | 'visitors_non_members' -> false
+        channel,    //null for all channels
+        type,       //'sales'|'visits' | {type:'sales'|'visits', kinds:[]} 
+        operation,  //'detail'|'sum'
+        periodType  //'date'|'week'
+    ) { 
 
         if (periodType == 'week') {
             from = serverFormatWeek(from);
@@ -53,14 +61,21 @@ module.exports = {
             delete query.periods.type;
 
         //Members work different if visits or sales
-        if (members === null || members === undefined || type === 'visits')
+        if (members === null || members === undefined || type === 'visits') 
             delete query.specs.members;
 
         if (type === 'visits') {
-            if (members === true)
+            
+            delete query.specs.channel;
+            
+            if (members === true || channel == 'visitors_members')
                 query.specs.kinds = ["membership"];
-            else if (members === false)
+            else if (members === false || channel == 'visitors_non_members')
                 query.specs.kinds = ["ga", "group"];
+            else if (members === "ga")
+                query.specs.kinds = ["ga"];
+            else if (members === "group")
+                query.specs.kinds = ["group"];
         }
 
         //Kinds for ticket type

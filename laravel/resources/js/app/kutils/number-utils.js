@@ -6,7 +6,8 @@ exports.forceDigits = function (n, d) { //n:number, d:number -> string
     return s;
 }
 
-exports.formatAmount = function(n) {
+
+var formatAmount = exports.formatAmount = function(n, dec) {
     // return n;
     if(n===null || n===undefined || isNaN(n) || n===0) return "0";
     
@@ -24,6 +25,11 @@ exports.formatAmount = function(n) {
             }
         };
         return sign+r;
+    } else if (dec !== undefined) {
+        //dec is defined
+        
+        return sign+n.toFixed(dec);
+        
     } else if (n > 100) {
         //one decimal
         return sign+n.toFixed(1);
@@ -31,4 +37,8 @@ exports.formatAmount = function(n) {
         //2 decimals
         return sign+n.toFixed(2);
     }
+}
+
+exports.formatInteger = function(n){
+    return formatAmount(n, 0);
 }

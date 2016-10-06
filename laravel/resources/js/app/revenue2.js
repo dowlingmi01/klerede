@@ -80,6 +80,7 @@ var GBar = React.createClass({
         var popup = this.refs.popup.getDOMNode();
         
         $(this.refs.gbarSections.getDOMNode()).on("mouseover", function(event){
+            // console.log($(popup));
             $(popup).fadeIn(300);
         });
         $(this.refs.gbarSections.getDOMNode()).on("mouseleave", function(event){
@@ -138,11 +139,18 @@ var GBar = React.createClass({
 });
 var ChannelPopup = React.createClass({
     render:function () {
-        var formatAmount = KUtils.number.formatAmount;
+        var numFormat = KUtils.number.formatAmount;
         var key = this.props.units;
+        var sign = "$";
         if (this.props.units == "dollars") {
             key = "amount";
         }
+        if (this.props.units == "attendance-tab") {
+            key = "amount";
+            sign = "";
+            numFormat = KUtils.number.formatInteger;
+        }
+        
         return(
             <div id="gift" className="details-row multicolor-wrapper">
                 <div className="col-xs-1">
@@ -152,7 +160,7 @@ var ChannelPopup = React.createClass({
                     {this.props.name}
                 </div>
                 <div id="quantity" className="col-xs-5">
-                    ${formatAmount(this.props.data[key])}
+                    {sign}{numFormat(this.props.data[key])}
                 </div>
             </div>
         );
@@ -207,8 +215,6 @@ var WeatherPopupView = React.createClass({
 var WeatherPopup = React.createClass({
     render:function () {
         
-        var formatAmount = KUtils.number.formatAmount;
-        
         var popupChannels = [];
         var channels = this.props.channels;
         for (var i in channels) {
@@ -222,7 +228,7 @@ var WeatherPopup = React.createClass({
         
         var formattedDate = KUtils.date.weatherFormat(this.props.date, this.props.periodType);
 
-        var attendance = formatAmount(this.props.attendance);
+        var attendance = this.props.attendance;
 
         return(
             <div id={this.props.id} className="weather-popup" style={{bottom:this.props.bottom+"px"}}>
@@ -232,7 +238,7 @@ var WeatherPopup = React.createClass({
                     </div>
                     <WeatherPopupView data={this.props.data} />
                 </div>
-                <div className="attendance row" >Attendance: {attendance}</div>
+                <div className="attendance row" >{attendance}</div>
                 <div id="details" className="row">
                     {popupChannels}
                 </div>
@@ -305,7 +311,7 @@ var DetailsRow = React.createClass({
     //props
     //from - to - title
     render:function () {
-        var formatAmount = KUtils.number.formatAmount;
+        var formatNumber = this.props.formatNumber;
 
         var from = this.props.from;
         var to = this.props.to;
@@ -338,7 +344,9 @@ var DetailsRow = React.createClass({
                 detailsRows.push(
                     <DetailsRow 
                         className="child-details"
-                        key={i} from={detail.from} to={detail.to} title={detail.title} 
+                        key={i} from={detail.from} to={detail.to} title={detail.title}
+                        formatNumber={this.props.formatNumber}
+                        sign={this.props.sign}
                         details={detail.details}
                     />
                 )
@@ -366,9 +374,9 @@ var DetailsRow = React.createClass({
                             </div>
                             <div className="col-xs-8 left-line">
                                 <div className="">
-                                    <div id="from-val" style={fromStyle}>${formatAmount(from)}</div>
+                                    <div id="from-val" style={fromStyle}>{this.props.sign}{formatNumber(from)}</div>
                                     <LongArrow className="long-arrow" width="21px" />
-                                    <div className="multicolor" id="to-val"  style={toStyle}>${formatAmount(to)}</div>
+                                    <div className="multicolor" id="to-val"  style={toStyle}>{this.props.sign}{formatNumber(to)}</div>
                                 </div>
                             </div>
                         </div>
@@ -419,11 +427,31 @@ var Revenue2 = React.createClass({
             actions.push({href:"#print", text:"Print", handler:this.onActionClick});
         }
         
-        return {
-            actions:actions,
+        var regularUnitsData = {
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
-            channelEmpty:{gate:true, cafe: true, store: true, membership: true},
+            childCategories:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"},
+            childCategoriesQdetails:{prefix:"gate_bars_by_", channel:"gate", type:'sales'},
+            attendanceDetailTitle:"Attendance"
+        }
+
+        var attendanceData = {
+            channelNames:{visitors_non_members:"Box Office", visitors_members:"Membership"},
+            channelActive:{visitors_non_members:"active", visitors_members:"active"},
+            childCategories:{ga:"General admission", group:"Groups"},
+            childCategoriesQdetails:{prefix:"visitors_non_members_bars_by_", channel:"ALL", type:'visits'},
+            attendanceDetailTitle:"Revenue"
+        }
+        
+        return {
+            actions:actions,
+            channelEmpty:{
+                gate:true, cafe: true, store: true, membership: true
+                ,visitors_non_members:true, visitors_members:true
+            },
+            dollars:regularUnitsData,
+            percap:regularUnitsData,
+            'attendance-tab':attendanceData,
             periodType:"week",
             members:"totals",
             units:"dollars",
@@ -431,7 +459,8 @@ var Revenue2 = React.createClass({
             date:date,
             periodFrom:date.thisWeekStart,      //mm/dd/yyyy
             periodTo:date.thisWeekLimit,          //mm/dd/yyyy
-            dirty:false,
+            dirty:-1,
+            dirtyWeather:-1,
             detailsClass:"",
             detailsTitle:"Show Details",
             barEnter:null,
@@ -443,7 +472,6 @@ var Revenue2 = React.createClass({
                 quarter:{lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"},
                 quarterBar:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
             },
-            ticketTypes:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"}
         };
     },
     onActionClick:function (event) {
@@ -561,7 +589,7 @@ var Revenue2 = React.createClass({
     },
     onPeriodTypeChange:function (event) {
         analytics.addEvent('Earned Revenue', 'Period Type Changed', event.target.value);
-        this.setState({periodType:event.target.value, dirty:true});
+        this.setState({periodType:event.target.value, dirty:1});
     },
     onDateSelect:function (event) {
         if (this.state.periodFrom === event.target.value) {
@@ -570,7 +598,7 @@ var Revenue2 = React.createClass({
         var date = this.buildDateDetails(event.target.value);
         var formatedDate = wnt.formatDate(new Date(event.target.value));
         analytics.addEvent('Earned Revenue', 'Date Changed', formatedDate);
-        this.setState({date:date, dirty:true});
+        this.setState({date:date, dirty:1, dirtyWeather:1});
     },
     getCompareList:function () {
         var barEnter = (this.state.barEnter !== null);
@@ -583,16 +611,30 @@ var Revenue2 = React.createClass({
     },
     onMembersChange:function (event) {
         analytics.addEvent('Earned Revenue', 'Member Changed', event.target.value);
-        this.setState({members:event.target.value, dirty:true});
+        this.setState({members:event.target.value, dirty:1});
     },
     onUnitsChange:function (units) {
+        
+        if (units == this.state.units) return;
+            
         analytics.addEvent('Earned Revenue', 'Units Changed', units);
-        this.setState({units:units})
+        
+        var newState = {};
+        newState.units = units;
+        
+        if (units == 'attendance-tab') {
+            newState.dirty = 1;
+        } else if( this.state.units == 'attendance-tab' ) {
+            newState.dirty = 1;
+        }
+        
+        this.setState(newState);
+        
     },
     onChannelClick:function (channel) {
         var state = this.state;
-        state.channelActive[channel] = (state.channelActive[channel] == "active") ? "" : "active" ;
-        // state.dirty = true;
+        var channelActive = state[state.units].channelActive
+        channelActive[channel] = (channelActive[channel] == "active") ? "" : "active" ;
         this.updateSums(state);
         this.setState(state);
     },
@@ -691,7 +733,7 @@ var Revenue2 = React.createClass({
                     for (var j=0; j<13; j++) {
                         var sub = i+(j*7);
                          usum += parseInt(r[sub].units);
-                        asum += r[sub].amount;
+                        asum += parseFloat(r[sub].amount);
                     }
                     w13av.push({periodFrom:from, periodTo:r[sub].period , units:usum/13, amount:asum/13});
                 }
@@ -700,30 +742,56 @@ var Revenue2 = React.createClass({
         }
         return state;
     },
+    copyUnitsToEmptyAmount:function (state) {
+        var result = state.result;
+        for (var i in result) {
+            var r = result[i];
+            if (r.units && !r.amount) {
+                r.amount = r.units;
+                continue;
+            }
+            try {
+                for (var j in r) {
+                    var d = r[j];
+                    if(d.units && !d.amount)
+                        d.amount = d.units;
+                }
+            } catch (e) {
+                console.error(i, e.message, r);
+            }
+        }
+
+        return state;
+    },
     updateSums:function (state) {
         var result = state.result;
         
+        var channelActive = state[state.units].channelActive;
         var total_bars = result.total_bars;
         var visitors = result.visitors;
         var partial_sum = [];
         var partial_sum_percap = [];
         var max = 0;
         var maxPercap = 0;
+
+        var unitSufix = this.state.units == 'attendance-tab'?'units':'amount';
+
         for (var i in total_bars) {
             
             //Save sum, only active channels
             //And calculate percaps
             var barSum = 0;
             var percapSum = 0;
-            for (var k in state.channelActive) {
-                if(state.channelActive[k] == "active") {
+            
+            for (var k in channelActive) {
+                if(channelActive[k] == "active") {
                     if(result[k+"_bars"].length > i) {
                         
-                        barSum += result[k+"_bars"][i].amount;
+                        barSum += parseInt( result[k+"_bars"][i][unitSufix] );
 
                         if (visitors[i]) {
                             var v = parseInt(visitors[i].units);
-                            result[k+"_bars"][i].percap = result[k+"_bars"][i].amount/v;
+                            result[k+"_bars"][i].percap = result[k+"_bars"][i][unitSufix]/v;
                         } else {
                             result[k+"_bars"][i].percap = 0;
                         }
@@ -913,6 +981,12 @@ var Revenue2 = React.createClass({
         
         queries.visitors_totals = getQuery(from, to, membership, 'ALL', 'visits', 'sum', 'date');
         
+        queries.visitors_revenue = getQuery(from, to, membership, 'gate', {type:'sales', kinds:['ga','group']}, 'detail', barInterval);
+        
+        queries.visitors_revenue_totals = getQuery(from, to, membership, 'ALL', {type:'sales', kinds:['ga','group']}, 'sum', 'date');
+        
+        
+
         //GENERAL QUERIES -> PAST PERIODS
 
         queries.visitors_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'visits', 'detail', lastBarInterval1);
@@ -925,32 +999,67 @@ var Revenue2 = React.createClass({
         
         if (lastBarFrom3) 
             queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
+
+
+        // TODO: Consider making separate query packs for attendance tab
+        // ATENDANCE TAB NON MEMBERS CATEGORIES
+        // queries.visitors_non_members_bars_by_ga = getQuery(from, to, 'ga', 'ALL', 'visits', 'detail', barInterval);
+        // queries.visitors_non_members_bars_by_group = getQuery(from, to, 'group', 'ALL', 'visits', 'detail', barInterval);
+        //
+        // queries.visitors_non_members_bars_by_ga_totals = getQuery(from, to, 'ga', 'ALL', 'visits', 'sum', 'date');
+        // queries.visitors_non_members_bars_by_group_totals = getQuery(from, to, 'group', 'ALL', 'visits', 'sum', 'date');
+        //
+        // //ATENDANCE TAB -> PAST PERIODS
+        //
+        // queries.visitors_non_members_bars_by_ga_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, 'ga', 'ALL', 'visits', 'detail', lastBarInterval1);
+        // queries.visitors_non_members_bars_by_group_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, 'group', 'ALL', 'visits', 'detail', lastBarInterval1);
+        //
+        // queries.visitors_non_members_bars_by_ga_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, 'ga', 'ALL', 'visits', 'sum', 'date');
+        // queries.visitors_non_members_bars_by_group_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, 'group', 'ALL', 'visits', 'sum', 'date');
+        //
+        // queries.visitors_non_members_bars_by_ga_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, 'ga', 'ALL', 'visits', 'detail', lastBarInterval2);
+        // queries.visitors_non_members_bars_by_group_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, 'group', 'ALL', 'visits', 'detail', lastBarInterval2);
+        //
+        // queries.visitors_non_members_bars_by_ga_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, 'ga', 'ALL', 'visits', 'sum', 'date');
+        // queries.visitors_non_members_bars_by_group_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, 'group', 'ALL', 'visits', 'sum', 'date');
+        //
+        // if (lastBarFrom3) {
+        //     queries.visitors_non_members_bars_by_ga_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, 'ga', 'ALL', 'visits', 'detail', lastBarInterval3);
+        //     queries.visitors_non_members_bars_by_group_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, 'group', 'ALL', 'visits', 'detail', lastBarInterval3);
+        // }
+
+
         //PER CHANNEL QUERIES
-        
-        for (var channel in state.channelActive) {
+        var channelActive = state[state.units].channelActive;
+        for (var channel in channelActive) {
+            
+            //TODO: be more explicit defining the type of query
+            var type = 'sales';
+            if((/^visitors/i).test(channel))
+                type = 'visits';
             
             //CURRENT PERIOD
-            var query = getQuery(from, to, membership, channel, 'sales', 'detail', barInterval);
+            var query = getQuery(from, to, membership, channel, type, 'detail', barInterval);
             
-            var totals = getQuery(from, to, membership, channel, 'sales', 'sum', 'date');
+            var totals = getQuery(from, to, membership, channel, type, 'sum', 'date');
             
 
             //LAST PERIOD
             //this results will be processed on client 13-Week-Average-(Day for week and month and Week for quarter)
         
-            var lastBar1 = getQuery(lastBarFrom1, lastBarTo1, membership, channel, 'sales', lastBarOperation1, lastBarInterval1);
+            var lastBar1 = getQuery(lastBarFrom1, lastBarTo1, membership, channel, type, lastBarOperation1, lastBarInterval1);
             
-            var lastBar2 = getQuery(lastBarFrom2, lastBarTo2, membership, channel, 'sales', lastBarOperation2, lastBarInterval2);
+            var lastBar2 = getQuery(lastBarFrom2, lastBarTo2, membership, channel, type, lastBarOperation2, lastBarInterval2);
             
             if(lastBarFrom3)
-                var lastBar3 = getQuery(lastBarFrom3, lastBarTo3, membership, channel, 'sales', lastBarOperation3, lastBarInterval3);
+                var lastBar3 = getQuery(lastBarFrom3, lastBarTo3, membership, channel, type, lastBarOperation3, lastBarInterval3);
 
 
             
             //LAST PERIOD TOTALS
-            var lastPeriod1_totals = getQuery(lastFrom1, lastTo1, membership, channel, 'sales', lastOperation1, lastInterval1);
+            var lastPeriod1_totals = getQuery(lastFrom1, lastTo1, membership, channel, type, lastOperation1, lastInterval1);
 
-            var lastPeriod2_totals = getQuery(lastFrom2, lastTo2, membership, channel, 'sales', lastOperation2, lastInterval2);
+            var lastPeriod2_totals = getQuery(lastFrom2, lastTo2, membership, channel, type, lastOperation2, lastInterval2);
             
             
             //WRITE VARS
@@ -970,36 +1079,40 @@ var Revenue2 = React.createClass({
         
         // WARNING!!! ->>> Ticket Type should be called Product Type (tickets are only for General Admision)
         //TICKET TYPE QUERIES 
-        var ticketTypes = this.state.ticketTypes;
-        for (var ttype in ticketTypes) {
-            
+        var childCategories = state[state.units].childCategories;
+        var qDetails = state[state.units].childCategoriesQdetails;
+        var prefix = qDetails.prefix;
+        var channel = qDetails.channel;
+        var type = qDetails.type;
+        
+        for (var kind in childCategories) {
             //current period
-            queries["gate_bars_by_"+ttype] = getQuery(
-                    from, to, membership, 'gate', {type:"sales", kinds:[ttype]}, 'detail', barInterval
+            queries[prefix+kind] = getQuery(
+                    from, to, membership, channel, {type:type, kinds:[kind]}, 'detail', barInterval
             );
-            queries["gate_bars_by_"+ttype+"_totals"] = getQuery(
-                    from, to, membership, 'gate', {type:"sales", kinds:[ttype]}, 'sum', 'date'
+            queries[prefix+kind+"_totals"] = getQuery(
+                    from, to, membership, channel, {type:type, kinds:[kind]}, 'sum', 'date'
             );
             
             //Last period I
-            queries["gate_bars_by_"+ttype+"_lastperiod_1"] = getQuery(
-                    lastBarFrom1, lastBarTo1, membership, 'gate', {type:"sales", kinds:[ttype]}, lastBarOperation1, lastBarInterval1
+            queries[prefix+kind+"_lastperiod_1"] = getQuery(
+                    lastBarFrom1, lastBarTo1, membership, channel, {type:type, kinds:[kind]}, lastBarOperation1, lastBarInterval1
             );
-            queries["gate_bars_by_"+ttype+"_lastperiod_1_totals"] = getQuery(
-                    lastFrom1, lastTo1, membership, 'gate', {type:"sales", kinds:[ttype]}, lastOperation1, lastInterval1
+            queries[prefix+kind+"_lastperiod_1_totals"] = getQuery(
+                    lastFrom1, lastTo1, membership, channel, {type:type, kinds:[kind]}, lastOperation1, lastInterval1
             );
             
             //Last period II
-            queries["gate_bars_by_"+ttype+"_lastperiod_2"] = getQuery(
-                    lastBarFrom2, lastBarTo2, membership, 'gate', {type:"sales", kinds:[ttype]}, lastBarOperation2, lastBarInterval2
+            queries[prefix+kind+"_lastperiod_2"] = getQuery(
+                    lastBarFrom2, lastBarTo2, membership, channel, {type:type, kinds:[kind]}, lastBarOperation2, lastBarInterval2
             );
-            queries["gate_bars_by_"+ttype+"_lastperiod_2_totals"] = getQuery(
-                    lastFrom2, lastTo2, membership, 'gate', {type:"sales", kinds:[ttype]}, lastOperation2, lastInterval2
+            queries[prefix+kind+"_lastperiod_2_totals"] = getQuery(
+                    lastFrom2, lastTo2, membership, channel, {type:type, kinds:[kind]}, lastOperation2, lastInterval2
             );
             
             //Last period III (only for bars nowadays)
-            queries["gate_bars_by_"+ttype+"_lastperiod_3"] = getQuery(
-                    lastBarFrom3, lastBarTo3, membership, 'gate', {type:"sales", kinds:[ttype]}, lastBarOperation3, lastBarInterval3
+            queries[prefix+kind+"_lastperiod_3"] = getQuery(
+                    lastBarFrom3, lastBarTo3, membership, channel, {type:type, kinds:[kind]}, lastBarOperation3, lastBarInterval3
             );
             
         }
@@ -1015,11 +1128,12 @@ var Revenue2 = React.createClass({
         state.result = result;
         this.singleResultsToArray(state);
         this.updateEmptyChannels(state);
+        this.copyUnitsToEmptyAmount(state);
         this.updateSums(state);
         this.updateQuarter13WeekAverage(state);
         this.update13WeekDayAverage(state);
         this.fillPartialPeriod(state);
-        state.dirty = false;
+        state.dirty = -1;
         
         this.setState(state);
         
@@ -1044,7 +1158,7 @@ var Revenue2 = React.createClass({
     onWeatherResult:function (wResult) {
         var state = this.state;
         state.wResult = wResult;
-        state.dirty = false;
+        state.dirtyWeather = -1;
         this.setState(state);
     },
     formatY:function (n) {
@@ -1069,20 +1183,26 @@ var Revenue2 = React.createClass({
         return r;
     },
     componentDidMount:function () {
-        this.setState({dirty:true});
+        this.setState({dirty:1, dirtyWeather:1});
     },
     shouldComponentUpdate:function (nextProps, nextState) {
-        if (nextState.dirty) {
-            this.updateData(nextState);
+        if (nextState.dirtyWeather === 1) {
+            nextState.dirtyWeather = 0;
             this.updateWeather(nextState);
         };
-        return !nextState.dirty;
+        if (nextState.dirty === 1) {
+            nextState.dirty = 0;
+            this.updateData(nextState);
+        };
+        return !(nextState.dirty >= 0 || nextState.dirtyWeather >=0);
     },
     render:function () {
         
-        var channelTypes = this.state.channelNames;
-        var channelActive = this.state.channelActive;
+        var unitsData = this.state[this.state.units];
+        var channelTypes = unitsData.channelNames;
+        var channelActive = unitsData.channelActive;
         var channelControls = [];
+        
 
         for (var k in channelTypes) {
             
@@ -1147,14 +1267,18 @@ var Revenue2 = React.createClass({
                         console.log("Collect Weather Data Error -> "+e, this.state);
                     }
                     
-                    //Collect Attendance Data
+                    //Collect Attendance or Visitors Revenue Data
                     try {
                         var attendance = 0;
-                        if (!barIsEmpty && visitors[i]) {
-                            attendance = visitors[i].units;
+                        var formatAmount = KUtils.number.formatAmount;
+                        if (!barIsEmpty) {
+                            attendance = this.state.units != 'attendance-tab' ? 
+                                "Attendance: "+formatAmount(visitors[i].units) 
+                                    : 
+                                "Revenue: $"+formatAmount(result.visitors_revenue[i].amount) ;
                         }
                     } catch (e) {
-                        console.log("Collect Weather Data Error -> "+e, this.state);
+                        // console.log("Collect Weather Data Error -> "+e, this.state);
                     }
                     
                     //Create GBars
@@ -1195,6 +1319,7 @@ var Revenue2 = React.createClass({
                     var toSufix = "_bars_totals";
                     var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
                     var visitors = parseInt(result.visitors_totals.units);
+                    var revenue = parseInt(result.visitors_revenue_totals.units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
                     var ttTotals = "_totals";
                 } else {
@@ -1214,12 +1339,21 @@ var Revenue2 = React.createClass({
                     
                     var visitors = parseInt(result.visitors[dataIndex].units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
+
+                    var revenue = parseInt(result.visitors_revenue[dataIndex].amount);
                 
                     ttTotals = "";
                 };
             } catch(e) {
                 console.log("Collect General Data for Details Error -> "+e, this.state);
             }
+            
+            var attendanceDetailData = this.state.units != 'attendance-tab' ?
+                                                    KUtils.number.formatInteger(visitors)
+                                                :
+                                                    <span><small>$</small> {KUtils.number.formatAmount(revenue)}</span>
+            ;
+            
             
             
             //Build Detail Rows
@@ -1229,6 +1363,8 @@ var Revenue2 = React.createClass({
                 var detailsRowsRight = [];
                 var detailsLeftHeader = <div></div>;
                 var detailsRightHeader = <div></div>;
+                var sign = this.state.units != "attendance-tab" ? "$" : "";
+                var detailsFormatNumber = this.state.units != "attendance-tab" ?  KUtils.number.formatAmount: KUtils.number.formatInteger;
             
                 for(var k in channelActive) {
 
@@ -1242,7 +1378,7 @@ var Revenue2 = React.createClass({
                         //Collect To data for Detail Rows
                         try {
                             var toData = result[k+toSufix];
-                            
+
                             if (dataIndex !== null) {
                                 var to = toData[dataIndex].amount;
                             } else {
@@ -1277,14 +1413,15 @@ var Revenue2 = React.createClass({
                         //Collect Ticket Type Data for Detail Rows
                         try {
                             var subDetails = [];
-                            var ticketTypes = this.state.ticketTypes;
-                            for (var tt in ticketTypes) {
+                            var childCategories = this.state[this.state.units].childCategories;
+
+                            for (var tt in childCategories) {
                         
                                 var ttSufix = k+"_bars_by_"+tt;
                         
                                 var ttToData = this.state.result[ttSufix+ttTotals];
                                 var ttFromData = this.state.result[ttSufix+"_"+this.state.comparePeriodType+ttTotals];
-
+                                
                                 if (ttFromData && ttToData) {
                                     
                                     
@@ -1313,7 +1450,7 @@ var Revenue2 = React.createClass({
                                             ttTo /= visitors;
                                         }
                                         
-                                        var title = ticketTypes[tt];
+                                        var title = childCategories[tt];
                                         subDetails.push({
                                             title:title,
                                             from:ttFrom,
@@ -1333,9 +1470,11 @@ var Revenue2 = React.createClass({
                         try {
                             detailsRows.push(
                                 <DetailsRow 
-                                    key={k} from={from} to={to} title={this.state.channelNames[k]}
+                                    key={k} from={from} to={to} title={unitsData.channelNames[k]}
                                     className="parent-details multicolor-wrapper col-xs-12"
+                                    formatNumber = {detailsFormatNumber}
                                     details={subDetails}
+                                    sign={sign}
                                 />
                             );
                             theOtherDetailsRows.push(<div key={k} ></div>);
@@ -1406,6 +1545,12 @@ var Revenue2 = React.createClass({
                                             onClick={this.onUnitsChange.bind(this,"percap")}
                                             name="Per Cap"
                                         />
+                                        <TabSelector 
+                                            selected = {this.state.units}
+                                            id="attendance-tab"
+                                            onClick={this.onUnitsChange.bind(this,"attendance-tab")}
+                                            name="Attendance"
+                                        />
                                     </div>
                                     <div className="col-xs-12 col-sm-6 text-right">
                                         {channelControls}
@@ -1466,8 +1611,8 @@ var Revenue2 = React.createClass({
                                             {lastPeriodFormattedDate}{showPeriodFormattedDate}
                                         </div>
                                         <div className="col-xs-12" id="attendance-detail">
-                                            <h4>Attendance</h4>
-                                            <div>{KUtils.number.formatAmount(visitors)}</div>
+                                            <h4>{this.state[this.state.units].attendanceDetailTitle}</h4>
+                                            <div>{attendanceDetailData}</div>
                                         </div>
                                     </div>
                                     <div className="col-xs-6 col-sm-6 text-right">
