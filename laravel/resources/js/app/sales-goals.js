@@ -133,9 +133,9 @@ var SalesGoals = React.createClass({
 	onStatsResult:function (result) {
         console.log('Sales Goals onStatsResult using KAPI...');
         
-        var bo = parseFloat(result.boxoffice.amount);
-        var cafe = parseFloat(result.cafe.amount);
-        var store = parseFloat(result.giftstore.amount);
+        var bo = parseFloat(result.boxoffice.amount) || 0;
+        var cafe = parseFloat(result.cafe.amount) || 0;
+        var store = parseFloat(result.giftstore.amount) || 0;
         
         result.sales = {amount:(bo + cafe + store)};
         
