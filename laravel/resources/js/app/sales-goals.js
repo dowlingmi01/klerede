@@ -132,6 +132,13 @@ var SalesGoals = React.createClass({
     },
 	onStatsResult:function (result) {
         console.log('Sales Goals onStatsResult using KAPI...');
+        
+        var bo = parseFloat(result.boxoffice.amount);
+        var cafe = parseFloat(result.cafe.amount);
+        var store = parseFloat(result.giftstore.amount);
+        
+        result.sales = {amount:(bo + cafe + store)};
+        
         wnt.sales = result;
 		KAPI.goals.sales.get(wnt.venueID,wnt.thisYear,this.onGoalsResult);
 	},
@@ -148,7 +155,7 @@ var SalesGoals = React.createClass({
             periodDays = wnt.daysInMonth(wnt.monthStart.split('-')[1], wnt.monthStart.split('-')[0]);
         }
 		var queries = {
-	        sales: { specs: { type: 'sales' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+            // sales: { specs: { type: 'sales' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
 	        boxoffice: { specs: { type: 'sales', channel: 'gate' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
 	        cafe: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
 	        giftstore: { specs: { type: 'sales', channel: 'store' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
