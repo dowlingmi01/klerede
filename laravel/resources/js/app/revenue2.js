@@ -1163,7 +1163,7 @@ var Revenue2 = React.createClass({
         this.setState(state);
     },
     formatY:function (n) {
-        var max = (this.state.units == "dollars") ? this.state.max : this.state.maxPercap;
+        var max = (this.state.units == "percap") ? this.state.maxPercap : this.state.max;
         var q = n*max/4;
         if(isNaN(q)) return "";
         
