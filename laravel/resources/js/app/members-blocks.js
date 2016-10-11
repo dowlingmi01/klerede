@@ -92,6 +92,8 @@ var MembersBlocksSet = React.createClass({
         event.preventDefault();
     },
 	onStatsResult:function(result) {
+
+        console.log(result);
         // Abbreviate numbers for total members block
         result.members_total_frequency_recency.current_members = this.abbrNumber(result.members_total_frequency_recency.current_members);
         result.members_total_frequency_recency_compareto_weekbefore.current_members = this.abbrNumber(result.members_total_frequency_recency_compareto_weekbefore.current_members);
@@ -106,15 +108,15 @@ var MembersBlocksSet = React.createClass({
         wnt.members.members_conversion_compareto_lastyear = (result.membership_sales_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
         wnt.members.members_conversion_compareto_rolling = (result.membership_sales_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
         // Calculate Capture Rate
-        wnt.members.capture_rate = (result.transactions.units / result.total_admissions.units) * 100;
-        wnt.members.capture_rate_compareto_weekbefore = (result.transactions_compareto_weekbefore.units / result.total_admissions_compareto_weekbefore.units) * 100;
-        wnt.members.capture_rate_compareto_lastyear = (result.transactions_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
-        wnt.members.capture_rate_compareto_rolling = (result.transactions_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
+        wnt.members.capture_rate = (result.transactions.units / result.member_admissions.units) * 100;
+        wnt.members.capture_rate_compareto_weekbefore = (result.transactions_compareto_weekbefore.units / result.member_admissions_compareto_weekbefore.units) * 100;
+        wnt.members.capture_rate_compareto_lastyear = (result.transactions_compareto_lastyear.units / result.member_admissions_compareto_lastyear.units) * 100;
+        wnt.members.capture_rate_compareto_rolling = (result.transactions_compareto_rolling.units / result.member_admissions_compareto_rolling.units) * 100;
         // Calculate Per Cap
-        wnt.members.per_cap = result.transactions.amount / result.total_admissions.units;
-        wnt.members.per_cap_compareto_weekbefore = result.transactions_compareto_weekbefore.amount / result.total_admissions_compareto_weekbefore.units;
-        wnt.members.per_cap_compareto_lastyear = result.transactions_compareto_lastyear.amount / result.total_admissions_compareto_lastyear.units;
-        wnt.members.per_cap_compareto_rolling = result.transactions_compareto_rolling.amount / result.total_admissions_compareto_rolling.units;
+        wnt.members.per_cap = result.transactions.amount / result.member_admissions.units;
+        wnt.members.per_cap_compareto_weekbefore = result.transactions_compareto_weekbefore.amount / result.member_admissions_compareto_weekbefore.units;
+        wnt.members.per_cap_compareto_lastyear = result.transactions_compareto_lastyear.amount / result.member_admissions_compareto_lastyear.units;
+        wnt.members.per_cap_compareto_rolling = result.transactions_compareto_rolling.amount / result.member_admissions_compareto_rolling.units;
 
         if(this.isMounted()) {
             this.setState({
@@ -171,12 +173,12 @@ var MembersBlocksSet = React.createClass({
                 }
             },
 
-            // Capture Rate = (Transactions / Total Visitors) * 100
-            // Per Cap = Store Sales / Total Visitors
-            transactions: { specs: { type: 'sales', channel: 'store' }, periods: wnt.today},
-            transactions_compareto_weekbefore: { specs: { type: 'sales', channel: 'store' }, periods: sameDayWeekBefore},
-            transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store' }, periods: sameDayLastYear},
-            transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store' },
+            // Capture Rate = (Members Transactions / Members Visitors) * 100
+            // Per Cap = Store Sales to members / Members Visitors
+            transactions: { specs: { type: 'sales', channel: 'store', members:true }, periods: wnt.today},
+            transactions_compareto_weekbefore: { specs: { type: 'sales', channel: 'store', members:true }, periods: sameDayWeekBefore},
+            transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store', members:true }, periods: sameDayLastYear},
+            transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store', members:true },
                 periods: {
                     from: wnt.yesterdaylastyear,
                     to: wnt.yesterday,
@@ -195,6 +197,17 @@ var MembersBlocksSet = React.createClass({
                 }
             },
 
+            member_admissions: { specs: { type: 'visits', kinds: ['membership']  }, periods: wnt.today },
+            member_admissions_compareto_weekbefore: { specs: { type: 'visits', kinds: ['membership'] }, periods: sameDayWeekBefore },
+            member_admissions_compareto_lastyear: { specs: { type: 'visits', kinds: ['membership'] }, periods: sameDayLastYear },
+            member_admissions_compareto_rolling: { specs: { type: 'visits', kinds: ['membership'] },
+                periods: {
+                    from: wnt.yesterdaylastyear,
+                    to: wnt.yesterday,
+                    kind: 'average'
+                }
+            },
+
             members_total_frequency_recency: { specs: { type: 'members' }, periods: wnt.today },
             members_total_frequency_recency_compareto_weekbefore: { specs: { type: 'members' }, periods: sameDayWeekBefore },
             members_total_frequency_recency_compareto_lastyear: { specs: { type: 'members' }, periods: sameDayLastYear },
@@ -206,7 +219,8 @@ var MembersBlocksSet = React.createClass({
                 }
             }
         };
-		
+
+		console.log(queries);
 		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
 		
 	},
