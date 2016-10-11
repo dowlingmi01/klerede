@@ -1143,8 +1143,8 @@ var Revenue2 = React.createClass({
     },
     updateWeather: function(state) {
         if (state.periodType == "quarter")
-             return;
-
+             return false;
+        
         var sf = KUtils.date.serverFormat;
         
 		KAPI.weather.query(
@@ -1155,6 +1155,7 @@ var Revenue2 = React.createClass({
 			},
 			this.onWeatherResult
 		);
+        return true;
     },
     onWeatherResult:function (wResult) {
         var state = this.state;
@@ -1189,13 +1190,16 @@ var Revenue2 = React.createClass({
     shouldComponentUpdate:function (nextProps, nextState) {
         if (nextState.dirtyWeather === 1) {
             nextState.dirtyWeather = 0;
-            this.updateWeather(nextState);
+            if (this.updateWeather(nextState) === false) {
+                nextState.dirtyWeather = -1;
+            };
         };
         if (nextState.dirty === 1) {
             nextState.dirty = 0;
             this.updateData(nextState);
         };
-        return !(nextState.dirty >= 0 || nextState.dirtyWeather >=0);
+        var should = !(nextState.dirty >= 0 || nextState.dirtyWeather >=0);
+        return should;
     },
     render:function () {
         var isNotAttendanceTab = this.state.units != 'attendance-tab';
