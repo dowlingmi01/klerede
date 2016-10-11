@@ -246,7 +246,7 @@ var SalesGoals = React.createClass({
         switch(eventAction) {
         case "#save":
 
-            saveImage("#sales-goals-widget");
+            saveImage("#sales-goals-widget", {}, "Sales Goals");
             break;
         case "#print":
             printDiv("#sales-goals-widget");

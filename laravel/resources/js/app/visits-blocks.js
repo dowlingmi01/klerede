@@ -78,7 +78,7 @@ var VisitsBlocksSet = React.createClass({
         var eventAction = $(event.target).attr('href');
         switch(eventAction) {
         case "#save":
-            saveImage("#visits-blocks-widget",{});
+            saveImage("#visits-blocks-widget",{}, "Daily Attendance Stats");
             break;
         case "#print":
             printDiv("#visits-blocks-widget");

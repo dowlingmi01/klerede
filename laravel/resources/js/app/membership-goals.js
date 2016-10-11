@@ -242,7 +242,7 @@ var MembershipGoals = React.createClass({
         var eventAction = $(event.target).attr('href');
         switch(eventAction) {
         case "#save":
-            KUtils.saveImage("#membership-goals-widget");
+            KUtils.saveImage("#membership-goals-widget",{}, "Membership Goals");
             break;
         case "#print":
             KUtils.printDiv("#membership-goals-widget");

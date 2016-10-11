@@ -478,7 +478,7 @@ var Revenue2 = React.createClass({
         var eventAction = $(event.target).attr('href');
         switch(eventAction) {
         case "#save":
-            saveImage("#revenue-row-widget2",{}, "earned-revenue");
+            saveImage("#revenue-row-widget2",{}, "Revenue Chart");
             break;
         case "#print":
             printDiv("#revenue-row-widget2");

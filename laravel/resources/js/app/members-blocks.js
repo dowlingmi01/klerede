@@ -80,7 +80,7 @@ var MembersBlocksSet = React.createClass({
         var eventAction = $(event.target).attr('href');
         switch(eventAction) {
         case "#save":
-            saveImage("#members-blocks-widget",{});
+            saveImage("#members-blocks-widget",{}, "Membership Stats");
             break;
         case "#print":
             printDiv("#members-blocks-widget");
