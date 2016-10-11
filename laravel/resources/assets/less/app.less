@@ -1792,6 +1792,15 @@ body > .popover.top>.arrow:after {
         path {
             fill: @rust;
         }
+        padding-top:26px;
+    }
+    .label:after {
+        color: @mediumgrey;
+        content: 'Guests that become members';
+        display: block;
+        font-size: 65%;
+        padding-top: 6px;
+        text-transform: initial;
     }
     // .stat:after {
     //     content: '%';
@@ -1814,6 +1823,15 @@ body > .popover.top>.arrow:after {
         path {
             fill: rgba(56,21,77,1);
         }
+        padding-top:20px;
+    }
+    .label:after {
+        color: @mediumgrey;
+        content: '% that purchased at gift store';
+        display: block;
+        font-size: 65%;
+        padding-top: 6px;
+        text-transform: initial;
     }
     // .stat:after {
     //     content: '%';
@@ -1870,13 +1888,13 @@ body > .popover.top>.arrow:after {
 #members-total {
     .stat,
     .change {
-        color: @cobalt;
+        color: #eebb40;
         .up,
         .down {
             opacity: 1;
         }
         path {
-            fill: @cobalt;
+            fill: #eebb40;
         }
     }
     .label:after {
@@ -1898,14 +1916,22 @@ body > .popover.top>.arrow:after {
 #members-percap {
     .stat,
     .change {
-        color: @darkgrey;
+        color: #9e8d79;
         .up,
         .down {
             opacity: 1;
         }
         path {
-            fill: @darkgrey;
+            fill: #9e8d79;
         }
+    }
+    .label:after {
+        color: @mediumgrey;
+        content: '$ amount spent at gift store';
+        display: block;
+        font-size: 70%;
+        padding-top: 6px;
+        text-transform: initial;
     }
 }
 /***********************/
