@@ -29,9 +29,13 @@ var saveImage = require ('./kutils/save-image.js');
 
 var MembersBlock = React.createClass({
     render: function() {
+        
+        var description = this.props.description || "";
+        
         return (
             <div className="stat-block stats-bottom">
                 <div className="label">{this.props.label}</div>
+                <div className="description">{description}</div>
                 <div className="stat">{this.props.stat}</div>
                 <div className="change">
                     <ChangeArrow width="62" height="69" color="#000000" className="up" />
@@ -277,15 +281,15 @@ var MembersBlocksSet = React.createClass({
                 $(oldstat).formatNumber({format:"#,##0.0", locale:"us"});
 
                 if($(statblock).parent().hasClass("dollars")) {
-                    $(newstat).html("<span style='font-size:50%'>$</span>"+$(newstat).html());
+                    $(newstat).html("<div class='units dollars'>$</div>"+$(newstat).html());
                     $(oldstat).html("$"+$(oldstat).html());
                 };
                 if($(statblock).parent().hasClass("percent")) {
-                    $(newstat).html($(newstat).html()+"<span style='font-size:50%'>%</span>");
+                    $(newstat).html($(newstat).html()+"<div class='units percent'>%</div>");
                     $(oldstat).html($(oldstat).html()+"%");
                 };
                 if($(statblock).parent().hasClass("kilo")) {
-                    $(newstat).html($(newstat).html()+"<span style='font-size:50%'>k</span>");
+                    $(newstat).html($(newstat).html()+"<div class='units kilo'>k</div>");
                     $(oldstat).html($(oldstat).html()+"k");
                 };
             }
@@ -329,37 +333,43 @@ var MembersBlocksSet = React.createClass({
                 <div className="row">
                     <div className="col-xs-6 col-sm-4 col-lg-2 percent" id="members-conversion">
                         <MembersBlock 
-                            label="Member Conversion" 
+                            label="Member Conversion"
+                            description="Guests that become members"
                             stat={this.state.membersConversion} 
                             comparedTo={this.state.membersConversionCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-frequency">
                         <MembersBlock 
-                            label="Frequency" 
+                            label="Frequency"
+                            description="# of visits per year"
                             stat={this.state.membersFrequency} 
                             comparedTo={this.state.membersFrequencyCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-recency">
                         <MembersBlock
                             label="Recency"
+                            description="Time since last visit (days)"
                             stat={this.state.membersRecency}
                             comparedTo={this.state.membersRecencyCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2 kilo" id="members-total">
                         <MembersBlock
                             label="Members"
+                            description="Total #"
                             stat={this.state.membersTotal}
                             comparedTo={this.state.membersTotalCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2 percent" id="members-captured">
                         <MembersBlock 
                             label="Capture Rate" 
+                            description="% that purchased at gift store" 
                             stat={this.state.membersCaptured} 
                             comparedTo={this.state.membersCapturedCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2 dollars" id="members-percap">
                         <MembersBlock
                             label="Per Cap"
+                            description="$ amount spent at gift store"
                             stat={this.state.membersPercap}
                             comparedTo={this.state.membersPercapCompareTo} />
                     </div>
