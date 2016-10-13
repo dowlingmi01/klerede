@@ -58,6 +58,14 @@ class UserController extends Controller
         return $users;
     }
 
+    private function getMessagesConstants(){
+        return  [
+            'required' => 'atribute_is_required',
+            'email' => 'invalid_email_format',
+            'numeric' => 'numeric_field'
+        ];
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -74,11 +82,11 @@ class UserController extends Controller
             'role_id' => 'required|numeric',
             'venue_id' => 'required|numeric'
         );
-        $validator = Validator::make(Input::all(), $rules);
+        
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
-            $messages->add("result", "error");
-            return  $messages  ;
+            return  Response::json(['result'=>'error', 'messasges'=>$messages], 400)  ;
         } 
         
         if(Gate::denies('validate-venue', $request->venue_id)){
@@ -146,11 +154,10 @@ class UserController extends Controller
             'role_id' => 'required|numeric',
             'venue_id' => 'required|numeric'
         );
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
-            $messages->add("result", "error");
-            return  $messages  ;
+            return  Response::json(['result'=>'error', 'messasges'=>$messages], 400)  ;
         } else {
             // store
             if (Gate::denies('validate-venue', $request->venue_id)) {
@@ -217,11 +224,10 @@ class UserController extends Controller
             'email'   => 'email',
             'role_id' => 'numeric',
         );
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
-            $messages->add("result", "error");
-            return  $messages;
+            return  Response::json(['result'=>'error', 'messasges'=>$messages], 400)  ;
         } else {
             // store
             $user = User::find($id);

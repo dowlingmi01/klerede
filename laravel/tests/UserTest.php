@@ -149,6 +149,100 @@ class UserTest extends TestCase
     
     }
 
+    public function testCreateInvalidUser()
+    {
+
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner'])
+                ->seeJsonStructure([
+                 'token'
+         ]);
+       
+
+        $token = '';
+        
+       $responseData = json_decode($this->response->getContent(), true);
+       $token = $responseData['token'];
+    
+
+       
+
+       $result2 = $this->post('api/v1/users?token='.$token, [ 
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+
+         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+
+         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                     
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+
+         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                     
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+
+         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                     
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+
+         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+
+         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>'a',
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+        
+
+          $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>'bbb'
+                                                    ])->seeJson(['result'=>'error' ]);
+                
+        $this->assertEquals(400, $this->response->status());
+        //echo $this->response->getContent();
+  
+    
+    }
+
     public function testCreateUserBasicUser()
     {
 
@@ -240,6 +334,35 @@ class UserTest extends TestCase
          $this->assertEquals(200, $this->response->status());
 
  
+    }
+
+    public function testUpdateInvalidUser(){
+
+          $result = $this->post('api/v1/auth/login', ['email'=>'aqua+basic@test.com','password'=>'secretbasic'])
+                ->seeJsonStructure([
+                 'token'
+        ]);
+
+        $token = '';
+        
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+        //echo $token."\n\r";
+
+        $result4 = $this->put('api/v1/users/5?token='.$token, [
+                                                    'email'=>'Test Invalid Email'
+                                                   
+                                                    ])->seeJson(['result'=>'error']);
+
+        $this->assertEquals(400, $this->response->status());
+
+         $result4 = $this->put('api/v1/users/5?token='.$token, [
+                                                    'role_id'=>'Test Invalid role'
+                                                   
+                                                    ])->seeJson(['result'=>'error']);
+
+        $this->assertEquals(400, $this->response->status());
+
     }
 
     public function testUpdateAdminUser()
