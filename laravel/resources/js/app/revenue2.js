@@ -413,6 +413,47 @@ var DetailsHeader = React.createClass({
         );
     }
 });
+
+var NoteCircle = React.createClass({
+    render:function () {
+        return(
+            <div className="note-circle-container">
+                <div className="note-circle one"></div>
+            </div>
+        );
+    }
+});
+
+var NoteBar = React.createClass({
+    render:function () {
+        return(
+            <div className="notebar">
+                <NoteCircle/> 
+                <div className="add-note-menu">
+                    <div className="menu-content fade in" role="tooltip" data-reactid=".7.0.0.1"><div className="arrow"></div><div className="action" ><a href="#save" data-reactid=".7.0.0.1.1:$0.0">Save</a></div><div className="action" ><a href="#print">Print</a></div></div>
+                </div> 
+            </div>
+        )
+    } 
+});
+var Notes = React.createClass({
+    render:function () {
+        return (
+            <div className="notes">
+                <div id="notebars">
+                    <NoteBar/>
+                    <NoteBar/>
+                    <NoteBar/>
+                    <NoteBar/>
+                    <NoteBar/>
+                    <NoteBar/>
+                    <NoteBar/>
+                </div>
+                <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
+            </div>
+        );
+    }
+})
 var Revenue2 = React.createClass({
     getInitialState:function () {
         var today = new Date(KUtils.date.localFormat(wnt.today));
@@ -1606,6 +1647,9 @@ var Revenue2 = React.createClass({
                                         {bars}
                                     </div>
                                 </div>
+                            </div>
+                            <div className="row notes-container">
+                                <Notes/>
                             </div>
                             <div className={"row details "+this.state.detailsClass}>
                                 <div className="col-xs-12 col-sm-12 descriptors">

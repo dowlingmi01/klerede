@@ -1,54 +1,60 @@
 @import "colors";
 
-.plus-sign-menu {
+.plus-sign-menu,
+.add-note-menu
+{
     z-index:1;
-}
-.plus-sign-menu .menu-content.fade.in {
-    display:block;
-}
-.plus-sign-menu .menu-content {
-    display:none;
-    background-color:@white;
-    border: 1px solid rgba(0, 0, 0, .2);
-    border-radius: 6px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
-    font-size:120%;
-    padding:7.5px;
-    text-align: center;
-
-    position:absolute;
-    top:-37px;
-    right:-20px;
     
-     white-space : nowrap;
-}
-.plus-sign-menu .menu-content .action {
-    display:inline-block;
-    border-right:1px solid @lightmediumgrey;
-    padding: 0 5px;
-}
-.plus-sign-menu .menu-content .action:last-child {
-    border-right:none;
-}
-.plus-sign-menu .menu-content a {
-    color:inherit;
-}
-.plus-sign-menu .menu-content a:hover {
-    text-decoration:none;
-    color:@aqua;
+    .menu-content {
+        display:none;
+        background-color:@white;
+        border: 1px solid rgba(0, 0, 0, .2);
+        border-radius: 6px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+        font-size:120%;
+        padding:7.5px;
+        text-align: center;
+
+        position:absolute;
+        top:-37px;
+        right:-20px;
+    
+         white-space : nowrap;
+         
+         .action {
+             display:inline-block;
+             border-right:1px solid @lightmediumgrey;
+             padding: 0 5px;
+         }
+         .action:last-child {
+             border-right:none;
+         }
+         a {
+             color:inherit;
+         }
+         a:hover {
+             text-decoration:none;
+             color:@aqua;
+         }
+         .arrow {
+             position: absolute;
+             top:100%;
+             right:20px;
+             margin-right:-3px;
+             width: 0; 
+             height: 0; 
+             border-left: 6px solid transparent;
+             border-right: 6px solid transparent;
+             border-top: 6px solid @white;
+         }
+    }
+    .menu-content.fade.in {
+        display:block;
+    }
 }
 
-.plus-sign-menu .menu-content .arrow {
-    position: absolute;
-    top:100%;
-    right:20px;
-    margin-right:-3px;
-    width: 0; 
-    height: 0; 
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid @white;
-}
+
+
 
 .saving .unsavable{
     display:none !important;
@@ -156,6 +162,79 @@
     font-size:270%;
 }
 
+// .printable-block {
+//     display:none;
+// }
+body.printable-block, #revenue-row-widget2 {
+    display:block;
+}
+#revenue2 .notes-container {
+    padding-right: 50px;
+    padding-left: 10px;
+    text-align:right;
+    .notes {
+        position:relative;
+        right:-60px;
+        width:94%;
+        background-color: @lightgrey;
+        #calendar-button {
+            position:absolute;
+            height:21px;
+            top:1px;
+            right:5px;
+            cursor:pointer;
+            img {
+                height:14px;
+                width:auto;
+            }
+        }
+        #notebars {
+            text-align:center;
+            line-height:0;
+
+            .notebar {
+                display:inline-block;
+                width:14%;
+                height:21px;
+                padding-top:3px;
+                text-align:center;
+                .note-circle-container {
+                    height: 15px;
+                    width: 15px;
+                    display:inline-block;
+                }
+            }
+        }
+        .note-circle {
+            border-radius: 50%;
+            cursor: pointer;
+            height: 100%;
+            width:100%;
+            background-color: @cobalt;
+            display: inline-block;
+        }
+        .one {
+            margin-top:25%;
+            height: 50%;
+            width:50%;
+        }
+        .two {
+            margin-top:16.5%;
+            height:64%;
+            width:64%;
+        }
+        .three {
+            margin-top:10%;
+            height: 80%;
+            width:80%;
+        }
+        .note-circle.selected,
+        .note-circle:hover
+        {
+            border: 2px solid @lightblack;
+        }
+    }
+}
 
 @media print {
     
