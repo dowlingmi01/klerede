@@ -340,14 +340,14 @@ var MembersBlocksSet = React.createClass({
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-frequency">
                         <MembersBlock 
-                            label="Frequency"
+                            label="Member Frequency"
                             description="# of visits per year"
                             stat={this.state.membersFrequency} 
                             comparedTo={this.state.membersFrequencyCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2" id="members-recency">
                         <MembersBlock
-                            label="Recency"
+                            label="Member Recency"
                             description="Time since last visit (days)"
                             stat={this.state.membersRecency}
                             comparedTo={this.state.membersRecencyCompareTo} />
@@ -361,14 +361,14 @@ var MembersBlocksSet = React.createClass({
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2 percent" id="members-captured">
                         <MembersBlock 
-                            label="Capture Rate" 
+                            label="Member Capture Rate" 
                             description="% that purchased at gift store" 
                             stat={this.state.membersCaptured} 
                             comparedTo={this.state.membersCapturedCompareTo} />
                     </div>
                     <div className="col-xs-6 col-sm-4 col-lg-2 dollars" id="members-percap">
                         <MembersBlock
-                            label="Per Cap"
+                            label="Member Per Cap"
                             description="$ amount spent at gift store"
                             stat={this.state.membersPercap}
                             comparedTo={this.state.membersPercapCompareTo} />

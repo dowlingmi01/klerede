@@ -1773,6 +1773,7 @@ body > .popover.top>.arrow:after {
     background-color: @white;
     color: @darkgrey;
     height: 180px;
+    position:relative;
     .label {
         color: @darkgrey;
         font-family:inherit;
@@ -1790,10 +1791,13 @@ body > .popover.top>.arrow:after {
         letter-spacing:-.03em;
         font-size: 4.5em;
         font-weight: 800;
-        position:relative;
+        
         transform:none;
-        top:initial;
-        left:initial;
+        position:absolute;
+        left:0;
+        width:100%;
+        top:35%;
+
         .units {
             font-size: 50%;
             position: absolute;
@@ -1806,13 +1810,6 @@ body > .popover.top>.arrow:after {
     }
 }
 #members-conversion {
-    .stat {
-        line-height:100%;
-        .units {
-            bottom:initial;
-            top: .35em;
-        }
-    }
     .stat,
     .change {
         color: @rust;
