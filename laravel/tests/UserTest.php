@@ -45,8 +45,11 @@ class UserTest extends TestCase
     {
         $this->json('GET', 'api/v1/auth/logged')
              ->seeJson([
-                 'error'=>'token_not_provided'
+                 'result'=>'error',
+                           'message'=>'token_not_provided'
              ]);
+
+        $this->assertEquals(400, $this->response->status());
     }
 
 
@@ -54,8 +57,11 @@ class UserTest extends TestCase
     {
         $this->json('GET', 'api/v1/auth/logged?token=XyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2ZW4iOjE1MTgsInJvbCI6MSwic3ViIjoxLCJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6NDA0MFwvYXBpXC92MVwvYXV0aFwvbG9naW4iLCJpYXQiOjE0NzI4NTk5MzgsImV4cCI6MTQ3MzQ2NDczOCwibmJmIjoxNDcyODU5OTM4LCJqdGkiOiJjMWMwOGFhODEyZjI3Mzg1N2YzM2JjMGI5NmZkZGFkOCJ9.h4mU8VxhEj-MRC_ZoXM98vwk6qyDAtpB3LPFUhLyb4Y')
              ->seeJson([
-                 'error'=>'token_invalid'
+                 'result'=>'error',
+                           'message'=>'token_invalid'
              ]);
+
+         $this->assertEquals(400, $this->response->status());
     }
 
     public function testLogin()
@@ -135,7 +141,7 @@ class UserTest extends TestCase
                           );
         $this->assertEquals(200, $this->response->status());
                 
-
+ 
         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
                                                     'last_name'=>'Test Create LastN',
                                                     'email'=>'newcreate2@test.com',
@@ -144,7 +150,7 @@ class UserTest extends TestCase
                                                     ])->seeJson(['result'=>'error',
                                                                     'message'=>'invalid_venue_id']);
         $this->assertEquals(400, $this->response->status());
- 
+  
         //test create user with insuficient priviledges
     
     }
@@ -164,14 +170,15 @@ class UserTest extends TestCase
        $token = $responseData['token'];
     
 
-       
-
+ 
        $result2 = $this->post('api/v1/users?token='.$token, [ 
                                                     'last_name'=>'Test Create LastN',
                                                     'email'=>'newcreate2@test.com',
                                                     'role_id'=>1,
                                                     'venue_id'=>1518
-                                                    ])->seeJson(['result'=>'error' ]);
+                                                    ]);
+      
+       //->seeJson(['result'=>'error' ]);
                 
         $this->assertEquals(400, $this->response->status());
 

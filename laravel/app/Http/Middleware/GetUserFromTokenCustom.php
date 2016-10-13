@@ -7,6 +7,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Middleware\GetUserFromToken;
 use App\User;
+use Illuminate\Support\Facades\Response;
 
 
 class GetUserFromTokenCustom extends GetUserFromToken
@@ -21,7 +22,18 @@ class GetUserFromTokenCustom extends GetUserFromToken
     public function handle($request, Closure $next)
     {
         if(config('jwt.active')){
-            return parent::handle($request, $next);
+            $result = parent::handle($request, $next);
+            if($result->status() >= 400){
+                $responseData = json_decode($result->content(), true);
+                if(array_key_exists ( 'error' , $responseData )){
+                    return Response::json(['result'=>'error', 'message'=>$responseData['error']], $result->status())  ;
+                } else {
+                    return $result;
+                }
+            } else {
+                return  $result;
+            }
+            
  
         } else {
             //$user = $this->auth->byId(config('jwt.mock_user_id'));
