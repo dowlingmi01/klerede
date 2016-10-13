@@ -59,7 +59,7 @@ class AuthenticateController extends Controller
 
     public function getAuthenticatedUser()
 	{
-
+       
 		if(config('jwt.active')){
 		    try {
 
@@ -69,15 +69,15 @@ class AuthenticateController extends Controller
 
 		    } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
 
-		        return response()->json(['token_expired'], $e->getStatusCode());
+		        return response()->json(['result'=>'error', 'message'=>'token_expired'], $e->getStatusCode());
 
 		    } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
 
-		        return response()->json(['token_invalid'], $e->getStatusCode());
+		        return response()->json(['result'=>'error', 'message'=>'token_invalid'], $e->getStatusCode());
 
 		    } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
 
-		        return response()->json(['token_absent'], $e->getStatusCode());
+		        return response()->json(['result'=>'error', 'message'=>'token_absent'], $e->getStatusCode());
 
 		    }
 
@@ -85,7 +85,7 @@ class AuthenticateController extends Controller
 
 		} else {
 			if (!$user = User::find(config('jwt.mock_user_id'))) {
-		        return response()->json(['user_not_found'], 404);
+		        return response()->json(['result'=>'error', 'message'=>'user_not_found'], 404);
 		     }
 		}
         $role = \App\Role::find($user->role_id);

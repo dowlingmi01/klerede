@@ -86,11 +86,13 @@ class UserTest extends TestCase
        $token = $responseData['token'];
        
         $this->json('GET', 'api/v1/auth/logged?token='.$token)
-             ->seeJsonStructure([
+            ->seeJsonStructure([
                  'user' => [
                      'id', 'name', 'email'
                  ]
-             ]);
+             ]); 
+
+
     }
 
     public function testCreateUser()
@@ -125,10 +127,10 @@ class UserTest extends TestCase
                                                     'email'=>'newcreate2@test.com',
                                                     'role_id'=>1,
                                                     'venue_id'=>1588
-                                                    ]); //->seeJson(['error'=>'token_invalid']);
-                
-        $this->assertEquals('Invalid venue id', $this->response->getContent());
-
+                                                    ])->seeJson(['result'=>'error',
+                                                                    'message'=>'invalid_venue_id']);
+        
+ 
         //test create user with insuficient priviledges
     
     }
@@ -155,7 +157,7 @@ class UserTest extends TestCase
                                                     'email'=>'newcreate2@test.com',
                                                     'role_id'=>1,
                                                     'venue_id'=>1518
-                                                    ])->seeJson(['error'=>'Insufficient privileges']);
+                                                    ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
                 
         
         //echo $this->response->getContent();
@@ -184,16 +186,16 @@ class UserTest extends TestCase
                                                     'email'=>'newcreate2@test.com',
                                                     'role_id'=>1,
                                                     'venue_id'=>1518
-                                                    ])->seeJson(['result'=> 'error', 'message'=>'User not found']);
+                                                    ])->seeJson(['result'=> 'error', 'message'=>'user_not_found']);
                 
         $result3 = $this->put('api/v1/users/2?token='.$token, ['first_name'=>'Test Create Name',
                                                     'last_name'=>'Test Create LastN',
                                                     'email'=>'newcreate2@test.com',
                                                     'role_id'=>1,
                                                     'venue_id'=>1518
-                                                    ]);
+                                                    ])->seeJson(['result'=>'error', 'message'=>'invalid_venue_id']);
 
-        $this->assertEquals('Invalid venue id', $this->response->getContent());        
+        //$this->assertEquals('Invalid venue id', $this->response->getContent());        
 
 
         $result3 = $this->put('api/v1/users/1?token='.$token, ['first_name'=>'Test Create Name',
@@ -201,12 +203,12 @@ class UserTest extends TestCase
                                                     'email'=>'newcreate2@test.com',
                                                     'role_id'=>1,
                                                     'venue_id'=>1518
-                                                    ])->seeJson(["error"=>"Insufficient privileges"]);
+                                                    ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
 
 
         $result31 = $this->put('api/v1/users/5?token='.$token, [ 
                                                     'role_id'=>1 
-                                                    ])->seeJson(["error"=>"Can't set role"]);
+                                                    ])->seeJson(['result'=>'error', 'message'=>'cant_set_role']);
 
          $result4 = $this->put('api/v1/users/5?token='.$token, [
                                                     'last_name'=>'Test Modify LastN'
@@ -253,7 +255,7 @@ class UserTest extends TestCase
         $result4 = $this->post('api/v1/users/5/pass?token='.$token, [
                             'oldPassword'=>'secretbasic',
                             'oldPassword'=>'secretbasic2',
-                            ])->seeJson(["error"=>"Insufficient privileges"]);
+                            ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
     }
 
     public function testUpdatOwnPasswordAdminUser()
@@ -270,14 +272,14 @@ class UserTest extends TestCase
         $result3 = $this->post('api/v1/users/7/pass?token='.$token, [
                             'oldPassword'=>'secretbasic2',
                             'password'=>'secretbasic2',
-                            ]);
+                            ])->seeJson(["result"=>"error","message"=>"invalid_venue_id"]);
 
-        $this->assertEquals('Invalid venue id', $this->response->getContent());
+        
 
         $result4 = $this->post('api/v1/users/6/pass?token='.$token, [
                             'oldPassword'=>'secretbasic2',
                             'password'=>'secretbasic2',
-                            ])->seeJson(["result"=>"error","message"=>"Invalid password"]);
+                            ])->seeJson(["result"=>"error","message"=>"invalid_password"]);
 
         $result4 = $this->post('api/v1/users/6/pass?token='.$token, [
                             'oldPassword'=>'secretbasic',
@@ -304,7 +306,7 @@ class UserTest extends TestCase
         $responseData = json_decode($this->response->getContent(), true);
         $token = $responseData['token'];
         
-        $result2 = $this->delete('api/v1/users/3?token='.$token)->seeJson(["error"=>"Insufficient privileges"]);
+        $result2 = $this->delete('api/v1/users/3?token='.$token)->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
     
        
   
@@ -325,19 +327,19 @@ class UserTest extends TestCase
         $responseData = json_decode($this->response->getContent(), true);
         $token = $responseData['token'];
 
-         $result2 = $this->delete('api/v1/users/1?token='.$token);
+         $result2 = $this->delete('api/v1/users/1?token='.$token)->seeJson(['result'=>'error', 'message'=>'cant_delete']);;
 
-        $this->assertEquals('Can\'t delete', $this->response->getContent());    
+        
         
         $result2 = $this->delete('api/v1/users/7?token='.$token)->seeJson(['result'=>'ok']);
 
-         $result2 = $this->delete('api/v1/users/6?token='.$token);
+         $result2 = $this->delete('api/v1/users/6?token='.$token)->seeJson(['result'=>'error', 'message'=>'invalid_venue_id']);
 
-        $this->assertEquals('Invalid venue id', $this->response->getContent());   
+         
 
-        $result2 = $this->delete('api/v1/users/3?token='.$token);
+        $result2 = $this->delete('api/v1/users/3?token='.$token)->seeJson(['result'=>'error', 'message'=>'cant_delete']);;
 
-        $this->assertEquals('Can\'t delete', $this->response->getContent());    
+        
 
 
         
@@ -355,7 +357,7 @@ class UserTest extends TestCase
         $responseData = json_decode($this->response->getContent(), true);
         $token = $responseData['token'];
         
-        $result2 = $this->get('api/v1/users/?venue_id=1518&token='.$token)->seeJson(["error"=>"Insufficient privileges"]);
+        $result2 = $this->get('api/v1/users/?venue_id=1518&token='.$token)->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
     }
 
     public function testListAdminUsers()
