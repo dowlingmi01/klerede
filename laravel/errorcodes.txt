@@ -1,7 +1,0 @@
-100=Invalid venue id
-200=Insuficient priviledges
-300=user not fount
-301=cant delete
-302=Can't set role
-305=Can't get user
-303=invalid passowrd

@@ -60,13 +60,24 @@ class UserTest extends TestCase
 
     public function testLogin()
     {
+        $this->json('POST', 'api/v1/auth/login', ['email'=>'not+exist+owner@test.com','password'=>'secretowner'])
+             ->seeJson(['result'=>'error',
+                           'message'=>'user_not_found']);
 
+        $this->assertEquals(404, $this->response->status());
 
+        $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'publicowner'])
+             ->seeJson(['result'=>'error',
+                           'message'=>'invalid_credentials']);
+
+        $this->assertEquals(401, $this->response->status());
 
         $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner'])
              ->seeJsonStructure([
                  'token'
              ]);
+
+        $this->assertEquals(200, $this->response->status());
     }
 
     public function testLogged()
@@ -91,6 +102,8 @@ class UserTest extends TestCase
                      'id', 'name', 'email'
                  ]
              ]); 
+
+        $this->assertEquals(200, $this->response->status());
 
 
     }
@@ -120,6 +133,7 @@ class UserTest extends TestCase
                                  'result', 'id'
                              ]
                           );
+        $this->assertEquals(200, $this->response->status());
                 
 
         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
@@ -129,7 +143,7 @@ class UserTest extends TestCase
                                                     'venue_id'=>1588
                                                     ])->seeJson(['result'=>'error',
                                                                     'message'=>'invalid_venue_id']);
-        
+        $this->assertEquals(400, $this->response->status());
  
         //test create user with insuficient priviledges
     
@@ -159,7 +173,7 @@ class UserTest extends TestCase
                                                     'venue_id'=>1518
                                                     ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
                 
-        
+        $this->assertEquals(403, $this->response->status());
         //echo $this->response->getContent();
   
     
@@ -187,6 +201,8 @@ class UserTest extends TestCase
                                                     'role_id'=>1,
                                                     'venue_id'=>1518
                                                     ])->seeJson(['result'=> 'error', 'message'=>'user_not_found']);
+
+        $this->assertEquals(404, $this->response->status());
                 
         $result3 = $this->put('api/v1/users/2?token='.$token, ['first_name'=>'Test Create Name',
                                                     'last_name'=>'Test Create LastN',
@@ -194,6 +210,8 @@ class UserTest extends TestCase
                                                     'role_id'=>1,
                                                     'venue_id'=>1518
                                                     ])->seeJson(['result'=>'error', 'message'=>'invalid_venue_id']);
+
+        $this->assertEquals(400, $this->response->status());
 
         //$this->assertEquals('Invalid venue id', $this->response->getContent());        
 
@@ -205,15 +223,21 @@ class UserTest extends TestCase
                                                     'venue_id'=>1518
                                                     ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
 
+        $this->assertEquals(403, $this->response->status());
+
 
         $result31 = $this->put('api/v1/users/5?token='.$token, [ 
                                                     'role_id'=>1 
                                                     ])->seeJson(['result'=>'error', 'message'=>'cant_set_role']);
 
+        $this->assertEquals(403, $this->response->status());
+
          $result4 = $this->put('api/v1/users/5?token='.$token, [
                                                     'last_name'=>'Test Modify LastN'
                                                    
                                                     ])->seeJson(['result'=>'ok']);
+
+         $this->assertEquals(200, $this->response->status());
 
  
     }
@@ -237,6 +261,8 @@ class UserTest extends TestCase
                                                      
                                                     ])->seeJson(['result'=>'ok']);
 
+        $this->assertEquals(200, $this->response->status());
+
         //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
         
     }
@@ -254,8 +280,10 @@ class UserTest extends TestCase
 
         $result4 = $this->post('api/v1/users/5/pass?token='.$token, [
                             'oldPassword'=>'secretbasic',
-                            'oldPassword'=>'secretbasic2',
+                            'password'=>'secretbasic2',
                             ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
+
+        $this->assertEquals(403, $this->response->status());
     }
 
     public function testUpdatOwnPasswordAdminUser()
@@ -274,12 +302,14 @@ class UserTest extends TestCase
                             'password'=>'secretbasic2',
                             ])->seeJson(["result"=>"error","message"=>"invalid_venue_id"]);
 
-        
+        $this->assertEquals(400, $this->response->status());
 
         $result4 = $this->post('api/v1/users/6/pass?token='.$token, [
                             'oldPassword'=>'secretbasic2',
                             'password'=>'secretbasic2',
                             ])->seeJson(["result"=>"error","message"=>"invalid_password"]);
+
+        $this->assertEquals(400, $this->response->status());
 
         $result4 = $this->post('api/v1/users/6/pass?token='.$token, [
                             'oldPassword'=>'secretbasic',
@@ -291,6 +321,7 @@ class UserTest extends TestCase
                  'token'
         ]);
 
+        $this->assertEquals(200, $this->response->status());
          
     }
 
@@ -308,7 +339,7 @@ class UserTest extends TestCase
         
         $result2 = $this->delete('api/v1/users/3?token='.$token)->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
     
-       
+       $this->assertEquals(403, $this->response->status());
   
     
 
@@ -329,17 +360,22 @@ class UserTest extends TestCase
 
          $result2 = $this->delete('api/v1/users/1?token='.$token)->seeJson(['result'=>'error', 'message'=>'cant_delete']);;
 
+         $this->assertEquals(400, $this->response->status());
         
         
         $result2 = $this->delete('api/v1/users/7?token='.$token)->seeJson(['result'=>'ok']);
 
+        $this->assertEquals(200, $this->response->status());
+
          $result2 = $this->delete('api/v1/users/6?token='.$token)->seeJson(['result'=>'error', 'message'=>'invalid_venue_id']);
+
+         $this->assertEquals(400, $this->response->status());
 
          
 
         $result2 = $this->delete('api/v1/users/3?token='.$token)->seeJson(['result'=>'error', 'message'=>'cant_delete']);;
 
-        
+        $this->assertEquals(400, $this->response->status());
 
 
         
@@ -358,6 +394,8 @@ class UserTest extends TestCase
         $token = $responseData['token'];
         
         $result2 = $this->get('api/v1/users/?venue_id=1518&token='.$token)->seeJson(['result'=>'error', 'message'=>'insufficient_privileges']);
+
+        $this->assertEquals(403, $this->response->status());
     }
 
     public function testListAdminUsers()
@@ -378,5 +416,7 @@ class UserTest extends TestCase
          $responseList = json_decode($this->response->getContent(), true);
 
         $this->assertNotEmpty($responseList);
+
+        $this->assertEquals(200, $this->response->status());
     }
 }

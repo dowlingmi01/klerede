@@ -13,7 +13,7 @@ use \Input;
 use JWTAuth;
 use \Password;
 use Mail;
-use Gate;
+use Gate; 
 use App\Venue;
 use App\Helpers\PermissionHelper;
 use Illuminate\Support\Facades\Response;
@@ -51,7 +51,7 @@ class UserController extends Controller
         }
         
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],400);
+            return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);
         }
 
         $users = User::where('venue_id', $input->venue_id)->get();
@@ -85,7 +85,7 @@ class UserController extends Controller
             return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); ;
         }
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],400);
+            return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);
         }
         //$password = generateNewPassword(); //TODO: Generar la funcion
 
@@ -232,10 +232,10 @@ class UserController extends Controller
                 return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); ;
             }
             if (Gate::denies('user-set', $id)) {
-                return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],400);
+                return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);
             }
             if ($request->role_id !=0 && Gate::denies('valid-role', $request->role_id)) {
-                return Response::json(['result'=>"error", 'message'=>'cant_set_role'],400);; 
+                return Response::json(['result'=>"error", 'message'=>'cant_set_role'],403);; 
             }
             $user->first_name       = trim($request->first_name) !== '' ? $request->first_name : $user->first_name;
             $user->last_name       = trim($request->last_name) !== '' ? $request->last_name : $user->last_name;
@@ -256,7 +256,7 @@ class UserController extends Controller
     public function updatePassword(Request $request, $id)
     {
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return Response::json(['result'=>'error', 'message'=>"insufficient_privileges"],400);
+            return Response::json(['result'=>'error', 'message'=>"insufficient_privileges"],403);
         }   
         $user = User::find($id);
         if(!$user){
@@ -287,7 +287,7 @@ class UserController extends Controller
         //check $id distinct to logged user
         //check venue_id
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return ['result'=> 'error', 'message'=>'insufficient_privileges'];
+            return Response::json(['result'=> 'error', 'message'=>'insufficient_privileges'], 403);
         }
         $user = User::find($id);
         if(!$user){
