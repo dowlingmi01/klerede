@@ -40,8 +40,9 @@ class ImportQueryInit extends Command {
 	public function fire()
 	{
 		$venues = [
-			1588 => [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
-			1518 => [1100, 1200, 1300, 1400, 1500, 1600, 1700],
+//			1588 => [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+//			1518 => [1100, 1200, 1300, 1400, 1500, 1600, 1700],
+			1518 => [1800],
 		];
 		foreach($venues as $venue_id=>$iqcIds)
 			foreach ($iqcIds as $iqcId) {
