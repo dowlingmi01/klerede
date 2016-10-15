@@ -16,6 +16,8 @@ KUtils.number = require("./kutils/number-utils.js");
 var Caret = require('./svg-icons').Caret;
 var LongArrow = require('./svg-icons').LongArrow;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
+var NoteIcon = require('./svg-icons').NoteIcon;
+var CloseIcon = require('./svg-icons').CloseIcon;
 var analytics = require("./analytics.js");
 
 var ActionMenu = require('./reusable-parts').ActionMenu;
@@ -414,12 +416,52 @@ var DetailsHeader = React.createClass({
     }
 });
 
+
+var AddNoteModal = React.createClass({
+    render:function () {
+        var className = this.props.show ? "modal fade in" : "modal fade";
+        var style = this.props.show ? {display:"block", paddingLeft:0} : {};
+        return(
+            <div className={className} style={style} tabIndex="-1" role="dialog">
+              <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title">Modal title</h4>
+                  </div>
+                  <div className="modal-body">
+                    <p>One fine body&hellip;</p>
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" className="btn btn-primary">Save changes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        );
+    }
+});
+
 var NoteCircle = React.createClass({
+    // onMouseEnter:function (e) {
+    //     console.log("note-circle-container", e.target, e.currentTarget, e.relatedTarget, e.eventPhase);
+    //     e.stopPropagation();
+    // },
     render:function () {
         return(
-            <div className="note-circle-container">
-                <div className="note-circle one"></div>
+            <div className="note-circle-container" onClick={this.props.onClick} >
+                <div className="note-circle four"></div>
             </div>
+        );
+    }
+});
+var AddNoteTip = React.createClass({
+    render:function () {
+        return (
+            <div className="add-note-menu">
+                <div className={"menu-content fade "+this.props.fadein} style={{left:this.props.left}} role="tooltip" ><div className="arrow"></div><div className="action" ><a href="#add-note" onClick={this.props.onAddNote}>Add Note</a></div></div>
+            </div> 
         );
     }
 });
@@ -427,33 +469,122 @@ var NoteCircle = React.createClass({
 var NoteBar = React.createClass({
     render:function () {
         return(
-            <div className="notebar">
-                <NoteCircle/> 
-                <div className="add-note-menu">
-                    <div className="menu-content fade in" role="tooltip" data-reactid=".7.0.0.1"><div className="arrow"></div><div className="action" ><a href="#save" data-reactid=".7.0.0.1.1:$0.0">Save</a></div><div className="action" ><a href="#print">Print</a></div></div>
-                </div> 
+            <div className={"notebar "+this.props.className}>
+                <NoteCircle onClick={this.props.onNoteClick}/> 
             </div>
         )
     } 
 });
-var Notes = React.createClass({
-    render:function () {
-        return (
-            <div className="notes">
-                <div id="notebars">
-                    <NoteBar/>
-                    <NoteBar/>
-                    <NoteBar/>
-                    <NoteBar/>
-                    <NoteBar/>
-                    <NoteBar/>
-                    <NoteBar/>
-                </div>
-                <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
+var NoteColumn = React.createClass({
+    render:function() {
+        return(
+            <div className="note-column" >
+                <div className="note-header">Short Week</div>
+                <div className="note-time">12pm-2pm</div>
+                <div className="note-author">Tom.Wolfe</div>
+                <div className="note-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut lab... </div>
             </div>
         );
     }
-})
+});
+var Notes = React.createClass({
+    getInitialState:function() {
+        return {
+            noteTipIcon:"", 
+            noteTip:"", 
+            noteTipLeft:0,
+            noteDetailsClass:"",
+            activeNote:null,
+            showAddNoteModal:false
+        }
+    },
+    addNote:function(e) {
+        console.log(e);
+        this.setState({showAddNoteModal:true});
+    },
+    showNoteTip:function (e) {
+        if (this.state.noteTip == "in") 
+            return;
+        
+        if ($(e.target).hasClass("note-circle-container"))
+            return;
+        
+        e.stopPropagation();
+
+        var addNoteTip = $(this.refs.addNoteTip.getDOMNode());
+        this.setState({noteTip:"in", noteTipLeft:e.pageX - addNoteTip.offset().left});
+    },
+    hideNoteTip:function (e) {
+        
+        if (this.state.noteTip == "out") 
+            return;
+        
+        e.stopPropagation();
+
+        this.setState({noteTip:"out"});
+    },
+    showNoteTipIcon:function (e) {
+        this.setState({noteTipIcon:"in"});
+    },
+    hideNoteTipIcon:function (e) {
+        this.setState({noteTipIcon:"out"});
+    },
+    showNotes:function (n) {
+        this.setState({activeNote:n, noteDetailsClass:"active"});
+    },
+    hideNotes:function (e) {
+        this.setState({activeNote:null, noteDetailsClass:""});
+    },
+    render:function () {
+        return (
+            <div className="notes">
+                <div id="calendar-button-container">
+                    <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
+                </div>
+                <div id="notebars" onMouseEnter={this.showNoteTip} onMouseLeave={this.hideNoteTip}>
+                    <div id="add-note-tip-container">
+                        <AddNoteTip onAddNote={this.addNote} ref="addNoteTip" left={this.state.noteTipLeft+"px"} fadein={this.state.noteTip}/>
+                    </div>
+                    <NoteBar className={this.state.activeNote===0 ? "active":""} onNoteClick={this.showNotes.bind(this, 0)} />
+                    <NoteBar className={this.state.activeNote===1 ? "active":""} onNoteClick={this.showNotes.bind(this, 1)} />
+                    <NoteBar className={this.state.activeNote===2 ? "active":""} onNoteClick={this.showNotes.bind(this, 2)} />
+                    <NoteBar className={this.state.activeNote===3 ? "active":""} onNoteClick={this.showNotes.bind(this, 3)} />
+                    <NoteBar className={this.state.activeNote===4 ? "active":""} onNoteClick={this.showNotes.bind(this, 4)} />
+                    <NoteBar className={this.state.activeNote===5 ? "active":""} onNoteClick={this.showNotes.bind(this, 5)} />
+                    <NoteBar className={this.state.activeNote===6 ? "active":""} onNoteClick={this.showNotes.bind(this, 6)} />
+                </div>
+                <div id="note-details" className={this.state.noteDetailsClass}>
+                     <div id="close-icon-container" onClick={this.hideNotes}><CloseIcon className="close-icon"/></div>
+                    <div id="contents">
+                        <div id="note-details-header">
+                            <div id="add-note" onMouseEnter={this.showNoteTipIcon} onMouseLeave={this.hideNoteTipIcon}>
+                                <NoteIcon className="note-icon" /> 
+                                <AddNoteTip  onAddNote={this.addNote} ref="addNoteTipIcon" left="5px" fadein={this.state.noteTipIcon}/>
+                            </div>
+                            Friday, May 5, 2016
+                        </div>
+                        <div className="row" id="note-columns">
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <AddNoteModal show={this.state.showAddNoteModal} />
+            </div>
+        );
+    }
+});
+
 var Revenue2 = React.createClass({
     getInitialState:function () {
         var today = new Date(KUtils.date.localFormat(wnt.today));

@@ -122,6 +122,22 @@ var NoteIcon = React.createClass({
     }
 });
 
+var CloseIcon = React.createClass({
+    render: function() {
+        return (
+            <svg x="0px" y="0px"
+            	 width="11.272px" height="11.296px" viewBox="0 0 11.272 11.296" enable-background="new 0 0 11.272 11.296" className={this.props.className}>
+            <path d="M11.013,9.775L6.886,5.648l4.127-4.126c0.172-0.172,0.259-0.398,0.259-0.625c0-0.226-0.087-0.453-0.259-0.625
+            	c-0.334-0.336-0.842-0.353-1.168-0.09L9.823,0.199L6.509,3.513L5.624,4.398L4.741,3.513L1.427,0.2
+            	C1.08-0.082,0.571-0.065,0.259,0.271c-0.345,0.346-0.345,0.9,0,1.25l4.127,4.127L0.259,9.775C0.087,9.947,0,10.173,0,10.4
+            	s0.087,0.453,0.259,0.625c0.334,0.336,0.842,0.354,1.168,0.09l0.021-0.018l3.314-3.313l0.885-0.885L6.53,7.784l3.314,3.313
+            	c0.347,0.281,0.856,0.264,1.168-0.072C11.358,10.679,11.358,10.125,11.013,9.775z"/>
+            </svg>
+        );
+    }
+});
+
+
 module.exports.ChangeArrow = ChangeArrow;
 module.exports.Caret = Caret;
 module.exports.LongArrow = LongArrow;
@@ -129,6 +145,7 @@ module.exports.PlusSign = PlusSign;
 module.exports.CheckMark = CheckMark;
 module.exports.CalendarIcon = CalendarIcon;
 module.exports.NoteIcon = NoteIcon;
+module.exports.CloseIcon = CloseIcon;
 module.exports.KleredeLogo = KleredeLogo;
 
 console.log('SVG icons loaded...');

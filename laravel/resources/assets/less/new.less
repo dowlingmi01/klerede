@@ -162,9 +162,9 @@
     font-size:270%;
 }
 
-// .printable-block {
-//     display:none;
-// }
+.printable-block {
+    display:none;
+}
 body.printable-block, #revenue-row-widget2 {
     display:block;
 }
@@ -173,35 +173,105 @@ body.printable-block, #revenue-row-widget2 {
     padding-left: 10px;
     text-align:right;
     .notes {
-        position:relative;
-        right:-60px;
-        width:94%;
+        text-align:left;
         background-color: @lightgrey;
-        #calendar-button {
-            position:absolute;
-            height:21px;
-            top:1px;
-            right:5px;
-            cursor:pointer;
-            img {
-                height:14px;
-                width:auto;
+        display:inline-block;
+        width:94%;
+        
+        #add-note-tip-container {
+            position:relative;
+        }
+        #calendar-button-container {
+            position:relative;
+            #calendar-button {
+                position:absolute;
+                height:21px;
+                top:1px;
+                right:5px;
+                cursor:pointer;
+                img {
+                    height:14px;
+                    width:auto;
+                }
             }
         }
         #notebars {
+            background-color: @halflightmediumgrey;
             text-align:center;
             line-height:0;
 
             .notebar {
                 display:inline-block;
-                width:14%;
+                width:14.28571428571429%;
                 height:21px;
-                padding-top:3px;
                 text-align:center;
+                position:relative;
                 .note-circle-container {
-                    height: 15px;
-                    width: 15px;
+                    height: 21px;
+                    width: 21px;
+                    padding:3px;
                     display:inline-block;
+                }
+            }
+        }
+
+        #note-details.active {
+            max-height:1024px;
+            transition: max-height .5s ease-in;
+        }
+        #note-details {
+            max-height:0;
+            transition: max-height .5s ease-out;
+            overflow-y:hidden;
+            #close-icon-container {
+                position:relative;
+                cursor:pointer;
+                svg.close-icon {
+                    position:absolute;
+                    right:5px;
+                    top:8px;
+                }
+            }
+            #contents {
+                margin-left:2em;
+                margin-right:2em;
+                padding-top:1em;
+                #note-details-header {
+                    font-size:120%;
+                    #add-note {
+                        display:inline-block;
+                        position:relative;
+                        z-index:1;
+                        cursor:pointer;
+                        font-size:83.333333333333%;
+                        svg.note-icon {
+                            width:14px;
+                            height:14px;
+                            vertical-align: text-bottom;
+                            margin-right:4px;
+                        }
+                    }
+                }
+                #note-columns {
+                    margin-top:1em;
+                    .note-column {
+                         border-left:1px solid @black;
+                         padding:0 1em;
+                         height:100%;
+                         .note-header {
+                             font-weight:800;
+                             font-size:120%;
+                         }
+                         .note-time {
+                             color:@halfdarkmediumgrey;
+                         }
+                         .note-author {
+                             margin-top:1em;
+                             color:@pink;
+                             font-weight:600;
+                             font-style: italic;
+                         }
+                     }
                 }
             }
         }
@@ -228,14 +298,34 @@ body.printable-block, #revenue-row-widget2 {
             height: 80%;
             width:80%;
         }
-        .note-circle.selected,
+        .notebar.active .note-circle,
         .note-circle:hover
         {
             border: 2px solid @lightblack;
         }
     }
 }
-
+#revenue2 .add-note-menu {
+    .menu-content {
+        
+        font-size:100%;
+        padding:4px 0;
+        line-height:100%;
+        position:absolute;
+        
+        top:15px;
+        width:80px;
+        left:0;
+        margin-left:-42px;
+        
+        .arrow {
+            transform: rotate(180deg);
+            top:-6px;
+            left:50%;
+            margin-left:-4px;
+        }
+     }
+}
 @media print {
     
     body .unprintable {
