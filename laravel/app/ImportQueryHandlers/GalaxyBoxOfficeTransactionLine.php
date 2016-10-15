@@ -38,12 +38,13 @@ class GalaxyBoxOfficeTransactionLine extends ImportQueryHandler {
 			$inserts = [];
 			$ids = [];
 			foreach($lines as $line) {
+				$date = (new Carbon($line->time))->format('Y-m-d');
 				$lineA = (array) $line;
 				unset($lineA['id']);
 				unset($lineA['time']);
+				$lineA['valid_date'] = $date;
 				$inserts[] = $lineA;
 				$ids[] = $line->id;
-				$date = (new Carbon($line->time))->format('Y-m-d');
 				$dates[$date] = true;
 			}
 			DB::table('box_office_transaction_line')->insert($inserts);

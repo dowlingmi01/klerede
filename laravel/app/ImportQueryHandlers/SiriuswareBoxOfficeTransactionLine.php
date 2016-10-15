@@ -8,11 +8,11 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 class SiriuswareBoxOfficeTransactionLine extends ImportQueryHandler {
-	protected $columns = ['source_id', 'sequence', 'box_office_product_code', 'sale_price', 'quantity'];
+	protected $columns = ['source_id', 'sequence', 'valid_date', 'box_office_product_code', 'sale_price', 'quantity'];
 	protected $updateVarColumn = 'sequence';
 	protected $updateVarName = 'BOX_OFFICE_LAST_TRAN_DETAIL_ID';
 	function process() {
-		$cols = ['l.id', 't.id as box_office_transaction_id', 'l.sequence', 'p.id as box_office_product_id'
+		$cols = ['l.id', 't.id as box_office_transaction_id', 'l.sequence', 'l.valid_date', 'p.id as box_office_product_id'
 			, 'l.sale_price', 'l.quantity', 'l.created_at', 't.time'];
 /*
 		$sel = DB::table('import_galaxy_box_office_transaction_line as l')
@@ -43,7 +43,7 @@ class SiriuswareBoxOfficeTransactionLine extends ImportQueryHandler {
 				$lineA['ticket_code'] = '';
 				$inserts[] = $lineA;
 				$ids[] = $line->id;
-				$date = (new Carbon($line->time))->format('Y-m-d');
+				$date = $line->valid_date;
 				$dates[$date] = true;
 			}
 			DB::table('box_office_transaction_line')->insert($inserts);
@@ -51,5 +51,6 @@ class SiriuswareBoxOfficeTransactionLine extends ImportQueryHandler {
 		});
 		$dates = array_keys($dates);
 		$this->setStatStatus($dates, Channel::getFor('gate')->id);
+		$this->setStatStatus($dates, -1);
 	}
 }

@@ -1,6 +1,8 @@
 SELECT item_id AS code
      , RTRIM(i.department) + '|' + RTRIM(i.category) + '|' + RTRIM(i.item) + '|' + descrip AS description
-     , FORMAT(pr_ctr_1, '000') AS account_code
+     , CASE WHEN user_code != '' THEN user_code
+            ELSE FORMAT(pr_ctr_1, '000')
+       END AS account_code
      , CASE WHEN t.department IS NULL THEN 'other'
             WHEN i.validate2 > 0 THEN 'ticket'
             ELSE 'pass'

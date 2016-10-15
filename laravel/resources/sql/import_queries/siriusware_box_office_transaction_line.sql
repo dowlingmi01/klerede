@@ -1,5 +1,6 @@
 SELECT h.cluster AS source_id
      , d.cluster AS sequence
+     , CAST(CASE WHEN i.validate2 > 0 THEN d.start_date ELSE d.date_time END AS date) AS valid_date
      , i.item_id AS box_office_product_code
      , d.extension AS sale_price
      , d.quantity
