@@ -122,7 +122,7 @@ var GBar = React.createClass({
         var onMouseDown = isEmpty ? "" : this.props.onMouseDown;
         
         
-        var weatherDiv = isEmpty? <div></div> : <WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} attendance={this.props.attendance} />;
+        var weatherDiv =<WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} attendance={this.props.attendance} />;
         
         return(
             <div id={this.props.id} onMouseDown={onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%", cursor: isEmpty?'initial':'pointer'}}>
@@ -132,7 +132,9 @@ var GBar = React.createClass({
                 <div className="glabel">
                     {KUtils.date.barFormat(this.props.date, this.props.periodType)}
                 </div>
-                {weatherDiv}
+                <div style={isEmpty? {display:"none"} : {} }>
+                    {weatherDiv}
+                </div>
             </div>
         );
     }
