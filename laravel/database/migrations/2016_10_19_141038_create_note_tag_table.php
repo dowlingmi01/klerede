@@ -15,6 +15,7 @@ class CreateNoteTagTable extends Migration
         Schema::create('note_tag', function (Blueprint $table) {
             $table->integer('note_id');
             $table->integer('tag_id');
+            $table->primary(array('note_id', 'tag_id'));
         });
     }
 
@@ -25,6 +26,6 @@ class CreateNoteTagTable extends Migration
      */
     public function down()
     {
-        Schema::drop('note');
+        Schema::drop('note_tag');
     }
 }

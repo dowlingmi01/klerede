@@ -15,7 +15,7 @@ class CreateChannelNoteTable extends Migration
         Schema::create('channel_note', function (Blueprint $table) {
             $table->integer('channel_id');
             $table->integer('note_id');
-            
+            $table->primary(array('channel_id', 'note_id'));
         });
     }
 
