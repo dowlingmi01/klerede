@@ -8,5 +8,8 @@ use App\Http\Requests;
 
 class NoteController extends Controller
 {
-    //
+    public function __construct()
+    {
+       $this->middleware('jwt.auth');
+    }
 }
