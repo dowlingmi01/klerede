@@ -14,7 +14,13 @@ class BoxOfficeProduct extends Model {
 	}
 	static public function import($data) {
 		if($data->kind == 'pass') {
-			$membership_kind_code = preg_match('/family/i', $data->description) ? 'family' : 'individual';
+			if( preg_match('/MBRCM/i', $data->description) ) {
+				$membership_kind_code = 'corporate';
+			} elseif( preg_match('/family/i', $data->description) ) {
+				$membership_kind_code = 'family';
+			} else {
+				$membership_kind_code = 'individual';
+			}
 			$data->membership_kind_id = MembershipKind::getFor($membership_kind_code)->id;
 		}
 		$product = self::firstOrNew(['venue_id'=>$data->venue_id, 'code'=>$data->code]);
