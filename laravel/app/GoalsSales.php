@@ -23,12 +23,20 @@ class GoalsSales {
 				'channel'=>'membership',
 				'name'=>'Total Membership $',
 				'type'=>'amount',
-				'sub_channels'=>['individual'=>['name'=>'Individual'], 'family'=>['name'=>'Family']],
+				'sub_channels'=>[
+					'individual'=>['name'=>'Individual'],
+					'family'=>['name'=>'Family'],
+					'corporate'=>['name'=>'Corporate'],
+				],
 			], 'membership/units' => [
 				'channel'=>'membership',
 				'name'=>'Total Membership #',
 				'type'=>'units',
-				'sub_channels'=>['individual'=>['name'=>'Individual'], 'family'=>['name'=>'Family']],
+				'sub_channels'=>[
+					'individual'=>['name'=>'Individual'],
+					'family'=>['name'=>'Family'],
+					'corporate'=>['name'=>'Corporate'],
+				],
 			], 'cafe/amount' => [
 				'channel'=>'cafe',
 				'name'=>'Cafe',
