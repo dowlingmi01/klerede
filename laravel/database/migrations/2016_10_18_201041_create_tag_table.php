@@ -17,7 +17,7 @@ class CreateTagTable extends Migration
             $table->string('description');
             $table->integer('venue_id');
             $table->integer('owner_id');
-            $table->integer('last_editor_id');
+  
             $table->timestamps();
         });
     }
