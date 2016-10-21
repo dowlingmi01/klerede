@@ -15,7 +15,7 @@ class CreateNoteTagTable extends Migration
         Schema::create('note_tag', function (Blueprint $table) {
             $table->integer('note_id');
             $table->integer('tag_id');
-            $table->primary(array('note_id', 'tag_id'));
+            $table->primary(['note_id', 'tag_id']);
         });
     }
 

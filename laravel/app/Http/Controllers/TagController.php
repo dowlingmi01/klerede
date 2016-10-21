@@ -58,10 +58,17 @@ class TagController extends Controller
         $tag = new Tag;
         $tag->description       = $request->description;
         $tag->owner_id       = \Auth::user()->id; //TODO: Logged user id
-        $tag->last_editor_id      = $tag->owner_id;
         $tag->venue_id = trim($request->venue_id) !== '' ? $request->venue_id : 0;
-        $tag->save();
-
+        try{ 
+            $tag->save();
+        } catch (\Illuminate\Database\QueryException $e){
+            $errorCode = $e->errorInfo[1];
+            if($errorCode == 1062){
+                return Response::json(['result'=>'error', 'message'=>'duplicate_entry'], 400);
+            } else {
+                return Response::json(['result'=>'error', 'message'=>$e->getMessage()], 400);
+            }
+        }
         return ['result'=>'ok', 'id'=>$tag->id];
     }
 

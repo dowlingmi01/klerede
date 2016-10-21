@@ -17,8 +17,8 @@ class CreateTagTable extends Migration
             $table->string('description');
             $table->integer('venue_id');
             $table->integer('owner_id');
-  
             $table->timestamps();
+            $table->unique(['description', 'venue_id']);
         });
     }
 

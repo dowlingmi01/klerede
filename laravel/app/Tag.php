@@ -10,7 +10,7 @@ class Tag extends Model
 
     protected $table = 'tag';
 
-    protected $hidden = ['id', 'last_editor_id', 'created_at', 'updated_at'];
+    protected $hidden = ['id', 'created_at', 'updated_at'];
 
     public function notes()
     {
