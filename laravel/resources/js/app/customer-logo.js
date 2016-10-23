@@ -1,4 +1,6 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 var $ = require('jquery');
 var wnt = require ('./wnt.js');
 
@@ -22,7 +24,7 @@ var CustomerLogo = React.createClass(
 
 if(document.getElementById('customer-logo')){
     $.when(wnt.gettingVenueData).done(function(data) {
-	    React.render(
+	    ReactDOM.render(
 	        <CustomerLogo />,
 	        document.getElementById('customer-logo')
 	    );

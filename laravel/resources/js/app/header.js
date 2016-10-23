@@ -3,6 +3,8 @@
 /************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var $ = require('jquery');
 var wnt = require ('./wnt.js');
@@ -715,7 +717,7 @@ var Header = React.createClass({
 
 if(document.getElementById('header')){
     $.when(wnt.gettingVenueData).done(function(data) {
-        React.render(
+        ReactDOM.render(
             <Header />,
             document.getElementById('header')
         );

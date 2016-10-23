@@ -3,6 +3,8 @@
 /**************************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var $ = require("jquery");
 var wnt = require("./wnt.js");
@@ -177,7 +179,7 @@ module.exports.ButtonExpand = ButtonExpand;
 
 // Loading just time and date instead of full welcome message
 if(document.getElementById('time-date')){
-    React.render(
+    ReactDOM.render(
         <TimeDate />,
         document.getElementById('time-date')
     );

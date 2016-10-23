@@ -3,6 +3,8 @@
 /***********************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var wnt = require ('./wnt.js');
 var analytics = require("./analytics.js");
@@ -346,7 +348,7 @@ var Attendance = React.createClass({
 
 if(document.getElementById('attendance-row-widget')){
     $.when(wnt.gettingVenueData).done(function(data) {
-        React.render(
+        ReactDOM.render(
             <Attendance />,
             document.getElementById('attendance-row-widget')
         );

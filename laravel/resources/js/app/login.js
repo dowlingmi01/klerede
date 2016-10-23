@@ -4,6 +4,8 @@
 
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 
 var CheckMark = require('./svg-icons').CheckMark;
@@ -289,7 +291,7 @@ var LoginComponent = React.createClass({
 })
 
 if(document.getElementById('login-component')){
-    React.render(
+    ReactDOM.render(
 		<LoginComponent token={token} email={email} action={action} />,
         document.getElementById('login-component')
     );

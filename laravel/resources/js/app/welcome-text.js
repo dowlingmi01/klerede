@@ -3,6 +3,8 @@
 /*******************************************************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var WelcomeText = React.createClass({
     getInitialState: function() {
@@ -25,7 +27,7 @@ var WelcomeText = React.createClass({
 });
 
 if(document.getElementById('welcome-text')){
-    React.render(
+    ReactDOM.render(
         <WelcomeText />,
         document.getElementById('welcome-text')
     );
