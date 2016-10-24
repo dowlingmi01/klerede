@@ -57,7 +57,7 @@ class TagController extends Controller
 
         $tag = new Tag;
         $tag->description       = $request->description;
-        $tag->owner_id       = \Auth::user()->id; //TODO: Logged user id
+        $tag->owner_id       = \Auth::user()->id;  
         $tag->venue_id = trim($request->venue_id) !== '' ? $request->venue_id : 0;
         try{ 
             $tag->save();

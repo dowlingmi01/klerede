@@ -9,6 +9,9 @@ class Note extends Model
     //
     protected $table = 'note';
 
+
+    protected $dates = ['time_start', 'time_end'];
+
     public function tags()
     {
         return $this->belongsToMany('App\Tag');
@@ -18,4 +21,6 @@ class Note extends Model
     {
         return $this->belongsToMany('App\Channel');
     }
+
+     
 }
