@@ -5,7 +5,7 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-
+var getDOMNode = require('./kutils/getDOMNode.js');
 
 
 var CheckMark = require('./svg-icons').CheckMark;
@@ -68,8 +68,8 @@ var LoginComponent = React.createClass({
 		}
 	},
 	submitForm:function () {
-		var email = this.refs.email.getDOMNode().value;
-		var password = this.refs.password.getDOMNode().value;
+		var email = getDOMNode(this.refs.email).value;
+		var password = getDOMNode(this.refs.password).value;
 		var errors = [];
 		if (KForms.isEmpty(email)) {
 			errors.push("Please enter your email.")
@@ -140,7 +140,7 @@ var LoginComponent = React.createClass({
 	resetSubmit:function () {
 		console.log('resetSubmit');
 
-		var email = this.refs.emailReset.getDOMNode().value;
+		var email = getDOMNode(this.refs.emailReset).value;
 
 		if (KForms.isEmpty(email)) {
 			alert("Please enter your email.");
@@ -179,8 +179,8 @@ var LoginComponent = React.createClass({
 	},
 	newPassword:function () {
 		
-		var new1 = this.refs.newPassword1.getDOMNode().value;
-		var new2 = this.refs.newPassword2.getDOMNode().value;
+		var new1 = getDOMNode(this.refs.newPassword1).value;
+		var new2 = getDOMNode(this.refs.newPassword2).value;
 		
 		var isValidResponse = KForms.isValidPassword(new1, new2);
 		if(isValidResponse === true) {
