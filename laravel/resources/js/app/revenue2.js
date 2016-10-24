@@ -466,6 +466,9 @@ var AddNoteModal = React.createClass({
         ); 
     },
     componentDidMount:function () {
+        console.debug("AddNoteModal->componentDidMount");
+        console.debug("AddNoteModal->componentDidMount->getDOMNode(this)->", getDOMNode(this));
+        console.debug("AddNoteModal->componentDidMount->getDOMNode(this).modal",getDOMNode(this).modal);
         $(getDOMNode(this)).modal("show");
         $(getDOMNode(this)).on('hidden.bs.modal', this.props.onClose);
     },
@@ -507,6 +510,10 @@ var AddNoteModal = React.createClass({
     },
     onAllDayClick:function (e) {
         this.setState({allDay:!this.state.allDay})
+    },
+    onComponentDidUpdate:function () {
+        console.debug("AddNoteModal->onComponentDidUpdate->$(div.modal)->", $('div.modal'));
+        
     },
     render:function () {
         var channels = [];
@@ -693,10 +700,12 @@ var Notes = React.createClass({
         }
     },
     closeAddNoteModal(e) {
+        console.debug("Revenue->closeAddNoteModal");
         this.setState({showAddNoteModal:false});
     },
     addNote:function(e) {
         // console.log(e);
+        console.debug("Revenue->addNote");
         e.preventDefault();
         this.setState({showAddNoteModal:true});
     },
@@ -734,6 +743,7 @@ var Notes = React.createClass({
         this.setState({activeNote:null, noteDetailsClass:""});
     },
     render:function () {
+        console.debug("Revenue->Render->showAddNoteModal:"+this.state.showAddNoteModal);
         return (
             <div className="notes">
                 <div id="calendar-button-container">
