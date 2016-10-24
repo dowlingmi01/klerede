@@ -583,9 +583,9 @@ var Revenue2 = React.createClass({
         
     },
     onBarMouseDown:function (n) {
-        this.setState({barEnter:n, detailsClass:"active"});
         if(this.state.detailsClass != "active")
             this.openDetails();
+        this.setState({barEnter:n});
     },
     onBarLeave:function () {
         this.setState({barEnter:null})
