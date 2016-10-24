@@ -466,9 +466,6 @@ var AddNoteModal = React.createClass({
         ); 
     },
     componentDidMount:function () {
-        console.debug("AddNoteModal->componentDidMount");
-        console.debug("AddNoteModal->componentDidMount->getDOMNode(this)->", getDOMNode(this));
-        console.debug("AddNoteModal->componentDidMount->getDOMNode(this).modal",getDOMNode(this).modal);
         $(getDOMNode(this)).modal("show");
         $(getDOMNode(this)).on('hidden.bs.modal', this.props.onClose);
     },
@@ -510,10 +507,6 @@ var AddNoteModal = React.createClass({
     },
     onAllDayClick:function (e) {
         this.setState({allDay:!this.state.allDay})
-    },
-    onComponentDidUpdate:function () {
-        console.debug("AddNoteModal->onComponentDidUpdate->$(div.modal)->", $('div.modal'));
-        
     },
     render:function () {
         var channels = [];
@@ -670,7 +663,7 @@ var AddNoteTip = React.createClass({
 var NoteBar = React.createClass({
     render:function () {
         return(
-            <div className={"notebar "+this.props.className}>
+            <div className={"notebar "+this.props.className} onClick={this.props.onClick} >
                 <NoteCircle onClick={this.props.onNoteClick}/> 
             </div>
         )
@@ -700,12 +693,10 @@ var Notes = React.createClass({
         }
     },
     closeAddNoteModal(e) {
-        console.debug("Revenue->closeAddNoteModal");
         this.setState({showAddNoteModal:false});
     },
     addNote:function(e) {
         // console.log(e);
-        console.debug("Revenue->addNote");
         e.preventDefault();
         this.setState({showAddNoteModal:true});
     },
@@ -736,14 +727,14 @@ var Notes = React.createClass({
     hideNoteTipIcon:function (e) {
         this.setState({noteTipIcon:"out"});
     },
-    showNotes:function (n) {
+    showNotes:function (n, event) {
+        event.stopPropagation();
         this.setState({activeNote:n, noteDetailsClass:"active"});
     },
     hideNotes:function (e) {
         this.setState({activeNote:null, noteDetailsClass:""});
     },
     render:function () {
-        console.debug("Revenue->Render->showAddNoteModal:"+this.state.showAddNoteModal);
         return (
             <div className="notes">
                 <div id="calendar-button-container">
@@ -753,19 +744,19 @@ var Notes = React.createClass({
                     <div id="add-note-tip-container">
                         <AddNoteTip onAddNote={this.addNote} ref="addNoteTip" left={this.state.noteTipLeft+"px"} fadein={this.state.noteTip}/>
                     </div>
-                    <NoteBar className={this.state.activeNote===0 ? "active":""} onNoteClick={this.showNotes.bind(this, 0)} />
-                    <NoteBar className={this.state.activeNote===1 ? "active":""} onNoteClick={this.showNotes.bind(this, 1)} />
-                    <NoteBar className={this.state.activeNote===2 ? "active":""} onNoteClick={this.showNotes.bind(this, 2)} />
-                    <NoteBar className={this.state.activeNote===3 ? "active":""} onNoteClick={this.showNotes.bind(this, 3)} />
-                    <NoteBar className={this.state.activeNote===4 ? "active":""} onNoteClick={this.showNotes.bind(this, 4)} />
-                    <NoteBar className={this.state.activeNote===5 ? "active":""} onNoteClick={this.showNotes.bind(this, 5)} />
-                    <NoteBar className={this.state.activeNote===6 ? "active":""} onNoteClick={this.showNotes.bind(this, 6)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===0 ? "active":""} onNoteClick={(event)=>this.showNotes(0, event) } />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===1 ? "active":""} onNoteClick={(event)=>this.showNotes(1, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===2 ? "active":""} onNoteClick={(event)=>this.showNotes(2, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===3 ? "active":""} onNoteClick={(event)=>this.showNotes(3, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===4 ? "active":""} onNoteClick={(event)=>this.showNotes(4, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===5 ? "active":""} onNoteClick={(event)=>this.showNotes(5, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===6 ? "active":""} onNoteClick={(event)=>this.showNotes(6, event)} />
                 </div>
                 <div id="note-details" className={this.state.noteDetailsClass}>
                      <div id="close-icon-container" onClick={this.hideNotes}><CloseIcon className="close-icon"/></div>
                     <div id="contents">
                         <div id="note-details-header">
-                            <div id="add-note" onMouseEnter={this.showNoteTipIcon} onMouseLeave={this.hideNoteTipIcon}>
+                            <div id="add-note" onClick={this.addNote} onMouseEnter={this.showNoteTipIcon} onMouseLeave={this.hideNoteTipIcon}>
                                 <NoteIcon className="note-icon" /> 
                                 <AddNoteTip  onAddNote={this.addNote} ref="addNoteTipIcon" left="5px" fadein={this.state.noteTipIcon}/>
                             </div>
