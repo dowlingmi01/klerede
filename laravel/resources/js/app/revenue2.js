@@ -1280,7 +1280,7 @@ var Revenue2 = React.createClass({
                         var formatAmount = KUtils.number.formatAmount;
                         if (!barIsEmpty) {
                             attendance = isNotAttendanceTab ? 
-                                "Attendance: "+formatAmount(visitors[i].units) 
+                                "Attendance: "+formatAmount(visitors[i].units, 0) 
                                     : 
                                 "Revenue: $"+formatAmount(result.visitors_revenue[i].amount) ;
                         }
