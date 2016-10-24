@@ -583,8 +583,9 @@ var Revenue2 = React.createClass({
         
     },
     onBarMouseDown:function (n) {
-        if(this.state.detailsClass == "active")
-            this.setState({barEnter:n});
+        this.setState({barEnter:n, detailsClass:"active"});
+        if(this.state.detailsClass != "active")
+            this.openDetails();
     },
     onBarLeave:function () {
         this.setState({barEnter:null})
@@ -645,9 +646,12 @@ var Revenue2 = React.createClass({
         analytics.addEvent('Earned Revenue', 'Comparte To', event.target.value);
         this.setState({comparePeriodType:event.target.value});
     },
+    openDetails:function () {
+        this.setState({detailsClass:"active", detailsTitle:"Hide Details", barEnter:null});
+    },
     onDetailsClick:function (event) {
         if (this.state.detailsClass == "") {
-            this.setState({detailsClass:"active", detailsTitle:"Hide Details", barEnter:null});
+            this.openDetails();
         } else {
             this.setState({detailsClass:"", detailsTitle:"Show Details"});
         }
