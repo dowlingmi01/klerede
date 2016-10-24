@@ -270,6 +270,10 @@ var MembersBlocksSet = React.createClass({
         $.each($('#members-blocks-widget .stat-block'), function(index, statblock){
             var newstat = $(statblock).find('.stat');
             var oldstat = $(statblock).find('.compare-to');
+
+            $(newstat).find(".units").remove();
+            $(oldstat).find(".units").remove();
+            
             var change = $(statblock).find('svg');
             if( ($(newstat).html() !== '-') && ($(oldstat).html() !== '-') ){
                 if($(newstat).parseNumber({format:"#,##0", locale:"us"}) > $(oldstat).parseNumber({format:"#,##0", locale:"us"})){
