@@ -16,6 +16,7 @@ use App\User;
 use \Hash;
 use \Validator;
 use \Input;
+use \DB;
 
 class NoteController extends Controller
 {
@@ -76,7 +77,7 @@ class NoteController extends Controller
         $note->owner_id       = \Auth::user()->id;  
         $note->last_editor_id       = $note->owner_id;  
         $note->venue_id = trim($request->venue_id) !== '' ? $request->venue_id : 0;
-
+        DB::beginTransaction();
         try{ 
         	$tagsId = $request->tags;
         	if(is_array($request->new_tags) && count($request->new_tags) > 0){
@@ -98,12 +99,13 @@ class NoteController extends Controller
 			        $tagsId[] = $tag->id;
         		}
         	}
-        	print_r($tagsId);
+        	 
             $note->save();
             $note->channels()->attach($request->channels);
             $note->tags()->attach($tagsId);
             $note->save();
         } catch (\Illuminate\Database\QueryException $e){
+            DB::rollBack();	
             $errorCode = $e->errorInfo[1];
             if($errorCode == 1062){
                 return Response::json(['result'=>'error', 'message'=>'duplicate_entry'], 400);
@@ -111,6 +113,7 @@ class NoteController extends Controller
                 return Response::json(['result'=>'error', 'message'=>$e->getMessage()], 400);
             }
         }
+        DB::commit();
         return ['result'=>'ok', 'id'=>$note->id];
     }
 
