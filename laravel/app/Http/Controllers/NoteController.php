@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use Illuminate\Http\Request;
+ 
 use Response;
 
-use App\Http\Requests;
+ 
 use Gate;
 use App\Tag;
+use App\Note;
 use App\User;
 use \Hash;
 use \Validator;
@@ -43,6 +44,8 @@ class NoteController extends Controller
         $rules = array(
         	'header' => 'required|max:255',
             'description' => 'required',
+            'time_start' => 'required',
+            'time_end' => 'required',
             'all_day' => 'required'
 
         );
@@ -51,6 +54,12 @@ class NoteController extends Controller
             $messages = $validator->messages();
             return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
         } 
+        //Validacion faltantes\
+        //si all_day es true, no debe venir hora, y sino debe venir
+        //start < end
+
+
+
          if($request->venue_id != 0){
 	        if(Gate::denies('validate-venue', $request->venue_id)){
 	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
@@ -67,7 +76,32 @@ class NoteController extends Controller
         $note->owner_id       = \Auth::user()->id;  
         $note->last_editor_id       = $note->owner_id;  
         $note->venue_id = trim($request->venue_id) !== '' ? $request->venue_id : 0;
+
         try{ 
+        	$tagsId = $request->tags;
+        	if(is_array($request->new_tags) && count($request->new_tags) > 0){
+        		foreach ($request->new_tags as $tagMame) {
+        			$tag = new Tag;
+			        $tag->description       = $tagMame;
+			        $tag->owner_id       =  $note->owner_id;  
+			        $tag->venue_id = $note->venue_id;
+			        try{ 
+			            $tag->save();
+			        } catch (\Illuminate\Database\QueryException $e){
+			            $errorCode = $e->errorInfo[1];
+			            if($errorCode == 1062){
+			                return Response::json(['result'=>'error', 'message'=>'duplicate_entry'], 400);
+			            } else {
+			                return Response::json(['result'=>'error', 'message'=>$e->getMessage()], 400);
+			            }
+			        }
+			        $tagsId[] = $tag->id;
+        		}
+        	}
+        	print_r($tagsId);
+            $note->save();
+            $note->channels()->attach($request->channels);
+            $note->tags()->attach($tagsId);
             $note->save();
         } catch (\Illuminate\Database\QueryException $e){
             $errorCode = $e->errorInfo[1];
