@@ -766,7 +766,7 @@ var Notes = React.createClass({
             noteTipLeft:0,
             noteDetailsClass:"",
             activeNote:null,
-            showAddNoteModal:true
+            showAddNoteModal:false
         }
     },
     closeAddNoteModal(e) {
@@ -2061,9 +2061,13 @@ var Revenue2 = React.createClass({
                                     </div>
                                 </div>
                             </div>
-                            <div className="row notes-container">
-                                <Notes/>
-                            </div>
+                            { features.notes ?
+                                <div className="row notes-container">
+                                    <Notes/>
+                                </div>
+                            :
+                                <div></div>
+                            }
                             <div className={"row details "+this.state.detailsClass}>
                                 <div className="col-xs-12 col-sm-12 descriptors">
                                     <div className="col-xs-6 col-sm-6" id="data-range">
