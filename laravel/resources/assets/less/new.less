@@ -103,9 +103,9 @@
             .form-group {
                 border-bottom: 1px solid @halflightmediumgrey;
                 padding-bottom:1em;
+                
                 input, textarea {
                     border:none;
-                    background-color:transparent;
                     padding-left:0;
                     padding-right:0;
                 }
@@ -117,18 +117,28 @@
                 }
                 #header, #description {
                     width:100%;
+                    background-color:transparent;
                 }
                 #header {
                     font-weight:600;
                     font-size:140%;
                 }
 
+                #add-category {
+                    background-color:transparent;
+                    padding-left:10px;                
+                    padding-right:10px;                
+                }
+                #add-category.active {
+                    background-color:rgba(236,234,231,1);
+                }
+                
                 .svg-button.circle.category-svg-button {
                     width:30px;
                     height:30px;
                 }
-                .svg-button#all-day .svg-button-content{
-                    // padding-top:0;
+                .svg-button.circle.category-svg-button.active {
+                    background-color: #eebb40;
                 }
                 #category-list {
                     margin-top:1em;

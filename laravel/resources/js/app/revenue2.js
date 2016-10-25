@@ -561,6 +561,21 @@ var AddNoteModal = React.createClass({
         if(!this.state.addCategoryActive) {
             this.setState({addCategoryActive:true});
             this.refs.addCategory.focus();
+        } else if (this.state.newCategory.length) {
+            var categoryNames = this.state.categoryNames;
+            var newCategory = this.state.newCategory;
+            
+            if (!categoryNames[newCategory]) {
+                categoryNames[newCategory] = newCategory;
+                this.setState({categoryNames:categoryNames, newCategory:"", addCategoryActive:false});
+            } else {
+                alert("This category already exits: "+newCategory);
+            }
+        }
+    },
+    onAddCategoryBlur(e){
+        if (!this.state.newCategory.length) {
+            this.setState({addCategoryActive:false});
         }
     },
     onNotifyClick:function (notify) {
@@ -655,16 +670,17 @@ var AddNoteModal = React.createClass({
                                 <SVGButton className="circle category-svg-button vertical-middle" icon={<SlimMinusSign />} />
                             </div>
                             <div className="inline-block float-right">
-                                <SVGButton className="circle category-svg-button vertical-middle" onClick={this.onAddCategoryClick} icon={<SlimPlusSign />} />
+                                <SVGButton className={"circle category-svg-button vertical-middle"+(this.state.newCategory.length ? " active" : "")} onClick={this.onAddCategoryClick} icon={<SlimPlusSign />} />
                                 &nbsp;
                                 <input 
                                     type="text" 
                                     ref="addCategory" 
                                     id="add-category" 
-                                    className="form-control vertical-middle" 
+                                    className={"form-control vertical-middle" + (this.state.addCategoryActive ? " active" : "")} 
                                     placeholder={this.state.addCategoryActive ? "Add Category" : ""} 
                                     value={this.state.newCategory} 
                                     onChange={this.onAddCategoryChange} 
+                                    onBlur={this.onAddCategoryBlur}
                                 />
                                 
                             </div>
@@ -766,7 +782,7 @@ var Notes = React.createClass({
             noteTipLeft:0,
             noteDetailsClass:"",
             activeNote:null,
-            showAddNoteModal:false
+            showAddNoteModal:true
         }
     },
     closeAddNoteModal(e) {
