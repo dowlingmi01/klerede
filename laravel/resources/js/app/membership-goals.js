@@ -4,6 +4,8 @@
 
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var $ = require('jquery');
 require('../libs/jquery.easing.1.3.js');
@@ -306,7 +308,7 @@ var MembershipGoals = React.createClass({
 
 if(document.getElementById('membership-goals-widget')){
     $.when(wnt.gettingVenueData).done(function(data) {    
-        React.render(
+        ReactDOM.render(
             <MembershipGoals />,
             document.getElementById('membership-goals-widget')
         );

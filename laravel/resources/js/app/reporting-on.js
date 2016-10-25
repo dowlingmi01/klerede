@@ -3,6 +3,8 @@
 /*******************************************************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var $ = require('jquery');
 var wnt = require ('./wnt.js');
@@ -30,7 +32,7 @@ var ReportingOn = React.createClass({
 
 if(document.getElementById('reporting-on')){
     $.when(wnt.gettingVenueData).done(function(data) {
-	    React.render(
+	    ReactDOM.render(
 	        <ReportingOn />,
 	        document.getElementById('reporting-on')
 	    );

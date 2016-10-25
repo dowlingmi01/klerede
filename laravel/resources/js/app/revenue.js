@@ -1181,7 +1181,7 @@ var Revenue = React.createClass({      // Klerede API for bar graph (NEW & WORKS
 
 if(document.getElementById('revenue-row-widget')){
     $.when(wnt.gettingVenueData).done(function(data) {
-        React.render(
+        ReactDOM.render(
             <Revenue />,
             document.getElementById('revenue-row-widget')
         );

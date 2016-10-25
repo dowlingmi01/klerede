@@ -3,6 +3,8 @@
 /**************************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var $ = require("jquery");
 
@@ -508,7 +510,7 @@ var GoalSetting = React.createClass({
 if(document.getElementById('goal-setting')){
     $.when(wnt.gettingVenueData).done(function(data) {
 	    console.log('Goal setting load...');
-	    React.render(
+	    ReactDOM.render(
 	        <GoalSetting />,
 	        document.getElementById('goal-setting')
 	    );

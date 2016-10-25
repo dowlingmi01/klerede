@@ -3,6 +3,8 @@
 /*********************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 var $ = require('jquery');
 var wnt = require('./wnt.js');
 
@@ -51,7 +53,7 @@ var MainActionMenu = React.createClass({
 
 if(document.getElementById('main-action-menu')){
     $.when(wnt.gettingVenueData).done(function(data) {
-        React.render(
+        ReactDOM.render(
             <MainActionMenu />,
             document.getElementById('main-action-menu')
         );
