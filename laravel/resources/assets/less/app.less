@@ -3,6 +3,8 @@
 /***************************************/
 @import "bootstrap/bootstrap";
 @import (inline) "jquery-ui.min.css";
+@import (inline) "react-datepicker.min.css";
+@import (inline) "jquery.timepicker.min.css";
 @import "colors";
 
 body, p, td, label, .checkbox label {
@@ -2247,6 +2249,10 @@ div#login section div.klerede-form div#options a:hover {
 }
 span#remember-checkmark div.legend-check-circle svg {
 	display:none;
+    fill:@white;
+    height:11px;
+    margin-left:3px;
+    margin-top:5px;
 }
 span#remember-checkmark div.legend-check-circle.active svg {
 	display:block;
@@ -2769,9 +2775,22 @@ form.inline-block {
     cursor: pointer;
     height: 20px;
     width: 20px;
+    padding-left:5px;
+    padding-top:5px;
     background-color:lightgray;
     display:inline-block;
     vertical-align: bottom;
+    svg {
+        fill:@white;
+        display:none;
+        width:10px;
+        height:10px;
+    }
+}
+.circle-checkbox.active {
+    svg {
+        display:block;
+    }
 }
 
 /******************************************************/
@@ -2848,6 +2867,9 @@ a.dp-choose-date {
 }
 #revenue2 .channel.empty {
     color:@lightmediumgrey;
+    svg {
+        display:none;
+    }
 }
 #revenue2 .channel.empty .circle-checkbox.multicolorbg  {
     background-color:@lightmediumgrey;

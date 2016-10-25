@@ -3,12 +3,14 @@
 /***************************/
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 
 var KleredeLogo = React.createClass({
     render:function () {
         return(
             <svg version="1.1" id="Layer_1" x="0px" y="0px"
-            	 width="111px" height="31.524px" viewBox="318.035 90.321 111 31.524" enable-background="new 318.035 90.321 111 31.524">
+            	 width="111px" height="31.524px" viewBox="318.035 90.321 111 31.524" enableBackground="new 318.035 90.321 111 31.524">
             <g>
             	<path fill="#FFFFFF" d="M322.034,113.437v8.408h-3.999V95.319h3.999v9.456l4.886-9.456h4.263l-5.472,10.82l6.417,15.707h-4.7
             		l-4.198-10.77L322.034,113.437z"/>
@@ -87,12 +89,50 @@ var PlusSign = React.createClass({
     }
 });
 
+var SlimPlusSign = React.createClass({
+    render: function() {
+        var onClick = this.props.onClick;
+        if (!onClick) {
+            onClick = "";
+        }
+        return (
+            <svg  onClick={onClick} x="0px" y="0px"
+                 width="15.202px" height="15.217px" viewBox="0 0 15.202 15.217" enableBackground="new 0 0 15.202 15.217" className={this.props.className}>
+            <path d="M8.488,6.728l0-5.844c0-0.243-0.099-0.464-0.259-0.625C8.07,0.099,7.848,0,7.604,0C7.131-0.001,6.76,0.346,6.715,0.762
+                L6.712,0.79l0,5.938L0.776,6.727C0.332,6.774-0.017,7.146,0,7.604c0,0.489,0.392,0.881,0.884,0.884l5.829,0.001v5.845
+                c0,0.243,0.099,0.465,0.259,0.625c0.16,0.159,0.381,0.258,0.625,0.259c0.473,0,0.845-0.346,0.89-0.763l0.002-0.027V8.489h5.937
+                c0.443-0.046,0.792-0.418,0.775-0.876c0-0.489-0.393-0.881-0.884-0.884L8.488,6.728z"/>
+            </svg>
+        );
+    }
+});
+
+var SlimMinusSign = React.createClass({
+    render: function() {
+        var onClick = this.props.onClick;
+        if (!onClick) {
+            onClick = "";
+        }
+        return (
+            <svg  onClick={onClick} x="0px" y="0px"
+                 width="15.202px" height="15.217px" viewBox="0 0 15.202 15.217" enableBackground="new 0 0 15.202 15.217" className={this.props.className}>
+<path d="M14.426,8.489c0.443-0.046,0.792-0.418,0.775-0.876c0-0.489-0.393-0.881-0.884-0.884L0.776,6.727
+	C0.332,6.774-0.017,7.146,0,7.604c0,0.489,0.392,0.881,0.884,0.884L14.426,8.489z"/>
+            </svg>
+        );
+    }
+});
+
+
 var CheckMark = React.createClass({
     render: function() {
         return (
             /* width is 137% of height */
-            <svg width="21.294px" height="15.555px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className={this.props.className}>
-                <path d="M20.641 0.653c-0.871-0.871-2.283-0.871-3.154 0.001l-9.489 9.528L3.793 5.98c-0.868-0.868-2.275-0.868-3.143 0 c-0.867 0.868-0.867 2.3 0 3.142l5.905 5.904c0.873 0.7 2.2 0.7 2.999-0.118L20.641 3.8 C21.512 2.9 21.5 1.5 20.6 0.7"/>
+            <svg  x="0px" y="0px"
+            	 width="15.2px" height="15.2px" viewBox="3.042 0.168 15.2 15.2" enableBackground="new 3.042 0.168 15.2 15.2">
+            <path d="M17.784,2.687c-0.622-0.622-1.631-0.622-2.253,0L8.753,9.493L5.75,6.491c-0.62-0.62-1.625-0.62-2.245,0
+            	c-0.619,0.62-0.619,1.643,0,2.244l4.218,4.217c0.624,0.499,1.571,0.499,2.142-0.084l7.919-7.934
+            	c0.622-0.643,0.613-1.643-0.029-2.214"/>
             </svg>
         );
     }
@@ -122,13 +162,32 @@ var NoteIcon = React.createClass({
     }
 });
 
-module.exports.ChangeArrow = ChangeArrow;
-module.exports.Caret = Caret;
-module.exports.LongArrow = LongArrow;
-module.exports.PlusSign = PlusSign;
-module.exports.CheckMark = CheckMark;
+var CloseIcon = React.createClass({
+    render: function() {
+        return (
+            <svg x="0px" y="0px"
+            	 width="11.272px" height="11.296px" viewBox="0 0 11.272 11.296" enableBackground="new 0 0 11.272 11.296" className={this.props.className}>
+            <path d="M11.013,9.775L6.886,5.648l4.127-4.126c0.172-0.172,0.259-0.398,0.259-0.625c0-0.226-0.087-0.453-0.259-0.625
+            	c-0.334-0.336-0.842-0.353-1.168-0.09L9.823,0.199L6.509,3.513L5.624,4.398L4.741,3.513L1.427,0.2
+            	C1.08-0.082,0.571-0.065,0.259,0.271c-0.345,0.346-0.345,0.9,0,1.25l4.127,4.127L0.259,9.775C0.087,9.947,0,10.173,0,10.4
+            	s0.087,0.453,0.259,0.625c0.334,0.336,0.842,0.354,1.168,0.09l0.021-0.018l3.314-3.313l0.885-0.885L6.53,7.784l3.314,3.313
+            	c0.347,0.281,0.856,0.264,1.168-0.072C11.358,10.679,11.358,10.125,11.013,9.775z"/>
+            </svg>
+        );
+    }
+});
+
+
 module.exports.CalendarIcon = CalendarIcon;
-module.exports.NoteIcon = NoteIcon;
+module.exports.Caret = Caret;
+module.exports.ChangeArrow = ChangeArrow;
+module.exports.CheckMark = CheckMark;
+module.exports.CloseIcon = CloseIcon;
 module.exports.KleredeLogo = KleredeLogo;
+module.exports.LongArrow = LongArrow;
+module.exports.NoteIcon = NoteIcon;
+module.exports.PlusSign = PlusSign;
+module.exports.SlimPlusSign = SlimPlusSign;
+module.exports.SlimMinusSign = SlimMinusSign;
 
 console.log('SVG icons loaded...');

@@ -1,5 +1,6 @@
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 var $ = require('jquery');
 require('../libs/jquery.datePicker.js');
@@ -16,11 +17,43 @@ KUtils.number = require("./kutils/number-utils.js");
 var Caret = require('./svg-icons').Caret;
 var LongArrow = require('./svg-icons').LongArrow;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
+var NoteIcon = require('./svg-icons').NoteIcon;
+var CloseIcon = require('./svg-icons').CloseIcon;
+var CalendarIcon = require('./svg-icons').CalendarIcon;
+var CheckMark = require('./svg-icons').CheckMark;
+
 var analytics = require("./analytics.js");
 
 var ActionMenu = require('./reusable-parts').ActionMenu;
 var printDiv = require ('./kutils/print-div.js');
 var saveImage = require ('./kutils/save-image.js');
+
+require('bootstrap');
+
+require('timepicker');
+
+var JQTimePicker = React.createClass({
+    componentDidMount:function () {
+        $(this.refs.self).timepicker(
+            {"timeFormat":this.props.timeFormat || "g:ia"}
+        );
+         $(this.refs.self).on("changeTime", this.props.onChange)
+    },
+    render:function () {
+        return (
+            <input type="text" id={this.props.id} ref="self" className={this.props.className} defaultValue={this.props.defaultValue} />
+        )
+    }
+});
+
+var DatePicker = require('react-datepicker');
+var moment = require('moment');
+moment.updateLocale('en',{
+    week:{
+        dow:1
+    }
+});
+var getDOMNode = require('./kutils/getDOMNode.js');
 
 
 var CaretHandler = React.createClass({
@@ -35,20 +68,23 @@ var Dropdown = React.createClass({
 
         var optionList = this.props.optionList;
         var options = [];
-
+        
+        if(this.props.placeholder) {
+            options.push(<option disabled key={'placeholder'} value="placeholder">{this.props.placeholder}</option>)
+        }
+        
+        
         for (var v in optionList) {
-            var option = <option key={v} value={v} >{optionList[v]}</option>;
+            var option = <option key={v} value={v}>{optionList[v]}</option>;
             options.push(option);
         }
         
         return (
             <div className={this.props.className}>
                 <Caret className="filter-caret" />
-                <form >
-                    <select className="form-control" onChange={this.props.onChange} value={this.props.selected} >
-                        {options}
-                    </select>
-                </form>
+                <select className="form-control" value={this.props.selected} onChange={this.props.onChange} >
+                    {options}
+                </select>
             </div>
         );
     }
@@ -59,9 +95,7 @@ var Channel = React.createClass({
         return(
             <div className={"channel multicolor-wrapper "+this.props.empty}>
                 <div className={"circle-checkbox multicolorbg "+this.props.active} onClick={this.props.onClick}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="21.294px" height="15.555px" viewBox="0 0 21.294 15.555" preserveAspectRatio="xMidYMid meet" className="legend-check" >
-                        <path d="M20.641 0.653c-0.871-0.871-2.283-0.871-3.154 0.001l-9.489 9.528L3.793 5.98c-0.868-0.868-2.275-0.868-3.143 0 c-0.867 0.868-0.867 2.3 0 3.142l5.905 5.904c0.873 0.7 2.2 0.7 2.999-0.118L20.641 3.8 C21.512 2.9 21.5 1.5 20.6 0.7"/>
-                    </svg>
+                    <CheckMark className="legend-check" />
                 </div> &nbsp;
                 <span>{this.props.name}</span>
                 &nbsp;
@@ -77,13 +111,13 @@ var GBar = React.createClass({
     componentDidMount:function () {
         if (!this.refs.popup)  return;
         
-        var popup = this.refs.popup.getDOMNode();
+        var popup = getDOMNode(this.refs.popup);
         
-        $(this.refs.gbarSections.getDOMNode()).on("mouseover", function(event){
+        $(getDOMNode(this.refs.gbarSections)).on("mouseover", function(event){
             // console.log($(popup));
             $(popup).fadeIn(300);
         });
-        $(this.refs.gbarSections.getDOMNode()).on("mouseleave", function(event){
+        $(getDOMNode(this.refs.gbarSections)).on("mouseleave", function(event){
             $(popup).finish();
             $(popup).fadeOut(150);
         });
@@ -252,7 +286,7 @@ var WeatherPopup = React.createClass({
     }
 });
 
-var DatePickerReact = React.createClass({
+var DatePickerJQuery = React.createClass({
     componentDidMount: function() {
         Date.firstDayOfWeek = KUtils.date.firstDayOfWeek;
         Date.format = 'mm/dd/yyyy';
@@ -415,6 +449,420 @@ var DetailsHeader = React.createClass({
         );
     }
 });
+
+var SlimPlusSign = require('./svg-icons').SlimPlusSign;
+var SlimMinusSign = require('./svg-icons').SlimMinusSign;
+
+var SVGButton = React.createClass({
+    render:function () {
+        return (
+            <div onClick={this.props.onClick || null} id={this.props.id || ""} className={"svg-button " + (this.props.className || "")}>
+                <div className="svg-button-content">{this.props.icon}</div>
+            </div>
+        );
+    }
+});
+
+var Category = React.createClass({
+    render:function () {
+        return(
+            <div className="category-item">
+                <SVGButton className="circle" onClick={this.props.onRemove} id="remove-category-item" icon={<CloseIcon className="" />} />
+                {"#"+this.props.name}
+            </div>
+        );
+    }
+})
+
+var TextArea = React.createClass({
+    onChange:function (e) {
+        var self = $(this.refs.self);
+        self.height(Math.max(self.prop('scrollHeight'), this.props.minHeight));
+    },
+    render:function () {
+        return(
+            <textarea ref="self" id={this.props.id} className={this.props.className} placeholder={this.props.placeholder} defaultValue={this.props.defaultValue} onChange={this.onChange} />
+        );
+    }
+});
+
+var AddNoteModal = React.createClass({
+    getInitialState:function () {
+        return(
+            {
+                channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
+                channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
+                categoryNames:{1:"Facility", 2:"Weather", 3:"Holiday", 4:"Local Event"},
+                selectedCategories:[],
+                notify:"none",
+                allDay:true,
+				dateStart:moment(),
+                dateEnd:moment(),
+                timeStart:"9:00am",
+                timeEnd:"10:00am",
+                addCategoryActive:false,
+                newCategory:""
+            }
+        ); 
+    },
+    componentDidMount:function () {
+        $(getDOMNode(this)).modal("show");
+        $(getDOMNode(this)).on('hidden.bs.modal', this.props.onClose);
+    },
+    onChange:function (e) {
+        console.log(e);
+    },
+    onDateStartChange(d) {
+        this.setState({dateStart:d})
+    },
+    onDateEndChange(d) {
+        this.setState({dateEnd:d})
+    },
+    onTimeStartChange(d) {
+        this.setState({timeStart:$(d.target).val()});
+    },
+    onTimeEndChange(d) {
+        this.setState({timeEnd:$(d.target).val()});
+    },
+    onChannelClick:function (k) {
+        var channelActive = this.state.channelActive;
+        if (channelActive[k] ==="active") {
+            channelActive[k] = "";
+        } else {
+            channelActive[k] = "active";
+        }
+        this.setState({channelActive:channelActive});
+    },
+    onCategorySelect(e) {
+        var selectedCategories = this.state.selectedCategories;
+        var value = e.target.value;
+
+        if(selectedCategories.indexOf(value) >= 0) 
+            return;
+        
+        selectedCategories.push(value);
+        this.setState({selectedCategories:selectedCategories});
+    },
+    onCategoryDeselect(c) {
+        var selectedCategories = this.state.selectedCategories;
+        var index = selectedCategories.indexOf(c);
+        
+        if (index <0) 
+            return;
+        
+        selectedCategories.splice(index, 1);
+        
+        this.setState({selectedCategories:selectedCategories});
+    },
+    onAddCategoryChange(e){
+        this.setState({newCategory:e.target.value});
+    },
+    onAddCategoryClick(e){
+        if(!this.state.addCategoryActive) {
+            this.setState({addCategoryActive:true});
+            this.refs.addCategory.focus();
+        }
+    },
+    onNotifyClick:function (notify) {
+        this.setState({notify:notify});
+    },
+    onAllDayClick:function (e) {
+        this.setState({allDay:!this.state.allDay})
+    },
+    render:function () {
+        var channels = [];
+        for (var k in this.state.channelNames) {
+            var channel = this.state.channelNames[k];
+            var active = this.state.channelActive[k];
+            channels.push(
+                <Channel empty={""} key={k} name={channel} active={active} onClick={this.onChannelClick.bind(this, k)} />
+            );
+        }
+        
+        var selectedCategories = this.state.selectedCategories;
+        var categoryNames = this.state.categoryNames;
+        var categories = [];
+        
+        for (var i=0; i<selectedCategories.length; i++) {
+            var c = selectedCategories[i];
+            if (categoryNames[c]) {
+                categories.push(<Category key={c} onRemove={this.onCategoryDeselect.bind(this, c)} value={c} name={categoryNames[c]} />)
+            };
+        }
+
+        
+        
+        return(
+            <div className="modal fade" tabIndex="-1" role="dialog">
+              <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                  <div className="modal-header modal-section">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><CloseIcon className="close-icon"/></button>
+                    <h3 className="modal-title">September 5, 2016</h3>
+                    <div id="calendar-button-container">
+                        <div id="calendar-button"> <CalendarIcon /> <span id="text">Calendar</span></div>
+                    </div>
+                  </div>
+                  <div className="modal-body modal-section">
+                    <form ref="addNoteForm" className="" onFocus={null}>
+                        <div className="form-group">
+                            <input type="text" id="header" className="form-control" placeholder="Add Note Header" defaultValue={null} onChange={this.onChange} />
+                        </div>
+                        <div className="form-group">
+                            <TextArea minHeight={34} id="description" className="form-control" placeholder="Description" defaultValue={null} onChange={this.onChange} />
+                        </div>
+                        <div className="form-group" id="date-time">
+                            <span>
+                                All day: <SVGButton className={"rounded-box " + (this.state.allDay ? "":"inactive")} onClick={this.onAllDayClick} id="all-day" icon={<CheckMark className="" />} />
+                            </span>
+                            <label className="checkbox-inline">
+                                Starts: <DatePicker dateFormat="MMM DD, YYYY" selected={this.state.dateStart} onChange={this.onDateStartChange} popoverAttachment='bottom center'
+    popoverTargetAttachment='top center' />
+                            </label>
+                            <label className="checkbox-inline">
+                            { this.state.allDay ? 
+                                <span className="timepicker"></span> 
+                            :
+                                <JQTimePicker className="timepicker" id="start-hour" defaultValue={this.state.timeStart} onChange={this.onTimeStartChange} />
+                            }
+                            </label>
+                            <label className="checkbox-inline">
+                              Ends: <DatePicker dateFormat="MMM DD, YYYY" selected={this.state.dateEnd} onChange={this.onDateEndChange} popoverAttachment='bottom center'
+    popoverTargetAttachment='top center' />
+                            </label>
+                            <label className="checkbox-inline">
+                            { this.state.allDay ? 
+                                <span className="timepicker"></span> 
+                             :
+                                <JQTimePicker className="timepicker" id="end-hour" defaultValue={this.state.timeEnd} onChange={this.onTimeEndChange} />
+                            }
+                            </label>
+                        </div>
+                        <div className="form-group">
+                            <h6>Check all that apply:</h6>
+                            <div>{channels}</div>
+                        </div>
+                        <div className="form-group" id="categories">
+                            <div className="inline-block">
+                                <Dropdown
+                                    className="inline-block revenue-dropdown vertical-middle"
+                                    ref="category-select"
+                                    optionList={this.state.categoryNames}
+                                    selected={"placeholder"}
+                                    placeholder="Chose a category"
+                                    onChange={this.onCategorySelect}
+                                />
+                                <SVGButton className="circle category-svg-button vertical-middle" icon={<SlimMinusSign />} />
+                            </div>
+                            <div className="inline-block float-right">
+                                <SVGButton className="circle category-svg-button vertical-middle" onClick={this.onAddCategoryClick} icon={<SlimPlusSign />} />
+                                &nbsp;
+                                <input 
+                                    type="text" 
+                                    ref="addCategory" 
+                                    id="add-category" 
+                                    className="form-control vertical-middle" 
+                                    placeholder={this.state.addCategoryActive ? "Add Category" : ""} 
+                                    value={this.state.newCategory} 
+                                    onChange={this.onAddCategoryChange} 
+                                />
+                                
+                            </div>
+                            <div id="category-list">{categories}</div>
+                        </div>
+                        <div className="form-group" id="notify">
+                            Notify Users:
+                            &nbsp;
+                            <span>
+                                <SVGButton 
+                                    onClick={this.onNotifyClick.bind(this, "email")} 
+                                    className={"circle "+ (this.state.notify!="email" ? "inactive" : "")} 
+                                    id="email-notify" 
+                                    icon={<CheckMark className="" />} 
+                                />
+                                &nbsp;Via Email
+                            </span>
+                            &nbsp;
+                            &nbsp;
+                            <span>
+                                <SVGButton 
+                                    onClick={this.onNotifyClick.bind(this, "none")} 
+                                    className={"circle "+ (this.state.notify!="none" ? "inactive" : "")} 
+                                    id="none-notify" 
+                                    icon={<CheckMark className="" />} 
+                                />
+                                &nbsp;None
+                            </span>
+                        </div>
+                    </form>
+                    
+                  </div>
+                  <div className="modal-footer modal-section">
+                    <div className="buttons">
+                        <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" className="btn btn-primary">Save Note</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        );
+    }
+});
+
+var NoteCircle = React.createClass({
+    // onMouseEnter:function (e) {
+    //     console.log("note-circle-container", e.target, e.currentTarget, e.relatedTarget, e.eventPhase);
+    //     e.stopPropagation();
+    // },
+    render:function () {
+        return(
+            <div className="note-circle-container" onClick={this.props.onClick} >
+                <div className="note-circle four"></div>
+            </div>
+        );
+    }
+});
+var AddNoteTip = React.createClass({
+    componentDidMount:function () {
+        // $(this.getDOMNode()).modal("show");
+        
+    },
+    render:function () {
+        return (
+            <div className="add-note-menu">
+                <div className={"menu-content fade "+this.props.fadein} style={{left:this.props.left}} role="tooltip" ><div className="arrow"></div><div className="action" ><a href="#add-note" onClick={this.props.onAddNote}>Add Note</a></div></div>
+            </div> 
+        );
+    }
+});
+
+var NoteBar = React.createClass({
+    render:function () {
+        return(
+            <div className={"notebar "+this.props.className} onClick={this.props.onClick} >
+                <NoteCircle onClick={this.props.onNoteClick}/> 
+            </div>
+        )
+    } 
+});
+var NoteColumn = React.createClass({
+    render:function() {
+        return(
+            <div className="note-column" >
+                <div className="note-header">Short Week</div>
+                <div className="note-time">12pm-2pm</div>
+                <div className="note-author">Tom.Wolfe</div>
+                <div className="note-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut lab... </div>
+            </div>
+        );
+    }
+});
+var Notes = React.createClass({
+    getInitialState:function() {
+        return {
+            noteTipIcon:"", 
+            noteTip:"", 
+            noteTipLeft:0,
+            noteDetailsClass:"",
+            activeNote:null,
+            showAddNoteModal:true
+        }
+    },
+    closeAddNoteModal(e) {
+        this.setState({showAddNoteModal:false});
+    },
+    addNote:function(e) {
+        // console.log(e);
+        e.preventDefault();
+        this.setState({showAddNoteModal:true});
+    },
+    showNoteTip:function (e) {
+        if (this.state.noteTip == "in") 
+            return;
+        
+        if ($(e.target).hasClass("note-circle-container"))
+            return;
+        
+        e.stopPropagation();
+
+        var addNoteTip = $(getDOMNode(this.refs.addNoteTip));
+        this.setState({noteTip:"in", noteTipLeft:e.pageX - addNoteTip.offset().left});
+    },
+    hideNoteTip:function (e) {
+        
+        if (this.state.noteTip == "out") 
+            return;
+        
+        e.stopPropagation();
+
+        this.setState({noteTip:"out"});
+    },
+    showNoteTipIcon:function (e) {
+        this.setState({noteTipIcon:"in"});
+    },
+    hideNoteTipIcon:function (e) {
+        this.setState({noteTipIcon:"out"});
+    },
+    showNotes:function (n, event) {
+        event.stopPropagation();
+        this.setState({activeNote:n, noteDetailsClass:"active"});
+    },
+    hideNotes:function (e) {
+        this.setState({activeNote:null, noteDetailsClass:""});
+    },
+    render:function () {
+        return (
+            <div className="notes">
+                <div id="calendar-button-container">
+                    <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
+                </div>
+                <div id="notebars" onMouseEnter={this.showNoteTip} onMouseLeave={this.hideNoteTip}>
+                    <div id="add-note-tip-container">
+                        <AddNoteTip onAddNote={this.addNote} ref="addNoteTip" left={this.state.noteTipLeft+"px"} fadein={this.state.noteTip}/>
+                    </div>
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===0 ? "active":""} onNoteClick={(event)=>this.showNotes(0, event) } />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===1 ? "active":""} onNoteClick={(event)=>this.showNotes(1, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===2 ? "active":""} onNoteClick={(event)=>this.showNotes(2, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===3 ? "active":""} onNoteClick={(event)=>this.showNotes(3, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===4 ? "active":""} onNoteClick={(event)=>this.showNotes(4, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===5 ? "active":""} onNoteClick={(event)=>this.showNotes(5, event)} />
+                    <NoteBar onClick={this.addNote} className={this.state.activeNote===6 ? "active":""} onNoteClick={(event)=>this.showNotes(6, event)} />
+                </div>
+                <div id="note-details" className={this.state.noteDetailsClass}>
+                     <div id="close-icon-container" onClick={this.hideNotes}><CloseIcon className="close-icon"/></div>
+                    <div id="contents">
+                        <div id="note-details-header">
+                            <div id="add-note" onClick={this.addNote} onMouseEnter={this.showNoteTipIcon} onMouseLeave={this.hideNoteTipIcon}>
+                                <NoteIcon className="note-icon" /> 
+                                <AddNoteTip  onAddNote={this.addNote} ref="addNoteTipIcon" left="5px" fadein={this.state.noteTipIcon}/>
+                            </div>
+                            Friday, May 5, 2016
+                        </div>
+                        <div className="row" id="note-columns">
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                            <div className="col-xs-3">
+                                <NoteColumn />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {this.state.showAddNoteModal ? <AddNoteModal onClose={this.closeAddNoteModal}/> : <div></div>}
+                
+            </div>
+        );
+    }
+});
+
 var Revenue2 = React.createClass({
     getInitialState:function () {
         var today = new Date(KUtils.date.localFormat(wnt.today));
@@ -1541,7 +1989,7 @@ var Revenue2 = React.createClass({
                                         selected={this.state.periodType}
                                         onChange={this.onPeriodTypeChange}
                                     />
-                                    <DatePickerReact defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
+                                    <DatePickerJQuery defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
                                 </div>
                                 <div className="col-xs-4 col-lg-6 text-right" id="members">
                                     {membersDropDown}
@@ -1613,6 +2061,9 @@ var Revenue2 = React.createClass({
                                     </div>
                                 </div>
                             </div>
+                            <div className="row notes-container">
+                                <Notes/>
+                            </div>
                             <div className={"row details "+this.state.detailsClass}>
                                 <div className="col-xs-12 col-sm-12 descriptors">
                                     <div className="col-xs-6 col-sm-6" id="data-range">
@@ -1679,7 +2130,7 @@ var Revenue2 = React.createClass({
 
 if(document.getElementById('revenue-row-widget2')){
     $.when(wnt.gettingVenueData).done(function(data) {
-        React.render(
+        ReactDOM.render(
             <Revenue2 />,
             document.getElementById('revenue-row-widget2')
         );

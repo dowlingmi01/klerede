@@ -69,6 +69,8 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::get('auth/ven', 'AuthenticateController@getVenueId');
 
 	Route::resource('users', 'UserController', ['except' => ['create', 'edit' ]]);
+	Route::resource('tags', 'TagController',  ['only' => ['index', 'show', 'store', 'destroy']]);
+	Route::resource('notes', 'NoteController',  ['except' => ['create', 'edit' ]]);
 	Route::post('users/{user_id}/pass', 'UserController@updatePassword');
 
 	Route::resource('roles', 'RoleController', ['only' => ['index']]);
