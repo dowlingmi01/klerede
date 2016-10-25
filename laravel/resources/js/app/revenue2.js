@@ -30,8 +30,29 @@ var saveImage = require ('./kutils/save-image.js');
 
 require('bootstrap');
 
+require('timepicker');
+
+var JQTimePicker = React.createClass({
+    componentDidMount:function () {
+        $(this.refs.self).timepicker(
+            {"timeFormat":this.props.timeFormat || "g:ia"}
+        );
+         $(this.refs.self).on("changeTime", this.props.onChange)
+    },
+    render:function () {
+        return (
+            <input type="text" id={this.props.id} ref="self" className={this.props.className} defaultValue={this.props.defaultValue} />
+        )
+    }
+});
+
 var DatePicker = require('react-datepicker');
 var moment = require('moment');
+moment.updateLocale('en',{
+    week:{
+        dow:1
+    }
+});
 var getDOMNode = require('./kutils/getDOMNode.js');
 
 
@@ -451,6 +472,18 @@ var Category = React.createClass({
     }
 })
 
+var TextArea = React.createClass({
+    onChange:function (e) {
+        var self = $(this.refs.self);
+        self.height(Math.max(self.prop('scrollHeight'), this.props.minHeight));
+    },
+    render:function () {
+        return(
+            <textarea ref="self" id={this.props.id} className={this.props.className} placeholder={this.props.placeholder} defaultValue={this.props.defaultValue} onChange={this.onChange} />
+        );
+    }
+});
+
 var AddNoteModal = React.createClass({
     getInitialState:function () {
         return(
@@ -461,7 +494,12 @@ var AddNoteModal = React.createClass({
                 selectedCategories:[],
                 notify:"none",
                 allDay:true,
-				selectedDate:moment()
+				dateStart:moment(),
+                dateEnd:moment(),
+                timeStart:"9:00am",
+                timeEnd:"10:00am",
+                addCategoryActive:false,
+                newCategory:""
             }
         ); 
     },
@@ -471,6 +509,18 @@ var AddNoteModal = React.createClass({
     },
     onChange:function (e) {
         console.log(e);
+    },
+    onDateStartChange(d) {
+        this.setState({dateStart:d})
+    },
+    onDateEndChange(d) {
+        this.setState({dateEnd:d})
+    },
+    onTimeStartChange(d) {
+        this.setState({timeStart:$(d.target).val()});
+    },
+    onTimeEndChange(d) {
+        this.setState({timeEnd:$(d.target).val()});
     },
     onChannelClick:function (k) {
         var channelActive = this.state.channelActive;
@@ -502,6 +552,15 @@ var AddNoteModal = React.createClass({
         
         this.setState({selectedCategories:selectedCategories});
     },
+    onAddCategoryChange(e){
+        this.setState({newCategory:e.target.value});
+    },
+    onAddCategoryClick(e){
+        if(!this.state.addCategoryActive) {
+            this.setState({addCategoryActive:true});
+            this.refs.addCategory.focus();
+        }
+    },
     onNotifyClick:function (notify) {
         this.setState({notify:notify});
     },
@@ -524,7 +583,6 @@ var AddNoteModal = React.createClass({
         
         for (var i=0; i<selectedCategories.length; i++) {
             var c = selectedCategories[i];
-            console.log(c);
             if (categoryNames[c]) {
                 categories.push(<Category key={c} onRemove={this.onCategoryDeselect.bind(this, c)} value={c} name={categoryNames[c]} />)
             };
@@ -549,25 +607,33 @@ var AddNoteModal = React.createClass({
                             <input type="text" id="header" className="form-control" placeholder="Add Note Header" defaultValue={null} onChange={this.onChange} />
                         </div>
                         <div className="form-group">
-                            <input type="text" id="description" className="form-control" placeholder="Description" defaultValue={null} onChange={this.onChange} />
+                            <TextArea minHeight={34} id="description" className="form-control" placeholder="Description" defaultValue={null} onChange={this.onChange} />
                         </div>
                         <div className="form-group" id="date-time">
                             <span>
                                 All day: <SVGButton className={"rounded-box " + (this.state.allDay ? "":"inactive")} onClick={this.onAllDayClick} id="all-day" icon={<CheckMark className="" />} />
                             </span>
                             <label className="checkbox-inline">
-                                Starts: <DatePicker selected={this.state.selectedDate} onChange={this.onChange} popoverAttachment='bottom center'
+                                Starts: <DatePicker dateFormat="MMM DD, YYYY" selected={this.state.dateStart} onChange={this.onDateStartChange} popoverAttachment='bottom center'
     popoverTargetAttachment='top center' />
                             </label>
                             <label className="checkbox-inline">
-                              <input type="text" id="start-hour" className="time" defaultValue="9:00am" />
+                            { this.state.allDay ? 
+                                <span className="timepicker"></span> 
+                            :
+                                <JQTimePicker className="timepicker" id="start-hour" defaultValue={this.state.timeStart} onChange={this.onTimeStartChange} />
+                            }
                             </label>
                             <label className="checkbox-inline">
-                              Ends: <DatePicker selected={this.state.selectedDate} onChange={this.onChange} popoverAttachment='bottom center'
+                              Ends: <DatePicker dateFormat="MMM DD, YYYY" selected={this.state.dateEnd} onChange={this.onDateEndChange} popoverAttachment='bottom center'
     popoverTargetAttachment='top center' />
                             </label>
                             <label className="checkbox-inline">
-                              <input type="text" id="end-hour" className="time" defaultValue="10:00am" />
+                            { this.state.allDay ? 
+                                <span className="timepicker"></span> 
+                             :
+                                <JQTimePicker className="timepicker" id="end-hour" defaultValue={this.state.timeEnd} onChange={this.onTimeEndChange} />
+                            }
                             </label>
                         </div>
                         <div className="form-group">
@@ -587,9 +653,18 @@ var AddNoteModal = React.createClass({
                                 <SVGButton className="circle category-svg-button vertical-middle" icon={<SlimMinusSign />} />
                             </div>
                             <div className="inline-block float-right">
-                                <SVGButton className="circle category-svg-button vertical-middle" icon={<SlimPlusSign />} />
+                                <SVGButton className="circle category-svg-button vertical-middle" onClick={this.onAddCategoryClick} icon={<SlimPlusSign />} />
                                 &nbsp;
-                                <input type="text" id="add-category" className="form-control vertical-middle" placeholder="Add a category" defaultValue={null} onChange={this.onChange} />
+                                <input 
+                                    type="text" 
+                                    ref="addCategory" 
+                                    id="add-category" 
+                                    className="form-control vertical-middle" 
+                                    placeholder={this.state.addCategoryActive ? "Add Category" : ""} 
+                                    value={this.state.newCategory} 
+                                    onChange={this.onAddCategoryChange} 
+                                />
+                                
                             </div>
                             <div id="category-list">{categories}</div>
                         </div>
@@ -689,7 +764,7 @@ var Notes = React.createClass({
             noteTipLeft:0,
             noteDetailsClass:"",
             activeNote:null,
-            showAddNoteModal:false
+            showAddNoteModal:true
         }
     },
     closeAddNoteModal(e) {

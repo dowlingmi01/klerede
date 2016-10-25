@@ -1,7 +1,8 @@
 @import "colors";
 
 .modal-backdrop.fade.in {
-    min-height:200%;
+    height:100%;
+    position:fixed;
 }
 .svg-button {
     display:inline-block;
@@ -91,8 +92,9 @@
                     font-weight:800;
                     width:90px;
                 }
-                input.time {
+                .timepicker {
                     width:60px;
+                    display:inline-block;
                 }
                 label {
                     padding-left:10px;
@@ -101,7 +103,7 @@
             .form-group {
                 border-bottom: 1px solid @halflightmediumgrey;
                 padding-bottom:1em;
-                input {
+                input, textarea {
                     border:none;
                     background-color:transparent;
                     padding-left:0;
@@ -110,6 +112,8 @@
                 .form-control {
                     color:@black;
                     font-weight:400;
+                    padding-top:0;
+                    padding-bottom:0;
                 }
                 #header, #description {
                     width:100%;
@@ -138,6 +142,9 @@
                         .svg-button.circle#remove-category-item {
                             background-color:@pink;
                             opacity:0;
+                            width:12px;
+                            height:12px;
+                            vertical-align:text-top;
                         }
                     }
                     .category-item:hover,.category-item:focus {
@@ -369,7 +376,10 @@
             background-color: @halflightmediumgrey;
             text-align:center;
             line-height:0;
-
+            
+            #add-note-tip-container{
+                z-index: 1;
+            }
             .notebar {
                 display:inline-block;
                 width:14.28571428571429%;
@@ -496,6 +506,79 @@
         }
      }
 }
+#revenue2 #note-details-header .add-note-menu {
+    .menu-content {
+        margin-left:-28px;
+        .arrow {
+            left:28px;
+        }
+     }
+}
+
+.react-datepicker {
+    background-color:rgba(236,234,231,1);
+    font-family: inherit;
+    font-weight:600;
+}
+.react-datepicker__tether-element-attached-bottom .react-datepicker__triangle {
+    border-top-color:rgba(236,234,231,1);
+}
+.react-datepicker__header{
+    text-align: left;
+    padding-left: 8px;
+}
+.react-datepicker__navigation--previous, 
+.react-datepicker__navigation--previous:hover 
+{
+    border-right-color:transparent;
+}
+.react-datepicker__navigation--previous {
+    left:initial;
+    top:0;
+    right:30px;
+    background: transparent url('../img/caret.svg') no-repeat scroll top left;
+    width: 28px;
+    height: 15px;
+    transform: rotate(90deg);
+}
+.react-datepicker__navigation--next, 
+.react-datepicker__navigation--next:hover 
+{
+    border-left-color:transparent;
+}
+.react-datepicker__navigation--next {
+    left:initial;
+    top:14px;
+    right:10px;
+    background: transparent url('../img/caret.svg') no-repeat scroll top left;
+    width: 28px;
+    height: 15px;
+    transform: rotate(-90deg);
+}
+.react-datepicker__day-names{
+    display:none;
+}
+.react-datepicker__header {
+    border-bottom:none;
+    background-color:transparent;
+}
+.react-datepicker__day,
+.react-datepicker__day:hover,
+.react-datepicker__day--selected,
+.react-datepicker__day--selected:hover
+{
+    border-radius:100%;
+    padding-left:1px;
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--selected:hover
+{
+    background-color:@cobalt;
+}
+.react-datepicker__day--outside-month{
+    opacity:.5;
+}
+
 @media print {
     
     body .unprintable {

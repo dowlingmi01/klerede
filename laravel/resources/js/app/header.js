@@ -681,7 +681,7 @@ var Header = React.createClass({
                             </div>
                             <div className="form-group">
                                 <label htmlFor="up-email">Email:</label>
-                                <input type="text" id="up-email" defaultValue={this.state.email} value={this.state.email} data-field="email" disabled />
+                                <input type="text" id="up-email" defaultValue={this.state.email} data-field="email" disabled />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="up-pwd-current">Current Password:</label>
@@ -697,7 +697,7 @@ var Header = React.createClass({
                             </div>
                             <div className="form-group">
                                 <label htmlFor="up-type">Account Type:</label>
-                                <input type="text" id="up-type" defaultValue={this.state.accountType} value={this.state.accountType} disabled/>
+                                <input type="text" id="up-type" defaultValue={this.state.accountType} disabled/>
                             </div>
                             <div className="form-group">
                                 <input type="submit" defaultValue="Save" className="btn" onClick={this.saveCurrentUserChanges} />
