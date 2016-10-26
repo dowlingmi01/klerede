@@ -138,7 +138,7 @@ class NoteController extends Controller
     }
 
 
-    public function update(Request  $request)
+    public function update(Request  $request, $id)
     {
         $rules = array(
         	'header' => 'required|max:255',
@@ -167,7 +167,7 @@ class NoteController extends Controller
         //TODO: Check permission to update a global note
 
         DB::beginTransaction();
-        $note = Note::find($note->id);
+        $note = Note::find($id);
         if(!$note){
             return Response::json(['result'=> 'error', 'message'=>'note_not_found'],404);
         }
@@ -176,7 +176,7 @@ class NoteController extends Controller
         $note->all_day       = $request->all_day;
         $note->time_start       = $request->time_start;
         $note->time_end       = $request->time_end;
-        $note->last_editor_id       = \Auth::user()->id
+        $note->last_editor_id       = \Auth::user()->id;
       
         
         try{ 
