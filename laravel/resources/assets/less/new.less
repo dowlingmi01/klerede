@@ -123,7 +123,35 @@
                     font-weight:600;
                     font-size:140%;
                 }
-
+                
+                #select-wrapper {
+                    width:200px;
+                    margin-right:10px;
+                    .Select-control {
+                        background-color:@lightgrey;
+                        border-radius:0;
+                        border:none;
+                        .filter-caret {
+                            top: 15px;
+                            right: 10px;
+                        }
+                    }
+                    .Select-placeholder {
+                        color:@black;
+                    }
+                    .Select-menu-outer {
+                        border:none;
+                        border-top: 2px solid @white;
+                    }
+                    .Select-option {
+                        background-color:@lightgrey;
+                    }
+                    .Select-option:hover{
+                        background-color:@cobalt;
+                        color:@white;
+                    }
+                }
+                
                 #add-category {
                     padding-left:10px;                
                     padding-right:10px;                

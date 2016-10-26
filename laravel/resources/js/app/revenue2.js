@@ -44,6 +44,7 @@ moment.updateLocale('en',{
     }
 });
 
+var Select = require('react-select');
 
 var CaretHandler = React.createClass({
     render:function () {
@@ -477,13 +478,26 @@ var TextArea = React.createClass({
     }
 });
 
+var SelectOption = React.createClass({
+    render:function (o) {
+        return (
+            <div>{this.props.label}</div>
+        );
+    } 
+});
+
 var AddNoteModal = React.createClass({
     getInitialState:function () {
         return(
             {
                 channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
                 channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
-                categoryNames:{1:"Facility", 2:"Weather", 3:"Holiday", 4:"Local Event"},
+                categoryList:[
+                    {value:1,label:"Facility"}, 
+                    {value:2, label:"Weather"}, 
+                    {value:3, label:"Holiday"}, 
+                    {value:4, label:"Local Event"}
+                ],
                 selectedCategories:[],
                 notify:"none",
                 allDay:true,
@@ -547,17 +561,21 @@ var AddNoteModal = React.createClass({
         }
         this.setState({channelActive:channelActive});
     },
-    onCategorySelect(e) {
+    onCategorySelect(c) {
+        
         var selectedCategories = this.state.selectedCategories;
-        var value = e.target.value;
-
-        if(selectedCategories.indexOf(value) >= 0) 
-            return;
+        
+        for (var i=0; i<selectedCategories.length; i++) {
+            if (selectedCategories[i].value == c.value) {
+                return;
+            }
+        }
         
         this.setChanged();
         
-        selectedCategories.push(value);
+        selectedCategories.push(c);
         this.setState({selectedCategories:selectedCategories});
+
     },
     onCategoryDeselect(c) {
         var selectedCategories = this.state.selectedCategories;
@@ -574,20 +592,28 @@ var AddNoteModal = React.createClass({
         this.setState({newCategory:e.target.value});
     },
     onAddCategoryClick(e){
+
         if(!this.state.addCategoryActive) {
+            
             this.setState({addCategoryActive:true});
             this.refs.addCategory.focus();
+            
         } else if (this.state.newCategory.length) {
-            var categoryNames = this.state.categoryNames;
+            
+            var categoryList = this.state.categoryList;
             var newCategory = this.state.newCategory;
             
-            if (!categoryNames[newCategory]) {
-                this.setChanged();
-                categoryNames[newCategory] = newCategory;
-                this.setState({categoryNames:categoryNames, newCategory:"", addCategoryActive:false});
-            } else {
-                alert("This category already exits: "+newCategory);
+            for (var i=0; i<categoryList.length; i++) {
+                var category = categoryList[i];
+                if(category.label == newCategory) {
+                    alert("This category already exits: "+newCategory);
+                    return;
+                }
             }
+            
+            this.setChanged();
+            categoryList.push({value:newCategory, label:newCategory, new:true});
+            this.setState({categoryList:categoryList, newCategory:"", addCategoryActive:false});
         }
     },
     onAddCategoryBlur(e){
@@ -614,14 +640,12 @@ var AddNoteModal = React.createClass({
         }
         
         var selectedCategories = this.state.selectedCategories;
-        var categoryNames = this.state.categoryNames;
         var categories = [];
         
         for (var i=0; i<selectedCategories.length; i++) {
             var c = selectedCategories[i];
-            if (categoryNames[c]) {
-                categories.push(<Category key={c} onRemove={this.onCategoryDeselect.bind(this, c)} value={c} name={categoryNames[c]} />)
-            };
+            
+            categories.push(<Category key={c.value} onRemove={this.onCategoryDeselect.bind(this, c)} value={c.value} name={c.label} />)
         }
 
         
@@ -678,14 +702,19 @@ var AddNoteModal = React.createClass({
                         </div>
                         <div className="form-group" id="categories">
                             <div className="inline-block">
-                                <Dropdown
-                                    className="inline-block revenue-dropdown vertical-middle"
-                                    ref="category-select"
-                                    optionList={this.state.categoryNames}
-                                    selected={"placeholder"}
-                                    placeholder="Chose a category"
-                                    onChange={this.onCategorySelect}
-                                />
+                                <div id="select-wrapper" className="inline-block vertical-middle">
+                                    <Select
+                                        name="form-field-name"
+                                        placeholder="Choose a category"
+                                        value="one"
+                                        options={this.state.categoryList}
+                                        onChange={this.onCategorySelect}
+                                        clearable={false}
+                                        searchable={false}
+                                        arrowRenderer={function(){return(<Caret className="filter-caret" />)}}
+                                        optionRenderer={function(o) {return (<SelectOption label={o.label}/>)}}
+                                    />
+                                </div>
                                 <SVGButton className="circle category-svg-button vertical-middle" icon={<SlimMinusSign />} />
                             </div>
                             <div className="inline-block float-right">
