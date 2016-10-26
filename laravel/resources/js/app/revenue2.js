@@ -1,10 +1,9 @@
-
 var React = require('react');
 var ReactDOM = require('react-dom');
-
+var getDOMNode = require('./kutils/getDOMNode.js');
 var $ = require('jquery');
-require('../libs/jquery.datePicker.js');
-var wnt = require ('./wnt.js');
+
+var analytics = require("./analytics.js");
 
 var KAPI = {};
 KAPI.stats = require("./kapi/stats.js");
@@ -14,46 +13,36 @@ var KUtils = {};
 KUtils.date = require("./kutils/date-utils.js");
 KUtils.number = require("./kutils/number-utils.js");
 
-var Caret = require('./svg-icons').Caret;
-var LongArrow = require('./svg-icons').LongArrow;
-var ChangeArrow = require('./svg-icons').ChangeArrow;
-var NoteIcon = require('./svg-icons').NoteIcon;
-var CloseIcon = require('./svg-icons').CloseIcon;
-var CalendarIcon = require('./svg-icons').CalendarIcon;
-var CheckMark = require('./svg-icons').CheckMark;
-
-var analytics = require("./analytics.js");
-
-var ActionMenu = require('./reusable-parts').ActionMenu;
 var printDiv = require ('./kutils/print-div.js');
 var saveImage = require ('./kutils/save-image.js');
 
+var wnt = require ('./wnt.js');
+
+var CalendarIcon = require('./svg-icons').CalendarIcon;
+var Caret = require('./svg-icons').Caret;
+var ChangeArrow = require('./svg-icons').ChangeArrow;
+var CloseIcon = require('./svg-icons').CloseIcon;
+var CheckMark = require('./svg-icons').CheckMark;
+var LongArrow = require('./svg-icons').LongArrow;
+var NoteIcon = require('./svg-icons').NoteIcon;
+var SlimPlusSign = require('./svg-icons').SlimPlusSign;
+var SlimMinusSign = require('./svg-icons').SlimMinusSign;
+
+var ActionMenu = require('./reusable-parts').ActionMenu;
+
+require('../libs/jquery.datePicker.js');
 require('bootstrap');
 
-require('timepicker');
-
-var JQTimePicker = React.createClass({
-    componentDidMount:function () {
-        $(this.refs.self).timepicker(
-            {"timeFormat":this.props.timeFormat || "g:ia"}
-        );
-         $(this.refs.self).on("changeTime", this.props.onChange)
-    },
-    render:function () {
-        return (
-            <input type="text" id={this.props.id} ref="self" className={this.props.className} defaultValue={this.props.defaultValue} />
-        )
-    }
-});
+var JQTimePicker = require('./kcomponents/timepicker.js');
 
 var DatePicker = require('react-datepicker');
+
 var moment = require('moment');
 moment.updateLocale('en',{
     week:{
         dow:1
     }
 });
-var getDOMNode = require('./kutils/getDOMNode.js');
 
 
 var CaretHandler = React.createClass({
@@ -63,6 +52,7 @@ var CaretHandler = React.createClass({
         );
     }
 });
+
 var Dropdown = React.createClass({
     render:function () {
 
@@ -173,6 +163,7 @@ var GBar = React.createClass({
         );
     }
 });
+
 var ChannelPopup = React.createClass({
     render:function () {
         var numFormat = KUtils.number.formatAmount;
@@ -202,6 +193,7 @@ var ChannelPopup = React.createClass({
         );
     }
 });
+
 var WeatherPopupView = React.createClass({
     render:function () {
         
@@ -320,6 +312,7 @@ var TabSelector = React.createClass({
         );
     }
 });
+
 var DetailsRow = React.createClass({
     getInitialState:function () {
         return {
@@ -426,6 +419,7 @@ var DetailsRow = React.createClass({
         )
     }
 });
+
 var DetailsHeader = React.createClass({
     render:function () {
         return(
@@ -449,9 +443,6 @@ var DetailsHeader = React.createClass({
         );
     }
 });
-
-var SlimPlusSign = require('./svg-icons').SlimPlusSign;
-var SlimMinusSign = require('./svg-icons').SlimMinusSign;
 
 var SVGButton = React.createClass({
     render:function () {
@@ -501,30 +492,53 @@ var AddNoteModal = React.createClass({
                 timeStart:"9:00am",
                 timeEnd:"10:00am",
                 addCategoryActive:false,
-                newCategory:""
+                newCategory:"",
+                changed:false
             }
         ); 
     },
+    setChanged:function() {
+        if (!this.state.changed) {
+            this.setState({changed:true});
+        }
+    },
     componentDidMount:function () {
         $(getDOMNode(this)).modal("show");
-        $(getDOMNode(this)).on('hidden.bs.modal', this.props.onClose);
+        // $(getDOMNode(this)).on('hidden.bs.modal', this.props.onClose);
+        // $(getDOMNode(this)).on('hidden.bs.modal', this.onClose);
+        $(getDOMNode(this)).on('hide.bs.modal', this.onClose);
+        // $(getDOMNode(this)).on('close.bs.alert', this.onClose);
+    },
+    onClose:function (e) {
+        // console.log(e);
+        // e.stopPropagation();
+        if (this.state.changed && !confirm("Your changes will be lost.\nAre you sure?")) {
+            e.preventDefault();
+        } else {
+            this.props.onClose();
+        }
     },
     onChange:function (e) {
         console.log(e);
     },
     onDateStartChange(d) {
+        this.setChanged();
         this.setState({dateStart:d})
     },
     onDateEndChange(d) {
+        this.setChanged();
         this.setState({dateEnd:d})
     },
     onTimeStartChange(d) {
+        this.setChanged();
         this.setState({timeStart:$(d.target).val()});
     },
     onTimeEndChange(d) {
+        this.setChanged();
         this.setState({timeEnd:$(d.target).val()});
     },
     onChannelClick:function (k) {
+        this.setChanged();
         var channelActive = this.state.channelActive;
         if (channelActive[k] ==="active") {
             channelActive[k] = "";
@@ -539,6 +553,8 @@ var AddNoteModal = React.createClass({
 
         if(selectedCategories.indexOf(value) >= 0) 
             return;
+        
+        this.setChanged();
         
         selectedCategories.push(value);
         this.setState({selectedCategories:selectedCategories});
@@ -566,6 +582,7 @@ var AddNoteModal = React.createClass({
             var newCategory = this.state.newCategory;
             
             if (!categoryNames[newCategory]) {
+                this.setChanged();
                 categoryNames[newCategory] = newCategory;
                 this.setState({categoryNames:categoryNames, newCategory:"", addCategoryActive:false});
             } else {
@@ -579,9 +596,11 @@ var AddNoteModal = React.createClass({
         }
     },
     onNotifyClick:function (notify) {
+        this.setChanged();
         this.setState({notify:notify});
     },
     onAllDayClick:function (e) {
+        this.setChanged();
         this.setState({allDay:!this.state.allDay})
     },
     render:function () {
@@ -676,8 +695,9 @@ var AddNoteModal = React.createClass({
                                     type="text" 
                                     ref="addCategory" 
                                     id="add-category" 
-                                    className={"form-control vertical-middle" + (this.state.addCategoryActive ? " active" : "")} 
-                                    placeholder={this.state.addCategoryActive ? "Add Category" : ""} 
+                                    className={"form-control vertical-middle" + (this.state.addCategoryActive ? " active" : "")}
+                                    disabled={ this.state.addCategoryActive ? null : "disabled" }
+                                    placeholder={this.state.addCategoryActive ? "Add new category" : ""} 
                                     value={this.state.newCategory} 
                                     onChange={this.onAddCategoryChange} 
                                     onBlur={this.onAddCategoryBlur}

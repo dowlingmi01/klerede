@@ -125,12 +125,12 @@
                 }
 
                 #add-category {
-                    background-color:transparent;
                     padding-left:10px;                
                     padding-right:10px;                
                 }
-                #add-category.active {
-                    background-color:rgba(236,234,231,1);
+                #add-category[disabled] {
+                    cursor:auto;
+                    background-color:transparent;
                 }
                 
                 .svg-button.circle.category-svg-button {
@@ -138,7 +138,7 @@
                     height:30px;
                 }
                 .svg-button.circle.category-svg-button.active {
-                    background-color: #eebb40;
+                    background-color: @gold;
                 }
                 #category-list {
                     margin-top:1em;
@@ -526,12 +526,12 @@
 }
 
 .react-datepicker {
-    background-color:rgba(236,234,231,1);
+    background-color:@lightgrey;
     font-family: inherit;
     font-weight:600;
 }
 .react-datepicker__tether-element-attached-bottom .react-datepicker__triangle {
-    border-top-color:rgba(236,234,231,1);
+    border-top-color:@lightgrey;
 }
 .react-datepicker__header{
     text-align: left;
