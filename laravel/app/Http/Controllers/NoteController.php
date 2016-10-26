@@ -24,21 +24,41 @@ class NoteController extends Controller
     {
        $this->middleware('jwt.auth');
     }
-/*
- $table->increments('id');
-            $table->string('header');
-            $table->text('description');
-            $table->boolean('all_day');
 
-            $table->dateTime('time_start');
-            $table->dateTime('time_end');
-            $table->integer('owner_id');
-            $table->integer('last_editor_id');
-            $table->integer('venue_id');
-            $table->timestamps();
-            $table->index(['venue_id', 'time_start']);
-        });
-        */
+    /**
+     * Return notes between [start, end) range with tags and channels
+     *
+     * @param  $request->start   (yyyy-MM-ddTHH:mm:ss)
+     * @param  $request->end   (yyyy-MM-ddTHH:mm:ss)
+     * @param  $request->venue_id
+     */
+    public function index(Request $request){
+    	$rules = array(
+        	 
+            'start' => 'required',
+            'end' => 'required' 
+
+        );
+        $validator = Validator::make(Input::all(), $rules);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
+        } 
+        $venues = [0];
+    	if($request->venue_id != 0){
+	        if(Gate::denies('validate-venue', $request->venue_id)){
+	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+	        }
+	        $venues[] = $request->venue_id;
+        }
+       
+
+    	return Note::with(['channels', 'tags'])
+    				->where('time_start', '>=', $request->start)
+    				->where('time_end', '<', $request->end)
+    				->whereIn('venue_id', $venues)
+    				->get();
+    }
 
     public function store(Request  $request)
     {
@@ -61,7 +81,7 @@ class NoteController extends Controller
 
 
 
-         if($request->venue_id != 0){
+        if($request->venue_id != 0){
 	        if(Gate::denies('validate-venue', $request->venue_id)){
 	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
 	        }
@@ -91,7 +111,7 @@ class NoteController extends Controller
 			        } catch (\Illuminate\Database\QueryException $e){
 			            $errorCode = $e->errorInfo[1];
 			            if($errorCode == 1062){
-			                return Response::json(['result'=>'error', 'message'=>'duplicate_entry'], 400);
+			                return Response::json(['result'=>'error', 'message'=>'duplicate_entry', 'entity'=>'tag'], 400);
 			            } else {
 			                return Response::json(['result'=>'error', 'message'=>$e->getMessage()], 400);
 			            }
@@ -108,7 +128,7 @@ class NoteController extends Controller
             DB::rollBack();	
             $errorCode = $e->errorInfo[1];
             if($errorCode == 1062){
-                return Response::json(['result'=>'error', 'message'=>'duplicate_entry'], 400);
+                return Response::json(['result'=>'error', 'message'=>'duplicate_entry', 'entity'=>'note'], 400);
             } else {
                 return Response::json(['result'=>'error', 'message'=>$e->getMessage()], 400);
             }
