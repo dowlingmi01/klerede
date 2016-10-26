@@ -226,7 +226,7 @@ class NoteController extends Controller
      */
     public function show($id)
     {
-       if($note = Note::find($id)){
+       if($note = Note::with(['channels','tags'])->find($id)){
             if($note->venue_id != 0){
 		        if (Gate::denies('validate-venue', $note->venue_id)) {
 		            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
@@ -236,5 +236,26 @@ class NoteController extends Controller
             return $note;
         }
         Response::json(['result'=> 'error', 'message'=>'note_not_found'], 404);
+    }
+
+    public function destroy($id)
+    {
+         
+        $note = Note::find($id);
+        if(!$note){
+            return Response::json(['result'=> 'error', 'message'=>'note_not_found'], 404);
+        }
+        if($tag->venue_id != 0){
+	        if (Gate::denies('validate-venue', $tag->venue_id)) {
+	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+	        }
+    	} else {
+    		//TOOD: Who can delete global notes?
+    	}
+        
+        //TODO: check permission for delete somebody elses note
+
+        $result = Note::destroy($id);
+        return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }
 }
