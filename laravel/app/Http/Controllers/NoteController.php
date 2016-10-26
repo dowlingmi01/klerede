@@ -30,7 +30,7 @@ class NoteController extends Controller
      *
      * @param  $request->start   (yyyy-MM-ddTHH:mm:ss)
      * @param  $request->end   (yyyy-MM-ddTHH:mm:ss)
-     * @param  $request->venue_id
+     * @param  $request->venue_id (can be 0)
      */
     public function index(Request $request){
     	$rules = array(
@@ -86,7 +86,7 @@ class NoteController extends Controller
 	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
 	        }
         }
-        //$password = generateNewPassword(); //TODO: Generar la funcion
+        //TODO: Check permission to creat a global note
 
         $note = new Note;
         $note->header       = $request->header;
@@ -123,6 +123,87 @@ class NoteController extends Controller
             $note->save();
             $note->channels()->attach($request->channels);
             $note->tags()->attach($tagsId);
+            $note->save();
+        } catch (\Illuminate\Database\QueryException $e){
+            DB::rollBack();	
+            $errorCode = $e->errorInfo[1];
+            if($errorCode == 1062){
+                return Response::json(['result'=>'error', 'message'=>'duplicate_entry', 'entity'=>'note'], 400);
+            } else {
+                return Response::json(['result'=>'error', 'message'=>$e->getMessage()], 400);
+            }
+        }
+        DB::commit();
+        return ['result'=>'ok', 'id'=>$note->id];
+    }
+
+
+    public function update(Request  $request)
+    {
+        $rules = array(
+        	'header' => 'required|max:255',
+            'description' => 'required',
+            'time_start' => 'required',
+            'time_end' => 'required',
+            'all_day' => 'required'
+
+        );
+        $validator = Validator::make(Input::all(), $rules);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
+        } 
+        //Validacion faltantes\
+        //si all_day es true, no debe venir hora, y sino debe venir
+        //start < end
+
+
+
+        if($request->venue_id != 0){
+	        if(Gate::denies('validate-venue', $request->venue_id)){
+	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+	        }
+        }
+        //TODO: Check permission to update a global note
+
+        DB::beginTransaction();
+        $note = Note::find($note->id);
+        if(!$note){
+            return Response::json(['result'=> 'error', 'message'=>'note_not_found'],404);
+        }
+        $note->header       = $request->header;
+        $note->description       = $request->description;
+        $note->all_day       = $request->all_day;
+        $note->time_start       = $request->time_start;
+        $note->time_end       = $request->time_end;
+        $note->last_editor_id       = \Auth::user()->id
+      
+        
+        try{ 
+        	$tagsId = $request->tags;
+        	if(is_array($request->new_tags) && count($request->new_tags) > 0){
+        		foreach ($request->new_tags as $tagMame) {
+        			$tag = new Tag;
+			        $tag->description       = $tagMame;
+			        $tag->owner_id       =  $note->owner_id;  
+			        $tag->venue_id = $note->venue_id;
+			        try{ 
+			            $tag->save();
+			        } catch (\Illuminate\Database\QueryException $e){
+			            $errorCode = $e->errorInfo[1];
+			            if($errorCode == 1062){
+			                return Response::json(['result'=>'error', 'message'=>'duplicate_entry', 'entity'=>'tag'], 400);
+			            } else {
+			                return Response::json(['result'=>'error', 'message'=>$e->getMessage()], 400);
+			            }
+			        }
+			        $tagsId[] = $tag->id;
+        		}
+        	}
+        	 
+            $note->save();
+            $note->channels()->sync($request->channels);
+            $note->tags()->sync($tagsId);
             $note->save();
         } catch (\Illuminate\Database\QueryException $e){
             DB::rollBack();	
