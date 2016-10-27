@@ -31,6 +31,16 @@
     }
 }
 
+.svg-button.disabled {
+    opacity:.5;
+    cursor:initial;
+    // .svg-button-content {
+    //     svg {
+    //         opacity:0;
+    //     }
+    // }
+}
+
 .svg-button.rounded-box {
     border-radius:20%;
 }
@@ -145,10 +155,37 @@
                     }
                     .Select-option {
                         background-color:@lightgrey;
+                        position:relative;
+                        .svg-button.delete-category {
+                            position:absolute;
+                            right:0;
+                            top:0;
+                            background-color:transparent;
+                            width:30px;
+                            height:30px;
+                            svg {
+                                fill:@black;
+                            }
+                        }
+                        button.btn {
+                            font-size: 90%;
+                            text-transform: none;
+                            margin-left: 10px;
+                            padding:6px 10px;
+                        }
+                        button.btn:hover {
+                            color:@cobalt;
+                            background-color:@white;
+                        }
                     }
                     .Select-option:hover{
                         background-color:@cobalt;
                         color:@white;
+                        .svg-button.delete-category {
+                            svg {
+                                fill:@white;
+                            }
+                        }
                     }
                 }
                 

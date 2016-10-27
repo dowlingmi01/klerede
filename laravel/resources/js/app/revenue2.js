@@ -447,8 +447,15 @@ var DetailsHeader = React.createClass({
 
 var SVGButton = React.createClass({
     render:function () {
+        if (this.props.disabled) {
+            return (
+                <div id={this.props.id || ""} className={"svg-button disabled " + (this.props.className || "")}>
+                    <div className="svg-button-content">{this.props.icon}</div>
+                </div>
+            );
+        };
         return (
-            <div onClick={this.props.onClick || null} id={this.props.id || ""} className={"svg-button " + (this.props.className || "")}>
+            <div onClick={this.props.onClick || null} onMouseDown={this.props.onMouseDown} id={this.props.id || ""} className={"svg-button " + (this.props.className || "")}>
                 <div className="svg-button-content">{this.props.icon}</div>
             </div>
         );
@@ -479,7 +486,33 @@ var TextArea = React.createClass({
 });
 
 var SelectOption = React.createClass({
-    render:function (o) {
+    getInitialState:function () {
+        return {};
+    },
+    doDelete:function (e) {
+        this.props.onDelete(this.props.value);
+    },
+    doNotDelete:function (e) {
+        this.setState({deleting:null});
+    },
+    delete:function (e) {
+        this.setState({deleting:true});
+    },
+    render:function () {
+        if (this.state.deleting) 
+            return (
+                <div>Are you sure?
+                    <button type="button" onClick={this.doDelete} className="btn">Yes</button>
+                    <button type="button"  onClick={this.doNotDelete}  className="btn" >No</button>
+                </div>
+            );
+        if (this.props.editMode) 
+            return (
+                <div>{this.props.label}
+                    <SVGButton onClick={this.delete} className="delete-category" icon={<SlimMinusSign />}/>
+                </div>
+            );
+        
         return (
             <div>{this.props.label}</div>
         );
@@ -493,10 +526,10 @@ var AddNoteModal = React.createClass({
                 channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
                 channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
                 categoryList:[
-                    {value:1,label:"Facility"}, 
-                    {value:2, label:"Weather"}, 
-                    {value:3, label:"Holiday"}, 
-                    {value:4, label:"Local Event"}
+                    {value:1,label:"Facility", global:true}, 
+                    {value:2, label:"Weather", global:true}, 
+                    {value:3, label:"Holiday", global:true}, 
+                    {value:4, label:"Local Event", global:true}
                 ],
                 selectedCategories:[],
                 notify:"none",
@@ -507,7 +540,8 @@ var AddNoteModal = React.createClass({
                 timeEnd:"10:00am",
                 addCategoryActive:false,
                 newCategory:"",
-                changed:false
+                changed:false,
+                editCategory:false
             }
         ); 
     },
@@ -621,6 +655,36 @@ var AddNoteModal = React.createClass({
             this.setState({addCategoryActive:false});
         }
     },
+    onEditCategory(e) {
+        // console.log("onEditCategory", this.state.editCategory);
+        if (!this.state.editCategory) {
+            
+            this.setState({editCategory:true});
+            this.refs.categorySelect.focus();
+            e.stopPropagation();
+        } else {
+            this.stopEditCategory();
+            this.refs.categorySelect.focus();
+            $(".Select-menu-outer").hide();
+        }
+    },
+    stopEditCategory:function () {
+        // console.log("stopEditCategory", this.state.editCategory);
+        if(this.state.editCategory) {
+            this.setState({editCategory:false});
+        }
+    },
+    onDeleteCategory(value) {
+        var categoryList = this.state.categoryList;
+        for (var i=0; i<categoryList.length; i++) {
+            if (categoryList[i].value == value) {
+                categoryList.splice(i,1);
+                this.setState({categoryList:categoryList});
+                return;
+            }
+        }
+        throw "category value not found: "+value;
+    },
     onNotifyClick:function (notify) {
         this.setChanged();
         this.setState({notify:notify});
@@ -628,6 +692,24 @@ var AddNoteModal = React.createClass({
     onAllDayClick:function (e) {
         this.setChanged();
         this.setState({allDay:!this.state.allDay})
+    },
+    optionRenderer:function (o) {
+        return (
+            <SelectOption value={o.value} onDelete={this.onDeleteCategory} editMode={!o.global && this.state.editCategory} label={o.label}/>
+        );
+    },
+    onCategorySelectClose() {
+        // console.log("onCategorySelectClose");
+        if(this.state.editCategory) {
+            throw("editingCategory");
+        } 
+    },
+    onCategorySelectBlur(e) {
+        // console.log("onCategorySelectBlur");
+        // this.stopEditCategory();
+    },
+    onCategorySelectOpen(e) {
+        // console.log("onCategorySelectOpen");
     },
     render:function () {
         var channels = [];
@@ -646,6 +728,14 @@ var AddNoteModal = React.createClass({
             var c = selectedCategories[i];
             
             categories.push(<Category key={c.value} onRemove={this.onCategoryDeselect.bind(this, c)} value={c.value} name={c.label} />)
+        }
+        
+        var categoryList = this.state.categoryList;
+        for (var i=0; i<categoryList.length; i++) {
+            if (!categoryList[i].global) {
+                var editableCatExist = true;
+                break;
+            }
         }
 
         
@@ -704,23 +794,33 @@ var AddNoteModal = React.createClass({
                             <div className="inline-block">
                                 <div id="select-wrapper" className="inline-block vertical-middle">
                                     <Select
-                                        name="form-field-name"
+                                        ref="categorySelect"
+                                        name="category-select"
                                         placeholder="Choose a category"
-                                        value="one"
                                         options={this.state.categoryList}
                                         onChange={this.onCategorySelect}
                                         clearable={false}
                                         searchable={false}
+                                        openOnFocus={true}
                                         arrowRenderer={function(){return(<Caret className="filter-caret" />)}}
-                                        optionRenderer={function(o) {return (<SelectOption label={o.label}/>)}}
+                                        optionRenderer={this.optionRenderer}
+                                        onClose={this.onCategorySelectClose}
+                                        onBlur={this.onCategorySelectBlur}
+                                        onOpen={this.onCategorySelectOpen}
                                     />
                                 </div>
-                                <SVGButton className="circle category-svg-button vertical-middle" icon={<SlimMinusSign />} />
+                                <SVGButton 
+                                    onClick={this.onEditCategory}
+                                    className={"circle category-svg-button vertical-middle" + (this.state.editCategory ? " active" : "")}
+                                    icon={<SlimMinusSign />}
+                                    disabled={editableCatExist || this.state.editCategory ? null : 'disabled'}
+                                />
                             </div>
                             <div className="inline-block float-right">
                                 <SVGButton className={"circle category-svg-button vertical-middle"+(this.state.newCategory.length ? " active" : "")} onClick={this.onAddCategoryClick} icon={<SlimPlusSign />} />
                                 &nbsp;
                                 <input 
+                                    autoComplete="off"
                                     type="text" 
                                     ref="addCategory" 
                                     id="add-category" 
@@ -831,7 +931,7 @@ var Notes = React.createClass({
             noteTipLeft:0,
             noteDetailsClass:"",
             activeNote:null,
-            showAddNoteModal:true
+            showAddNoteModal:false
         }
     },
     closeAddNoteModal(e) {

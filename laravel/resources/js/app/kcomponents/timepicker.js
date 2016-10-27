@@ -14,3 +14,5 @@ var JQTimePicker = React.createClass({
         )
     }
 });
+
+module.exports = JQTimePicker;
