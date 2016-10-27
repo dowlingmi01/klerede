@@ -20,6 +20,21 @@ class CreateTagTable extends Migration
             $table->timestamps();
             $table->unique(['description', 'venue_id']);
         });
+
+        $tags = array(
+                ['description' => 'Facility'  , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'Weather'  , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'Group visit' , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'Programming'  , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'Special event' , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'Local event'  , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'Campaign'  , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'State holiday'  , 'venue_id' => 0, 'owner_id' => 0 ],
+                ['description' => 'School holiday' , 'venue_id' => 0, 'owner_id' => 0 ],
+
+                
+        );
+        DB::table('tag')->insert($tags);
     }
 
     /**
