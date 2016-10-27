@@ -5,7 +5,8 @@ var $ = require('jquery');
 var wnt = require ('./wnt.js');
 
 var logos = {
-    1518:<img src="img/na-logo-one-line.png" />
+    1518:<img src="img/na-logo-one-line.png" />,
+    1204:<img src="img/logo-psc-full.png" />
 };
 
 exports.logos = logos;
@@ -14,7 +15,7 @@ var CustomerLogo = React.createClass(
     {
         render:function () {
             if (logos[wnt.venue.id]) {
-                return logos[wnt.venue.id];
+                return logos[1204];
             }
             return <div></div>;
         }
