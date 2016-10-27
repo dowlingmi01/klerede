@@ -15,7 +15,7 @@ var CustomerLogo = React.createClass(
     {
         render:function () {
             if (logos[wnt.venue.id]) {
-                return logos[1204];
+                return logos[wnt.venue.id];
             }
             return <div></div>;
         }
