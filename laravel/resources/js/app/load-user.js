@@ -1,6 +1,6 @@
 var getLoggedUser = require("./kapi/auth.js").getLoggedUser;
 var venue = require("./kapi/venue.js");
-var wnt = require("./wnt.js");
+var wnt = require("./kcomponents/wnt.js");
 
 var analytics = require("./analytics.js");
 analytics.create(global_ga_id);

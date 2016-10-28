@@ -3,7 +3,7 @@
 /*********************************************/
 
 var $ = require('jquery');
-var wnt = require("./wnt.js");
+var wnt = require("./kcomponents/wnt.js");
 
 $(function(){
     $.when(wnt.gettingVenueData).done(function(data) {

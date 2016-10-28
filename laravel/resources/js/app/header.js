@@ -7,7 +7,7 @@ var ReactDOM = require('react-dom');
 
 
 var $ = require('jquery');
-var wnt = require ('./wnt.js');
+var wnt = require ('./kcomponents/wnt.js');
 var _l = require("./lang/lang.js");
 
 var KAPI = {};

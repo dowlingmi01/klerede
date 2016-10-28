@@ -10,7 +10,7 @@ var ReactDOM = require('react-dom');
 var $ = require ("jquery");
 require('../libs/jquery.easing.1.3.js');
 
-var wnt = require ('./wnt.js');
+var wnt = require ('./kcomponents/wnt.js');
 
 var KAPI = {
     stats:require("./kapi/stats.js")
