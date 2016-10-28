@@ -64,6 +64,7 @@ var TextArea = React.createClass({
     onChange:function (e) {
         var self = $(this.refs.self);
         self.height(Math.max(self.prop('scrollHeight'), this.props.minHeight));
+        this.props.onChange(e);
     },
     render:function () {
         return(
@@ -121,14 +122,16 @@ var AddNoteModal = React.createClass({
                 selectedCategories:[],
                 notify:"none",
                 allDay:true,
-				dateStart:moment(),
-                dateEnd:moment(),
+				dateStart:moment(this.props.date),
+                dateEnd:moment(this.props.date),
                 timeStart:"9:00am",
                 timeEnd:"10:00am",
                 addCategoryActive:false,
                 newCategory:"",
                 changed:false,
-                editCategory:false
+                editCategory:false,
+                header:"",
+                description:""
             }
         ); 
     },
@@ -153,8 +156,13 @@ var AddNoteModal = React.createClass({
             this.props.onClose();
         }
     },
-    onChange:function (e) {
-        console.log(e);
+    onHeaderChange:function (e) {
+        this.setChanged();
+        this.setState({header:e.target.value});
+    },
+    onDescriptionChange:function (e) {
+        this.setChanged();
+        this.setState({description:e.target.value});
     },
     onDateStartChange(d) {
         this.setChanged();
@@ -298,6 +306,77 @@ var AddNoteModal = React.createClass({
     onCategorySelectOpen(e) {
         // console.log("onCategorySelectOpen");
     },
+    onSaveNote:function (e) {
+        //console.log(save note)
+        var channels = [],
+            i=0;
+        for (var k in this.state.channelActive) {
+            i++;
+            if (this.state.channelActive[k] == 'active') {
+                channels.push(i);
+            }
+        }
+        
+        var categoryList = this.state.categoryList;
+        var newTags = [];
+        for (var l in categoryList) {
+            if (categoryList[l].new) {
+                newTags.push(categoryList[l].label);
+            };
+        }
+
+        var tags = [];
+        for (var m in this.state.selectedCategories) {
+            tags.push(this.state.selectedCategories[m].value);
+        };
+        
+        
+        var dateStart = moment(this.state.dateStart);
+        var dateEnd = moment(this.state.dateEnd);
+        
+        if (!this.state.allDay) {
+            var timeStart = moment(this.state.timeStart,["h:mma"]);
+            var timeEnd = moment(this.state.timeEnd,["h:mma"]);
+
+            dateStart.hour(timeStart.hour());
+            dateStart.minute(timeStart.minute());
+
+            dateEnd.hour(timeEnd.hour());
+            dateEnd.minute(timeEnd.minute());
+        }
+        // console.log( dateStart.format('YYYY-MM-DD HH:mm:ss'));
+        // } else {
+        //     var dateStart = this.state.dateStart.format('YYYY-MM-DD HH:mm:ss');
+        //     var dateEnd = this.state.dateEnd.format('YYYY-MM-DD HH:mm:ss');
+        // }
+        
+        KAPI.notes.post(
+            wnt.venueID,
+            this.state.header,
+            this.state.description,
+            dateStart.format('YYYY-MM-DD HH:mm:ss'),
+            dateEnd.format('YYYY-MM-DD HH:mm:ss'),
+            channels,
+            tags,
+            this.onSaveNoteSucces,
+            this.onSaveNoteError,
+            this.state.allDay,
+            newTags
+        );
+    },
+    onSaveNoteSucces(response) {
+        if (response.result=="ok") {
+            this.setState({changed:false});
+            $(getDOMNode(this)).modal("hide");
+            alert("New note has been saved.");
+        } else {
+            alert("Unkown problem found: "+response.message);
+        }
+    },
+    onSaveNoteError(response) {
+        console.log(response);
+        alert("An error ocurred saving note:"+response.message);
+    },
     render:function () {
         var channels = [];
         for (var k in this.state.channelNames) {
@@ -341,10 +420,10 @@ var AddNoteModal = React.createClass({
                   <div className="modal-body modal-section">
                     <form ref="addNoteForm" className="" onFocus={null}>
                         <div className="form-group">
-                            <input type="text" id="header" className="form-control" placeholder="Add Note Header" defaultValue={null} onChange={this.onChange} />
+                            <input type="text" id="header" className="form-control" placeholder="Add Note Header" defaultValue={null} onChange={this.onHeaderChange} />
                         </div>
                         <div className="form-group">
-                            <TextArea minHeight={34} id="description" className="form-control" placeholder="Description" defaultValue={null} onChange={this.onChange} />
+                            <TextArea minHeight={34} id="description" className="form-control" placeholder="Description" defaultValue={null} onChange={this.onDescriptionChange} />
                         </div>
                         <div className="form-group" id="date-time">
                             <span>
@@ -452,7 +531,7 @@ var AddNoteModal = React.createClass({
                   <div className="modal-footer modal-section">
                     <div className="buttons">
                         <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" className="btn btn-primary">Save Note</button>
+                        <button type="button" onClick={this.onSaveNote} className="btn btn-primary">Save Note</button>
                     </div>
                   </div>
                 </div>
@@ -563,6 +642,19 @@ var Notes = React.createClass({
     hideNotes:function (e) {
         this.setState({activeNote:null, noteDetailsClass:""});
     },
+    updateNoteList:function (props) {
+        console.log(props.startDate, props.endDate);
+        KAPI.notes.list(wnt.venueID, props.startDate, props.endDate, this.onNoteListUpdated);
+    },
+    onNoteListUpdated(response) {
+        console.log(response);
+    },
+    componentWillReceiveProps:function (nextProps) {
+        this.updateNoteList(nextProps);
+    },
+    componentDidMount:function () {
+        this.updateNoteList(this.props);
+    },
     render:function () {
         return (
             <div className="notes">
@@ -608,7 +700,7 @@ var Notes = React.createClass({
                     </div>
                 </div>
                 
-                {this.state.showAddNoteModal ? <AddNoteModal onClose={this.closeAddNoteModal}/> : <div></div>}
+                {this.state.showAddNoteModal ? <AddNoteModal date={this.props.startDate} onClose={this.closeAddNoteModal}/> : <div></div>}
                 
             </div>
         );

@@ -9,7 +9,7 @@ module.exports = {
         var route = "/notes/"+id+"?venue_id="+venueID;
         core.getData(route, onSuccess);
     },
-    post: function(venueID, header, description, time_start, time_end, channels, tags, onSuccess, all_day, new_tags) {
+    post: function(venueID, header, description, time_start, time_end, channels, tags, onSuccess, onError, all_day, new_tags) {
         if (!new_tags) new_tags = [];
         if (all_day == null || all_day == undefined) all_day = false;
         var data = {
@@ -24,7 +24,7 @@ module.exports = {
             venue_id: venueID
         };
 		var route = "/notes";
-		core.postData(route, onSuccess, data);
+		core.postData(route, onSuccess, data, {error:onError});
     },
     put: function(id, header, description, time_start, time_end, channels, tags, onSuccess, all_day, new_tags) {
         if (!new_tags) new_tags = [];

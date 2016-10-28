@@ -1622,7 +1622,10 @@ var Revenue2 = React.createClass({
                             </div>
                             { features.notes ?
                                 <div className="row notes-container">
-                                    <Notes/>
+                                    <Notes 
+                                        startDate={KUtils.date.serverFormat(this.state.periodFrom)} 
+                                        endDate={KUtils.date.serverFormat(this.state.periodTo)}
+                                    />
                                 </div>
                             :
                                 <div></div>
