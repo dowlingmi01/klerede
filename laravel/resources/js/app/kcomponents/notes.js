@@ -186,19 +186,51 @@ var AddNoteModal = React.createClass({
     },
     onDateStartChange(d) {
         this.setChanged();
-        this.setState({dateStart:d})
+        var state = {dateStart:d};
+        if (moment(this.state.dateEnd).isBefore(d)) {
+            state.dateEnd = d;
+        };
+        this.setState(state);
     },
     onDateEndChange(d) {
         this.setChanged();
-        this.setState({dateEnd:d})
+        var state = {dateEnd:d};
+        if (moment(this.state.dateStart).isAfter(d)) {
+            state.dateStart = d;
+        };
+        this.setState(state);
     },
     onTimeStartChange(d) {
         this.setChanged();
-        this.setState({timeStart:$(d.target).val()});
+        var timeStart = $(d.target).val();
+        var state = {timeStart:timeStart};
+        
+        if ( this.state.dateStart.isSame(this.state.dateEnd) ) {
+            var timeStartM = moment(timeStart,["h:mma"]);
+            var timeEndM = moment(this.state.timeEnd,["h:mma"]);
+
+            if( timeStartM.isAfter(timeEndM) ) {
+                state.timeEnd = timeStartM.add(1, "h").format("h:mma");
+            }
+        }
+        
+        this.setState(state);
     },
     onTimeEndChange(d) {
         this.setChanged();
-        this.setState({timeEnd:$(d.target).val()});
+        var timeEnd = $(d.target).val();
+        var state = {timeEnd:timeEnd};
+        
+        if ( this.state.dateStart.isSame(this.state.dateEnd) ) {
+            var timeStartM = moment(this.state.timeStart,["h:mma"]);
+            var timeEndM = moment(timeEnd,["h:mma"]);
+
+            if( timeStartM.isAfter(timeEndM) ) {
+                state.timeStart = timeEndM.add(-1, "h").format("h:mma");
+            }
+        }
+        
+        this.setState(state);
     },
     onChannelClick:function (k) {
         this.setChanged();
@@ -229,7 +261,6 @@ var AddNoteModal = React.createClass({
     onCategoryDeselect(c) {
         var selectedCategories = this.state.selectedCategories;
         var index = selectedCategories.indexOf(c);
-        
         if (index <0) 
             return;
         
@@ -261,8 +292,10 @@ var AddNoteModal = React.createClass({
             }
             
             this.setChanged();
-            categoryList.push({value:newCategory, label:newCategory, new:true});
+            var newCategory = {value:newCategory, label:newCategory, new:true};
+            categoryList.push(newCategory);
             this.setState({categoryList:categoryList, newCategory:"", addCategoryActive:false});
+            this.onCategorySelect(newCategory);
         }
     },
     onAddCategoryBlur(e){
@@ -293,8 +326,18 @@ var AddNoteModal = React.createClass({
         var categoryList = this.state.categoryList;
         for (var i=0; i<categoryList.length; i++) {
             if (categoryList[i].value == value) {
+
+                var deletedCat = categoryList[i];
+
+                this.onCategoryDeselect(deletedCat);
+
                 categoryList.splice(i,1);
                 this.setState({categoryList:categoryList});
+
+                if(deletedCat.new) {
+                    return;
+                }
+
                 this.doDeleteCategory(value);
                 return;
             }
@@ -302,12 +345,14 @@ var AddNoteModal = React.createClass({
         throw "category value not found: "+value;
     },
     doDeleteCategory:function (value) {
+        console.log("doDeleteCategory:"+value);
         KAPI.tags.delete(value, wnt.venueID, this.onDeleteCategorySuccess, this.onDeleteCategoryError);
     },
     onDeleteCategorySuccess: function(response) {
         console.log(response);
     },
     onDeleteCategoryError: function(response) {
+        this.loadTags();
         alert(response.message);
         throw response;
     },

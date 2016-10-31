@@ -20,6 +20,6 @@ module.exports = {
     },
     delete:function(id, venueID, onSuccess, onError, mergeID) {
         var route = "/tags/"+id+"?venue_id="+venueID + (mergeID ? "&merge_to="+mergeID : "");
-        core.deleteData(route, onSuccess, {error:onError});
+        core.deleteData(route, onSuccess, {}, {error:onError});
     }
 }
