@@ -6,7 +6,7 @@ var wnt = require ('./wnt.js');
 
 var logos = {
     1518:<img src="img/na-logo-one-line.png" />,
-    1204:<img src="img/logo-psc-full.png" />
+    1204:<img style={{width:"165px"}} src="img/logo-psc-full.png" />
 };
 
 exports.logos = logos;
