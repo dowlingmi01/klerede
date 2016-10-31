@@ -605,11 +605,19 @@ var Revenue2 = React.createClass({
     onDateSelect:function (event) {
         if (this.state.periodFrom === event.target.value) {
             return;
-        }
-        var date = this.buildDateDetails(event.target.value);
+        };
+        this.dateUpdate(event.target.value);
+    },
+    dateUpdate:function(newDate) {
+        var date = this.buildDateDetails(newDate);
         var formatedDate = wnt.formatDate(new Date(event.target.value));
         analytics.addEvent('Earned Revenue', 'Date Changed', formatedDate);
-        this.setState({date:date, dirty:1, dirtyWeather:1});
+        this.setState({date:date, dirty:1, dirtyWeather:1, periodFrom:newDate});
+    },
+    quarterShowNotes:function (newDate) {
+        console.log(newDate);
+        this.setState({periodType:"week"});
+        this.dateUpdate(newDate);
     },
     getCompareList:function () {
         var barEnter = (this.state.barEnter !== null);
@@ -1621,11 +1629,14 @@ var Revenue2 = React.createClass({
                                     </div>
                                 </div>
                             </div>
-                            { (features.notes && this.state.periodType != "quarter") ?
+                            { (features.notes) ?
                                 <div className="row notes-container">
                                     <Notes 
                                         startDate={KUtils.date.serverFormat(this.state.periodFrom)} 
                                         endDate={KUtils.date.serverFormat(this.state.lastDay)}
+                                        onShowNotes = {this.quarterShowNotes}
+                                        showNoteDate = {this.state.showNoteDate}
+                                        isQuarter = {this.state.periodType == "quarter" }
                                     />
                                 </div>
                             :

@@ -743,7 +743,14 @@ var Notes = React.createClass({
     },
     showNotes:function (event, n) {
         event.stopPropagation();
+        
         var activeNote = $(event.currentTarget).attr('id');
+        
+        if(this.props.isQuarter) {
+            this.props.onShowNotes(moment(activeNote).format("MM/DD/YYYY"));
+            return;
+        }
+        
         // console.debug(activeNote, $(event.currentTarget).prop('id'))
         this.setState({activeNote:activeNote, noteDetailsClass:"active"});
     },
@@ -771,8 +778,15 @@ var Notes = React.createClass({
         var count = 0;
         var currentDate = moment(this.props.startDate);
         var endDate = moment(this.props.endDate);
+        var step = 1;
+        if (this.props.isQuarter) {
+            var weekday = currentDate.weekday();
+            currentDate.add(-weekday,"d");
+            step = 7;
+        }
+        
         while(currentDate.isBefore(endDate)) {
-            var currentDatePlusOne= moment(currentDate).add(1, "d");
+            var currentDatePlusOne = moment(currentDate).add(step, "d");
             var dateNotes = [];
             while(response.length) {
                 var note = response.shift();
@@ -795,6 +809,11 @@ var Notes = React.createClass({
             
             currentDate = currentDatePlusOne;
         }
+        
+        if (this.props.isQuarter) {
+            count = 14;
+        }
+        
         // console.debug(noteList, count);
         this.setState({noteList:noteList, noteListCount:count});
     },
