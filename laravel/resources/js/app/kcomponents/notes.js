@@ -831,8 +831,8 @@ var Notes = React.createClass({
             var noteColumns = [];
             var currentNotes = noteList[this.state.activeNote];
             for (var i=0 ; i<currentNotes.length; i++) {
-                if(i>=4)
-                    break;
+                // if(i>=4)
+                //     break;
                 
                 noteColumns.push(
                     <div  key={i} className="col-xs-3">
