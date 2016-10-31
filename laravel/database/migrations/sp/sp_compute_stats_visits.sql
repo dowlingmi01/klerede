@@ -32,7 +32,7 @@ BEGIN
             STRAIGHT_JOIN box_office_product_kind_map m
                   ON p.venue_id = m.venue_id
                  AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-                 AND box_office_product_kind_id < 4
+                 AND box_office_product_kind_id IN (1, 2, 3, 6)
            WHERE p.is_ga = 1
              AND p.kind = 'ticket'
              AND t.venue_id = in_venue_id
@@ -54,7 +54,7 @@ BEGIN
             STRAIGHT_JOIN box_office_product_kind_map m
                   ON p.venue_id = m.venue_id
                  AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-                 AND box_office_product_kind_id < 4
+                 AND box_office_product_kind_id IN (1, 2, 3, 6)
             STRAIGHT_JOIN facility f ON v.facility_id = f.id
            WHERE f.is_ga = 1
              AND v.venue_id = in_venue_id
@@ -76,7 +76,7 @@ BEGIN
             STRAIGHT_JOIN box_office_product_kind_map m
                   ON p.venue_id = m.venue_id
                  AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-                 AND box_office_product_kind_id < 4
+                 AND box_office_product_kind_id IN (1, 2, 3, 6)
              STRAIGHT_JOIN facility f ON v.facility_id = f.id
            WHERE f.is_ga = 1
              AND v.venue_id = in_venue_id
