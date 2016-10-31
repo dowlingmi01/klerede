@@ -451,6 +451,7 @@
             background-color: @halflightmediumgrey;
             text-align:center;
             line-height:0;
+            position:relative;
             height:21px;
             padding-left:10px;
             padding-right:10px;
@@ -458,17 +459,18 @@
                 z-index: 1;
             }
             .notebar {
+                // background-color:@lightgrey;
                 display:inline-block;
                 width:14.28571428571429%;
                 height:21px;
                 text-align:center;
                 position:relative;
-                top:-3px;
                 .note-circle-container {
                     height: 21px;
                     width: 21px;
                     padding:3px;
                     display:inline-block;
+                    // background-color:gray;
                 }
             }
         }
@@ -513,22 +515,22 @@
                 #note-columns {
                     margin-top:1em;
                     .note-column {
-                         border-left:1px solid @black;
-                         padding:0 1em;
-                         height:100%;
-                         .note-header {
+                        min-height:117px;
+                        border-left:1px solid @black;
+                        padding:0 1em;
+                        .note-header {
                              font-weight:800;
                              font-size:120%;
-                         }
-                         .note-time {
+                        }
+                        .note-time {
                              color:@halfdarkmediumgrey;
-                         }
-                         .note-author {
+                        }
+                        .note-author {
                              margin-top:1em;
                              color:@pink;
                              font-weight:600;
                              font-style: italic;
-                         }
+                        }
                      }
                 }
             }
@@ -539,23 +541,26 @@
             height: 100%;
             width:100%;
             background-color: @cobalt;
-            display: inline-block;
+            display: block;
         }
         .one {
             margin-top:25%;
             margin-bottom:25%;
+            margin-left:25%;
             height: 50%;
             width:50%;
         }
         .two {
             margin-top:16.5%;
             margin-bottom:16.5%;
+            margin-left:16.5%;
             height:64%;
             width:64%;
         }
         .three {
             margin-top:10%;
             margin-bottom:10%;
+            margin-left:10%;
             height: 80%;
             width:80%;
         }
@@ -583,7 +588,8 @@
         margin-left:-42px;
         
         .arrow {
-            transform: rotate(180deg);
+            border-top: none;
+            border-bottom: 6px solid @white;
             top:-6px;
             left:50%;
             margin-left:-4px;

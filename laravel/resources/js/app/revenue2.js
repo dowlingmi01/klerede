@@ -1621,7 +1621,7 @@ var Revenue2 = React.createClass({
                                     </div>
                                 </div>
                             </div>
-                            { features.notes ?
+                            { (features.notes && this.state.periodType != "quarter") ?
                                 <div className="row notes-container">
                                     <Notes 
                                         startDate={KUtils.date.serverFormat(this.state.periodFrom)} 

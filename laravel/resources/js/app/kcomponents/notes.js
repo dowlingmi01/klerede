@@ -2,6 +2,8 @@ var React = require('react');
 var $ = require('jquery');
 var getDOMNode = require('../kutils/getDOMNode.js');
 
+var limitString = require('../kutils/string-utils.js').limitString;
+
 var wnt = require ('./wnt.js');
 
 require('bootstrap');
@@ -121,8 +123,8 @@ var AddNoteModal = React.createClass({
                 selectedCategories:[],
                 notify:"none",
                 allDay:true,
-				dateStart:moment(this.props.date),
-                dateEnd:moment(this.props.date),
+				dateStart:moment(this.props.selectedDate || this.props.date),
+                dateEnd:moment(this.props.selectedDate || this.props.date),
                 timeStart:"9:00am",
                 timeEnd:"10:00am",
                 addCategoryActive:false,
@@ -359,6 +361,10 @@ var AddNoteModal = React.createClass({
             tags.push(this.state.selectedCategories[m].value);
         };
         
+		if(tags.length == 0 && newTags.length == 0) {
+			alert("Please select at least one category.");
+			return;
+		}
         
         var dateStart = moment(this.state.dateStart);
         var dateEnd = moment(this.state.dateEnd);
@@ -577,8 +583,14 @@ var NoteCircle = React.createClass({
     //     e.stopPropagation();
     // },
     render:function () {
+		var style = {};
+		// console.log(this.props.circleClassName)
+		if (this.props.circleClassName == " empty") {
+			style.width = "0px";
+			// console.log(style);
+		}
         return(
-            <div id={this.props.id} className="note-circle-container" onClick={this.props.onClick} >
+            <div style={style} id={this.props.id} className="note-circle-container" onClick={this.props.onClick}>
                 <div className={"note-circle "+this.props.circleClassName}></div>
             </div>
         );
@@ -591,8 +603,8 @@ var AddNoteTip = React.createClass({
     },
     render:function () {
         return (
-            <div className="add-note-menu">
-                <div className={"menu-content fade "+this.props.fadein} style={{left:this.props.left}} role="tooltip" ><div className="arrow"></div><div className="action" ><a href="#add-note" onClick={this.props.onAddNote}>Add Note</a></div></div>
+            <div className="add-note-menu" onClick={this.props.onAddNote}>
+                <div className={"menu-content fade "+this.props.fadein} style={{left:this.props.left}} role="tooltip" ><div className="arrow"></div><div className="action" ><a href="#add-note">Add Note</a></div></div>
             </div> 
         );
     }
@@ -600,11 +612,14 @@ var AddNoteTip = React.createClass({
 
 var NoteBar = React.createClass({
     render:function () {
+
+        var showNotes = this.props.showNotes;
         var circleClassName;
         
         switch (this.props.noteCount) {
         case 0:
             circleClassName = " empty";
+            showNotes = null;
             break;
         case 1:
             circleClassName = " one";
@@ -624,13 +639,13 @@ var NoteBar = React.createClass({
             <div 
                 style={this.props.width ? {width:this.props.width} : {}} 
                 className={"notebar "+this.props.className} 
-                onClick={this.props.onClick} 
+                onClick={this.props.addNote}
+				onMouseEnter={this.props.onMouseEnter} 
             >
                 <NoteCircle 
                     id={this.props.id} 
-                    circleClassName={circleClassName} 
-                    onClick={this.props.onNoteClick}
-                    onMouseEnter={function(event){event.stopPropagation()}}
+                    circleClassName={circleClassName}
+                    onClick = {showNotes}
                 /> 
             </div>
         )
@@ -640,12 +655,14 @@ var NoteColumn = React.createClass({
     render:function() {
         var note = this.props.note;
         var formatedTime = note.all_day ? "All day" : moment(note.time_start).format("ha")+"-"+moment(note.time_end).format("ha")
+        var description = limitString(note.description, 95);
+        
         return(
             <div className="note-column" >
                 <div className="note-header">{note.header}</div>
                 <div className="note-time">{formatedTime}</div>
                 <div className="note-author">{note.author.split(" ").join(".")}</div>
-                <div className="note-description">{note.description}</div>
+                <div className="note-description">{description}</div>
             </div>
         );
     }
@@ -659,6 +676,7 @@ var Notes = React.createClass({
             noteDetailsClass:"",
             activeNote:null,
             showAddNoteModal:false,
+            selectedDate:null,
             noteList:{},
             noteListCount:1,
             authorList:{}
@@ -667,8 +685,13 @@ var Notes = React.createClass({
     closeAddNoteModal(e) {
         this.setState({showAddNoteModal:false});
     },
+	onNoteBarMouseEnter(e) {
+        var selectedDate = $(e.currentTarget).find(".note-circle-container").prop("id");
+		this.setState({selectedDate:selectedDate});
+		// console.log(selectedDate);
+	},
     addNote:function(e) {
-        // console.log(e);
+        // console.log(e.target, e.currentTarget);
         e.preventDefault();
         this.setState({showAddNoteModal:true});
     },
@@ -679,8 +702,24 @@ var Notes = React.createClass({
         if ($(e.target).hasClass("note-circle-container"))
             return;
         
-        e.stopPropagation();
+		// console.log(
+		// 	$(e.target).prop("id") != "notebars" ,
+		// 	!$(e.relatedTarget).hasClass("notebar"),
+		// 	$(e.relatedTarget).prop("id") != "revenue2"
+		// );
+		// console.log(e.target, e.relatedTarget);
 
+        if ( 
+			$(e.target).prop("id") != "notebars" 
+			&& !$(e.relatedTarget).hasClass("notebar") 
+			&& $(e.relatedTarget).prop("id") != "revenue2" 
+		) {
+            //prevents showing tip when over other inner elements
+            return;
+        }
+
+        e.stopPropagation();
+        
         var addNoteTip = $(getDOMNode(this.refs.addNoteTip));
         this.setState({noteTip:"in", noteTipLeft:e.pageX - addNoteTip.offset().left});
     },
@@ -694,7 +733,10 @@ var Notes = React.createClass({
         this.setState({noteTip:"out"});
     },
     showNoteTipIcon:function (e) {
-        this.setState({noteTipIcon:"in"});
+		
+        var selectedDate = moment(this.state.activeNote).format();
+		
+        this.setState({noteTipIcon:"in", selectedDate:selectedDate});
     },
     hideNoteTipIcon:function (e) {
         this.setState({noteTipIcon:"out"});
@@ -753,10 +795,14 @@ var Notes = React.createClass({
             
             currentDate = currentDatePlusOne;
         }
-        console.debug(noteList, count);
+        // console.debug(noteList, count);
         this.setState({noteList:noteList, noteListCount:count});
     },
     componentWillReceiveProps:function (nextProps) {
+        if (this.props.startDate == nextProps.startDate && this.props.endDate == nextProps.endDate ) {
+            return;
+        }
+		this.hideNotes();
         this.updateNoteList(nextProps);
     },
     componentDidMount:function () {
@@ -771,11 +817,12 @@ var Notes = React.createClass({
             var noteBar = <NoteBar
                 key={k}
                 id={k}
-                onClick={this.addNote}
+                addNote={this.addNote}
                 width={barWidth}
                 className={this.state.activeNote==k ? "active":""} 
-                onNoteClick={(event)=>this.showNotes(event, k)}
+                showNotes={(event)=>this.showNotes(event, k)}
                 noteCount = {dayNotes.length}
+				onMouseEnter = {this.onNoteBarMouseEnter}
             />
             noteBars.push(noteBar);
         }
@@ -803,7 +850,7 @@ var Notes = React.createClass({
                 <div id="calendar-button-container">
                     <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
                 </div>
-                <div id="notebars" onMouseEnter={this.showNoteTip} onMouseLeave={this.hideNoteTip}>
+                <div id="notebars" onMouseOver={this.showNoteTip} onMouseLeave={this.hideNoteTip}>
                     <div id="add-note-tip-container">
                         <AddNoteTip onAddNote={this.addNote} ref="addNoteTip" left={this.state.noteTipLeft+"px"} fadein={this.state.noteTip}/>
                     </div>
@@ -825,7 +872,7 @@ var Notes = React.createClass({
                     </div>
                 </div>
                 
-                {this.state.showAddNoteModal ? <AddNoteModal date={this.props.startDate} onSave={this.updateNoteList.bind(this, this.props)} onClose={this.closeAddNoteModal}/> : <div></div>}
+                {this.state.showAddNoteModal ? <AddNoteModal selectedDate={this.state.selectedDate} date={this.props.startDate} onSave={this.updateNoteList.bind(this, this.props)} onClose={this.closeAddNoteModal}/> : <div></div>}
                 
             </div>
         );
