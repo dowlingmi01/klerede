@@ -6,7 +6,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 
 var $ = require('jquery');
-var wnt = require('./wnt.js');
+var wnt = require('./kcomponents/wnt.js');
 
 var ActionMenu = require('./reusable-parts').ActionMenu;
 

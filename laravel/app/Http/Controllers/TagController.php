@@ -105,7 +105,7 @@ class TagController extends Controller
         
         //TODO: define what happend when user try to delete an used tag
 
-        $result = User::destroy($id);
+        $result = Tag::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
     }
 }

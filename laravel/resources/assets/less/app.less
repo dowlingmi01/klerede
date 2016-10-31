@@ -6,6 +6,7 @@
 @import (inline) "react-datepicker.min.css";
 @import (inline) "jquery.timepicker.min.css";
 @import "colors";
+@import "react-select/select";
 
 body, p, td, label, .checkbox label {
     color: @darkgrey;
@@ -1866,13 +1867,13 @@ body > .popover.top>.arrow:after {
 #members-total {
     .stat,
     .change {
-        color: #eebb40;
+        color: @gold;
         .up,
         .down {
             opacity: 1;
         }
         path {
-            fill: #eebb40;
+            fill: @gold;
         }
     }
 }
@@ -2840,7 +2841,7 @@ a.dp-choose-date {
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
-    background-color: rgba(236,234,231,1);
+    background-color: @lightgrey;
     border: none;
     border-radius: 0;
     box-shadow: none;

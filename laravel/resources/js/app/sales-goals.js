@@ -10,7 +10,7 @@ var $ = require('jquery');
 require('../libs/jquery.easing.1.3.js');
 require('../libs/jquery.numberformatter-1.2.4.jsmin.js');
 
-var wnt = require ('./wnt.js');
+var wnt = require ('./kcomponents/wnt.js');
 
 var KAPI = {};
 KAPI.auth = require("./kapi/auth.js");

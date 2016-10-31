@@ -9,6 +9,7 @@ class Note extends Model
     //
     protected $table = 'note';
 
+    protected $hidden = ['pivot'];
 
     protected $dates = ['time_start', 'time_end'];
 
@@ -21,6 +22,7 @@ class Note extends Model
     {
         return $this->belongsToMany('App\Channel');
     }
+
 
      
 }

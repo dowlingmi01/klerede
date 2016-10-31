@@ -11,7 +11,7 @@ var $ = require("jquery");
 (Function('return this')()).jQuery = require('jquery');
 require("bootstrap").collapse;
 
-var wnt = require ('./wnt.js');
+var wnt = require ('./kcomponents/wnt.js');
 var goals = require("./kapi/goals.js");
 
 var ButtonExpand = require('./reusable-parts').ButtonExpand;

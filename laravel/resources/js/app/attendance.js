@@ -6,7 +6,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 
 
-var wnt = require ('./wnt.js');
+var wnt = require ('./kcomponents/wnt.js');
 var analytics = require("./analytics.js");
 
 

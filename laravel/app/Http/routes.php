@@ -12,7 +12,7 @@
 */
 
 use App\GoalsSales;
-use App\StoreTransaction, App\Stats;
+use App\StoreTransaction, App\Stats, App\Channel;
 use App\WeatherDaily;
 use App\Helpers\PermissionHelper;
  
@@ -76,6 +76,12 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::resource('roles', 'RoleController', ['only' => ['index']]);
 
 	Route::controller('import', 'ImportController');
+
+	Route::get('channels', function() {
+		//FIXME: Move to own controller
+		return Response::json(Channel::all());
+	});
+
 });
 
 Route::get('dashboard', function()

@@ -2,7 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 
 var $ = require('jquery');
-var wnt = require ('./wnt.js');
+var wnt = require ('./kcomponents/wnt.js');
 
 var logos = {
     1518:<img src="img/na-logo-one-line.png" />,
