@@ -18,8 +18,8 @@ module.exports = {
 		var route = "/tag";
 		core.postData(route, onSuccess, data);
     },
-    delete:function(id, venueID, onSuccess, mergeID) {
+    delete:function(id, venueID, onSuccess, onError, mergeID) {
         var route = "/tags/"+id+"?venue_id="+venueID + (mergeID ? "&merge_to="+mergeID : "");
-        core.deleteData(route, onSuccess);
+        core.deleteData(route, onSuccess, {error:onError});
     }
 }

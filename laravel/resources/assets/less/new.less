@@ -451,7 +451,9 @@
             background-color: @halflightmediumgrey;
             text-align:center;
             line-height:0;
-            
+            height:21px;
+            padding-left:10px;
+            padding-right:10px;
             #add-note-tip-container{
                 z-index: 1;
             }
@@ -461,6 +463,7 @@
                 height:21px;
                 text-align:center;
                 position:relative;
+                top:-3px;
                 .note-circle-container {
                     height: 21px;
                     width: 21px;
@@ -540,18 +543,24 @@
         }
         .one {
             margin-top:25%;
+            margin-bottom:25%;
             height: 50%;
             width:50%;
         }
         .two {
             margin-top:16.5%;
+            margin-bottom:16.5%;
             height:64%;
             width:64%;
         }
         .three {
             margin-top:10%;
+            margin-bottom:10%;
             height: 80%;
             width:80%;
+        }
+        .empty {
+            display:none;
         }
         .notebar.active .note-circle,
         .note-circle:hover

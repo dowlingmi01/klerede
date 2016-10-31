@@ -468,6 +468,7 @@ var Revenue2 = React.createClass({
             date:date,
             periodFrom:date.thisWeekStart,      //mm/dd/yyyy
             periodTo:date.thisWeekLimit,          //mm/dd/yyyy
+            lastDay:date.thisWeekLimit,
             dirty:-1,
             dirtyWeather:-1,
             detailsClass:"",
@@ -868,7 +869,7 @@ var Revenue2 = React.createClass({
             total_bars.push({period:du.serverFormat(lastDay), units:0, amount:0})
             lastDay = du.addDays(lastDay, 1, true);
         }
-        
+        state.lastDay = lastDay;
     },
     updateData:function (state) {
 
@@ -1624,7 +1625,7 @@ var Revenue2 = React.createClass({
                                 <div className="row notes-container">
                                     <Notes 
                                         startDate={KUtils.date.serverFormat(this.state.periodFrom)} 
-                                        endDate={KUtils.date.serverFormat(this.state.periodTo)}
+                                        endDate={KUtils.date.serverFormat(this.state.lastDay)}
                                     />
                                 </div>
                             :
