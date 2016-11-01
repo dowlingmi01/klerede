@@ -140,7 +140,7 @@ class Stats {
 			->select(['s.venue_id', 't.business_day', DB::raw('year(t.business_day)')
 				, DB::raw('year(t.business_day)*100 + quarter(t.business_day)')
 				, DB::raw('year(t.business_day)*100 + month(t.business_day)')
-				, DB::raw('year(t.business_day)*100 + week(t.business_day)')
+				, DB::raw('yearweek(t.business_day, 3)')
 				, DB::raw("$channel_id, 0, 0")
 				, DB::raw('IF(member_xstore_id IS NULL AND member_id IS NULL, 0, 1) as members')
 				, DB::raw('0')

@@ -20,7 +20,7 @@ class Helper {
 		$m->year = (int) $date->format("Y");
 		$m->month = $m->year * 100 + (int) $date->format("m");
 		$m->quarter = $m->year * 100 + ceil(((int) $date->format("m")) / 3);
-		$m->week = $m->year * 100 + (int) $date->format("W");
+		$m->week = (int) $date->format("oW");
 	}
 	public static function array_subkeys($array, $keys) {
 		return array_intersect_key($array, array_flip($keys));
