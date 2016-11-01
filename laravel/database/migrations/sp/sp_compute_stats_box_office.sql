@@ -23,7 +23,7 @@ BEGIN
           SELECT t.venue_id, l.valid_date, year(l.valid_date)
                , year(l.valid_date)*100 + quarter(l.valid_date)
                , year(l.valid_date)*100 + month(l.valid_date)
-               , year(l.valid_date)*100 + week(l.valid_date)
+               , yearweek(l.valid_date, 3)
                , IF(p.kind = 'pass', 2, 1) as channel_id, m.box_office_product_kind_id
                , IFNULL(p.membership_kind_id, 0), IF(p.kind = 'pass', 1, 0) as members, o.is_online as online
                , sum(quantity), sum(sale_price)
@@ -50,7 +50,7 @@ BEGIN
           SELECT t.venue_id, date(t.time), year(t.time)
                , year(t.time)*100 + quarter(t.time)
                , year(t.time)*100 + month(t.time)
-               , year(t.time)*100 + week(t.time)
+               , yearweek(t.time, 3)
                , IF(p.kind = 'pass', 2, 1) as channel_id, m.box_office_product_kind_id
                , IFNULL(p.membership_kind_id, 0), IF(p.kind = 'pass', 1, 0) as members, o.is_online as online
                , sum(quantity), sum(sale_price)

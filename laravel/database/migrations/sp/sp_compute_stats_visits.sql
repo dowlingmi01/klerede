@@ -23,7 +23,7 @@ BEGIN
           SELECT p.venue_id, v.valid_date, year(v.valid_date)
                , year(v.valid_date)*100 + quarter(v.valid_date)
                , year(v.valid_date)*100 + month(v.valid_date)
-               , year(v.valid_date)*100 + week(v.valid_date)
+               , yearweek(v.valid_date, 3)
                , m.box_office_product_kind_id, sum(quantity)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM box_office_transaction_line v
@@ -46,7 +46,7 @@ BEGIN
           SELECT p.venue_id, date(v.time), year(v.time)
                , year(v.time)*100 + quarter(v.time)
                , year(v.time)*100 + month(v.time)
-               , year(v.time)*100 + week(v.time)
+               , yearweek(v.time, 3)
                , m.box_office_product_kind_id, sum(quantity)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM visit v
@@ -68,7 +68,7 @@ BEGIN
           SELECT p.venue_id, date(v.time), hour(v.time), year(v.time)
                , year(v.time)*100 + quarter(v.time)
                , year(v.time)*100 + month(v.time)
-               , year(v.time)*100 + week(v.time)
+               , yearweek(v.time, 3)
                , m.box_office_product_kind_id, sum(quantity)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM visit v

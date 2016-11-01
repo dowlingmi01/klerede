@@ -15,7 +15,7 @@ BEGIN
      SELECT t.venue_id, t.business_day, year(t.business_day)
           , year(t.business_day)*100 + quarter(t.business_day)
           , year(t.business_day)*100 + month(t.business_day)
-          , year(t.business_day)*100 + week(t.business_day)
+          , yearweek(t.business_day, 3)
           , 3 as channel_id, 0
           , 0, IF(member_id IS NULL , 0, 1) as members, 0
           , sum(quantity), sum(sale_price)
