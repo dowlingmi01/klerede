@@ -582,30 +582,34 @@ var AddNoteModal = React.createClass({
                             </div>
                             <div id="category-list">{categories}</div>
                         </div>
-                        <div className="form-group" id="notify">
-                            Notify Users:
-                            &nbsp;
-                            <span>
-                                <SVGButton 
-                                    onClick={this.onNotifyClick.bind(this, "email")} 
-                                    className={"circle "+ (this.state.notify!="email" ? "inactive" : "")} 
-                                    id="email-notify" 
-                                    icon={<CheckMark className="" />} 
-                                />
-                                &nbsp;Via Email
-                            </span>
-                            &nbsp;
-                            &nbsp;
-                            <span>
-                                <SVGButton 
-                                    onClick={this.onNotifyClick.bind(this, "none")} 
-                                    className={"circle "+ (this.state.notify!="none" ? "inactive" : "")} 
-                                    id="none-notify" 
-                                    icon={<CheckMark className="" />} 
-                                />
-                                &nbsp;None
-                            </span>
-                        </div>
+                        { (false) ? 
+                            <div className="form-group" id="notify">
+                                Notify Users:
+                                &nbsp;
+                                <span>
+                                    <SVGButton 
+                                        onClick={this.onNotifyClick.bind(this, "email")} 
+                                        className={"circle "+ (this.state.notify!="email" ? "inactive" : "")} 
+                                        id="email-notify" 
+                                        icon={<CheckMark className="" />} 
+                                    />
+                                    &nbsp;Via Email
+                                </span>
+                                &nbsp;
+                                &nbsp;
+                                <span>
+                                    <SVGButton 
+                                        onClick={this.onNotifyClick.bind(this, "none")} 
+                                        className={"circle "+ (this.state.notify!="none" ? "inactive" : "")} 
+                                        id="none-notify" 
+                                        icon={<CheckMark className="" />} 
+                                    />
+                                    &nbsp;None
+                                </span>
+                            </div>
+                        :
+                            <div></div>   
+                        }
                     </form>
                     
                   </div>
