@@ -1,3 +1,4 @@
+var moment = require("moment");
 var _forceDigits = require("./number-utils.js").forceDigits;
 
 var firstDayOfWeek = 1,
@@ -79,9 +80,9 @@ var firstDayOfWeek = 1,
         return date.getUTCFullYear()+"-"+m+"-"+d;
     },
     serverFormatWeek = function (date) {
-        var date = new Date(date);
-        var w = getWeekNumber(date);
-        return date.getUTCFullYear()+"-"+w;
+        var m = moment(date, "MM/DD/YYYY");
+        var w = m.isoWeekYear()+"-"+m.isoWeek();//format("YYYY-WW");
+        return w;
     },
     localFormat = function (serverDate) { //yyyy-mm-dd -> mm/dd/yyy
         var date = new Date(serverDate);
@@ -109,19 +110,6 @@ var firstDayOfWeek = 1,
         var result = new Date(date);
         result.setUTCFullYear(result.getUTCFullYear() + years);
         return formatFromDate(result);
-    },
-    getWeekNumber = function (d) { //yyyy-mm-dd -> w (0-52)
-        // var d="2016-01-01";
-        var date = new Date(d);
-        
-        var jan1 = new Date(date.getUTCFullYear()+"-01-01");
-        if(jan1.getUTCDay()!= 0) 
-            jan1.setUTCDate( -jan1.getUTCDay()+1 ); //->find last year sunday
-        
-        var msec = date.getTime() - jan1.getTime(); //diff in milliseconds
-        var weeks = Math.floor(msec/(1000*60*60*24*7)); //millisecondsasecond*secondsaminute*minutesanhour*hoursaday*weekdays
-        // [date.toUTCString(),jan1.toUTCString(), msec, weeks];
-        return weeks;
     },
     getQuarterNumber = function (d) {
         var date = new Date(d);
@@ -154,37 +142,33 @@ var firstDayOfWeek = 1,
         return dates;
     },
     weekToDates = function (w, y) { // w, y | YYYY-W -> mm/dd/yyyy
-        
+
         if (y === undefined) {
             var s = w;
             var a = s.split("-");
             y = parseInt(a[0]);
             w = parseInt(a[1]);
         };
-        
+
         var date = new Date("01/01/"+year.toString());
         return addDays(date, week*7);
     },
     dateToWeek = function (d) { // mm/dd/yyyy -> YYYY-W
-        
-        var w = getWeekNumber(d);
+
+        var w = moment(d).isoWeek();
         var y = (new Date(d)).getUTCFullYear();
-        
+
         return y+"-"+_forceDigits(w, 2);
     },
-    getDateFromWeek = function (s) { //YYYY-W -> mm/dd/yyyy
-        //week 0 means week 52 of prev year
+    getDateFromWeek = function (s) { //YYYY-W -> mm/dd/yyyy (returns start week date)
+        //week ISO 1988 from 1 to 53, 4 days rule
         var a = s.split("-");
         var year = parseInt(a[0]);
         var week = parseInt(a[1]);
         
-        if(week<0 || week > 52) throw "getDateFromWeek -> week must be 0-52";
+        var m = moment().year(year).isoWeek(week).startOf("week");
         
-        var jan1 = new Date(year+"-01-01");
-        if(jan1.getUTCDay()!= 0) 
-            jan1.setUTCDate( -jan1.getUTCDay()+1 ); //->find last year sunday
-        
-        return addDays(jan1, week*7);
+        return  m.format("MM/DD/YYYY");
     };
 
     module.exports = {
@@ -201,7 +185,6 @@ var firstDayOfWeek = 1,
         addDays:addDays,
         addMonths:addMonths,
         addYears:addYears,
-        getWeekNumber:getWeekNumber,
         getQuarterNumber:getQuarterNumber,
         quarterToDates:quarterToDates,
         dateToWeek:dateToWeek,
