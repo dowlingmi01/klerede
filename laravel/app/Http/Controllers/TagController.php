@@ -48,13 +48,12 @@ class TagController extends Controller
             $messages = $validator->messages();
             return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
         } 
-         if($request->venue_id != 0){
-	        if(Gate::denies('validate-venue', $request->venue_id)){
-	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
-	        }
+         
+        if(Gate::denies('validate-venue', $request->venue_id)){
+            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
         }
-        //$password = generateNewPassword(); //TODO: Generar la funcion
-
+        
+      
         $tag = new Tag;
         $tag->description       = $request->description;
         $tag->owner_id       = \Auth::user()->id;  
@@ -95,17 +94,33 @@ class TagController extends Controller
         if(!$tag){
             return Response::json(['result'=> 'error', 'message'=>'tag_not_found'], 404);
         }
-        if($tag->venue_id != 0){
-	        if (Gate::denies('validate-venue', $tag->venue_id)) {
-	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
-	        }
-    	} else {
-    		//TOOD: Who can delete global tags?
-    	}
-        
-        //TODO: define what happend when user try to delete an used tag
+      
+        if (Gate::denies('validate-venue', $tag->venue_id)) {
+            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+        }
+
+ 
+        $canDelete = 1;
+        if(trim($request->merge_to) !== ''){
+            $merge_to = (int)$request->merge_to;
+            $notes = $tag->notes();
+            foreach ($notes as $note) {
+                $note->detach($id);
+                $note->attach($merge_to);
+                $note->save();
+            }
+
+        } else {
+            if($tag->notes()->count() > 0){
+                return Response::json(['result' => 'error', 'message' => 'used_tag'], 400);
+            }
+        }
 
         $result = Tag::destroy($id);
-        return ['result' => ($result == 1 ? "ok": "error:".$result)];
-    }
-}
+        return Response::json(['result' => ($result == 1 ? "ok": "error", 'message'=>($result == 1 ? "": $result)], ($result == 1 ? 200: 400);
+     }
+ }
+
+
+
+ 
