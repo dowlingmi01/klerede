@@ -439,7 +439,7 @@ var Revenue2 = React.createClass({
         var regularUnitsData = {
             channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
-            childCategories:{ga:"General admission", group:"Groups", donation:"Donation", other:"Other"},
+            childCategories:{ga:"General admission", group:"Groups", donation:"Donation", other_attendance:"Other Attendance", other:"Other"},
             childCategoriesQdetails:{prefix:"gate_bars_by_", channel:"gate", type:'sales'},
             attendanceDetailTitle:"Attendance"
         }
@@ -1023,35 +1023,6 @@ var Revenue2 = React.createClass({
         if (lastBarFrom3) 
             queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
 
-
-        // TODO: Consider making separate query packs for attendance tab
-        // ATENDANCE TAB NON MEMBERS CATEGORIES
-        // queries.visitors_non_members_bars_by_ga = getQuery(from, to, 'ga', 'ALL', 'visits', 'detail', barInterval);
-        // queries.visitors_non_members_bars_by_group = getQuery(from, to, 'group', 'ALL', 'visits', 'detail', barInterval);
-        //
-        // queries.visitors_non_members_bars_by_ga_totals = getQuery(from, to, 'ga', 'ALL', 'visits', 'sum', 'date');
-        // queries.visitors_non_members_bars_by_group_totals = getQuery(from, to, 'group', 'ALL', 'visits', 'sum', 'date');
-        //
-        // //ATENDANCE TAB -> PAST PERIODS
-        //
-        // queries.visitors_non_members_bars_by_ga_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, 'ga', 'ALL', 'visits', 'detail', lastBarInterval1);
-        // queries.visitors_non_members_bars_by_group_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, 'group', 'ALL', 'visits', 'detail', lastBarInterval1);
-        //
-        // queries.visitors_non_members_bars_by_ga_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, 'ga', 'ALL', 'visits', 'sum', 'date');
-        // queries.visitors_non_members_bars_by_group_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, 'group', 'ALL', 'visits', 'sum', 'date');
-        //
-        // queries.visitors_non_members_bars_by_ga_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, 'ga', 'ALL', 'visits', 'detail', lastBarInterval2);
-        // queries.visitors_non_members_bars_by_group_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, 'group', 'ALL', 'visits', 'detail', lastBarInterval2);
-        //
-        // queries.visitors_non_members_bars_by_ga_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, 'ga', 'ALL', 'visits', 'sum', 'date');
-        // queries.visitors_non_members_bars_by_group_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, 'group', 'ALL', 'visits', 'sum', 'date');
-        //
-        // if (lastBarFrom3) {
-        //     queries.visitors_non_members_bars_by_ga_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, 'ga', 'ALL', 'visits', 'detail', lastBarInterval3);
-        //     queries.visitors_non_members_bars_by_group_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, 'group', 'ALL', 'visits', 'detail', lastBarInterval3);
-        // }
-
-
         //PER CHANNEL QUERIES
         var channelActive = state[state.units].channelActive;
         for (var channel in channelActive) {
@@ -1100,8 +1071,7 @@ var Revenue2 = React.createClass({
                 
         }
         
-        // WARNING!!! ->>> Ticket Type should be called Product Type (tickets are only for General Admision)
-        //TICKET TYPE QUERIES 
+        //PRODUCT TYPE QUERIES 
         var childCategories = state[state.units].childCategories;
         var qDetails = state[state.units].childCategoriesQdetails;
         var prefix = qDetails.prefix;
