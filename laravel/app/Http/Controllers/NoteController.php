@@ -17,6 +17,7 @@ use \Hash;
 use \Validator;
 use \Input;
 use \DB;
+use App\Helpers\PermissionHelper;
 
 class NoteController extends Controller
 {
@@ -78,15 +79,11 @@ class NoteController extends Controller
         //Validacion faltantes\
         //si all_day es true, no debe venir hora, y sino debe venir
         //start < end
-
-
-
-        if($request->venue_id != 0){
-	        if(Gate::denies('validate-venue', $request->venue_id)){
-	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
-	        }
-        }
-        //TODO: Check permission to creat a global note
+ 
+        
+	    if(Gate::denies('validate-venue', $request->venue_id)){
+	        return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+	    }
 
         $note = new Note;
         $note->header       = $request->header;
@@ -140,6 +137,9 @@ class NoteController extends Controller
 
     public function update(Request  $request, $id)
     {
+    	if (Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
+            return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
+        }
         $rules = array(
         	'header' => 'required|max:255',
             'description' => 'required',
@@ -171,6 +171,11 @@ class NoteController extends Controller
         if(!$note){
             return Response::json(['result'=> 'error', 'message'=>'note_not_found'],404);
         }
+        if ($note->owner_id != \Auth::user()->id && Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
+            return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
+        }
+
+
         $note->header       = $request->header;
         $note->description       = $request->description;
         $note->all_day       = $request->all_day;
@@ -240,19 +245,17 @@ class NoteController extends Controller
 
     public function destroy($id)
     {
-         
         $note = Note::find($id);
         if(!$note){
             return Response::json(['result'=> 'error', 'message'=>'note_not_found'], 404);
         }
-        if($tag->venue_id != 0){
-	        if (Gate::denies('validate-venue', $tag->venue_id)) {
-	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
-	        }
-    	} else {
-    		//TOOD: Who can delete global notes?
-    	}
-        
+        if ($note->owner_id != \Auth::user()->id && Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
+            return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
+        }
+        if (Gate::denies('validate-venue', $tag->venue_id)) {
+	        return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+	    }
+    	
         //TODO: check permission for delete somebody elses note
 
         $result = Note::destroy($id);

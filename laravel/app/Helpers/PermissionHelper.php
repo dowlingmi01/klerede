@@ -8,6 +8,7 @@ class PermissionHelper {
 	 
 	const OWNER_LEVEL = 10;
 	const USER_MANAGE = 'users-manage';
+	const NOTE_MANAGE = 'notes-manage';
 	const GOALS_SET = 'goals-set';
 
 	public static function permissions($user) {

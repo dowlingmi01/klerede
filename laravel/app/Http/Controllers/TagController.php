@@ -12,7 +12,7 @@ use App\User;
 use \Hash;
 use \Validator;
 use \Input;
- 
+use App\Helpers\PermissionHelper;
  
  
 
@@ -40,13 +40,15 @@ class TagController extends Controller
 
     public function store(Request  $request)
     {
+
+         
         $rules = array(
             'description' => 'required'
         );
         $validator = Validator::make(Input::all(), $rules);
         if ($validator->fails()) {
             $messages = $validator->messages();
-            return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
+            return  Response::json(['result'=>'error', 'messages'=>$messages], 400);
         } 
          
         if(Gate::denies('validate-venue', $request->venue_id)){
@@ -89,11 +91,16 @@ class TagController extends Controller
 
     public function destroy($id)
     {
-         
+       
         $tag = Tag::find($id);
         if(!$tag){
             return Response::json(['result'=> 'error', 'message'=>'tag_not_found'], 404);
         }
+
+        if ($tag->owner_id != \Auth::user()->id && Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
+            return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
+        }
+
       
         if (Gate::denies('validate-venue', $tag->venue_id)) {
             return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
