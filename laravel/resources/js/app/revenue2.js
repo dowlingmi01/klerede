@@ -447,7 +447,7 @@ var Revenue2 = React.createClass({
         var attendanceData = {
             channelNames:{visitors_non_members:"Box Office", visitors_members:"Membership"},
             channelActive:{visitors_non_members:"active", visitors_members:"active"},
-            childCategories:{ga:"General admission", group:"Groups"},
+            childCategories:{ga:"General admission", group:"Groups", other_attendance:"Other Attendance"},
             childCategoriesQdetails:{prefix:"visitors_non_members_bars_by_", channel:"ALL", type:'visits'},
             attendanceDetailTitle:"Revenue"
         }
@@ -699,6 +699,53 @@ var Revenue2 = React.createClass({
         }
         return state;
     },
+    fillHoles:function (state){
+        //don't fill quarters because it is almost impossible to have holes.
+        if (state.periodType == "quarter") return state;
+        
+        var du = KUtils.date;
+        
+        var result = state.result;
+        var queries = state.lastQueries;
+
+        for(var k in result) {
+            if ( !(/total/).test(k) || k == "total_bars" ) {
+                var r = result[k];
+                
+                if (!r || r.length == 0)  {
+                    // console.debug("result is empty", k)
+                    continue;
+                }
+                
+                var q = queries[k];
+                if (!q) {
+                    // var prefix = state[state.units].childCategoriesQdetails.prefix;
+                    var l = k.replace(prefix, "gate_bars");
+                    q = queries[l];
+                    if (!q) {
+                        console.error("periods not found in "+k+" or "+l,queries[k], queries[l]);
+                        continue;
+                    }
+                }
+                var start = new Date(q.periods.from);
+                var end = new Date(q.periods.to);
+                
+                for (var i=0 ; i<r.length; i++) {
+                    
+                    var current = new Date(r[i].period);
+                    
+                    while (start < current) { //exit on start == current
+                        var fill = {period:du.serverFormat(start), units:0, amount:0};
+                        // console.debug(k,fill);
+                        r.splice(i, 0, fill);
+                        start = du.addDays(start, 1, true);
+                    }
+                    start = du.addDays(start, 1, true)
+                }
+            }
+        }
+        return state;
+    },
     updateQuarter13WeekAverage:function (state) {
         if (state.periodType != "quarter")
             return;
@@ -769,14 +816,14 @@ var Revenue2 = React.createClass({
         var result = state.result;
         for (var i in result) {
             var r = result[i];
-            if (r.units && !r.amount) {
+            if (r.units && !r.amount && r.amount !== 0 ) {
                 r.amount = r.units;
                 continue;
             }
             try {
                 for (var j in r) {
                     var d = r[j];
-                    if(d.units && !d.amount)
+                    if(d.units && !d.amount &&  d.amount !== 0 )
                         d.amount = d.units;
                 }
             } catch (e) {
@@ -840,6 +887,7 @@ var Revenue2 = React.createClass({
         return state;
     },
     fillPartialPeriod:function(state) {
+        // if (state.periodType != "quarter") return;
         var du = KUtils.date;
         
         var result = state.result;
@@ -1111,6 +1159,7 @@ var Revenue2 = React.createClass({
         }
         
         console.log("Revenue2 sending queries...", queries);
+        state.lastQueries = queries;
         KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);        
                 
     },
@@ -1120,6 +1169,7 @@ var Revenue2 = React.createClass({
         
         state.result = result;
         this.singleResultsToArray(state);
+        this.fillHoles(state);
         this.updateEmptyChannels(state);
         this.copyUnitsToEmptyAmount(state);
         this.updateSums(state);
