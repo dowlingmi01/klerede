@@ -124,7 +124,8 @@ class TagController extends Controller
         }
 
         $result = Tag::destroy($id);
-        return Response::json(['result' => ($result == 1 ? "ok": "error", 'message'=>($result == 1 ? "": $result)], ($result == 1 ? 200: 400);
+        return Response::json(
+                ['result' => ($result == 1 ? "ok": "error"), 'message'=>($result == 1 ? "": $result)], ($result == 1 ? 200: 400));
      }
  }
 

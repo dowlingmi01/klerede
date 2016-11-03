@@ -61,5 +61,13 @@ class TagTest extends TestCase
                                                     'venue_id'=>1518 
                                                             ]) 
                ->seeJson(['result' => 'error', 'message'=>'duplicate_entry']);
+
+        //Can't create global tags
+        $result = $this->post('api/v1/tags?token='.$token, ['description'=>'tag1',
+                                                    'venue_id'=>0 
+                                                            ]) 
+               ->seeJson(['result' => 'error', 'message'=>'invalid_venue_id']);
 	}
+
+   
 }

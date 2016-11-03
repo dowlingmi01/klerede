@@ -137,9 +137,7 @@ class NoteController extends Controller
 
     public function update(Request  $request, $id)
     {
-    	if (Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
-            return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
-        }
+     
         $rules = array(
         	'header' => 'required|max:255',
             'description' => 'required',
@@ -148,7 +146,7 @@ class NoteController extends Controller
             'all_day' => 'required'
 
         );
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
             return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
@@ -260,5 +258,13 @@ class NoteController extends Controller
 
         $result = Note::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
+    }
+
+    private function getMessagesConstants(){
+        return  [
+            'required' => 'atribute_is_required',
+            'email' => 'invalid_email_format',
+            'numeric' => 'numeric_field'
+        ];
     }
 }
