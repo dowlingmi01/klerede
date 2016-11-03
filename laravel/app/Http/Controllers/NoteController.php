@@ -88,7 +88,7 @@ class NoteController extends Controller
         $note = new Note;
         $note->header       = $request->header;
         $note->description       = $request->description;
-        $note->all_day       = $request->all_day;
+        $note->all_day       = filter_var($request->all_day, FILTER_VALIDATE_BOOLEAN);
         $note->time_start       = $request->time_start;
         $note->time_end       = $request->time_end;
         $note->owner_id       = \Auth::user()->id;  
@@ -176,7 +176,7 @@ class NoteController extends Controller
 
         $note->header       = $request->header;
         $note->description       = $request->description;
-        $note->all_day       = $request->all_day;
+        $note->all_day       = filter_var($request->all_day, FILTER_VALIDATE_BOOLEAN);
         $note->time_start       = $request->time_start;
         $note->time_end       = $request->time_end;
         $note->last_editor_id       = \Auth::user()->id;
