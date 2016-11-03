@@ -125,7 +125,7 @@ var GBar = React.createClass({
         var onMouseDown = isEmpty ? "" : this.props.onMouseDown;
         
         
-        var weatherDiv =<WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} attendance={this.props.attendance} />;
+        var weatherDiv =<WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channelUnits={channelUnits} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} attendance={this.props.attendance} />;
         
         return(
             <div id={this.props.id} onMouseDown={onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%", cursor: isEmpty?'initial':'pointer'}}>
@@ -146,13 +146,13 @@ var GBar = React.createClass({
 var ChannelPopup = React.createClass({
     render:function () {
         var numFormat = KUtils.number.formatAmount;
-        var key = this.props.units;
+        var key = this.props.channelUnits;
         var sign = "$";
-        if (this.props.units == "dollars") {
-            key = "amount";
-        }
+        // if (this.props.units == "dollars") {
+        //     key = "amount";
+        // }
         if (this.props.units == "attendance-tab") {
-            key = "amount";
+            // key = "amount";
             sign = "";
             numFormat = KUtils.number.formatInteger;
         }
@@ -230,7 +230,7 @@ var WeatherPopup = React.createClass({
                 popupChannels.push(<div key={i}></div>);
                 continue;
             }
-            popupChannels.push(<ChannelPopup key={i} name={channels[i].name}  data={channels[i].data} units={this.props.units} />);
+            popupChannels.push(<ChannelPopup key={i} name={channels[i].name}  channelUnits={this.props.channelUnits} data={channels[i].data} units={this.props.units} />);
         }
         
         var formattedDate = KUtils.date.weatherFormat(this.props.date, this.props.periodType);
