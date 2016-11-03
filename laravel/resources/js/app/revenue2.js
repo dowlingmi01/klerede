@@ -90,6 +90,8 @@ var GBar = React.createClass({
         });
     },
     render:function () {
+
+        var channelUnits = this.props.channelUnits;
         var isEmpty = (this.props.total<=0);
         var channels = this.props.channels;
         var sections = [];
@@ -100,7 +102,7 @@ var GBar = React.createClass({
                 sections.push(<div key={i}></div>);
                 continue;
             }
-            var sectionH = (100*channel.data.amount/this.props.partial) + "%";
+            var sectionH = (100*channel.data[channelUnits]/this.props.partial) + "%";
             if (this.props.units == "percap") {
                 sectionH = (100*channel.data.percap/this.props.partialPercap) + "%";
             }
@@ -812,27 +814,30 @@ var Revenue2 = React.createClass({
         }
         return state;
     },
-    copyUnitsToEmptyAmount:function (state) {
-        var result = state.result;
-        for (var i in result) {
-            var r = result[i];
-            if (r.units && !r.amount && r.amount !== 0 ) {
-                r.amount = r.units;
-                continue;
-            }
-            try {
-                for (var j in r) {
-                    var d = r[j];
-                    if(d.units && !d.amount &&  d.amount !== 0 )
-                        d.amount = d.units;
-                }
-            } catch (e) {
-                // console.error(i, e.message, r);
-            }
-        }
-
-        return state;
-    },
+    // copyUnitsToEmptyAmount:function (state) {
+    //     var result = state.result;
+    //     for (var i in result) {
+    //         var r = result[i];
+    //         if (r.units && !r.amount && r.amount !== 0 ) {
+    //             r.amount = r.units;
+    //             console.error(i, r);
+    //             continue;
+    //         }
+    //         try {
+    //             for (var j in r) {
+    //                 var d = r[j];
+    //                 if(d.units && !d.amount &&  d.amount !== 0 ) {
+    //                     console.error(j, d);
+    //                     d.amount = d.units;
+    //                 }
+    //             }
+    //         } catch (e) {
+    //             console.error(i, e.message, r);
+    //         }
+    //     }
+    //
+    //     return state;
+    // },
     updateSums:function (state) {
         var result = state.result;
         
@@ -1171,7 +1176,6 @@ var Revenue2 = React.createClass({
         this.singleResultsToArray(state);
         this.fillHoles(state);
         this.updateEmptyChannels(state);
-        this.copyUnitsToEmptyAmount(state);
         this.updateSums(state);
         this.updateQuarter13WeekAverage(state);
         this.update13WeekDayAverage(state);
@@ -1272,11 +1276,12 @@ var Revenue2 = React.createClass({
         var result = this.state.result;
         var wResult = this.state.wResult;
         var max = this.state.max;
+        var rUnits = this.state.units != "attendance-tab" ? "amount" : "units";
+
         if (result) {
             
             //Build BARS
             try {
-                
                 var total_bars = result.total_bars;
                 var visitors = result.visitors;
                 var partial_sum = result.partial_sum;
@@ -1286,7 +1291,7 @@ var Revenue2 = React.createClass({
                 for (var i in total_bars) {
                     
                     var total_bar = total_bars[i];
-                    var barIsEmpty = (total_bar.amount <= 0);
+                    var barIsEmpty = (total_bar[rUnits] <= 0);
                     //Collect Bar Data by Channel
                     var channels = [];
                     try {
@@ -1322,11 +1327,12 @@ var Revenue2 = React.createClass({
                             attendance = isNotAttendanceTab ? 
                                 "Attendance: "+formatAmount(visitors[i].units, 0) 
                                     : 
-                                "Revenue: $"+formatAmount(result.visitors_revenue[i].amount) ;
+                                "Revenue: $"+formatAmount(result.visitors_revenue[i][rUnits]) ;
                         }
                     } catch (e) {
                         // console.log("Collect Weather Data Error -> "+e, this.state);
                     }
+                    
                     
                     //Create GBars
                     try {
@@ -1334,7 +1340,8 @@ var Revenue2 = React.createClass({
                                 key={i}
                                 id={"gbar-"+i}
                                 units={this.state.units}
-                                total={total_bar.amount}
+                                channelUnits={rUnits}
+                                total={total_bar[rUnits]}
                                 attendance={attendance}
                                 partial={partial_sum[i]}
                                 partialPercap={partial_sum_percap[i]}
@@ -1387,7 +1394,7 @@ var Revenue2 = React.createClass({
                     var visitors = parseInt(result.visitors[dataIndex].units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
 
-                    var revenue = parseInt(result.visitors_revenue[dataIndex].amount);
+                    var revenue = parseInt(result.visitors_revenue[dataIndex][rUnits]);
                 
                     ttTotals = "";
                 };
@@ -1427,9 +1434,9 @@ var Revenue2 = React.createClass({
                             var toData = result[k+toSufix];
 
                             if (dataIndex !== null) {
-                                var to = toData[dataIndex].amount;
+                                var to = toData[dataIndex][rUnits];
                             } else {
-                                to = toData.amount;
+                                to = toData[rUnits];
                             }
                             
                             if(this.state.units == "percap") {
@@ -1444,9 +1451,9 @@ var Revenue2 = React.createClass({
                             var fromData = result[k+fromSufix];
                             
                             if (dataIndex !== null) {
-                                var from = fromData[dataIndex].amount;
+                                var from = fromData[dataIndex][rUnits];
                             } else {
-                                from = fromData.amount;
+                                from = fromData[rUnits];
                             }
                             
                             if(this.state.units == "percap") {
@@ -1476,20 +1483,20 @@ var Revenue2 = React.createClass({
                                     try {
                                         if (dataIndex !== null) {
                                             if(ttFromData[dataIndex]) {
-                                                var ttFrom = ttFromData[dataIndex].amount;
+                                                var ttFrom = ttFromData[dataIndex][rUnits];
                                             } else {
                                                 ttFrom = 0;
                                             }
                                             
                                             if(ttFromData[dataIndex]) {
-                                                var ttTo = ttToData[dataIndex].amount;
+                                                var ttTo = ttToData[dataIndex][rUnits];
                                             } else {
                                                 ttTo = 0;
                                             }
                                             
                                         } else {
-                                            ttFrom = ttFromData.amount;
-                                            ttTo = ttToData.amount;
+                                            ttFrom = ttFromData[rUnits];
+                                            ttTo = ttToData[rUnits];
                                         }
                                         
                                         if(this.state.units == "percap") {
