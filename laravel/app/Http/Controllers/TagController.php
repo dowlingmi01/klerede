@@ -108,8 +108,10 @@ class TagController extends Controller
 
  
         $canDelete = 1;
-        if(trim($request->merge_to) !== ''){
-            $merge_to = (int)$request->merge_to;
+        Input::all();
+        $merge_to = Input::get('name');
+        if(trim($merge_to) !== ''){
+            $merge_to = (int)$merge_to;
             $notes = $tag->notes();
             foreach ($notes as $note) {
                 $note->detach($id);
