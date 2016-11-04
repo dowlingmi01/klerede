@@ -455,9 +455,6 @@
             height:21px;
             padding-left:10px;
             padding-right:10px;
-            #add-note-tip-container{
-                z-index: 1;
-            }
             .notebar {
                 // background-color:@lightgrey;
                 display:inline-block;
@@ -471,6 +468,13 @@
                     padding:3px;
                     display:inline-block;
                     // background-color:gray;
+                }
+                #add-note-tip-container{
+                    z-index: 1;
+                    .menu-content {
+                        left: 50%;
+                        top:0;
+                    }
                 }
             }
         }
@@ -488,7 +492,7 @@
                 cursor:pointer;
                 svg.close-icon {
                     position:absolute;
-                    right:5px;
+                    right:8px;
                     top:8px;
                 }
             }
@@ -505,8 +509,8 @@
                         cursor:pointer;
                         font-size:83.333333333333%;
                         svg.note-icon {
-                            width:14px;
-                            height:14px;
+                            width:17px;
+                            height:17px;
                             vertical-align: text-bottom;
                             margin-right:4px;
                         }
@@ -514,6 +518,16 @@
                 }
                 #note-columns {
                     margin-top:1em;
+                    .note-column:hover {
+                        .edit-delete {
+                            svg.edit-icon {
+                                display:inline-block;
+                            }
+                            .svg-button {
+                                display:inline-block;
+                            }
+                        }
+                    }
                     .note-column {
                         min-height:117px;
                         border-left:1px solid @black;
@@ -525,8 +539,22 @@
                         .note-time {
                              color:@halfdarkmediumgrey;
                         }
+                        .edit-delete {
+                            height:17px;
+                            svg.edit-icon {
+                                width:17px;
+                                height:17px;
+                                margin-right:4px;
+                                display:none;
+                                cursor:pointer;
+                            }
+                            .svg-button {
+                                display:none;
+                                vertical-align:top;
+                            }
+                        }
                         .note-author {
-                             margin-top:1em;
+                             // margin-top:1em;
                              color:@pink;
                              font-weight:600;
                              font-style: italic;
