@@ -8,7 +8,4 @@ class StoreProductCategory extends Model {
 	static function getFor($code) {
 		return StoreProductCategory::firstOrCreate(['code'=>$code]);
 	}
-	public function store_product_category_group() {
-		return $this->belongsTo('App\StoreProductCategoryGroup');
-	}
 }
