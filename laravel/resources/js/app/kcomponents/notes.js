@@ -947,9 +947,11 @@ var Notes = React.createClass({
         // console.debug(noteList, count);
         if (this.props.showFirstNote) {
             for (var k in noteList) {
-                state.activeNote = k;
-                state.noteDetailsClass = "active";
-                break;
+                if(noteList[k].length) {
+                    state.activeNote = k;
+                    state.noteDetailsClass = "active";
+                    break;
+                }
             }
             this.props.onShowFristNoteComplete();
         }
