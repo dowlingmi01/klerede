@@ -828,6 +828,7 @@ var NoteColumn = React.createClass({
 });
 var Notes = React.createClass({
     getInitialState:function() {
+        console.log(this.props.barCount);
         return {
             noteTipIcon:"", 
             noteDetailsClass:"",
@@ -836,7 +837,6 @@ var Notes = React.createClass({
             selectedDate:null,
             noteList:{},
             editNote:null,
-            noteListCount:1,
             authorList:{}
         }
     },
@@ -943,7 +943,7 @@ var Notes = React.createClass({
             count = 14;
         }
         
-        var state = {noteList:noteList, noteListCount:count};
+        var state = {noteList:noteList};
         // console.debug(noteList, count);
         if (this.props.showFirstNote) {
             for (var k in noteList) {
@@ -979,7 +979,7 @@ var Notes = React.createClass({
     render:function () {
         var noteList = this.state.noteList;
         var noteBars = [];
-        var barWidth = (100/this.state.noteListCount)+"%";
+        var barWidth = (100/this.props.barCount)+"%";
         for (var k in noteList) {
             var dayNotes = noteList[k];
             var noteBar = <NoteBar

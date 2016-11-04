@@ -1667,6 +1667,7 @@ var Revenue2 = React.createClass({
                                         showFirstNote = {this.state.showFirstNote}
                                         onShowFristNoteComplete = {this.onShowFristNoteComplete}
                                         isQuarter = {this.state.periodType == "quarter" }
+                                        barCount={result.total_bars.length}
                                     />
                                 </div>
                             :
