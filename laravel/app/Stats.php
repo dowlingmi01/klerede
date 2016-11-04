@@ -170,7 +170,7 @@ class Stats {
 		DB::statement('call sp_compute_stats_members(?, ?, ?)', [$venue_id, $dateFrom, $dateTo]);
 	}
 	static function lastDate($venue_id) {
-		$last_date = DB::Table('stat_sales')->where('venue_id', $venue_id)->groupBy('date')
+		$last_date = DB::table('stat_sales')->where('venue_id', $venue_id)->groupBy('date')
 			->select(['date', DB::raw('count(distinct channel_id) as num_channels')])
 			->orderBy('num_channels', 'desc')->orderBy('date', 'desc')->first()->date;
 		return $last_date;
