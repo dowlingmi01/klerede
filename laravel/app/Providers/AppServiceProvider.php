@@ -1,5 +1,6 @@
 <?php namespace App\Providers;
 
+use Validator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -11,7 +12,17 @@ class AppServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		//
+		Validator::extend('before_equal', function($attribute, $value, $parameters, $validator) {
+   			  return strtotime($validator->getData()[$parameters[0]]) >= strtotime($value);
+		});
+	 
+		Validator::extend('date_time_conditional', function($attribute, $value, $parameters, $validator) {
+			  $whitout_time = filter_var($validator->getData()[$parameters[0]], FILTER_VALIDATE_BOOLEAN);
+   			  $format = $whitout_time ? "Y-m-d" : "Y-m-d H:i:s"   ;
+   			  $d = \DateTime::createFromFormat($format, $value);
+    		  return $d && $d->format($format) == $value;
+   			   
+		});
 	}
 
 	/**
@@ -25,6 +36,7 @@ class AppServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+	 	
 		$this->app->bind(
 			'Illuminate\Contracts\Auth\Registrar',
 			'App\Services\Registrar'
