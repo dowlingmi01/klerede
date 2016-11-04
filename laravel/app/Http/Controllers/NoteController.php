@@ -252,7 +252,7 @@ class NoteController extends Controller
         if ($note->owner_id != \Auth::user()->id && Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
             return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
         }
-        if (Gate::denies('validate-venue', $tag->venue_id)) {
+        if (Gate::denies('validate-venue', $note->venue_id)) {
 	        return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
 	    }
     	
