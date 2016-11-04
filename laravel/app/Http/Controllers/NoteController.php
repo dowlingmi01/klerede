@@ -17,6 +17,7 @@ use \Hash;
 use \Validator;
 use \Input;
 use \DB;
+use App\Helpers\PermissionHelper;
 
 class NoteController extends Controller
 {
@@ -57,6 +58,7 @@ class NoteController extends Controller
     				->where('time_start', '>=', $request->start)
     				->where('time_end', '<', $request->end)
     				->whereIn('venue_id', $venues)
+					->orderBy('time_start')
     				->get();
     }
 
@@ -65,12 +67,13 @@ class NoteController extends Controller
         $rules = array(
         	'header' => 'required|max:255',
             'description' => 'required',
-            'time_start' => 'required',
-            'time_end' => 'required',
-            'all_day' => 'required'
+            'time_start' => 'required|before_equal:time_end|date_time_conditional:all_day',
+            'time_end' => 'required|date_time_conditional:all_day',
+            'all_day' => 'required',
+            'venue_id' => 'required'
 
         );
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
             return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
@@ -78,20 +81,16 @@ class NoteController extends Controller
         //Validacion faltantes\
         //si all_day es true, no debe venir hora, y sino debe venir
         //start < end
-
-
-
-        if($request->venue_id != 0){
-	        if(Gate::denies('validate-venue', $request->venue_id)){
-	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
-	        }
-        }
-        //TODO: Check permission to creat a global note
+ 
+        
+	    if(Gate::denies('validate-venue', $request->venue_id)){
+	        return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+	    }
 
         $note = new Note;
         $note->header       = $request->header;
         $note->description       = $request->description;
-        $note->all_day       = $request->all_day;
+        $note->all_day       = filter_var($request->all_day, FILTER_VALIDATE_BOOLEAN);
         $note->time_start       = $request->time_start;
         $note->time_end       = $request->time_end;
         $note->owner_id       = \Auth::user()->id;  
@@ -140,15 +139,16 @@ class NoteController extends Controller
 
     public function update(Request  $request, $id)
     {
+     
         $rules = array(
         	'header' => 'required|max:255',
             'description' => 'required',
-            'time_start' => 'required',
-            'time_end' => 'required',
+            'time_start' => 'required|before_equal:time_end|date_time_conditional:all_day',
+            'time_end' => 'required|date_time_conditional:all_day',
             'all_day' => 'required'
 
         );
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
             return  Response::json(['result'=>'error', 'messages'=>$messages], 400);   ;
@@ -171,9 +171,14 @@ class NoteController extends Controller
         if(!$note){
             return Response::json(['result'=> 'error', 'message'=>'note_not_found'],404);
         }
+        if ($note->owner_id != \Auth::user()->id && Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
+            return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
+        }
+
+
         $note->header       = $request->header;
         $note->description       = $request->description;
-        $note->all_day       = $request->all_day;
+        $note->all_day       = filter_var($request->all_day, FILTER_VALIDATE_BOOLEAN);
         $note->time_start       = $request->time_start;
         $note->time_end       = $request->time_end;
         $note->last_editor_id       = \Auth::user()->id;
@@ -240,22 +245,30 @@ class NoteController extends Controller
 
     public function destroy($id)
     {
-         
         $note = Note::find($id);
         if(!$note){
             return Response::json(['result'=> 'error', 'message'=>'note_not_found'], 404);
         }
-        if($tag->venue_id != 0){
-	        if (Gate::denies('validate-venue', $tag->venue_id)) {
-	            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
-	        }
-    	} else {
-    		//TOOD: Who can delete global notes?
-    	}
-        
+        if ($note->owner_id != \Auth::user()->id && Gate::denies('has-permission', PermissionHelper::NOTE_MANAGE)) {
+            return  Response::json(['result'=>'error', 'messages'=>'insufficient_privileges'], 403); 
+        }
+        if (Gate::denies('validate-venue', $note->venue_id)) {
+	        return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
+	    }
+    	
         //TODO: check permission for delete somebody elses note
 
         $result = Note::destroy($id);
         return ['result' => ($result == 1 ? "ok": "error:".$result)];
+    }
+
+    private function getMessagesConstants(){
+        return  [
+            'required' => 'atribute_is_required',
+            'email' => 'invalid_email_format',
+            'numeric' => 'numeric_field',
+            'before_equal' => 'befor_or_equal',
+            'date_time_conditional' => 'all_day_without_time'
+        ];
     }
 }

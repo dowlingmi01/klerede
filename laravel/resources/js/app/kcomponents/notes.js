@@ -11,7 +11,8 @@ require('bootstrap');
 var KAPI={
     notes:require("../kapi/notes.js"),
     users:require("../kapi/users.js"),
-    tags:require("../kapi/tags.js")
+    tags:require("../kapi/tags.js"),
+    auth:require("../kapi/auth.js")
 };
 
 var DatePicker = require('react-datepicker');
@@ -30,6 +31,7 @@ var CalendarIcon = require('../svg-icons').CalendarIcon;
 var Caret = require('../svg-icons').Caret;
 var CheckMark = require('../svg-icons').CheckMark;
 var CloseIcon = require('../svg-icons').CloseIcon;
+var EditIcon = require('../svg-icons').EditIcon;
 var NoteIcon = require('../svg-icons').NoteIcon;
 var SlimPlusSign = require('../svg-icons').SlimPlusSign;
 var SlimMinusSign = require('../svg-icons').SlimMinusSign;
@@ -74,7 +76,7 @@ var TextArea = React.createClass({
     },
     render:function () {
         return(
-            <textarea ref="self" id={this.props.id} className={this.props.className} placeholder={this.props.placeholder} defaultValue={this.props.defaultValue} onChange={this.onChange} />
+            <textarea ref="self" id={this.props.id} className={this.props.className} placeholder={this.props.placeholder} value={this.props.value} defaultValue={this.props.defaultValue} onChange={this.onChange} />
         );
     }
 });
@@ -115,25 +117,51 @@ var SelectOption = React.createClass({
 
 var AddNoteModal = React.createClass({
     getInitialState:function () {
-        return(
-            {
-                channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
-                channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
-                categoryList:[],
-                selectedCategories:[],
-                notify:"none",
-                allDay:true,
-				dateStart:moment(this.props.selectedDate || this.props.date),
-                dateEnd:moment(this.props.selectedDate || this.props.date),
-                timeStart:"9:00am",
-                timeEnd:"10:00am",
-                addCategoryActive:false,
-                newCategory:"",
-                changed:false,
-                editCategory:false,
-                header:"",
-                description:""
+        var state = {
+            channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
+            channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
+            categoryList:[],
+            selectedCategories:[],
+            notify:"none",
+            allDay:true,
+			dateStart:moment(this.props.selectedDate || this.props.date),
+            dateEnd:moment(this.props.selectedDate || this.props.date),
+            timeStart:"9:00am",
+            timeEnd:"10:00am",
+            addCategoryActive:false,
+            newCategory:"",
+            changed:false,
+            editCategory:false,
+            header:"",
+            description:"",
+            id:null
+        };
+        
+        var note = this.props.editNote;
+        if (note) {
+            state.channelActive = {gate:"", cafe: "", store: "", membership: ""};
+            for (var i in note.channels) {
+                var ch = note.channels[i].code;
+                state.channelActive[ch] = "active";
             }
+            for (var j in note.tags) {
+                var tag = note.tags[j];
+                state.selectedCategories.push({value:tag.id, label:tag.description, global:(tag.venue_id == 0) ? true : false})
+            }
+            state.allDay = note.all_day ? true : false;
+            state.dateStart = moment(note.time_start);
+            state.dateEnd = moment(note.time_end);
+            if(!state.allDay) {
+                state.timeStart = state.dateStart.format("h:mma");
+                state.timeEnd = state.dateEnd.format("h:mma");
+            }
+            state.header = note.header;
+            state.description = note.description;
+            state.id = note.id;
+        }
+        
+        return(
+            state
         ); 
     },
     setChanged:function() {
@@ -384,6 +412,17 @@ var AddNoteModal = React.createClass({
     },
     onSaveNote:function (e) {
         //console.log(save note)
+        
+        if(!this.state.header.length) {
+            alert("Please add a header.");
+            return;
+        }
+        if(!this.state.description.length) {
+            alert("Please add a description.");
+            return;
+        }
+        
+        
         var channels = [],
             i=0;
         for (var k in this.state.channelActive) {
@@ -429,20 +468,37 @@ var AddNoteModal = React.createClass({
         //     var dateStart = this.state.dateStart.format('YYYY-MM-DD HH:mm:ss');
         //     var dateEnd = this.state.dateEnd.format('YYYY-MM-DD HH:mm:ss');
         // }
-        
-        KAPI.notes.post(
-            wnt.venueID,
-            this.state.header,
-            this.state.description,
-            dateStart.format('YYYY-MM-DD HH:mm:ss'),
-            dateEnd.format('YYYY-MM-DD HH:mm:ss'),
-            channels,
-            tags,
-            this.onSaveNoteSucces,
-            this.onSaveNoteError,
-            this.state.allDay,
-            newTags
-        );
+        if (this.state.id) {
+            // alert("Edit not implemented yet.");
+            // return;
+            KAPI.notes.put(
+                this.state.id,
+                this.state.header,
+                this.state.description,
+                dateStart.format('YYYY-MM-DD HH:mm:ss'),
+                dateEnd.format('YYYY-MM-DD HH:mm:ss'),
+                channels,
+                tags,
+                this.onSaveNoteSucces,
+                this.onSaveNoteError,
+                this.state.allDay,
+                newTags
+            );
+        } else {
+            KAPI.notes.post(
+                wnt.venueID,
+                this.state.header,
+                this.state.description,
+                dateStart.format('YYYY-MM-DD HH:mm:ss'),
+                dateEnd.format('YYYY-MM-DD HH:mm:ss'),
+                channels,
+                tags,
+                this.onSaveNoteSucces,
+                this.onSaveNoteError,
+                this.state.allDay,
+                newTags
+            );
+        }
     },
     onSaveNoteSucces(response) {
         if (response.result=="ok") {
@@ -456,7 +512,7 @@ var AddNoteModal = React.createClass({
     },
     onSaveNoteError(response) {
         console.log(response);
-        alert("An error ocurred saving note:"+response.message);
+        alert("An error ocurred saving note.");
     },
     render:function () {
         var channels = [];
@@ -501,10 +557,10 @@ var AddNoteModal = React.createClass({
                   <div className="modal-body modal-section">
                     <form ref="addNoteForm" className="" onFocus={null}>
                         <div className="form-group">
-                            <input type="text" id="header" className="form-control" placeholder="Add Note Header" defaultValue={null} onChange={this.onHeaderChange} />
+                            <input autoComplete="off" type="text" id="header" className="form-control" placeholder="Add Note Header" value={this.state.header} onChange={this.onHeaderChange} />
                         </div>
                         <div className="form-group">
-                            <TextArea minHeight={34} id="description" className="form-control" placeholder="Description" defaultValue={null} onChange={this.onDescriptionChange} />
+                            <TextArea autoComplete="off" minHeight={34} id="description" className="form-control" placeholder="Description" value={this.state.description} onChange={this.onDescriptionChange} />
                         </div>
                         <div className="form-group" id="date-time">
                             <span>
@@ -582,30 +638,34 @@ var AddNoteModal = React.createClass({
                             </div>
                             <div id="category-list">{categories}</div>
                         </div>
-                        <div className="form-group" id="notify">
-                            Notify Users:
-                            &nbsp;
-                            <span>
-                                <SVGButton 
-                                    onClick={this.onNotifyClick.bind(this, "email")} 
-                                    className={"circle "+ (this.state.notify!="email" ? "inactive" : "")} 
-                                    id="email-notify" 
-                                    icon={<CheckMark className="" />} 
-                                />
-                                &nbsp;Via Email
-                            </span>
-                            &nbsp;
-                            &nbsp;
-                            <span>
-                                <SVGButton 
-                                    onClick={this.onNotifyClick.bind(this, "none")} 
-                                    className={"circle "+ (this.state.notify!="none" ? "inactive" : "")} 
-                                    id="none-notify" 
-                                    icon={<CheckMark className="" />} 
-                                />
-                                &nbsp;None
-                            </span>
-                        </div>
+                        { (false) ? 
+                            <div className="form-group" id="notify">
+                                Notify Users:
+                                &nbsp;
+                                <span>
+                                    <SVGButton 
+                                        onClick={this.onNotifyClick.bind(this, "email")} 
+                                        className={"circle "+ (this.state.notify!="email" ? "inactive" : "")} 
+                                        id="email-notify" 
+                                        icon={<CheckMark className="" />} 
+                                    />
+                                    &nbsp;Via Email
+                                </span>
+                                &nbsp;
+                                &nbsp;
+                                <span>
+                                    <SVGButton 
+                                        onClick={this.onNotifyClick.bind(this, "none")} 
+                                        className={"circle "+ (this.state.notify!="none" ? "inactive" : "")} 
+                                        id="none-notify" 
+                                        icon={<CheckMark className="" />} 
+                                    />
+                                    &nbsp;None
+                                </span>
+                            </div>
+                        :
+                            <div></div>   
+                        }
                     </form>
                     
                   </div>
@@ -656,6 +716,17 @@ var AddNoteTip = React.createClass({
 });
 
 var NoteBar = React.createClass({
+    getInitialState:function () {
+        return {fadein:"out"}
+    },
+    onMouseEnter:function (e) {
+        this.setState({fadein:"in"});
+        var selectedDate = this.props.id;
+        this.props.onSelectDate(selectedDate);
+    },
+    onMouseLeave:function (e) {
+        this.setState({fadein:"out"});
+    },
     render:function () {
 
         var showNotes = this.props.showNotes;
@@ -685,27 +756,70 @@ var NoteBar = React.createClass({
                 style={this.props.width ? {width:this.props.width} : {}} 
                 className={"notebar "+this.props.className} 
                 onClick={this.props.addNote}
-				onMouseEnter={this.props.onMouseEnter} 
+				onMouseEnter={this.onMouseEnter} 
+				onMouseLeave={this.onMouseLeave} 
             >
                 <NoteCircle 
                     id={this.props.id} 
                     circleClassName={circleClassName}
                     onClick = {showNotes}
                 /> 
+                <div id="add-note-tip-container">
+                    <AddNoteTip onAddNote={this.props.addNote} ref="addNoteTip" fadein={this.state.fadein}/>
+                </div>
             </div>
         )
     } 
 });
+
 var NoteColumn = React.createClass({
+    getInitialState:function () {
+        return {
+            permissions: KAPI.auth.getUserPermissions(),
+            userID: KAPI.auth.getUser().id
+        }
+    },
+    onNoteEdit:function (e) {
+        this.props.onNoteEdit(this.props.note);
+    },
+    onNoteDelete:function (e) {
+        if (!confirm("Delete this note?")) {
+            return;
+        }
+        var id = this.props.note.id;
+        KAPI.notes.delete(id, wnt.venueID, this.onNoteDeleted);
+    },
+    onNoteDeleted:function (response) {
+        alert("The note has been deleted.");
+        this.props.onNoteDeleted();
+    },
     render:function() {
         var note = this.props.note;
         var formatedTime = note.all_day ? "All day" : moment(note.time_start).format("ha")+"-"+moment(note.time_end).format("ha")
         var description = limitString(note.description, 95);
         
+        
+        if (note.owner_id == this.state.userID) {
+            var editable = true;
+        }
+        
         return(
             <div className="note-column" >
                 <div className="note-header">{note.header}</div>
                 <div className="note-time">{formatedTime}</div>
+                <div className="edit-delete">
+                {(editable) ?
+                <span>
+                    <EditIcon onClick={this.onNoteEdit} className="edit-icon"  /> 
+                    <SVGButton 
+                        className={"circle delete vertical-middle"} 
+                        onClick={this.onNoteDelete} icon={<SlimMinusSign />} 
+                    />
+                </span>
+                : 
+                    <span></span>
+                }
+                </div>
                 <div className="note-author">{note.author.split(" ").join(".")}</div>
                 <div className="note-description">{description}</div>
             </div>
@@ -716,13 +830,12 @@ var Notes = React.createClass({
     getInitialState:function() {
         return {
             noteTipIcon:"", 
-            noteTip:"", 
-            noteTipLeft:0,
             noteDetailsClass:"",
             activeNote:null,
             showAddNoteModal:false,
             selectedDate:null,
             noteList:{},
+            editNote:null,
             noteListCount:1,
             authorList:{}
         }
@@ -730,52 +843,17 @@ var Notes = React.createClass({
     closeAddNoteModal(e) {
         this.setState({showAddNoteModal:false});
     },
-	onNoteBarMouseEnter(e) {
-        var selectedDate = $(e.currentTarget).find(".note-circle-container").prop("id");
+	onSelectDate(selectedDate) {
 		this.setState({selectedDate:selectedDate});
-		// console.log(selectedDate);
+        // console.log(selectedDate);
 	},
+    onNoteEdit:function(note) {
+        this.setState({showAddNoteModal:true, editNote:note});
+    },
     addNote:function(e) {
         // console.log(e.target, e.currentTarget);
         e.preventDefault();
-        this.setState({showAddNoteModal:true});
-    },
-    showNoteTip:function (e) {
-        if (this.state.noteTip == "in") 
-            return;
-        
-        if ($(e.target).hasClass("note-circle-container"))
-            return;
-        
-		// console.log(
-		// 	$(e.target).prop("id") != "notebars" ,
-		// 	!$(e.relatedTarget).hasClass("notebar"),
-		// 	$(e.relatedTarget).prop("id") != "revenue2"
-		// );
-		// console.log(e.target, e.relatedTarget);
-
-        if ( 
-			$(e.target).prop("id") != "notebars" 
-			&& !$(e.relatedTarget).hasClass("notebar") 
-			&& $(e.relatedTarget).prop("id") != "revenue2" 
-		) {
-            //prevents showing tip when over other inner elements
-            return;
-        }
-
-        e.stopPropagation();
-        
-        var addNoteTip = $(getDOMNode(this.refs.addNoteTip));
-        this.setState({noteTip:"in", noteTipLeft:e.pageX - addNoteTip.offset().left});
-    },
-    hideNoteTip:function (e) {
-        
-        if (this.state.noteTip == "out") 
-            return;
-        
-        e.stopPropagation();
-
-        this.setState({noteTip:"out"});
+        this.setState({showAddNoteModal:true, editNote:false});
     },
     showNoteTipIcon:function (e) {
 		
@@ -789,7 +867,13 @@ var Notes = React.createClass({
     showNotes:function (event, n) {
         event.stopPropagation();
         
+        
         var activeNote = $(event.currentTarget).attr('id');
+
+        if (this.state.activeNote == activeNote) {
+            this.hideNotes(event);
+            return;
+        }
         
         if(this.props.isQuarter) {
             this.props.onShowNotes(moment(activeNote).format("MM/DD/YYYY"));
@@ -859,8 +943,26 @@ var Notes = React.createClass({
             count = 14;
         }
         
+        var state = {noteList:noteList, noteListCount:count};
         // console.debug(noteList, count);
-        this.setState({noteList:noteList, noteListCount:count});
+        if (this.props.showFirstNote) {
+            for (var k in noteList) {
+                state.activeNote = k;
+                state.noteDetailsClass = "active";
+                break;
+            }
+            this.props.onShowFristNoteComplete();
+        }
+        
+        if (this.state.activeNote) {
+            var noteColumns = [];
+            var currentNotes = noteList[this.state.activeNote];
+            if(currentNotes.length == 0) {
+                this.hideNotes();
+            }
+        }
+        
+        this.setState(state);
     },
     componentWillReceiveProps:function (nextProps) {
         if (this.props.startDate == nextProps.startDate && this.props.endDate == nextProps.endDate ) {
@@ -885,8 +987,9 @@ var Notes = React.createClass({
                 width={barWidth}
                 className={this.state.activeNote==k ? "active":""} 
                 showNotes={(event)=>this.showNotes(event, k)}
+                addNote={this.addNote}
                 noteCount = {dayNotes.length}
-				onMouseEnter = {this.onNoteBarMouseEnter}
+				onSelectDate = {this.onSelectDate}
             />
             noteBars.push(noteBar);
         }
@@ -900,7 +1003,7 @@ var Notes = React.createClass({
                 
                 noteColumns.push(
                     <div  key={i} className="col-xs-3">
-                        <NoteColumn note={currentNotes[i]}  />
+                        <NoteColumn note={currentNotes[i]} onNoteEdit={this.onNoteEdit} onNoteDeleted={this.updateNoteList.bind(this, this.props)} />
                     </div>
                 )
             }
@@ -914,10 +1017,7 @@ var Notes = React.createClass({
                 <div id="calendar-button-container">
                     <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
                 </div>
-                <div id="notebars" onMouseOver={this.showNoteTip} onMouseLeave={this.hideNoteTip}>
-                    <div id="add-note-tip-container">
-                        <AddNoteTip onAddNote={this.addNote} ref="addNoteTip" left={this.state.noteTipLeft+"px"} fadein={this.state.noteTip}/>
-                    </div>
+                <div id="notebars">
                     {noteBars}
                 </div>
                 <div id="note-details" className={this.state.noteDetailsClass}>
@@ -936,7 +1036,7 @@ var Notes = React.createClass({
                     </div>
                 </div>
                 
-                {this.state.showAddNoteModal ? <AddNoteModal selectedDate={this.state.selectedDate} date={this.props.startDate} onSave={this.updateNoteList.bind(this, this.props)} onClose={this.closeAddNoteModal}/> : <div></div>}
+                {this.state.showAddNoteModal ? <AddNoteModal editNote={this.state.editNote} selectedDate={this.state.selectedDate} date={this.props.startDate} onSave={this.updateNoteList.bind(this, this.props)} onClose={this.closeAddNoteModal}/> : <div></div>}
                 
             </div>
         );

@@ -20,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies($gate);
 
         $gate->define('validate-venue', function ($user, $venue_id) {
+            if($venue_id == 0) return false;
             return $user->venue_id == $venue_id;
         });
 
