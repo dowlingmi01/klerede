@@ -58,6 +58,7 @@ class NoteController extends Controller
     				->where('time_start', '>=', $request->start)
     				->where('time_end', '<', $request->end)
     				->whereIn('venue_id', $venues)
+					->orderBy('time_start')
     				->get();
     }
 
