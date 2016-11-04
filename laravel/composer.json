@@ -10,6 +10,7 @@
 		"tymon/jwt-auth": "0.5.*"
 	},
 	"require-dev": {
+		"barryvdh/laravel-ide-helper": "v2.2.1",
 		"phpunit/phpunit": "~4.0",
 		"phpspec/phpspec": "~2.1",
 		"symfony/dom-crawler": "~3.0",

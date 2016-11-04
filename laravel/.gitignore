@@ -5,3 +5,5 @@ temp*.*
 public/css/*
 public/js/*
 resources/.com.apple.timemachine.supported
+_ide_helper*.php
+.phpstorm.meta.php
