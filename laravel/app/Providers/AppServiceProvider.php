@@ -17,11 +17,12 @@ class AppServiceProvider extends ServiceProvider {
 		});
 	 
 		Validator::extend('date_time_conditional', function($attribute, $value, $parameters, $validator) {
-			  $whitout_time = filter_var($validator->getData()[$parameters[0]], FILTER_VALIDATE_BOOLEAN);
-   			  $format = $whitout_time ? "Y-m-d" : "Y-m-d H:i:s"   ;
+			  $without_time = filter_var($validator->getData()[$parameters[0]], FILTER_VALIDATE_BOOLEAN);
+   			  $format = "Y-m-d H:i:s"; //$whitout_time ? "Y-m-d  00:00:00" : "Y-m-d H:i:s"   ;
    			  $d = \DateTime::createFromFormat($format, $value);
-    		  return $d && $d->format($format) == $value;
-   			   
+    		  $valid_format =  $d && $d->format($format) == $value;
+    		  $zero_time = substr($value, -8)  === '00:00:00';
+   			  return $valid_format && !($without_time xor $zero_time);
 		});
 	}
 
