@@ -67,9 +67,9 @@ class NoteController extends Controller
         $rules = array(
         	'header' => 'required|max:255',
             'description' => 'required',
-            'time_start' => 'required|before_equal:time_end|date_time_conditional:all_day',
-            'time_end' => 'required|date_time_conditional:all_day',
-            'all_day' => 'required',
+            'time_start' => 'required|before_equal:time_end|long_date_format', //|date_time_conditional:all_day',
+            'time_end' => 'required|long_date_format', //|date_time_conditional:all_day',
+            'all_day' => 'required|conditional_time:time_start,time_end',
             'venue_id' => 'required'
 
         );
@@ -143,9 +143,9 @@ class NoteController extends Controller
         $rules = array(
         	'header' => 'required|max:255',
             'description' => 'required',
-            'time_start' => 'required|before_equal:time_end|date_time_conditional:all_day',
-            'time_end' => 'required|date_time_conditional:all_day',
-            'all_day' => 'required'
+            'time_start' => 'required|before_equal:time_end', //|date_time_conditional:all_day',
+            'time_end' => 'required', //|date_time_conditional:all_day',
+            'all_day' => 'required|conditional_time:time_start,time_end'
 
         );
         $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
@@ -268,7 +268,8 @@ class NoteController extends Controller
             'email' => 'invalid_email_format',
             'numeric' => 'numeric_field',
             'before_equal' => 'befor_or_equal',
-            'date_time_conditional' => 'all_day_without_time'
+            'date_time_conditional' => 'all_day_without_time',
+            'long_date_format' => 'invalid_date_format'
         ];
     }
 }
