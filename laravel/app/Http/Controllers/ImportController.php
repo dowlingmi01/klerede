@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\ImportQuery;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Response;
+use Artisan;
+use Request;
+use Response;
 
 class ImportController extends Controller {
 	public function getQuery() {
@@ -32,6 +33,8 @@ class ImportController extends Controller {
 		$venue_id = Request::input('venue_id');
 		$file = Request::file('file');
 		$file->move(ImportQuery::getDir() . '/logs/' . $venue_id, Carbon::now()->format('Y-m-d\THis') . '.log');
+		Artisan::queue('kl:stats_compute');
+		Artisan::queue('kl:stats_members_compute', ['venue_id'=>$venue_id]);
 		return Response::json(['status' => 0]);
 	}
 }
