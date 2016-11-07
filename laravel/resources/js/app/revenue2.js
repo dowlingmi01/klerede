@@ -1596,7 +1596,7 @@ var Revenue2 = React.createClass({
                                         selected={this.state.periodType}
                                         onChange={this.onPeriodTypeChange}
                                     />
-                                    <DatePickerJQuery defaultDate={this.state.periodFrom} onSelect={this.onDateSelect} id="datepicker-2"/>
+                                    <DatePickerJQuery defaultDate={this.state.date.currentDate} onSelect={this.onDateSelect} id="datepicker-2"/>
                                 </div>
                                 <div className="col-xs-4 col-lg-6 text-right" id="members">
                                     {membersDropDown}
