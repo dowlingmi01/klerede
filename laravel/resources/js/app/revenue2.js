@@ -615,12 +615,13 @@ var Revenue2 = React.createClass({
         this.setState({periodType:event.target.value, dirty:1});
     },
     onDateSelect:function (event) {
-        if (this.state.periodFrom === event.target.value) {
+        if (this.state.date.currentDate === event.target.value) {
             return;
         };
         this.dateUpdate(event.target.value);
     },
     dateUpdate:function(newDate) {
+        console.log(newDate);
         var date = this.buildDateDetails(newDate);
         var formatedDate = wnt.formatDate(new Date(newDate));
         analytics.addEvent('Earned Revenue', 'Date Changed', formatedDate);
