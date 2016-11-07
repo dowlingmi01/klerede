@@ -258,18 +258,28 @@ var WeatherPopup = React.createClass({
 });
 
 var DatePickerJQuery = React.createClass({
+    updateWeek:function (e) {
+        var calendar = $(".dp-calendar");
+        var trList = calendar.find("tr");
+        $.each(trList, function(i, tr) {
+            if($(tr).find(".selected").length) {
+                $(tr).find("td").addClass("selected");
+            };
+        });
+    },
     componentDidMount: function() {
         Date.firstDayOfWeek = KUtils.date.firstDayOfWeek;
         Date.format = 'mm/dd/yyyy';
         // var dp = $('#'+this.props.id).datePicker({
         var dp = $('#'+this.props.id).datePicker({
-            selectWeek: true,
+            selectWeek: false,
             closeOnSelect: true,
             startDate: '01/01/1996',
             endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear,
             defaultDate:this.props.defaultDate
         });
         $("input#datepicker-2").bind("change", this.props.onSelect);
+        $("form.datepicker-form a").on("click", this.updateWeek);
     },
     render:function () {
         return(
