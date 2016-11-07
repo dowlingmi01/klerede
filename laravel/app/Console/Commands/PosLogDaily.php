@@ -2,9 +2,9 @@
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
+use \Artisan;
+use \File;
+use \Storage;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Process\Process;
@@ -44,7 +44,7 @@ class PosLogDaily extends Command {
 	{
 		$storage = Storage::disk('poslog');
 		$files = collect($storage->files())->filter(function($file){return File::extension($file) == 'xml';}) ;
-		if($files) {
+		if($files->count()) {
 			$dirname = Carbon::now()->format('Ymd');
 			$storage->makeDirectory($dirname);
 			foreach($files as $file) {
