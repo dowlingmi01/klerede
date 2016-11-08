@@ -30,6 +30,7 @@ var Select = require('react-select');
 var CalendarIcon = require('../svg-icons').CalendarIcon;
 var Caret = require('../svg-icons').Caret;
 var CheckMark = require('../svg-icons').CheckMark;
+var Circle = require('../svg-icons').Circle;
 var CloseIcon = require('../svg-icons').CloseIcon;
 var EditIcon = require('../svg-icons').EditIcon;
 var NoteIcon = require('../svg-icons').NoteIcon;
@@ -209,6 +210,10 @@ var AddNoteModal = React.createClass({
         this.setState({header:e.target.value});
     },
     onDescriptionChange:function (e) {
+        if(e.target.value.length>120) {
+            alert("120 character limit reached.")
+            return;
+        };
         this.setChanged();
         this.setState({description:e.target.value});
     },
@@ -297,6 +302,10 @@ var AddNoteModal = React.createClass({
         this.setState({selectedCategories:selectedCategories});
     },
     onAddCategoryChange(e){
+        if(e.target.value.length>25) {
+            alert("25 character limit reached.")
+            return;
+        };
         this.setState({newCategory:e.target.value});
     },
     onAddCategoryClick(e){
@@ -551,18 +560,26 @@ var AddNoteModal = React.createClass({
                     <button type="button" className="close" data-dismiss="modal" aria-label="Close"><CloseIcon className="close-icon"/></button>
                     <h3 className="modal-title">{currentDate}</h3>
                     <div id="calendar-button-container">
+                    {false ? 
                         <div id="calendar-button"> <CalendarIcon /> <span id="text">Calendar</span></div>
+                    :
+                        <div></div>
+                    }
                     </div>
                   </div>
                   <div className="modal-body modal-section">
+                    <div className="required-text"><Circle className="required-circle" /> Indicates Required Field</div>
                     <form ref="addNoteForm" className="" onFocus={null}>
                         <div className="form-group">
                             <input autoComplete="off" type="text" id="header" className="form-control" placeholder="Add Note Header" value={this.state.header} onChange={this.onHeaderChange} />
+                            <Circle className="required-circle note-header" />
                         </div>
                         <div className="form-group">
-                            <TextArea autoComplete="off" minHeight={34} id="description" className="form-control" placeholder="Description" value={this.state.description} onChange={this.onDescriptionChange} />
+                            <TextArea autoComplete="off" minHeight={34} id="description" className="form-control" placeholder="Description - 120 character limit" value={this.state.description} onChange={this.onDescriptionChange} />
+                            <Circle className="required-circle" />
                         </div>
                         <div className="form-group" id="date-time">
+                            <Circle className="required-circle" />
                             <span>
                                 All day: <SVGButton className={"rounded-box " + (this.state.allDay ? "":"inactive")} onClick={this.onAllDayClick} id="all-day" icon={<CheckMark className="" />} />
                             </span>
@@ -592,8 +609,20 @@ var AddNoteModal = React.createClass({
                         <div className="form-group">
                             <h6>Check all that apply:</h6>
                             <div>{channels}</div>
+                            <Circle className="required-circle" />
                         </div>
                         <div className="form-group" id="categories">
+                            <div className="choose-text">
+                                <Circle className="required-circle" />
+                                <div>
+                                    Choose a common category or create your own.
+                                    <br />
+                                    <small>
+                                        Categories are used to identify and track the topic of a note and facilitate a search for it.
+                                    </small>
+                                </div>
+                            </div>
+                            
                             <div className="inline-block">
                                 <div id="select-wrapper" className="inline-block vertical-middle">
                                     <Select
@@ -620,6 +649,7 @@ var AddNoteModal = React.createClass({
                                 />
                             </div>
                             <div className="inline-block float-right">
+                                <div className={"character-limit" + (this.state.addCategoryActive ? " active" : "")}><small>25 character limit</small></div>
                                 <SVGButton className={"circle category-svg-button vertical-middle"+(this.state.newCategory.length ? " active" : "")} onClick={this.onAddCategoryClick} icon={<SlimPlusSign />} />
                                 &nbsp;
                                 <input 
@@ -671,8 +701,8 @@ var AddNoteModal = React.createClass({
                   </div>
                   <div className="modal-footer modal-section">
                     <div className="buttons">
-                        <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" onClick={this.onSaveNote} className="btn btn-primary">Save Note</button>
+                        <button type="button" id="button-save" onClick={this.onSaveNote} className="btn btn-primary">Save Note</button>
+                        <button type="button"  id="button-cancel" className="btn btn-default" data-dismiss="modal">Cancel</button>
                     </div>
                   </div>
                 </div>
@@ -696,7 +726,7 @@ var NoteCircle = React.createClass({
 		}
         return(
             <div style={style} id={this.props.id} className="note-circle-container" onClick={this.props.onClick}>
-                <div className={"note-circle "+this.props.circleClassName}></div>
+                <div className={"note-circle "+this.props.circleClassName}><Circle /></div>
             </div>
         );
     }
@@ -799,7 +829,7 @@ var NoteColumn = React.createClass({
         var description = limitString(note.description, 95);
         
         
-        if (note.owner_id == this.state.userID) {
+        if (this.state.permissions["users-manage"] || note.owner_id == this.state.userID) {
             var editable = true;
         }
         
@@ -820,7 +850,7 @@ var NoteColumn = React.createClass({
                     <span></span>
                 }
                 </div>
-                <div className="note-author">{note.author.split(" ").join(".")}</div>
+                <div className="note-author">{note.author}</div>
                 <div className="note-description">{description}</div>
             </div>
         );

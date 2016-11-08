@@ -248,11 +248,21 @@ var CloseIcon = React.createClass({
     }
 });
 
+var Circle = React.createClass({
+    render:function () {
+        return(
+            <svg className={this.props.className} x="0px" y="0px" width="18px" height="20px" viewBox="0 0 20 20" enableBackground="new 0 0 20 20">
+                 <circle cx="10" cy="10" r="7.5"/>
+            </svg>
+        );
+    }
+});
 
 module.exports.CalendarIcon = CalendarIcon;
 module.exports.Caret = Caret;
 module.exports.ChangeArrow = ChangeArrow;
 module.exports.CheckMark = CheckMark;
+module.exports.Circle = Circle;
 module.exports.CloseIcon = CloseIcon;
 module.exports.EditIcon = EditIcon;
 module.exports.KleredeLogo = KleredeLogo;
