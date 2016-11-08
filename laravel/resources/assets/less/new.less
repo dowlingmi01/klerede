@@ -97,6 +97,20 @@
             }
         }
         .modal-body {
+            .required-text {
+                text-align:right;
+                position:relative;
+                font-size:90%;
+                color:@mediumgrey;
+            }
+            .required-circle {
+                vertical-align:text-top;
+                width:5px;
+                height:5px;
+                circle {
+                    fill:red;
+                }
+            }
             .form-group#date-time {
                 input {
                     font-weight:800;
@@ -113,6 +127,25 @@
             .form-group {
                 border-bottom: 1px solid @halflightmediumgrey;
                 padding-bottom:1em;
+                position:relative;
+                
+                .required-circle.note-header {
+                    top: 6px;
+                }
+                .required-circle {
+                    position: absolute;
+                    left: -6px;
+                    top: 0px;
+                }
+                .choose-text {
+                    line-height: 120%;
+                    margin-bottom: 2em;
+                    .required-circle {
+                        circle {
+                            fill:@black;
+                        }
+                    }
+                }
                 
                 input, textarea {
                     border:none;
@@ -156,6 +189,10 @@
                     .Select-option {
                         background-color:@lightgrey;
                         position:relative;
+                        > div {
+                            white-space: nowrap;
+                        }
+                        
                         .svg-button.delete-category {
                             position:absolute;
                             right:0;
@@ -170,8 +207,8 @@
                         button.btn {
                             font-size: 90%;
                             text-transform: none;
-                            margin-left: 10px;
-                            padding:6px 10px;
+                            margin-left: 8px;
+                            padding:6px 8px;
                         }
                         button.btn:hover {
                             color:@cobalt;
@@ -228,6 +265,18 @@
                         }
                     }
                 }
+                .character-limit {
+                    display:none;
+                    position:relative;
+                    small {
+                        position:absolute;
+                        top:-16px;
+                        left:35px;
+                    }
+                }
+                .character-limit.active {
+                    display:block;
+                }
             }
         }
         .modal-footer {
@@ -237,6 +286,27 @@
                 display:inline-block;
                 button {
                     border:none;
+                    display:block;
+                }
+                // button#button-cancel {
+                //     position:relative;
+                //     top:-32px;
+                // }
+                button#button-cancel {
+                    position:relative;
+                    top:-22px;
+                    left:100px;
+                    height:26px;
+                    font-size:12px;
+                    background-color:transparent;
+                }
+                button#button-cancel:hover, 
+                button#button-cancel:active, 
+                button#button-cancel:focus
+                {
+                    box-shadow: none;
+                    color: @aquadarker;
+                    background-color:transparent;
                 }
             }
         }
@@ -467,6 +537,7 @@
                     width: 21px;
                     padding:3px;
                     display:inline-block;
+                    vertical-align:middle;
                     // background-color:gray;
                 }
                 #add-note-tip-container{
@@ -529,6 +600,7 @@
                         }
                     }
                     .note-column {
+                        margin-bottom:1em;
                         min-height:117px;
                         border-left:1px solid @black;
                         padding:0 1em;
@@ -564,12 +636,15 @@
             }
         }
         .note-circle {
-            border-radius: 50%;
             cursor: pointer;
             height: 100%;
             width:100%;
-            background-color: @cobalt;
             display: block;
+            svg {
+                fill: @cobalt;
+                width:100%;
+                height:100%;
+            }
         }
         .one {
             margin-top:25%;
@@ -598,7 +673,11 @@
         .notebar.active .note-circle,
         .note-circle:hover
         {
-            border: 2px solid @lightblack;
+            svg circle {
+                stroke:@lightblack;
+                stroke-miterlimit:10;
+                stroke-width:2;
+            }
         }
     }
 }

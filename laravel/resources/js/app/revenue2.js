@@ -266,7 +266,7 @@ var DatePickerJQuery = React.createClass({
             selectWeek: true,
             closeOnSelect: true,
             startDate: '01/01/1996',
-            endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear,
+            // endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear,
             defaultDate:this.props.defaultDate
         });
         $("input#datepicker-2").bind("change", this.props.onSelect);
@@ -484,6 +484,7 @@ var Revenue2 = React.createClass({
                 quarter:{lastperiod_1:"Last Quarter", lastperiod_2:"Same Quarter Last Year"},
                 quarterBar:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"}
             },
+            resultLength:0
         };
     },
     onActionClick:function (event) {
@@ -900,12 +901,17 @@ var Revenue2 = React.createClass({
         var result = state.result;
         var total_bars = result.total_bars;
         
+        state.resultLength = total_bars.length;
+        
         switch (state.periodType) {
         case "quarter":
+            var firstDay = new Date(state.date.thisQuarterStart);
             var end = new Date(state.date.thisQuarterEnd);
             var lastDay = du.addDays(state.date.thisQuarterLimit, 1, true);
             
             if (end == lastDay) return;
+            if (firstDay > lastDay)
+                lastDay = firstDay;
             
             while(1) {
                 lastDay = du.addDays(lastDay, 7, true);
@@ -915,10 +921,12 @@ var Revenue2 = React.createClass({
             
             break;
         case "week":
+            var firstDay = new Date(state.date.thisWeekStart);
             var end = new Date(state.date.thisWeekEnd);
             var lastDay = du.addDays(state.date.thisWeekLimit, 1, true);
             break;
         case "month":
+            var firstDay = new Date(state.date.thisMonthStart);
             var end = new Date(state.date.thisMonthEnd);
             var lastDay = du.addDays(state.date.thisMonthLimit, 1, true);
             break;
@@ -927,7 +935,9 @@ var Revenue2 = React.createClass({
         }
         
         if (end==lastDay) return;
-        
+        if (firstDay > lastDay)
+            lastDay = firstDay;
+                
         while(lastDay <= end) {
             total_bars.push({period:du.serverFormat(lastDay), units:0, amount:0})
             lastDay = du.addDays(lastDay, 1, true);
@@ -1673,7 +1683,7 @@ var Revenue2 = React.createClass({
                             :
                                 <div></div>
                             }
-                            <div className={"row details "+this.state.detailsClass}>
+                            <div className={"row details "+(this.state.resultLength ? this.state.detailsClass : "")}>
                                 <div className="col-xs-12 col-sm-12 descriptors">
                                     <div className="col-xs-6 col-sm-6" id="data-range">
                                         <h4 className="add-left-padding" >Date Range</h4>
@@ -1721,10 +1731,14 @@ var Revenue2 = React.createClass({
                                         </div>
                                 </div>
                             </div>
-                            <div className={"text-center unsavable "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
-                                <CaretHandler />
-                                {this.state.detailsTitle}
-                            </div>
+                            {this.state.resultLength ? 
+                                <div className={"text-center unsavable "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
+                                    <CaretHandler />
+                                    {this.state.detailsTitle}
+                                </div>
+                            :
+                                <div></div>
+                            }
                         </div>
                     </div>
                     <div className="clearFix"></div>
