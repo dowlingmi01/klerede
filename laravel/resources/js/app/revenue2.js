@@ -258,13 +258,46 @@ var WeatherPopup = React.createClass({
 });
 
 var DatePickerJQuery = React.createClass({
-    updateWeek:function (e) {
-        var calendar = $(".dp-calendar");
+    getInitialState:function () {
+       return({
+           endDate:new Date(wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear),
+           displayedMonth:wnt.thisMonthNum+1, 
+           displayedYear:wnt.thisYear
+       }) 
+    },
+    updateWeek:function (e, div) {
+        var calendar = $(div);
         var trList = calendar.find("tr");
         $.each(trList, function(i, tr) {
             if($(tr).find(".selected").length) {
                 $(tr).find("td").addClass("selected");
             };
+        });
+        this.updateEmptyDays(this.state.displayedMonth, this.state.displayedYear);
+    },
+    onMonthChanged:function (event, m, y) {
+        m += 1;
+        this.setState({displayedMonth:m, displayedYear:y});
+        this.updateEmptyDays(m, y);
+    },
+    updateEmptyDays:function (m, y) {
+        
+        var state = this.state;
+        var calendar = $(".dp-calendar");
+        var trList = calendar.find("tr");
+        
+        $.each(trList, function(i, tr) {
+            var tdList = $(tr).find("td");
+            $.each(tdList, function(i, td) {
+                var d = parseInt($(td).text());
+                var date = new Date(m+"/"+d+"/"+y);
+
+                if (!$(td).hasClass("other-month")) {
+                    if (date > state.endDate) {
+                        $(td).addClass("no-data");
+                    };
+                }
+            });
         });
     },
     componentDidMount: function() {
@@ -275,11 +308,13 @@ var DatePickerJQuery = React.createClass({
             selectWeek: false,
             closeOnSelect: true,
             startDate: '01/01/1996',
-            // endDate: wnt.doubleDigits(wnt.thisMonthNum+1)+'/'+wnt.doubleDigits(wnt.thisDate)+'/'+wnt.thisYear,
             defaultDate:this.props.defaultDate
         });
-        $("input#datepicker-2").bind("change", this.props.onSelect);
-        $("form.datepicker-form a").on("click", this.updateWeek);
+        
+        $("input#datepicker-2").bind("dateSelected", this.props.onSelect);
+        $("input#datepicker-2").bind("dpDisplayed", this.updateWeek);
+        $("input#datepicker-2").bind("dpMonthChanged", this.onMonthChanged);
+        
     },
     render:function () {
         return(
@@ -622,7 +657,6 @@ var Revenue2 = React.createClass({
         this.dateUpdate(event.target.value);
     },
     dateUpdate:function(newDate) {
-        console.log(newDate);
         var date = this.buildDateDetails(newDate);
         var formatedDate = wnt.formatDate(new Date(newDate));
         analytics.addEvent('Earned Revenue', 'Date Changed', formatedDate);
