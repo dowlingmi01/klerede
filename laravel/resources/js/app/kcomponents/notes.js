@@ -40,6 +40,11 @@ var SlimMinusSign = require('../svg-icons').SlimMinusSign;
 var Channel = require('./channel.js');
 var JQTimePicker = require('./timepicker.js');
 
+var Asterisc = React.createClass({
+    render:function () {
+        return <div className={this.props.className}>*</div>;
+    }
+})
 
 var SVGButton = React.createClass({
     render:function () {
@@ -210,12 +215,13 @@ var AddNoteModal = React.createClass({
         this.setState({header:e.target.value});
     },
     onDescriptionChange:function (e) {
-        if(e.target.value.length>120) {
+        var value = e.target.value;
+        if(value.length>120) {
             alert("120 character limit reached.")
-            return;
+            value = value.substring(0, 120);
         };
         this.setChanged();
-        this.setState({description:e.target.value});
+        this.setState({description:value});
     },
     onDateStartChange(d) {
         this.setChanged();
@@ -346,6 +352,7 @@ var AddNoteModal = React.createClass({
             
             this.setState({editCategory:true});
             this.refs.categorySelect.focus();
+            $(".Select-menu-outer").show();
             e.stopPropagation();
         } else {
             this.stopEditCategory();
@@ -411,6 +418,15 @@ var AddNoteModal = React.createClass({
         if(this.state.editCategory) {
             throw("editingCategory");
         } 
+    },
+    checkEditCategoryOuter(e) {
+        this.stopEditCategory();
+        $(".Select-menu-outer").hide();
+        
+    },
+    checkEditCategoryInner(e) {
+        e.stopPropagation();
+        e.preventDefault();
     },
     onCategorySelectBlur(e) {
         // console.log("onCategorySelectBlur");
@@ -555,7 +571,7 @@ var AddNoteModal = React.createClass({
         return(
             <div className="modal fade" tabIndex="-1" role="dialog">
               <div className="modal-dialog" role="document">
-                <div className="modal-content">
+                <div className="modal-content" onClick={this.checkEditCategoryOuter}>
                   <div className="modal-header modal-section">
                     <button type="button" className="close" data-dismiss="modal" aria-label="Close"><CloseIcon className="close-icon"/></button>
                     <h3 className="modal-title">{currentDate}</h3>
@@ -568,18 +584,18 @@ var AddNoteModal = React.createClass({
                     </div>
                   </div>
                   <div className="modal-body modal-section">
-                    <div className="required-text"><Circle className="required-circle" /> Indicates Required Field</div>
+                    <div className="required-text"><Asterisc className="required-circle" /> Indicates Required Field</div>
                     <form ref="addNoteForm" className="" onFocus={null}>
                         <div className="form-group">
                             <input autoComplete="off" type="text" id="header" className="form-control" placeholder="Add Note Header" value={this.state.header} onChange={this.onHeaderChange} />
-                            <Circle className="required-circle note-header" />
+                            <Asterisc className="required-circle note-header" />
                         </div>
                         <div className="form-group">
                             <TextArea autoComplete="off" minHeight={34} id="description" className="form-control" placeholder="Description - 120 character limit" value={this.state.description} onChange={this.onDescriptionChange} />
-                            <Circle className="required-circle" />
+                            <Asterisc className="required-circle" />
                         </div>
                         <div className="form-group" id="date-time">
-                            <Circle className="required-circle" />
+                            <Asterisc className="required-circle" />
                             <span>
                                 All day: <SVGButton className={"rounded-box " + (this.state.allDay ? "":"inactive")} onClick={this.onAllDayClick} id="all-day" icon={<CheckMark className="" />} />
                             </span>
@@ -609,11 +625,11 @@ var AddNoteModal = React.createClass({
                         <div className="form-group">
                             <h6>Check all that apply:</h6>
                             <div>{channels}</div>
-                            <Circle className="required-circle" />
+                            <Asterisc className="required-circle" />
                         </div>
                         <div className="form-group" id="categories">
                             <div className="choose-text">
-                                <Circle className="required-circle" />
+                                <Asterisc className="required-circle" />
                                 <div>
                                     Choose a common category or create your own.
                                     <br />
@@ -623,7 +639,7 @@ var AddNoteModal = React.createClass({
                                 </div>
                             </div>
                             
-                            <div className="inline-block">
+                            <div className="inline-block" id="select-category" onClick={this.checkEditCategoryInner}>
                                 <div id="select-wrapper" className="inline-block vertical-middle">
                                     <Select
                                         ref="categorySelect"
@@ -806,7 +822,9 @@ var NoteColumn = React.createClass({
     getInitialState:function () {
         return {
             permissions: KAPI.auth.getUserPermissions(),
-            userID: KAPI.auth.getUser().id
+            userID: KAPI.auth.getUser().id,
+            description:this.props.note.description
+            
         }
     },
     onNoteEdit:function (e) {
@@ -823,10 +841,25 @@ var NoteColumn = React.createClass({
         alert("The note has been deleted.");
         this.props.onNoteDeleted();
     },
+    componentWillReceiveProps:function (nextProps) {
+        this.setState({description:nextProps.note.description});
+    },
+    componentDidUpdate:function () {
+        if (this.refs.noteDescription.scrollHeight <= $(this.refs.noteDescription).height())
+            return;
+        
+        while(this.refs.noteDescription.scrollHeight > $(this.refs.noteDescription).height()) {
+            var array = $(this.refs.noteDescription).text().split(" ");
+            array.pop();
+            $(this.refs.noteDescription).text(array.join(" "));
+        };
+        
+        this.setState({description:$(this.refs.noteDescription).text()});
+    },
     render:function() {
         var note = this.props.note;
         var formatedTime = note.all_day ? "All day" : moment(note.time_start).format("ha")+"-"+moment(note.time_end).format("ha")
-        var description = limitString(note.description, 95);
+        var description = this.state.description;
         
         
         if (this.state.permissions["users-manage"] || note.owner_id == this.state.userID) {
@@ -851,7 +884,7 @@ var NoteColumn = React.createClass({
                 }
                 </div>
                 <div className="note-author">{note.author}</div>
-                <div className="note-description">{description}</div>
+                <div ref="noteDescription" className="note-description">{description}</div>
             </div>
         );
     }

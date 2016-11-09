@@ -104,12 +104,16 @@
                 color:@mediumgrey;
             }
             .required-circle {
+                display:inline-block;
                 vertical-align:text-top;
-                width:5px;
-                height:5px;
-                circle {
-                    fill:red;
-                }
+                font-size:16px;
+                line-height:12px;
+                // width:5px;
+                // height:5px;
+                color:red;
+                // circle {
+                //     fill:red;
+                // }
             }
             .form-group#date-time {
                 input {
@@ -604,7 +608,8 @@ table.jCalendar td.no-data {
                     }
                     .note-column {
                         margin-bottom:1em;
-                        min-height:117px;
+                        height:124px;
+                        overflow-y:hidden;
                         border-left:1px solid @black;
                         padding:0 1em;
                         .note-header {
@@ -633,6 +638,10 @@ table.jCalendar td.no-data {
                              color:@pink;
                              font-weight:600;
                              font-style: italic;
+                        }
+                        .note-description {
+                            height:51px;
+                            overflow-y:hidden;
                         }
                      }
                 }
