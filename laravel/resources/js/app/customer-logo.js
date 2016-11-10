@@ -6,7 +6,8 @@ var wnt = require ('./kcomponents/wnt.js');
 
 var logos = {
     1518:<img src="img/na-logo-one-line.png" />,
-    1204:<img style={{width:"165px"}} src="img/logo-psc-full.png" />
+    1204:<img style={{width:"165px"}} src="img/logo-psc-full.png" />,
+    1597:<img style={{width:"213px"}} src="img/the-queen-mary.png" />
 };
 
 exports.logos = logos;
