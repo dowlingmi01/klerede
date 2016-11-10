@@ -522,7 +522,7 @@ var Revenue2 = React.createClass({
             detailsTitle:"Show Details",
             barEnter:null,
             compareLists:{
-                week:{lastperiod_1:"Last Week", lastperiod_2:"13 Week Average"},
+                week:{lastperiod_1:"Last Week", lastperiod_3:"Same Week Last Year", lastperiod_2:"13 Week Average", },
                 weekBar:{lastperiod_1:"Same Day Previous Week", lastperiod_2:"Same Day Last Year", lastperiod_3:"13 Week Average (Day)"},
                 month:{lastperiod_1:"Last Month", lastperiod_2:"Same Month Last Year"},
                 monthBar:{lastperiod_1:"Same Day Last Year", lastperiod_2:"13 Week Average (Day)"},
@@ -576,8 +576,8 @@ var Revenue2 = React.createClass({
         p.thisWeekEnd = du.addDays(date, 6 - weekDay);
         p.thisWeekLimit = applyLimit( p.thisWeekEnd );
         
-        p.thisWeekStartMinusOneYear = du.addYears(p.thisWeekStart, -1);
-        p.thisWeekLimitMinusOneYear = du.addYears(p.thisWeekLimit, -1);
+        p.thisWeekStartMinusOneYear = du.addDays(p.thisWeekStart, -364);
+        p.thisWeekLimitMinusOneYear = du.addDays(p.thisWeekLimit, -364);
         
         p.lastWeekLimit = du.addDays(p.thisWeekLimit, -7);
         p.lastWeekStart = du.addDays(p.thisWeekStart, -7);
@@ -621,8 +621,8 @@ var Revenue2 = React.createClass({
         
         //INDIVIDUAL DAYS Calculations
         // for week
-        p.thisWeekStartMinusOneYear = du.addDays(p.thisWeekStart, -(52*7));
-        p.thisWeekLimitMinusOneYear = du.addDays(p.thisWeekLimit, -(52*7));
+        // p.thisWeekStartMinusOneYear = du.addDays(p.thisWeekStart, -(52*7));
+        // p.thisWeekLimitMinusOneYear = du.addDays(p.thisWeekLimit, -(52*7));
         
         //for month 
         p.thisMonthLimitMinusOneWeek = du.addDays(p.thisMonthLimit, -7);
@@ -862,30 +862,6 @@ var Revenue2 = React.createClass({
         }
         return state;
     },
-    // copyUnitsToEmptyAmount:function (state) {
-    //     var result = state.result;
-    //     for (var i in result) {
-    //         var r = result[i];
-    //         if (r.units && !r.amount && r.amount !== 0 ) {
-    //             r.amount = r.units;
-    //             console.error(i, r);
-    //             continue;
-    //         }
-    //         try {
-    //             for (var j in r) {
-    //                 var d = r[j];
-    //                 if(d.units && !d.amount &&  d.amount !== 0 ) {
-    //                     console.error(j, d);
-    //                     d.amount = d.units;
-    //                 }
-    //             }
-    //         } catch (e) {
-    //             console.error(i, e.message, r);
-    //         }
-    //     }
-    //
-    //     return state;
-    // },
     updateSums:function (state) {
         var result = state.result;
         
@@ -1014,6 +990,11 @@ var Revenue2 = React.createClass({
             var lastOperation2 = 'average';
             var lastInterval2 = 'week';
             
+            var lastFrom3 = p.thisWeekStartMinusOneYear;
+            var lastTo3 = p.thisWeekLimitMinusOneYear;
+            var lastOperation3 = 'sum';
+            var lastInterval3 = 'date';
+            
             var lastBarFrom1 = p.lastWeekStart;
             var lastBarTo1 = p.lastWeekLimit;
             var lastBarOperation1 = 'detail';
@@ -1133,6 +1114,9 @@ var Revenue2 = React.createClass({
         if (lastBarFrom3) 
             queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
 
+        if (lastFrom3) 
+            queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
+        
         //PER CHANNEL QUERIES
         var channelActive = state[state.units].channelActive;
         for (var channel in channelActive) {
@@ -1165,6 +1149,9 @@ var Revenue2 = React.createClass({
 
             var lastPeriod2_totals = getQuery(lastFrom2, lastTo2, membership, channel, type, lastOperation2, lastInterval2);
             
+            if(lastFrom3) 
+                var lastPeriod3_totals = getQuery(lastFrom3, lastTo3, membership, channel, type, lastOperation3, lastInterval3);
+            
             
             //WRITE VARS
             queries[channel+"_bars"] = query;
@@ -1177,6 +1164,8 @@ var Revenue2 = React.createClass({
 
             queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
             queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
+            if(lastFrom3)
+                queries[channel+"_bars_lastperiod_3_totals"] = lastPeriod3_totals;
             
                 
         }
@@ -1213,10 +1202,15 @@ var Revenue2 = React.createClass({
                     lastFrom2, lastTo2, membership, channel, {type:type, kinds:[kind]}, lastOperation2, lastInterval2
             );
             
-            //Last period III (only for bars nowadays)
+            //Last period III
             queries[prefix+kind+"_lastperiod_3"] = getQuery(
                     lastBarFrom3, lastBarTo3, membership, channel, {type:type, kinds:[kind]}, lastBarOperation3, lastBarInterval3
             );
+            if(lastFrom3)
+                queries[prefix+kind+"_lastperiod_3_totals"] = getQuery(
+                        lastFrom3, lastTo3, membership, channel, {type:type, kinds:[kind]}, lastOperation3, lastInterval3
+                );
+            
             
         }
         
