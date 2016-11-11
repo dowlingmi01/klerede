@@ -7,6 +7,7 @@ var limitString = require('../kutils/string-utils.js').limitString;
 var wnt = require ('./wnt.js');
 
 require('bootstrap');
+require ('jquery-placeholder');
 
 var KAPI={
     notes:require("../kapi/notes.js"),
@@ -539,6 +540,9 @@ var AddNoteModal = React.createClass({
         console.log(response);
         alert("An error ocurred saving note.");
     },
+	componentDidUpdate:function(){
+		$('input, textarea').placeholder();
+	},
     render:function () {
         var channels = [];
         for (var k in this.state.channelNames) {
@@ -631,10 +635,10 @@ var AddNoteModal = React.createClass({
                             <div className="choose-text">
                                 <Asterisc className="required-circle" />
                                 <div>
-                                    Choose a common category or create your own.
+                                    Choose a common category OR create your own.
                                     <br />
                                     <small>
-                                        Categories are used to identify and track the topic of a note and facilitate a search for it.
+                                        Categories classify notes to help facilitate search and data analysis.
                                     </small>
                                 </div>
                             </div>

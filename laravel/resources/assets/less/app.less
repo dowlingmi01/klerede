@@ -2820,6 +2820,10 @@ form.inline-block {
     top:50%;
     margin-top:-2px;
 }
+.ie form .filter-caret,
+.ie .filter-caret.dropdown {
+	display:none;
+}
 
 form.datepicker-form {
     display:inline-block;
@@ -3092,6 +3096,9 @@ a.dp-choose-date {
                                                                         
 #revenue2 #details-handle {
     cursor:pointer;
+	#details-title {
+		display: inline-block;
+	}
 }
 #revenue2 #details-handle.active .filter-caret {
     transform: rotate(180deg);
@@ -3100,9 +3107,14 @@ a.dp-choose-date {
 #revenue2 #details-handle  .filter-caret {
     transform: rotate(0);
     transition: .3s;
-    top:11px;
-    left:7px;
-    width:auto;
+	display: inline-block;
+	position:static;
+	margin-top:11px;
+	margin-right:10px;
+	width:13px;
+    // top:11px;
+    // left:7px;
+    // width:auto;
 }
 
 

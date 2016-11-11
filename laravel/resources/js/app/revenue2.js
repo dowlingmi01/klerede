@@ -33,6 +33,7 @@ var SlimMinusSign = require('./svg-icons').SlimMinusSign;
 var ActionMenu = require('./reusable-parts').ActionMenu;
 
 require('../libs/jquery.datePicker.js');
+require('../libs/jquery.simulate.js');
 require('bootstrap');
 
 var CaretHandler = React.createClass({
@@ -44,6 +45,10 @@ var CaretHandler = React.createClass({
 });
 
 var Dropdown = React.createClass({
+	onCaretClick:function (e) {
+		console.log(this.refs.selectElement);
+		$(this.refs.selectElement).simulate('mousedown');
+	},
     render:function () {
 
         var optionList = this.props.optionList;
@@ -61,8 +66,8 @@ var Dropdown = React.createClass({
         
         return (
             <div className={this.props.className}>
-                <Caret className="filter-caret" />
-                <select className="form-control" value={this.props.selected} onChange={this.props.onChange} >
+                <div className="inline-block" onClick={this.onCaretClick}><Caret className="filter-caret dropdown" /></div>
+                <select ref="selectElement" className="form-control" value={this.props.selected} onChange={this.props.onChange} >
                     {options}
                 </select>
             </div>
@@ -1817,8 +1822,8 @@ var Revenue2 = React.createClass({
                             </div>
                             {this.state.resultLength ? 
                                 <div className={"text-center unsavable "+this.state.detailsClass} id="details-handle" onClick={this.onDetailsClick} >
-                                    <CaretHandler />
-                                    {this.state.detailsTitle}
+                                    <CaretHandler /><div id="details-title">{this.state.detailsTitle}</div>
+                                    
                                 </div>
                             :
                                 <div></div>

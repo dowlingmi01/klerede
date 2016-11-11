@@ -11,3 +11,5 @@ global.$ = global.jQuery = require("jquery");
 global.moment = require("moment");
 
 global.du = require("./kutils/date-utils");
+
+require('console-polyfill');
