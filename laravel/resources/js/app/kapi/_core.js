@@ -68,7 +68,7 @@ module.exports = {
     	_srdata("PUT", route, onSuccess, data, options);
     },
     patchData:function(route, onSuccess, data, options) {
-    	console.log("My name is _patchData but I use PUT");
+        // console.log("My name is _patchData but I use PUT");
     	_srdata("PUT", route, onSuccess, data, options);
     },
     deleteData:function(route, onSuccess, data, options) {

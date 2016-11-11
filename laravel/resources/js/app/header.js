@@ -4,6 +4,7 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
+var getDOMNode = require('./kutils/getDOMNode.js');
 
 
 var $ = require('jquery');
@@ -83,13 +84,13 @@ var User = React.createClass({
         $(event.target).closest('.confirm').hide();
     },
 	onRoleChange:function (event) {
-		console.log(event);
+        // console.log(event);
 		// event.stopPropagation();
 		// event.nativeEvent.stopImmediatePropagation();
 		// console.log(this.refs.roleSelect);
         this.setState({ message: '' });
 		
-		var addUserRoleID = this.refs.roleSelect.getDOMNode().value;
+		var addUserRoleID = getDOMNode(this.refs.roleSelect).value;
 		// console.log(addUserRoleID);
 		// patch:function (userID, firstName, lastName, email, roleID, venueID, onSuccess, onError) {
 		KAPI.users.patch(
@@ -105,12 +106,13 @@ var User = React.createClass({
 	},
 	onRoleChangeSuccess:function (response) {
         this.setState({ message: 'User role updated.'});
-		$(this.refs.confirm.getDOMNode()).hide();
+		$(this.refs.confirm).hide();
+        this.props.onRoleChange();
 	},
 	onRoleChangeError:function (error) {
 		console.log(error);
         this.setState({ message: 'Could not update user role.' });
-		$(this.refs.confirm.getDOMNode()).hide();
+		$(this.refs.confirm).hide();
 	},
     passwordReset: function(event){
         event.preventDefault();
@@ -141,13 +143,18 @@ var User = React.createClass({
     },
     render: function() {
         
-        // Role selector removed:
-        // <Roles ref="roleSelect" onChange={this.onRoleChange} roleList={this.props.roleList} roleID={this.props.roleID}/>
+        // Role name replaced by role selector:
+        //<div className="inline-block role">{roleName}</div>&nbsp; 
         var roleName = this.props.roleList[this.props.roleID];
         
-        var deleteUser = "";
+        var deleteUser = "",
+        passwordReset = "";
         if (this.props.roleLevel > 10 ) {
-            deleteUser = <a className="stop" onClick={this.deleteUser}>Delete User</a>;
+            deleteUser = <a className="stop" onClick={this.deleteUser}>Delete</a>;
+        }
+        
+        if (this.props.roleLevel > this.props.userLevel) {
+            passwordReset = <a className="stop" onClick={this.passwordReset}>Password Reset</a>;
         }
         
         return (
@@ -155,9 +162,11 @@ var User = React.createClass({
 				<div className="name" onClick={this.props.onClose}>{this.props.name} <Caret className="utilities-caret" /></div>
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
-                        <div className="inline-block role">{roleName}</div>&nbsp; 
-                        {deleteUser}&nbsp; 
-                        <a className="stop" onClick={this.passwordReset}>Password Reset</a>
+                    <div className="roles">
+                        <Roles ref="roleSelect" onChange={this.onRoleChange} userLevel={this.props.userLevel} roles={this.props.roles} roleID={this.props.roleID}/>
+                        &nbsp;{deleteUser}&nbsp; 
+                        {passwordReset}
+                    </div>
                     <div className="message">{this.state.message}</div>
                     <div className="confirm" ref='confirm'>
                         <span className="message">Are you sure you want to delete this user?</span>
@@ -173,17 +182,29 @@ var User = React.createClass({
 var Roles = React.createClass({
     render: function() {
 		// console.log(this.props);
-		var roleList = this.props.roleList;
+        var userLevel = this.props.userLevel;
+		var roleList = this.props.roles;
 		var roleID = this.props.roleID;
 		var roles = [];
 		
+        
 		for(var k in roleList) {
 			// var selected = (k == roleID);
-			
-			roles.push(<option key={k.toString()} value={k.toString()}>{roleList[k]}</option>);
+			var rol = roleList[k];
+            if(rol.id == roleID) {
+                var roleLevel = rol.level;
+                var roleName = rol.name;
+            }
+            if(rol.level < userLevel) continue;
+            
+			roles.push(<option key={rol.id} value={rol.id}>{rol.name}</option>);
 			// roles.push(<option selected={selected} value={k.toString()}>{roleList[k]}</option>);
 		}
 		
+        if(roleLevel < userLevel) {
+            return <div className="inline-block role">{roleName}&nbsp;</div> 
+        }
+        
         return (
             <select defaultValue={roleID} className="form-control stop" id={this.props.id} onChange={this.props.onChange}>
 			{roles}
@@ -204,6 +225,7 @@ var Header = React.createClass({
             name: user.name,
             email: user.email,
             roleID: user.role_id,
+            userLevel: 100,
             pwdCurrent: '',
             pwdNew: '',
             pwdMatch: '',
@@ -248,6 +270,7 @@ var Header = React.createClass({
 		// console.log(roles);
 
 		var newState = this.state;
+        newState.roles = roles;
 		newState.roleNames = {};
 		newState.roleLevels = {};
 
@@ -255,6 +278,9 @@ var Header = React.createClass({
 			var rol = roles[i];
 			newState.roleNames[rol.id] = rol.name;
             newState.roleLevels[rol.id] = rol.level;
+            if(rol.id == this.state.roleID) {
+                newState.userLevel = rol.level;
+            }
 		};
 		
 		newState.accountType = newState.roleNames[newState.roleID];
@@ -441,12 +467,12 @@ var Header = React.createClass({
 		console.log(error);
 		alert(_l("Could not save user profile."));
 	},
-	// onAddUserChange:function (event) {
-	// 	var addUserRoleID = this.refs.addUserRole.getDOMNode().value;
-	// 	var state = this.state;
-	// 	state.addUserRoleID = addUserRoleID;
-	// 	this.setState(state);
-	// },
+    onAddUserRoleChange:function (event) {
+        var addUserRoleID = event.target.value;
+        var state = this.state;
+        state.addUserRoleID = addUserRoleID;
+        this.setState(state);
+    },
     addUser: function(event){
         event.preventDefault();
 
@@ -493,7 +519,7 @@ var Header = React.createClass({
 		if (response.result == "ok") {
 			this.setState({addUserMessage:"New user added." });
 			// alert(_l("New user added."));
-			this.refs.addUserForm.getDOMNode().reset();
+			this.refs.addUserForm.reset();
 			this.getUsers();
 		} else {
 			this.setState({addUserMessage:_l("Could not add new user.") });
@@ -590,7 +616,8 @@ var Header = React.createClass({
     			users.push(<User 
     				onClose={this.onUserClose.bind(this,i)}
     				className={"user" + (this.state.currentUser===i?" active":"")}
-    				onDeleteSuccess={this.getUsers} 
+    				onDeleteSuccess={this.getUsers}
+                    onRoleChange={this.getUsers} 
     				key={data.id} 
     				id={data.id} 
     				name={data.name} 
@@ -599,7 +626,9 @@ var Header = React.createClass({
     				email={data.email} 
     				roleID={data.role_id} 
     				roleList={this.state.roleNames}
+                    roles={this.state.roles}
                     roleLevel={level}
+                    userLevel={this.state.userLevel}
     			/>);
     		}
             
@@ -618,6 +647,7 @@ var Header = React.createClass({
                                 <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
                                 <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
                                 <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
+                                <Roles ref="roleSelect" onChange={this.onAddUserRoleChange} userLevel={this.state.userLevel} roles={this.state.roles} roleID={this.state.addUserRoleID}/>
                                 <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                                 <div className="message">{this.state.addUserMessage}</div>
                             </form>
@@ -697,7 +727,7 @@ var Header = React.createClass({
                             </div>
                             <div className="form-group">
                                 <label htmlFor="up-type">Account Type:</label>
-                                <input type="text" id="up-type" defaultValue={this.state.accountType} disabled/>
+                                <input type="text" id="up-type" value={this.state.accountType}/>
                             </div>
                             <div className="form-group">
                                 <input type="submit" defaultValue="Save" className="btn" onClick={this.saveCurrentUserChanges} />
