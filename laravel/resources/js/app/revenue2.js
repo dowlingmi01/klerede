@@ -1107,16 +1107,34 @@ var Revenue2 = React.createClass({
         
         queries.visitors_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'visits', 'sum', 'date');
 
+        queries.visitors_revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'gate', {type:'sales', kinds:['ga','group']}, 'detail', lastBarInterval1);
+        
+        queries.visitors_revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', {type:'sales', kinds:['ga','group']}, 'sum', 'date');
+
+
         queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
 
         queries.visitors_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', 'sum', 'date');
         
-        if (lastBarFrom3) 
-            queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
-
-        if (lastFrom3) 
-            queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
+        queries.visitors_revenue_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'gate', {type:'sales', kinds:['ga','group']}, 'detail', lastBarInterval2);
         
+        queries.visitors_revenue_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', {type:'sales', kinds:['ga','group']}, 'sum', 'date');
+
+        if (lastBarFrom3) {
+
+            queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
+            
+            queries.visitors_revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'gate', {type:'sales', kinds:['ga','group']}, 'detail', lastBarInterval3);
+        
+        }
+
+        if (lastFrom3) {
+            
+            queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
+            
+            queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', {type:'sales', kinds:['ga','group']}, 'sum', 'date');
+            
+        }
         //PER CHANNEL QUERIES
         var channelActive = state[state.units].channelActive;
         for (var channel in channelActive) {
@@ -1426,6 +1444,7 @@ var Revenue2 = React.createClass({
                     var visitors = parseInt(result.visitors_totals.units);
                     var revenue = parseInt(result.visitors_revenue_totals.units);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
+                    var lastRevenue = parseInt(result["visitors_revenue_"+this.state.comparePeriodType+"_totals"].units);
                     var ttTotals = "_totals";
                 } else {
                     
@@ -1446,6 +1465,7 @@ var Revenue2 = React.createClass({
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
 
                     var revenue = parseInt(result.visitors_revenue[dataIndex][rUnits]);
+                    var lastRevenue = parseInt(result["visitors_revenue_"+this.state.comparePeriodType][dataIndex].units);
                 
                     ttTotals = "";
                 };
@@ -1453,13 +1473,38 @@ var Revenue2 = React.createClass({
                 console.log("Collect General Data for Details Error -> "+e, this.state);
             }
             
-            var attendanceDetailData = isNotAttendanceTab ?
-                                                    KUtils.number.formatInteger(visitors)
-                                                :
-                                                    <span><small>$</small> {KUtils.number.formatAmount(revenue)}</span>
-            ;
+            //Data for attendance/revenue comparison
+            if(isNotAttendanceTab) {
+                var arCurrent = visitors;
+                var arLast = lastVisitors;
+                var arSign = "";
+                var arCurrentFormatted = KUtils.number.formatInteger(arCurrent);
+                var arLastFormatted = KUtils.number.formatInteger(arLast);
+            } else {
+                var arCurrent = revenue;
+                var arLast = lastRevenue;
+                var arSign = "$";
+                var arCurrentFormatted = KUtils.number.formatAmount(arCurrent);
+                var arLastFormatted = KUtils.number.formatAmount(arLast);
+            }
             
-            
+            var percent = (100*((arCurrent/arLast) - 1)).toFixed(2);
+            if (isNaN(percent)) {
+                percent = "";
+                var change = <span></span>;
+            } else {
+                var upDownClass = percent >= 0 ? "up"  : "down";
+                var change = <span className="change">(
+                        <ChangeArrow className={upDownClass} />
+                        <span className="" id="change">{percent}%</span>
+                    )
+                </span>;
+            }
+            var attendanceDetailData = <span>
+                                            <small>{arSign}</small> {arCurrentFormatted}
+                                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                                            <small>{arSign}</small> {arLastFormatted}&nbsp;&nbsp;{change}
+                                        </span>;            
             
             //Build Detail Rows
             try {

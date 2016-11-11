@@ -397,6 +397,19 @@ table.jCalendar td.no-data {
        div {
             font-size:90%;
             padding-top:4px;
+            .change {
+                font-size:80%;
+                color:@red;
+                svg {
+                    fill: #ad1d0e;
+                    height: 12px;
+                    vertical-align: text-bottom;
+                    width:12px;
+                }
+                svg.down {
+                    transform: rotate(180deg);
+                }
+            }
         }
    }
 }
