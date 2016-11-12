@@ -28,7 +28,7 @@ class VenueController extends Controller {
 	public function show($id)
 	{
         if (Gate::denies('validate-venue', $id)) {
-            return Response::json(["error"=>"Invalid venue id"]);
+            return Response::json(['result'=> 'error', 'message'=>"Invalid venue id"], 400);
         }
 		$venue = Venue::find($id);
 		$venue->stats_last_date = Stats::lastDate($id);

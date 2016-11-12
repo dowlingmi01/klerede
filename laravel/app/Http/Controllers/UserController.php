@@ -13,9 +13,10 @@ use \Input;
 use JWTAuth;
 use \Password;
 use Mail;
-use Gate;
+use Gate; 
 use App\Venue;
 use App\Helpers\PermissionHelper;
+use Illuminate\Support\Facades\Response;
  
 class UserController extends Controller
 {
@@ -46,15 +47,23 @@ class UserController extends Controller
     {
         $input = (object) $request->all();
         if (Gate::denies('validate-venue', $input->venue_id)) {
-            return "Invalid venue id".$input->venue_id.'#' ;
+            return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400);
         }
         
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return ['error'=>'Insufficient privileges'];
+            return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);
         }
 
         $users = User::where('venue_id', $input->venue_id)->get();
         return $users;
+    }
+
+    private function getMessagesConstants(){
+        return  [
+            'required' => 'atribute_is_required',
+            'email' => 'invalid_email_format',
+            'numeric' => 'numeric_field'
+        ];
     }
 
     /**
@@ -73,18 +82,18 @@ class UserController extends Controller
             'role_id' => 'required|numeric',
             'venue_id' => 'required|numeric'
         );
-        $validator = Validator::make(Input::all(), $rules);
+        
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
-            $messages->add("result", "error");
-            return  $messages  ;
+            return  Response::json(['result'=>'error', 'messasges'=>$messages], 400)  ;
         } 
         
         if(Gate::denies('validate-venue', $request->venue_id)){
-            return "Invalid venue id";
+            return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); ;
         }
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return ['error'=>'Insufficient privileges'];
+            return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);
         }
         //$password = generateNewPassword(); //TODO: Generar la funcion
 
@@ -145,15 +154,14 @@ class UserController extends Controller
             'role_id' => 'required|numeric',
             'venue_id' => 'required|numeric'
         );
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
-            $messages->add("result", "error");
-            return  $messages  ;
+            return  Response::json(['result'=>'error', 'messasges'=>$messages], 400)  ;
         } else {
             // store
             if (Gate::denies('validate-venue', $request->venue_id)) {
-                return "Invalid venue id";
+                return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); ;
             }
             $user = new User;
             $user->first_name       = $request->first_name;
@@ -180,14 +188,14 @@ class UserController extends Controller
         //TODO: only autorized venue and user by role
         if($user = User::find($id)){
             if (Gate::denies('validate-venue', $user->venue_id)) {
-                return "Invalid venue id";
+                return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); ;
             }
             if (Gate::denies('user-get', $id)) {
-                return ["error"=>"Can't get user"];
+                return Response::json(['result'=>"error", 'message'=>"cant_get_user"],400); ;;
             }
             return $user;
         }
-        return ['reuslt'=>'error', 'message'=>'user not found'];
+        return Response::json(['result'=>'error', 'message'=>'user_not_found'],404); 
         
     }
 
@@ -216,25 +224,24 @@ class UserController extends Controller
             'email'   => 'email',
             'role_id' => 'numeric',
         );
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(Input::all(), $rules, $this->getMessagesConstants());
         if ($validator->fails()) {
             $messages = $validator->messages();
-            $messages->add("result", "error");
-            return  $messages;
+            return  Response::json(['result'=>'error', 'messasges'=>$messages], 400)  ;
         } else {
             // store
             $user = User::find($id);
             if(!$user){
-                return ['result'=> 'error', 'message'=>'User not found'];
+                return Response::json(['result'=>'error', 'message'=>'user_not_found'],404);
             }
             if (Gate::denies('validate-venue', $user->venue_id)) {
-                return "Invalid venue id";
+                return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); ;
             }
             if (Gate::denies('user-set', $id)) {
-                return ["error"=>"Insufficient privileges"];
+                return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);
             }
             if ($request->role_id !=0 && Gate::denies('valid-role', $request->role_id)) {
-                return ["error"=>"Can't set role"];
+                return Response::json(['result'=>"error", 'message'=>'cant_set_role'],403);; 
             }
             $user->first_name       = trim($request->first_name) !== '' ? $request->first_name : $user->first_name;
             $user->last_name       = trim($request->last_name) !== '' ? $request->last_name : $user->last_name;
@@ -255,14 +262,14 @@ class UserController extends Controller
     public function updatePassword(Request $request, $id)
     {
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return ["error"=>"Insufficient privileges"];
+            return Response::json(['result'=>'error', 'message'=>"insufficient_privileges"],403);
         }   
         $user = User::find($id);
         if(!$user){
-            return ['result'=> 'error', 'message'=>'User not found'];
+            return Response::json(['result'=>'error', 'message'=>'user_not_found'],404);
          }
         if (Gate::denies('validate-venue', $user->venue_id)) {
-            return "Invalid venue id";
+            return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); ;
         }
 
         if(Hash::check($request->oldPassword, $user->password)) {
@@ -271,7 +278,7 @@ class UserController extends Controller
             $user->save();
             return ['result'=>'ok', 'id'=>$user->id];
         } else {
-            return ['result'=>'error', 'message'=>'Invalid password'];
+            return Response::json( ['result'=>'error', 'message'=>'invalid_password'],400); ;
         }
     }
 
@@ -286,19 +293,19 @@ class UserController extends Controller
         //check $id distinct to logged user
         //check venue_id
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
-            return ["error"=>"Insufficient privileges"];
+            return Response::json(['result'=> 'error', 'message'=>'insufficient_privileges'], 403);
         }
         $user = User::find($id);
         if(!$user){
-            return ['result'=> 'error', 'message'=>'User not found'];
+            return Response::json(['result'=> 'error', 'message'=>'user_not_found'],404);
         }
         if (Gate::denies('validate-venue', $user->venue_id)) {
-            return "Invalid venue id";
+            return Response::json(['result'=>"error", 'message'=>"invalid_venue_id"],400); 
         }
         if (Gate::denies('delete-user', $id)) {
-            return "Can't delete";
+            return Response::json(['result'=>"error", 'message'=>"cant_delete"],400); 
         }
         $result = User::destroy($id);
-        return ['result' => ($result == 1 ? "ok": "error:".$result)];
+        return Response::json(['result' => ($result == 1 ? "ok": "error:".$result)],($result == 1 ? 200:400));
     }
 }

@@ -37,16 +37,16 @@ class AuthenticateController extends Controller
         try {
             // verify the credentials and create a token for the user
             if (!$user = User::whereEmail($credentials['email'])->first()) {
-                return response()->json(['user_not_found'], 404);
+                return response()->json(['result'=>'error', 'message'=>'user_not_found'], 404);
             }
 
             $claims = ['ven' =>$user->venue_id, 'rol' =>$user->role_id];
             if (! $token = JWTAuth::attempt($credentials, $claims)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
+                return response()->json(['result'=>'error', 'message'=>'invalid_credentials'], 401);
             }
         } catch (JWTException $e) {
             // something went wrong
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json(['result'=>'error', 'message'=> 'could_not_create_token'], 500);
         }
 
         // if no errors are encountered we can return a JWT
@@ -61,31 +61,15 @@ class AuthenticateController extends Controller
 	{
 
 		if(config('jwt.active')){
-		    try {
-
-		        if (! $user = JWTAuth::parseToken()->authenticate()) {
-		            return response()->json(['user_not_found'], 404);
-		        }
-
-		    } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-
-		        return response()->json(['token_expired'], $e->getStatusCode());
-
-		    } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-
-		        return response()->json(['token_invalid'], $e->getStatusCode());
-
-		    } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-
-		        return response()->json(['token_absent'], $e->getStatusCode());
-
-		    }
-
-		    // the token is valid and we have found the user via the sub claim
+		   
+	        if (! $user = \Auth::user()) {
+	            return response()->json(['user_not_found'], 404);
+	        }
+ 		  
 
 		} else {
 			if (!$user = User::find(config('jwt.mock_user_id'))) {
-		        return response()->json(['user_not_found'], 404);
+		        return response()->json(['result'=>'error', 'message'=>'user_not_found'], 404);
 		     }
 		}
         $role = \App\Role::find($user->role_id);

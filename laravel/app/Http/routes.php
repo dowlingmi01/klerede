@@ -24,7 +24,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::post('stats/query', function() {
 		$input = Request::all();
         if (Gate::denies('validate-venue', $input['venue_id'])) {
-            return Response::json(["error"=>"Invalid venue id"]);
+            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
 		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
 		return Response::json($result);
@@ -34,7 +34,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::get('weather/query', function() {
 		$input = (object) Request::all(); 
         if (Gate::denies('validate-venue', $input->venue_id)) {
-            return Response::json(["error"=>"Invalid venue id"]);
+            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
 		if(isset($input->hourly))
 			$input->hourly = filter_var($input->hourly, FILTER_VALIDATE_BOOLEAN);
@@ -45,17 +45,17 @@ Route::group(['prefix'=>'api/v1'], function() {
 	})->middleware(['jwt.auth']);
 	Route::get('goals/sales/{venue_id}/{year}', function($venue_id, $year) {
         if (Gate::denies('validate-venue', $venue_id)) {
-            return Response::json(["error"=>"Invalid venue id"]);
+            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
 		return Response::json(GoalsSales::get($venue_id, $year));
 	})->middleware(['jwt.auth']);;
 	Route::put('goals/sales/{venue_id}/{year}/{channel}/{type}/{sub_channel?}',
 		function($venue_id, $year, $channel, $type, $sub_channel = null) {
         if (Gate::denies('validate-venue', $venue_id)) {
-            return Response::json(["error"=>"Invalid venue id"]);
+            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
         if (Gate::denies('has-permission', PermissionHelper::GOALS_SET)) {
-            return Response::json(["error"=>"Insufficient privileges"]);
+            return Response::json(['result'=> 'error', 'message'=>"insufficient_privileges"],400);  
         }
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
