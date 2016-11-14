@@ -95,6 +95,9 @@ class UserController extends Controller
         if (Gate::denies('has-permission', PermissionHelper::USER_MANAGE)) {
             return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);
         }
+        if (Gate::denies('valid-role', $request->role_id)) {
+                return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);; 
+        }
         //$password = generateNewPassword(); //TODO: Generar la funcion
 
         $user = new User;
@@ -242,6 +245,9 @@ class UserController extends Controller
             }
             if ($request->role_id !=0 && Gate::denies('valid-role', $request->role_id)) {
                 return Response::json(['result'=>"error", 'message'=>'cant_set_role'],403);; 
+            }
+            if (Gate::denies('valid-role', $user->role_id)) {
+                return Response::json(['result'=>"error", 'message'=>'insufficient_privileges'],403);; 
             }
             $user->first_name       = trim($request->first_name) !== '' ? $request->first_name : $user->first_name;
             $user->last_name       = trim($request->last_name) !== '' ? $request->last_name : $user->last_name;

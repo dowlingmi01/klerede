@@ -44,6 +44,7 @@ class NoteTest extends TestCase
        	$token = '';
         
        	$responseData = json_decode($this->response->getContent(), true);
+
        	$token = $responseData['token'];
     
 
@@ -51,20 +52,20 @@ class NoteTest extends TestCase
         		"header"=>" header test 1",
 				"description"=>"description test 1",
 				"all_day"=>false,
-				"time_start"=>"2016-26-10 12:10:30",
-				"time_end"=>"2016-26-10 17:35:55",
+				"time_start"=>"2016-10-26 12:10:30",
+				"time_end"=>"2016-10-26 17:35:55",
 				"channels"=> [2,4], 
 				"new_tags" => [ "testTag 1"],
 				"venue_id"=>1518]
 			)->seeJsonStructure(['result', 'id']);
-
+        
         $this->assertEquals(200, $this->response->status());
 
         $result = $this->post('api/v1/notes?token='.$token, ["header"=>" header test 2",
 												"description"=>"description test 2",
 												"all_day"=>false,
-												"time_start"=>"2016-26-10 12:10:30",
-												"time_end"=>"2016-26-10 17:35:55",
+												"time_start"=>"2016-10-26 12:10:30",
+												"time_end"=>"2016-10-26 17:35:55",
 												"channels"=> [2,4], 
 								  				"venue_id"=>1588
                                                             ]) 
@@ -73,8 +74,8 @@ class NoteTest extends TestCase
         $result = $this->post('api/v1/notes?token='.$token, ["header"=>" header test 2",
 												"description"=>"description test 2",
 												"all_day"=>false,
-												"time_start"=>"2016-26-10 12:10:30",
-												"time_end"=>"2016-26-10 17:35:55",
+												"time_start"=>"2016-10-26 12:10:30",
+												"time_end"=>"2016-10-26 17:35:55",
 												"channels"=> [2,4], 
 								  				"venue_id"=>0
                                                             ]) 
@@ -86,21 +87,21 @@ class NoteTest extends TestCase
 								        		"header"=>" header test 3",
 												"description"=>"description test 3",
 												"all_day"=>false,
-												"time_start"=>"2016-26-10 12:10:30",
-												"time_end"=>"2016-26-10 17:35:55",
+												"time_start"=>"2016-10-26 12:10:30",
+												"time_end"=>"2016-10-26 17:35:55",
 												"channels"=> [2,4], 
 												"new_tags" => [ "testTag 1"],
 												"venue_id"=>1518]) 
                ->seeJson(['result' => 'error', 'message'=>'duplicate_entry', 'entity'=>'tag']);
 
         $this->assertEquals(400, $this->response->status());
-
+        //---
         $result = $this->post('api/v1/notes?token='.$token, [
 								        		 
 												"description"=>"description test 3",
 												"all_day"=>false,
-												"time_start"=>"2016-26-10 12:10:30",
-												"time_end"=>"2016-26-10 17:35:55",
+												"time_start"=>"2016-10-26 12:10:30",
+												"time_end"=>"2016-10-26 17:35:55",
 												 
 											 
 												"venue_id"=>1518]) 
@@ -112,8 +113,8 @@ class NoteTest extends TestCase
 								        		"header"=>" header test 3",
 												 
 												"all_day"=>false,
-												"time_start"=>"2016-26-10 12:10:30",
-												"time_end"=>"2016-26-10 17:35:55",
+												"time_start"=>"2016-10-26 12:10:30",
+												"time_end"=>"2016-10-26 17:35:55",
 												 
 											 
 												"venue_id"=>1518]) 
@@ -125,8 +126,8 @@ class NoteTest extends TestCase
 								        		"header"=>" header test 3", 
 												"description"=>"description test 3",
 												 
-												"time_start"=>"2016-26-10 12:10:30",
-												"time_end"=>"2016-26-10 17:35:55",
+												"time_start"=>"2016-10-26 12:10:30",
+												"time_end"=>"2016-10-26 17:35:55",
 												 
 											 
 												"venue_id"=>1518]) 
@@ -141,21 +142,20 @@ class NoteTest extends TestCase
 												"description"=>"description test 3",
 												"all_day"=>false,
 												 
-												"time_end"=>"2016-26-10 17:35:55",
+												"time_end"=>"2016-10-26 17:35:55",
 												 
 											 
 												"venue_id"=>1518]) 
                ->seeJson(['result' => 'error'  ]);
 
           $this->assertEquals(400, $this->response->status());
-
 
         $result = $this->post('api/v1/notes?token='.$token, [
 								        		
 								        		"header"=>" header test 3",  
 												"description"=>"description test 3",
 												"all_day"=>false,
-												"time_start"=>"2016-26-10 12:10:30",
+												"time_start"=>"2016-10-26 12:10:30",
 												
 												 
 											 
@@ -170,8 +170,8 @@ class NoteTest extends TestCase
 	 							        		"header"=>" header test 3",  
 												"description"=>"description test 3",
 												"all_day"=>false,
-												"time_start"=>"2016-26-10 12:10:30",
-												"time_end"=>"2016-26-10 17:35:55" ]
+												"time_start"=>"2016-10-26 12:10:30",
+												"time_end"=>"2016-10-26 17:35:55" ]
 	 											 ) 
                ->seeJson(['result' => 'error'  ]);
 

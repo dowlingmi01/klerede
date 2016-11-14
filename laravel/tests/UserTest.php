@@ -245,11 +245,40 @@ class UserTest extends TestCase
                                                     ])->seeJson(['result'=>'error' ]);
                 
         $this->assertEquals(400, $this->response->status());
+
+
+
+
         //echo $this->response->getContent();
   
     
     }
 
+    public function testCreateUserAdminUser()
+    {
+
+
+      $result = $this->post('api/v1/auth/login', ['email'=>'aqua+admin@test.com','password'=>'secretadmin'])
+                ->seeJsonStructure([
+                 'token'
+         ]);
+       
+
+        $token = '';
+        
+       $responseData = json_decode($this->response->getContent(), true);
+       $token = $responseData['token'];
+
+         $result2 = $this->post('api/v1/users?token='.$token, ['first_name'=>'Test Create Name',
+                                                    'last_name'=>'Test Create LastN',
+                                                    'email'=>'newcreate2@test.com',
+                                                    'role_id'=>1,
+                                                    'venue_id'=>1518
+                                                    ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges' ]);
+                
+        $this->assertEquals(403, $this->response->status());
+
+    }
     public function testCreateUserBasicUser()
     {
 
@@ -395,6 +424,28 @@ class UserTest extends TestCase
 
         //$result = $this->json('POST', 'api/v1/auth/login', ['email'=>'aqua+owner@test.com','password'=>'secretowner']);
         
+    }
+
+     public function testUpdateUserOwnerUser()
+    {
+
+        $result = $this->post('api/v1/auth/login', ['email'=>'aqua+admin@test.com','password'=>'secretadmin'])
+                ->seeJsonStructure([
+                 'token'
+         ]);
+       
+
+        $token = '';
+        
+        $responseData = json_decode($this->response->getContent(), true);
+        $token = $responseData['token'];
+
+        $result3 = $this->put('api/v1/users/1?token='.$token, [ 
+                                      'email'=>'aqua+admin+mod@test.com' 
+                ])->seeJson(['result'=>'error', 'message'=>'insufficient_privileges' ]);
+                
+        $this->assertEquals(403, $this->response->status());
+
     }
 
     public function testUpdatOwnPasswordUser()
