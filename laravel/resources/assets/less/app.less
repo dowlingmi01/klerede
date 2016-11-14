@@ -760,8 +760,12 @@ div.user-wrapper {
 #visits-nonmembers .stat-block {background-color: @gold;}
 #sales-gate .stat-block {background-color: @aqua;}
 */
+
 #visits-blocks-widget,
 #members-blocks-widget {
+    select.form-control::-ms-expand {
+        display: none;
+    }
     .form-control {
         appearance: none;
             -moz-appearance: none;
@@ -794,6 +798,9 @@ div.user-wrapper {
     h3 {
         font-size: 120%;
         text-transform: uppercase;
+    }
+    select.form-control::-ms-expand {
+        display: none;
     }
     .form-control {
         appearance: none;
@@ -2854,6 +2861,10 @@ a.dp-choose-date {
 }
 #revenue2 .unit-filter {
     cursor: pointer;
+}
+
+#revenue2 select.form-control::-ms-expand {
+    display: none;
 }
 #revenue2 .form-control {
     appearance: none;
