@@ -1499,7 +1499,7 @@ var Revenue2 = React.createClass({
                 var change = <span></span>;
             } else {
                 var upDownClass = percent >= 0 ? "up"  : "down";
-                var change = <span className="change">(
+                var change = <span className={"change "+upDownClass}>(
                         <ChangeArrow className={upDownClass} />
                         <span className="" id="change">{percent}%</span>
                     )
@@ -1508,7 +1508,7 @@ var Revenue2 = React.createClass({
             var attendanceDetailData = <span>
                                             <small>{arSign}</small> {arCurrentFormatted}
                                             &nbsp;&nbsp;|&nbsp;&nbsp;
-                                            <small>{arSign}</small> {arLastFormatted}&nbsp;&nbsp;{change}
+                                            <small>{arSign}</small> <span className="attendance-last">{arLastFormatted}</span>&nbsp;&nbsp;{change}
                                         </span>;            
             
             //Build Detail Rows

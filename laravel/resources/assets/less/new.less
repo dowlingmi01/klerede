@@ -401,11 +401,24 @@ table.jCalendar td.no-data {
        div {
             font-size:90%;
             padding-top:4px;
-            .change {
-                font-size:80%;
+            .attendance-last {
+                color:gray;
+            }
+            .change.down {
                 color:@red;
                 svg {
-                    fill: #ad1d0e;
+                    fill:@red;
+                }
+            }
+            .change.up {
+                color:@aqua;
+                svg {
+                    fill:@aqua;
+                }
+            }
+            .change {
+                font-size:80%;
+                svg {
                     height: 12px;
                     vertical-align: text-bottom;
                     width:12px;
