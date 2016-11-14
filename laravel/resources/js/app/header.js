@@ -22,6 +22,7 @@ var KleredeLogo = require('./svg-icons').KleredeLogo;
 
 var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
+var CloseIcon = require('./svg-icons').CloseIcon;
 var LongArrow = require('./svg-icons').LongArrow;
 
 var customerLogos = require("./customer-logo.js").logos;
@@ -646,7 +647,7 @@ var Header = React.createClass({
                               </div>;
                             
             manageUsers = <div id="manage-users" className={"utilities-set" + (this.state.currentUtilitiesSet=="manage-users"? " active" : "") } onClick={this.activateField}>
-                            <h3>Manage Users <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
+                            <h3>Manage Users <div onClick={this.closeUtility} className="close"><CloseIcon className="close-icon" /></div> </h3>
                             <div className="utility-group">
                                 {users}
                             </div>
@@ -694,7 +695,7 @@ var Header = React.createClass({
                 </div>
                 <div id="utilities-background" className="a-mask-to-fix-height">
                     <div id="utilities" className={this.state.utilitiesClass}>
-                        <h3>Settings <div className="glyphicon glyphicon-remove close" id="close-utilities" aria-hidden="true" onClick={this.closeUtilities}></div></h3>
+                        <h3>Settings <div onClick={this.closeUtilities} className="close"><CloseIcon className="close-icon" /></div></h3>
                         <div className="utility" onClick={this.toggleUtility.bind(this,"user-profile","modal")}>
                             User Profile
                             <Caret className="utilities-caret" />
@@ -708,7 +709,7 @@ var Header = React.createClass({
                         <div className="utility" data-utility="logout" data-type="tbd" onClick={this.logout}>Logout</div>
                     </div>
                     <div id="user-profile" className={"utilities-set" + (this.state.currentUtilitiesSet=="user-profile"? " active" : "") } onClick={this.activateField}>
-                        <h3>User Profile <div className="glyphicon glyphicon-remove close" aria-hidden="true" onClick={this.closeUtility}></div></h3>
+                        <h3>User Profile <div onClick={this.closeUtility} className="close"><CloseIcon className="close-icon" /></div></h3>
                         <form className="settings">
                             <div className="form-group">
                                 <label htmlFor="up-firstName">First Name:</label>
