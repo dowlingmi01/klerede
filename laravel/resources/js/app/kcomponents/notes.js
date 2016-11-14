@@ -398,8 +398,16 @@ var AddNoteModal = React.createClass({
     },
     onDeleteCategoryError: function(response) {
         this.loadTags();
-        alert(response.message);
-        throw response;
+        var result = response.responseJSON;
+        if(result) {
+            if(result.message=="used_tag") {
+                alert("Cannot delete a category that contains notes");
+            } else {
+                alert("Cannot delete a category: "+result.message);
+            }
+        } else {
+            throw response;
+        };
     },
     onNotifyClick:function (notify) {
         this.setChanged();
