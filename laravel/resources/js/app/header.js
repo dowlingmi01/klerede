@@ -243,6 +243,7 @@ var Header = React.createClass({
 			currentUser:-1,
 			utilitiesClass:"",
 			addUserMessage:"",
+			addUserError:"",
 			darkenBackgroundActive:"",
         };
         
@@ -496,11 +497,11 @@ var Header = React.createClass({
 		
 		if(errors.length) {
 			
-			alert(errors.join("\n"));
+			this.userError(errors.join("\n"));
 			return;
 		}
 		
-		this.setState({addUserMessage:"Adding new user..." });
+		this.userMessage("Adding new user..." );
         event.target.blur();
 		//new:function (name, email, password, role_id, venue_id, onSuccess, onError)
 		KAPI.users.new(
@@ -517,20 +518,27 @@ var Header = React.createClass({
 	onAddUser:function (response) {
 		console.log(response);
 		if (response.result == "ok") {
-			this.setState({addUserMessage:"New user added." });
-			// alert(_l("New user added."));
+			this.userMessage("New user added.");
 			this.refs.addUserForm.reset();
 			this.getUsers();
 		} else {
-			this.setState({addUserMessage:_l("Could not add new user.") });
-			// alert(_l("Could not add new user:")+" "+_l(response.message));
+            this.onAddUserError(response);
 		}
 	},
-	onAddUserError:function (error) {
-		console.log(error);
-		this.setState({addUserMessage:_l("Could not add new user.") });
-		// alert(_l("Could not add new user."));
+	onAddUserError:function (response) {
+		console.log(response);
+        var error = <span>Could not add new user.<br />Email address already exists.</span>;
+        if(response.message) {
+            error = response.message;
+        }
+		this.userError(error);
 	},
+    userMessage:function(m) {
+        this.setState({addUserMessage:m, addUserError:"" });
+    },
+    userError:function(m) {
+        this.setState({addUserMessage:"", addUserError:m });
+    },
     changePlan: function(event){
 		this.openUtility('change-plan');
         // event.preventDefault();
@@ -644,12 +652,13 @@ var Header = React.createClass({
                             </div>
                             <form ref="addUserForm" className="utility-group form-group" onFocus={this.closeUser}>
                                 <h4>Add a User</h4>
-                                <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} />
-                                <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} />
-                                <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} />
+                                <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} autoComplete="off" />
+                                <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} autoComplete="off" />
+                                <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} autoComplete="off" />
                                 <Roles ref="roleSelect" onChange={this.onAddUserRoleChange} userLevel={this.state.userLevel} roles={this.state.roles} roleID={this.state.addUserRoleID}/>
                                 <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
                                 <div className="message">{this.state.addUserMessage}</div>
+                                <div className="error">{this.state.addUserError}</div>
                             </form>
                         </div>;
         }
