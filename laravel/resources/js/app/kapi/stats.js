@@ -71,11 +71,13 @@ module.exports = {
             if (members === true || channel == 'visitors_members')
                 query.specs.kinds = ["membership"];
             else if (members === false || channel == 'visitors_non_members')
-                query.specs.kinds = ["ga", "group"];
+                query.specs.kinds = ["ga", "group", "other_attendance"];
             else if (members === "ga")
                 query.specs.kinds = ["ga"];
             else if (members === "group")
                 query.specs.kinds = ["group"];
+            else if (members === "other_attendance")
+                query.specs.kinds = ["other_attendance"];
         }
 
         //Kinds for ticket type
