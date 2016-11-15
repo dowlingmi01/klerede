@@ -78,6 +78,15 @@ class PscChanges extends Migration
 		VenueVariable::setValue(1204, 'VISITS_SOURCE', 'sales');
 		VenueVariable::setValue(1204, 'CAFE_LAST_TRAN_ID', 0);
 		VenueVariable::setValue(1204, 'CAFE_LAST_TRAN_DETAIL_ID', 0);
+
+		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_psc.csv'));
+		DB::table('box_office_product_kind_map')->insert($bopkm_data);
+		DB::table('facility')->insert([
+			['venue_id'=>1204, 'code'=>'0/GATE10', 'is_ga'=> true ],
+		]);
+		DB::table('operator')->insert([
+			['venue_id'=>1204, 'code'=>'WEBOP', 'is_online'=> true ],
+		]);
 	}
 
     /**
@@ -87,6 +96,9 @@ class PscChanges extends Migration
      */
     public function down()
     {
+		DB::table('box_office_product_kind_map')->where('venue_id', 1204)->delete();
+		DB::table('facility')->where('venue_id', 1204)->delete();
+		DB::table('operator')->where('venue_id', 1204)->delete();
 		Schema::dropIfExists('import_siriusware_cafe_product');
 		Schema::dropIfExists('import_siriusware_cafe_transaction');
 		Schema::dropIfExists('import_siriusware_cafe_transaction_line');
