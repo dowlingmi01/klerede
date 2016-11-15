@@ -57,6 +57,12 @@ class PscChanges extends Migration
 			['id'=>2100, 'name'=>'siriusware_cafe_transaction_line'],
 		]);
 
+		$sps = ['sp_compute_stats_visits', 'sp_compute_stats_box_office'];
+		foreach($sps as $sp) {
+			$sql = file_get_contents(database_path(sprintf('migrations/sp/%s.sql', $sp)));
+			DB::unprepared($sql);
+		}
+
 		VenueVariable::setValue(1518, 'BOP_ACCT_CODE_EXP', 'CASE WHEN user_code != \'\' THEN user_code ELSE FORMAT(pr_ctr_1, \'000\') END');
 		VenueVariable::setValue(1518, 'BOP_KIND_EXP', 'CASE WHEN t.department IS NULL THEN \'other\' WHEN x.validate2 > 0 THEN \'ticket\' ELSE \'pass\' END');
 		VenueVariable::setValue(1518, 'BOP_IS_GA_EXP', 'CASE WHEN cast(a_no_loc_l as varchar) NOT LIKE \'%|1|%\' THEN 1 ELSE 0 END');

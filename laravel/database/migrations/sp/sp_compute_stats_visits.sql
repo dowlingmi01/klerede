@@ -34,7 +34,7 @@ BEGIN
                  AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
                  AND box_office_product_kind_id IN (1, 2, 3, 6)
            WHERE p.is_ga = 1
-             AND p.kind = 'ticket'
+             AND p.kind != 'pass'
              AND t.venue_id = in_venue_id
              AND v.valid_date = in_date
            GROUP BY p.venue_id, v.valid_date, m.box_office_product_kind_id
