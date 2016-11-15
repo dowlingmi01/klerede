@@ -22,7 +22,6 @@ class CreateRoleTable extends Migration
         $roles = array(
                 ['id'=>1, 'name' => 'Owner'],
                 ['id'=>2, 'name' => 'Admin'],
-                ['id'=>3, 'name' => 'Power'],
                 ['id'=>4, 'name' => 'Basic'],
         );
 		DB::table('role')->insert($roles);

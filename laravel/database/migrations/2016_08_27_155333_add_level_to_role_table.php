@@ -20,7 +20,6 @@ class AddLevelToRoleTable extends Migration
         $roles = array(
                 ['id'=>1, 'name' => 'Owner', 'level'=>'10', 'permission'=>'UM|GS'],
                 ['id'=>2, 'name' => 'Admin', 'level'=>'20', 'permission'=>'UM|GS'],
-                ['id'=>3, 'name' => 'Power', 'level'=>'30', 'permission'=>'GS'],
                 ['id'=>4, 'name' => 'Basic', 'level'=>'40', 'permission'=>''],
         );
         DB::table('role')->truncate();

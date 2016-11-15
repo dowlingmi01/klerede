@@ -20,7 +20,6 @@ class AlterTableRoleChangePermission extends Migration
         $roles = array(
                 ['id'=>1, 'name' => 'Owner', 'level'=>'10', 'permissions'=>'users-manage|goals-set'],
                 ['id'=>2, 'name' => 'Admin', 'level'=>'20', 'permissions'=>'users-manage|goals-set'],
-                ['id'=>3, 'name' => 'Power', 'level'=>'30', 'permissions'=>'goals-set'],
                 ['id'=>4, 'name' => 'Basic', 'level'=>'40', 'permissions'=>''],
         );
         DB::table('role')->truncate();
