@@ -26,7 +26,6 @@ var ChangeArrow = require('./svg-icons').ChangeArrow;
 var CloseIcon = require('./svg-icons').CloseIcon;
 var CheckMark = require('./svg-icons').CheckMark;
 var LongArrow = require('./svg-icons').LongArrow;
-var NoteIcon = require('./svg-icons').NoteIcon;
 var SlimPlusSign = require('./svg-icons').SlimPlusSign;
 var SlimMinusSign = require('./svg-icons').SlimMinusSign;
 

@@ -33,6 +33,7 @@ var Caret = require('../svg-icons').Caret;
 var CheckMark = require('../svg-icons').CheckMark;
 var Circle = require('../svg-icons').Circle;
 var CloseIcon = require('../svg-icons').CloseIcon;
+var CloseIconPink = require('../svg-icons').CloseIconPink;
 var EditIcon = require('../svg-icons').EditIcon;
 var NoteIcon = require('../svg-icons').NoteIcon;
 var SlimPlusSign = require('../svg-icons').SlimPlusSign;
@@ -68,7 +69,7 @@ var Category = React.createClass({
     render:function () {
         return(
             <div className="category-item">
-                <SVGButton className="circle" onClick={this.props.onRemove} id="remove-category-item" icon={<CloseIcon className="" />} />
+                <CloseIconPink className="remove-category-item" onClick={this.props.onRemove} />
                 {"#"+this.props.name}
             </div>
         );
@@ -903,7 +904,6 @@ var NoteColumn = React.createClass({
 });
 var Notes = React.createClass({
     getInitialState:function() {
-        console.log(this.props.barCount);
         return {
             noteTipIcon:"", 
             noteDetailsClass:"",
