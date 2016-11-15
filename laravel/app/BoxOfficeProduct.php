@@ -13,7 +13,8 @@ class BoxOfficeProduct extends Model {
 			return $result;
 	}
 	static public function import($data) {
-		if($data->kind == 'pass') {
+		$productKind = BoxOfficeProductKindMap::getKindFor($data->venue_id, $data->account_code);
+		if($productKind && $productKind->code == 'membership') {
 			if( preg_match('/MBRCM/i', $data->description) ) {
 				$membership_kind_code = 'corporate';
 			} elseif( preg_match('/family/i', $data->description) ) {
