@@ -1575,7 +1575,14 @@ var Revenue2 = React.createClass({
                         
                                 var ttToData = this.state.result[ttSufix+ttTotals];
                                 var ttFromData = this.state.result[ttSufix+"_"+this.state.comparePeriodType+ttTotals];
-                                
+                                if ( 
+                                    (!ttToData && !ttFromData) || 
+                                    (ttToData.length===0 && ttFromData.length===0 )|| 
+                                    (ttToData[rUnits]===null && ttFromData[rUnits]===null )
+                                ) {
+                                    continue;
+                                }
+                                // console.log(ttToData, ttFromData, ttSufix+ttTotals, ttSufix+"_"+this.state.comparePeriodType+ttTotals);
                                 if (ttFromData && ttToData) {
                                     
                                     
