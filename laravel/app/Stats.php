@@ -99,8 +99,10 @@ class Stats {
 			}
 		} else {
 			$dbquery->addSelect(DB::raw('sum(units) as units'));
-			if($specs->type == 'sales')
+			if($specs->type == 'sales') {
+				$dbquery->whereNotIn('box_office_product_kind_id', [4, 5]);
 				$dbquery->addSelect(DB::raw('sum(amount) as amount'));
+			}
 
 			if($periods->kind == 'average') {
 				$subquery = $dbquery;
