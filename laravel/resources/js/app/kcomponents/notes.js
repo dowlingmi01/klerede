@@ -1088,9 +1088,12 @@ var Notes = React.createClass({
         
         return (
             <div className="notes">
+            { features.notes_calendar ?
                 <div id="calendar-button-container" onClick={this.showCalendar}>
                     <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
                 </div>
+                :<div></div>
+            }
                 <div id="notebars">
                     {noteBars}
                 </div>
