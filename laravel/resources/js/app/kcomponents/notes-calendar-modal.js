@@ -27,6 +27,196 @@ var KAPI = {
 
 BigCalendar.momentLocalizer(moment);
 
+var eventsTest = [{
+    "id": 44,
+    "header": "Test Note",
+    "description": "Note by MD",
+    "all_day": 0,
+    "time_start": "2016-11-02 09:00:00",
+    "time_end": "2016-11-02 12:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-10 15:16:22",
+    "updated_at": "2016-11-10 15:16:22",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }
+    ],
+    "tags": [{
+        "id": 5,
+        "description": "Private event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 44,
+            "tag_id": 5
+        }
+    }
+    ]
+}, {
+    "id": 35,
+    "header": "Pay What You Want Day",
+    "description": "Visitors to the aquarium will be able to determine their own pricing",
+    "all_day": 1,
+    "time_start": "2016-11-06 00:00:00",
+    "time_end": "2016-11-06 00:00:00",
+    "owner_id": 6,
+    "last_editor_id": 6,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 20:12:31",
+    "updated_at": "2016-11-08 20:12:31",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 5,
+        "description": "Private event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 35,
+            "tag_id": 5
+        }
+    }, {
+        "id": 7,
+        "description": "Campaign",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 35,
+            "tag_id": 7
+        }
+    }
+    ]
+}, {
+    "id": 34,
+    "header": "Election Day",
+    "description": "Historic election",
+    "all_day": 1,
+    "time_start": "2016-11-08 00:00:00",
+    "time_end": "2016-11-08 00:00:00",
+    "owner_id": 6,
+    "last_editor_id": 6,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 20:10:00",
+    "updated_at": "2016-11-08 20:10:00",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 1,
+        "description": "Facility",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 34,
+            "tag_id": 1
+        }
+    }
+    ]
+}, {
+    "id": 36,
+    "header": "Test Note",
+    "description": "description of what's going on",
+    "all_day": 1,
+    "time_start": "2016-11-09 00:00:00",
+    "time_end": "2016-11-09 00:00:00",
+    "owner_id": 6,
+    "last_editor_id": 6,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 21:15:49",
+    "updated_at": "2016-11-08 21:15:49",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 5,
+        "description": "Private event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 36,
+            "tag_id": 5
+        }
+    }
+    ]
+}, {
+    "id": 43,
+    "header": "Note in the future",
+    "description": "Omit any punctuation on either side of the ellipsis, unless the punctuation is necessary to make the shortened",
+    "all_day": 0,
+    "time_start": "2016-11-17 08:30:00",
+    "time_end": "2016-11-17 11:30:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 23:31:51",
+    "updated_at": "2016-11-08 23:31:51",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 4,
+        "description": "Special exhibit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 43,
+            "tag_id": 4
+        }
+    }
+    ]
+}
+]
+
+;
+
 function NoteEvent({ event }) {
     var className = "NoteEvent";
     var style = {};
@@ -38,6 +228,11 @@ function NoteEvent({ event }) {
         // console.log(event.dateCount, (1.25 ^ event.dateCount), size);
         style.width = size+"px";
         style.height = size+"px";
+        
+        if(event.firstOneDay) {
+            className += " revealed";
+        }
+        
     };
     return (
         <Circle style={style} className={className}/>
@@ -234,34 +429,46 @@ var NotesCalendarModal = React.createClass({
         KAPI.notes.list(wnt.venueID, monthStart, monthEnd, this.onNotesUpdated);
     },
     onNotesUpdated:function (result) {
+        // result  = eventsTest;
         var events = [];
         
         var lastDate = "";
         var dateCount = 0;
+        var firstFound = false;
         
         for (var i=0; i<result.length; i++) {
             var r = result[i];
             var start = moment(r.time_start);
             var end = moment(r.time_end);
             var currentDate = start.format('YYYY-MM-DD');
+            var firstOneDay = false;
             
             if(lastDate!=currentDate) {
                 lastDate=currentDate;
                 dateCount=0;
+                firstFound = false;
             } else {
                 events[events.length-1].lastInDate = false;
             }
+            
+            var eventLength = (end.startOf("day").diff(start.startOf("day"), 'days'));
             dateCount++;
+            
+            if (!firstFound && eventLength < 1) {
+                firstFound = true;
+                firstOneDay = true;
+            }
             
             events.push({
                 'title': r.header,
                 'allDay': r.all_day ? true : false,
                 'start': start.toDate(),
                 'end': end.toDate(),
-                'length': (end.startOf("day").diff(start.startOf("day"), 'days')),
+                'length': eventLength,
                 'data': r,
                 dateCount:dateCount,
-                lastInDate:true
+                lastInDate:true,
+                firstOneDay:firstOneDay
             })
         }
         
@@ -278,20 +485,6 @@ var NotesCalendarModal = React.createClass({
         
         this.setState({events:events, notes:this.getNotes(this.state.currentDate, events)});
     },
-    revealEvents:function () {
-        var weekRows = $(".rbc-row-content");
-        for (var i = weekRows.length - 1; i >= 0; i--) {
-            var eventRows = $(weekRows[i]).find(".rbc-row");
-            for (var j = eventRows.length - 1; j >= 0; j--) {
-                var eventRow = eventRows[j];
-                var event = $(eventRow).find("svg.NoteEvent");
-                if (event.length) {
-                    event.css("display","inline-block");
-                    break;
-                }
-            }
-        }
-    },
     updateDate:function (date) {
         this.updateNotes(date);
         this.props.onSelectDate(date);
@@ -307,11 +500,12 @@ var NotesCalendarModal = React.createClass({
         this.props.onNoteEdit(null);
     },
     onDateChange:function (e) {
-        // console.log(e);
+        console.log(e);
         // e.preventDefault();
         this.updateDate(e);
     },
     onSelectNote:function (e) {
+        console.log(e);
         this.updateDate(e.start);
     },
     onSelectSlot:function (e) {
@@ -360,7 +554,6 @@ var NotesCalendarModal = React.createClass({
         var current = $(getDOMNode(this.refs.BigCalendar)).find(".rbc-current");
         // console.log(this.refs.BigCalendar, current, DayBG);
         $(current).append(DayBG);
-        this.revealEvents();
 	},
     render:function () {
         
