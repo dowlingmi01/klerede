@@ -14,7 +14,7 @@ class AddFiscalYearStartMonthToVenueTable extends Migration
     {
         Schema::table('venue', function(Blueprint $table)
         {
-            $table->integer('fiscal_year_start_month')->nullable()->after('long');
+            $table->integer('fiscal_year_start_month')->after('long')->default(1);
 
         });
         DB::table('venue')->update(['fiscal_year_start_month' => 1]);
