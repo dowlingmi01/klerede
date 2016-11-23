@@ -488,7 +488,7 @@ var Revenue2 = React.createClass({
         }
         
         var regularUnitsData = {
-            channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
+            channelNames:{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
             childCategories:{ga:"General admission", group:"Groups", donation:"Donation", other_attendance:"Other Attendance", other:"Other"},
             childCategoriesQdetails:{prefix:"gate_bars_by_", channel:"gate", type:'sales'},
@@ -496,7 +496,7 @@ var Revenue2 = React.createClass({
         }
 
         var attendanceData = {
-            channelNames:{visitors_non_members:"Box Office", visitors_members:"Membership"},
+            channelNames:{visitors_non_members:"Guest Services", visitors_members:"Membership"},
             channelActive:{visitors_non_members:"active", visitors_members:"active"},
             childCategories:{ga:"General admission", group:"Groups", other_attendance:"Other Attendance"},
             childCategoriesQdetails:{prefix:"visitors_non_members_bars_by_", channel:"ALL", type:'visits'},

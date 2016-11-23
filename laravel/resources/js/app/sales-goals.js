@@ -85,7 +85,7 @@ var SalesGoals = React.createClass({
             for(var i=0; i<3; i++){
                 var month = wnt.thisQuarterMonths[i];
                 var monthTotal;
-                // Gate / Box Office
+                // Gate / Guest Services
                 monthTotal = goals['gate/amount'].months[month];
                 wnt.filter.sgGoalBox += monthTotal;
                 // Cafe
@@ -295,7 +295,7 @@ var SalesGoals = React.createClass({
                     <Meter label="Total Sales" divID="meter-sales-total" amount={this.state.sales} goal={this.state.goalTotal} completed='sgGoalTotalComplete' />
                     <h3>By Channel</h3>
                     <div className="channels">
-                        <Meter label="Box Office" divID="meter-sales-box" amount={this.state.boxoffice} goal={this.state.goalBox} completed='sgGoalBoxComplete' />
+                        <Meter label="Guest Services" divID="meter-sales-box" amount={this.state.boxoffice} goal={this.state.goalBox} completed='sgGoalBoxComplete' />
                         <Meter label="Gift Store" divID="meter-sales-gift" amount={this.state.giftstore} goal={this.state.goalGift} completed='sgGoalGiftComplete' />
                         <Meter label="Cafe" divID="meter-sales-cafe" amount={this.state.cafe} goal={this.state.goalCafe} completed='sgGoalCafeComplete' />
                     </div>
