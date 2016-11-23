@@ -28,91 +28,17 @@ var KAPI = {
 BigCalendar.momentLocalizer(moment);
 
 var eventsTest = [{
-    "id": 44,
-    "header": "Test Note",
-    "description": "Note by MD",
+    "id": 19,
+    "header": "Test again for 3rd",
+    "description": "should add note to the 3rd test",
     "all_day": 0,
-    "time_start": "2016-11-02 09:00:00",
-    "time_end": "2016-11-02 12:00:00",
-    "owner_id": 1,
-    "last_editor_id": 1,
+    "time_start": "2016-10-02 00:00:00",
+    "time_end": "2016-10-02 00:00:00",
+    "owner_id": 5,
+    "last_editor_id": 5,
     "venue_id": 1518,
-    "created_at": "2016-11-10 15:16:22",
-    "updated_at": "2016-11-10 15:16:22",
-    "channels": [{
-        "id": 1,
-        "code": "gate"
-    }
-    ],
-    "tags": [{
-        "id": 5,
-        "description": "Private event",
-        "venue_id": 0,
-        "owner_id": 0,
-        "pivot": {
-            "note_id": 44,
-            "tag_id": 5
-        }
-    }
-    ]
-}, {
-    "id": 35,
-    "header": "Pay What You Want Day",
-    "description": "Visitors to the aquarium will be able to determine their own pricing",
-    "all_day": 1,
-    "time_start": "2016-11-06 00:00:00",
-    "time_end": "2016-11-06 00:00:00",
-    "owner_id": 6,
-    "last_editor_id": 6,
-    "venue_id": 1518,
-    "created_at": "2016-11-08 20:12:31",
-    "updated_at": "2016-11-08 20:12:31",
-    "channels": [{
-        "id": 3,
-        "code": "cafe"
-    }, {
-        "id": 1,
-        "code": "gate"
-    }, {
-        "id": 2,
-        "code": "membership"
-    }, {
-        "id": 4,
-        "code": "store"
-    }
-    ],
-    "tags": [{
-        "id": 5,
-        "description": "Private event",
-        "venue_id": 0,
-        "owner_id": 0,
-        "pivot": {
-            "note_id": 35,
-            "tag_id": 5
-        }
-    }, {
-        "id": 7,
-        "description": "Campaign",
-        "venue_id": 0,
-        "owner_id": 0,
-        "pivot": {
-            "note_id": 35,
-            "tag_id": 7
-        }
-    }
-    ]
-}, {
-    "id": 34,
-    "header": "Election Day",
-    "description": "Historic election",
-    "all_day": 1,
-    "time_start": "2016-11-08 00:00:00",
-    "time_end": "2016-11-08 00:00:00",
-    "owner_id": 6,
-    "last_editor_id": 6,
-    "venue_id": 1518,
-    "created_at": "2016-11-08 20:10:00",
-    "updated_at": "2016-11-08 20:10:00",
+    "created_at": "2016-11-03 19:03:15",
+    "updated_at": "2016-11-03 19:03:15",
     "channels": [{
         "id": 3,
         "code": "cafe"
@@ -133,23 +59,23 @@ var eventsTest = [{
         "venue_id": 0,
         "owner_id": 0,
         "pivot": {
-            "note_id": 34,
+            "note_id": 19,
             "tag_id": 1
         }
     }
     ]
 }, {
-    "id": 36,
+    "id": 16,
     "header": "Test Note",
-    "description": "description of what's going on",
-    "all_day": 1,
-    "time_start": "2016-11-09 00:00:00",
-    "time_end": "2016-11-09 00:00:00",
-    "owner_id": 6,
-    "last_editor_id": 6,
+    "description": "things happened tody",
+    "all_day": 0,
+    "time_start": "2016-10-04 00:00:00",
+    "time_end": "2016-10-04 00:00:00",
+    "owner_id": 5,
+    "last_editor_id": 5,
     "venue_id": 1518,
-    "created_at": "2016-11-08 21:15:49",
-    "updated_at": "2016-11-08 21:15:49",
+    "created_at": "2016-11-03 18:59:26",
+    "updated_at": "2016-11-03 18:59:26",
     "channels": [{
         "id": 3,
         "code": "cafe"
@@ -165,28 +91,136 @@ var eventsTest = [{
     }
     ],
     "tags": [{
-        "id": 5,
-        "description": "Private event",
+        "id": 7,
+        "description": "Campaign",
         "venue_id": 0,
         "owner_id": 0,
         "pivot": {
-            "note_id": 36,
-            "tag_id": 5
+            "note_id": 16,
+            "tag_id": 7
         }
     }
     ]
 }, {
-    "id": 43,
-    "header": "Note in the future",
-    "description": "Omit any punctuation on either side of the ellipsis, unless the punctuation is necessary to make the shortened",
+    "id": 17,
+    "header": "Note Test for 10\/4",
+    "description": "does this actually add",
     "all_day": 0,
-    "time_start": "2016-11-17 08:30:00",
-    "time_end": "2016-11-17 11:30:00",
+    "time_start": "2016-10-04 10:00:00",
+    "time_end": "2016-10-04 12:00:00",
+    "owner_id": 5,
+    "last_editor_id": 5,
+    "venue_id": 1518,
+    "created_at": "2016-11-03 19:00:52",
+    "updated_at": "2016-11-03 19:00:52",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }
+    ],
+    "tags": [{
+        "id": 1,
+        "description": "Facility",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 17,
+            "tag_id": 1
+        }
+    }
+    ]
+}, {
+    "id": 30,
+    "header": "3rd note",
+    "description": "The word\/ character limit happens in many occasions. For example: Twitter: 140, SMS: 160, Reddit Title: 300, Ebay Title: 80, Yelp Post: 5000, LinkedIn Summary:",
+    "all_day": 1,
+    "time_start": "2016-10-06 00:00:00",
+    "time_end": "2016-10-06 00:00:00",
     "owner_id": 1,
     "last_editor_id": 1,
     "venue_id": 1518,
-    "created_at": "2016-11-08 23:31:51",
-    "updated_at": "2016-11-08 23:31:51",
+    "created_at": "2016-11-07 23:37:22",
+    "updated_at": "2016-11-07 23:37:22",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 3,
+        "description": "Group visit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 30,
+            "tag_id": 3
+        }
+    }, {
+        "id": 6,
+        "description": "Local event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 30,
+            "tag_id": 6
+        }
+    }
+    ]
+}, {
+    "id": 31,
+    "header": "note 4",
+    "description": "The word\/ character limit happens in many occasions. For example: Twitter: 140, SMS: 160, Reddit Title: 300, Ebay Title: 80, Yelp Post: 5000, LinkedIn Summary:",
+    "all_day": 1,
+    "time_start": "2016-10-06 00:00:00",
+    "time_end": "2016-10-06 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-07 23:43:30",
+    "updated_at": "2016-11-07 23:43:30",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }
+    ],
+    "tags": [{
+        "id": 1,
+        "description": "Facility",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 31,
+            "tag_id": 1
+        }
+    }
+    ]
+}, {
+    "id": 32,
+    "header": "Note 5",
+    "description": "The word\/ character limit happens in many occasions. For example: Twitter: 140, SMS: 160, Reddit Title: 300, Ebay Title: 80, Yelp Post: 5000, LinkedIn Summary: ...",
+    "all_day": 1,
+    "time_start": "2016-10-06 00:00:00",
+    "time_end": "2016-10-06 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-07 23:43:45",
+    "updated_at": "2016-11-07 23:43:45",
     "channels": [{
         "id": 3,
         "code": "cafe"
@@ -207,14 +241,627 @@ var eventsTest = [{
         "venue_id": 0,
         "owner_id": 0,
         "pivot": {
-            "note_id": 43,
+            "note_id": 32,
             "tag_id": 4
+        }
+    }
+    ]
+}, {
+    "id": 20,
+    "header": "This is week view Oct 6th",
+    "description": "This is week view Oct 6th",
+    "all_day": 0,
+    "time_start": "2016-10-06 11:00:00",
+    "time_end": "2016-10-06 14:00:00",
+    "owner_id": 5,
+    "last_editor_id": 5,
+    "venue_id": 1518,
+    "created_at": "2016-11-03 20:14:01",
+    "updated_at": "2016-11-03 20:14:01",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 6,
+        "description": "Local event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 20,
+            "tag_id": 6
+        }
+    }
+    ]
+}, {
+    "id": 18,
+    "header": "Test Again for the 7th",
+    "description": "Note is supposed to add on the 7th but seems to be adding to the 20th",
+    "all_day": 0,
+    "time_start": "2016-10-07 10:30:00",
+    "time_end": "2016-10-07 11:30:00",
+    "owner_id": 5,
+    "last_editor_id": 5,
+    "venue_id": 1518,
+    "created_at": "2016-11-03 19:02:19",
+    "updated_at": "2016-11-03 19:02:19",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 6,
+        "description": "Local event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 18,
+            "tag_id": 6
+        }
+    }
+    ]
+}, {
+    "id": 25,
+    "header": "Note for the 9th - I'M changing this note now - 2nd change - this one on Chrome",
+    "description": "testing",
+    "all_day": 1,
+    "time_start": "2016-10-09 00:00:00",
+    "time_end": "2016-10-09 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-07 16:57:49",
+    "updated_at": "2016-11-07 17:01:21",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 6,
+        "description": "Local event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 25,
+            "tag_id": 6
+        }
+    }
+    ]
+}, {
+    "id": 47,
+    "header": "Test note",
+    "description": "MD made on a PC using FF",
+    "all_day": 1,
+    "time_start": "2016-10-12 00:00:00",
+    "time_end": "2016-10-12 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-10 22:12:57",
+    "updated_at": "2016-11-10 22:12:57",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 3,
+        "description": "Group visit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 47,
+            "tag_id": 3
+        }
+    }, {
+        "id": 14,
+        "description": "MDTest",
+        "venue_id": 1518,
+        "owner_id": 1,
+        "pivot": {
+            "note_id": 47,
+            "tag_id": 14
+        }
+    }
+    ]
+}, {
+    "id": 48,
+    "header": "Test note",
+    "description": "MD test of IE on Windows",
+    "all_day": 1,
+    "time_start": "2016-10-12 00:00:00",
+    "time_end": "2016-10-12 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-11 20:11:34",
+    "updated_at": "2016-11-11 20:11:34",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 8,
+        "description": "State holiday",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 48,
+            "tag_id": 8
+        }
+    }
+    ]
+}, {
+    "id": 29,
+    "header": "2nd note example",
+    "description": "0123456 78901 234567 90123 4567890 1234567 8901234567890 1234567890 1234567890123 45678901234567890123456789 ",
+    "all_day": 1,
+    "time_start": "2016-10-13 00:00:00",
+    "time_end": "2016-10-13 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-07 23:32:31",
+    "updated_at": "2016-11-07 23:33:01",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 7,
+        "description": "Campaign",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 29,
+            "tag_id": 7
+        }
+    }
+    ]
+}, {
+    "id": 46,
+    "header": "terwer",
+    "description": "werwerwer",
+    "all_day": 1,
+    "time_start": "2016-10-13 00:00:00",
+    "time_end": "2016-10-13 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-10 18:39:48",
+    "updated_at": "2016-11-10 18:39:48",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 1,
+        "description": "Facility",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 46,
+            "tag_id": 1
+        }
+    }, {
+        "id": 13,
+        "description": "Test Category @",
+        "venue_id": 1518,
+        "owner_id": 1,
+        "pivot": {
+            "note_id": 46,
+            "tag_id": 13
+        }
+    }
+    ]
+}, {
+    "id": 27,
+    "header": "LONG NOTE EXAMPLE",
+    "description": "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\"",
+    "all_day": 0,
+    "time_start": "2016-10-13 10:00:00",
+    "time_end": "2016-10-13 12:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-07 23:12:35",
+    "updated_at": "2016-11-08 20:58:51",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }
+    ],
+    "tags": [{
+        "id": 7,
+        "description": "Campaign",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 27,
+            "tag_id": 7
+        }
+    }
+    ]
+}, {
+    "id": 37,
+    "header": "Test Note",
+    "description": "Pateways, conference servers and other custom solutions.Pateways, conference servers and other custom solutions. fsdefgt",
+    "all_day": 1,
+    "time_start": "2016-10-14 00:00:00",
+    "time_end": "2016-10-14 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 23:19:36",
+    "updated_at": "2016-11-08 23:19:36",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }
+    ],
+    "tags": [{
+        "id": 3,
+        "description": "Group visit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 37,
+            "tag_id": 3
+        }
+    }
+    ]
+}, {
+    "id": 40,
+    "header": "4th note",
+    "description": " ellipses  ellipses  ellipses  ellipses ",
+    "all_day": 1,
+    "time_start": "2016-10-14 00:00:00",
+    "time_end": "2016-10-14 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 23:23:06",
+    "updated_at": "2016-11-08 23:23:06",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 3,
+        "description": "Group visit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 40,
+            "tag_id": 3
+        }
+    }
+    ]
+}, {
+    "id": 41,
+    "header": "5th note",
+    "description": " ellipses  ellipses  ellipses ",
+    "all_day": 1,
+    "time_start": "2016-10-14 00:00:00",
+    "time_end": "2016-10-14 00:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 23:23:19",
+    "updated_at": "2016-11-08 23:23:19",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 9,
+        "description": "School holiday",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 41,
+            "tag_id": 9
+        }
+    }
+    ]
+}, {
+    "id": 42,
+    "header": "6th note",
+    "description": " ellipses  ellipses  ellipses ",
+    "all_day": 0,
+    "time_start": "2016-10-14 09:00:00",
+    "time_end": "2016-10-14 10:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 23:24:04",
+    "updated_at": "2016-11-08 23:24:04",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 4,
+        "description": "Special exhibit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 42,
+            "tag_id": 4
+        }
+    }
+    ]
+}, {
+    "id": 38,
+    "header": "2nd Note",
+    "description": " ellipses  ellipses  ellipses  ellipses  ellipses  ellipses ",
+    "all_day": 0,
+    "time_start": "2016-10-14 10:00:00",
+    "time_end": "2016-10-14 12:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 23:22:20",
+    "updated_at": "2016-11-08 23:22:20",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 3,
+        "description": "Group visit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 38,
+            "tag_id": 3
+        }
+    }
+    ]
+}, {
+    "id": 39,
+    "header": "3rd Note",
+    "description": " ellipses  ellipses  ellipses  ellipses  ellipses ",
+    "all_day": 0,
+    "time_start": "2016-10-14 11:00:00",
+    "time_end": "2016-10-14 13:30:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-08 23:22:46",
+    "updated_at": "2016-11-08 23:22:46",
+    "channels": [{
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }
+    ],
+    "tags": [{
+        "id": 4,
+        "description": "Special exhibit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 39,
+            "tag_id": 4
+        }
+    }
+    ]
+}, {
+    "id": 45,
+    "header": "Test Note",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliq",
+    "all_day": 0,
+    "time_start": "2016-10-15 09:00:00",
+    "time_end": "2016-10-15 10:00:00",
+    "owner_id": 1,
+    "last_editor_id": 1,
+    "venue_id": 1518,
+    "created_at": "2016-11-10 18:06:43",
+    "updated_at": "2016-11-10 18:06:43",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }
+    ],
+    "tags": [{
+        "id": 3,
+        "description": "Group visit",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 45,
+            "tag_id": 3
+        }
+    }
+    ]
+}, {
+    "id": 21,
+    "header": "Hey!",
+    "description": "Testting",
+    "all_day": 0,
+    "time_start": "2016-10-17 00:00:00",
+    "time_end": "2016-10-17 00:00:00",
+    "owner_id": 3,
+    "last_editor_id": 3,
+    "venue_id": 1518,
+    "created_at": "2016-11-04 13:50:50",
+    "updated_at": "2016-11-04 13:50:50",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 8,
+        "description": "State holiday",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 21,
+            "tag_id": 8
+        }
+    }
+    ]
+}, {
+    "id": 6,
+    "header": "happened today",
+    "description": "things happened",
+    "all_day": 0,
+    "time_start": "2016-10-20 09:00:00",
+    "time_end": "2016-10-20 11:00:00",
+    "owner_id": 5,
+    "last_editor_id": 5,
+    "venue_id": 1518,
+    "created_at": "2016-10-31 21:28:10",
+    "updated_at": "2016-10-31 21:28:10",
+    "channels": [{
+        "id": 3,
+        "code": "cafe"
+    }, {
+        "id": 1,
+        "code": "gate"
+    }, {
+        "id": 2,
+        "code": "membership"
+    }, {
+        "id": 4,
+        "code": "store"
+    }
+    ],
+    "tags": [{
+        "id": 1,
+        "description": "Facility",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 6,
+            "tag_id": 1
+        }
+    }, {
+        "id": 6,
+        "description": "Local event",
+        "venue_id": 0,
+        "owner_id": 0,
+        "pivot": {
+            "note_id": 6,
+            "tag_id": 6
         }
     }
     ]
 }
 ]
-
 ;
 
 function NoteEvent({ event }) {
@@ -229,7 +876,7 @@ function NoteEvent({ event }) {
         style.width = size+"px";
         style.height = size+"px";
         
-        if(event.firstOneDay) {
+        if(event.firstOneDay && event.dateCount<=2) {
             className += " revealed";
         }
         
@@ -500,12 +1147,12 @@ var NotesCalendarModal = React.createClass({
         this.props.onNoteEdit(null);
     },
     onDateChange:function (e) {
-        console.log(e);
+        // console.log(e);
         // e.preventDefault();
         this.updateDate(e);
     },
     onSelectNote:function (e) {
-        console.log(e);
+        // console.log(e);
         this.updateDate(e.start);
     },
     onSelectSlot:function (e) {
