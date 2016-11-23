@@ -13,7 +13,7 @@ var formatAmount = exports.formatAmount = function(n, dec) {
     
     var sign = n<0 ? "-" : "";
     n = Math.abs(n);
-    if ( n >= 1000) {
+    if ( n >= 100) {
         //comma values, no decimals
         var s = n.toFixed(0);
         var r = "";
@@ -30,7 +30,7 @@ var formatAmount = exports.formatAmount = function(n, dec) {
         
         return sign+n.toFixed(dec);
         
-    } else if (n > 100) {
+    } else if (n > 10) {
         //one decimal
         return sign+n.toFixed(1);
     } else {
