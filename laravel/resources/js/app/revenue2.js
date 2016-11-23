@@ -754,8 +754,10 @@ var Revenue2 = React.createClass({
         return state;
     },
     fillHoles:function (state){
-        //don't fill quarters because it is almost impossible to have holes.
-        if (state.periodType == "quarter") return state;
+        
+        if (state.periodType == "quarter") {
+            var quarter = true;
+        }
         
         var du = KUtils.date;
         
@@ -781,20 +783,38 @@ var Revenue2 = React.createClass({
                         continue;
                     }
                 }
-                var start = new Date(q.periods.from);
-                var end = new Date(q.periods.to);
                 
-                for (var i=0 ; i<r.length; i++) {
+                if (quarter) {
+                    var start = du.getDateFromWeek(q.periods.from, true);
+                    var end = du.getDateFromWeek(q.periods.to, true);
+                    for (var i=0 ; i<r.length; i++) {
                     
-                    var current = new Date(r[i].period);
+                        var current = du.getDateFromWeek(r[i].period, true);
                     
-                    while (start < current) { //exit on start == current
-                        var fill = {period:du.serverFormat(start), units:0, amount:0};
-                        // console.debug(k,fill);
-                        r.splice(i, 0, fill);
-                        start = du.addDays(start, 1, true);
+                        while (start < current) { //exit on start == current
+                            var fill = {period:du.dateToWeek(start.toISOString()), units:0, amount:0};
+                            r.splice(i, 0, fill);
+                            start = du.addDays(start, 7, true);
+                        }
+                        start = du.addDays(start, 7, true)
                     }
-                    start = du.addDays(start, 1, true)
+                    
+                } else {
+                    var start = new Date(q.periods.from);
+                    var end = new Date(q.periods.to);
+                
+                    for (var i=0 ; i<r.length; i++) {
+                    
+                        var current = new Date(r[i].period);
+                    
+                        while (start < current) { //exit on start == current
+                            var fill = {period:du.serverFormat(start), units:0, amount:0};
+                            // console.debug(k,fill);
+                            r.splice(i, 0, fill);
+                            start = du.addDays(start, 1, true);
+                        }
+                        start = du.addDays(start, 1, true)
+                    }
                 }
             }
         }

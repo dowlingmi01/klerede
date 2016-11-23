@@ -160,13 +160,15 @@ var firstDayOfWeek = 1,
 
         return y+"-"+_forceDigits(w, 2);
     },
-    getDateFromWeek = function (s) { //YYYY-W -> mm/dd/yyyy (returns start week date)
+    getDateFromWeek = function (s, dateObject) { //YYYY-W -> mm/dd/yyyy (returns start week date)
         //week ISO 1988 from 1 to 53, 4 days rule
         var a = s.split("-");
         var year = parseInt(a[0]);
         var week = parseInt(a[1]);
         
         var m = moment().year(year).isoWeek(week).startOf("week");
+        
+        if(dateObject) return m.toDate();
         
         return  m.format("MM/DD/YYYY");
     };
