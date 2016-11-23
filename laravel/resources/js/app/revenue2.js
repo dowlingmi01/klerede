@@ -1768,6 +1768,7 @@ var Revenue2 = React.createClass({
                                     <Notes 
                                         startDate={KUtils.date.serverFormat(this.state.periodFrom)} 
                                         endDate={KUtils.date.serverFormat(this.state.lastDay)}
+                                        date={this.state.date}
                                         onShowNotes = {this.quarterShowNotes}
                                         showFirstNote = {this.state.showFirstNote}
                                         onShowFristNoteComplete = {this.onShowFristNoteComplete}
