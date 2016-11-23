@@ -5,6 +5,7 @@ var getDOMNode = require('../kutils/getDOMNode.js');
 var limitString = require('../kutils/string-utils.js').limitString;
 
 var wnt = require ('./wnt.js');
+var NotesCalendarModal = require('../kcomponents/notes-calendar-modal.js');
 
 require('bootstrap');
 require ('jquery-placeholder');
@@ -39,31 +40,17 @@ var NoteIcon = require('../svg-icons').NoteIcon;
 var SlimPlusSign = require('../svg-icons').SlimPlusSign;
 var SlimMinusSign = require('../svg-icons').SlimMinusSign;
 
+var AddNoteTip = require('./add-note-tip');
 var Channel = require('./channel.js');
 var JQTimePicker = require('./timepicker.js');
+var SVGButton = require('./svg-button');
+
 
 var Asterisc = React.createClass({
     render:function () {
         return <div className={this.props.className}>*</div>;
     }
 })
-
-var SVGButton = React.createClass({
-    render:function () {
-        if (this.props.disabled) {
-            return (
-                <div id={this.props.id || ""} className={"svg-button disabled " + (this.props.className || "")}>
-                    <div className="svg-button-content">{this.props.icon}</div>
-                </div>
-            );
-        };
-        return (
-            <div onClick={this.props.onClick || null} onMouseDown={this.props.onMouseDown} id={this.props.id || ""} className={"svg-button " + (this.props.className || "")}>
-                <div className="svg-button-content">{this.props.icon}</div>
-            </div>
-        );
-    }
-});
 
 var Category = React.createClass({
     render:function () {
@@ -218,10 +205,10 @@ var AddNoteModal = React.createClass({
     },
     onDescriptionChange:function (e) {
         var value = e.target.value;
-        if(value.length>120) {
-            alert("120 character limit reached.")
-            value = value.substring(0, 120);
-        };
+        // if(value.length>120) {
+        //     alert("120 character limit reached.")
+        //     value = value.substring(0, 120);
+        // };
         this.setChanged();
         this.setState({description:value});
     },
@@ -760,19 +747,6 @@ var NoteCircle = React.createClass({
         );
     }
 });
-var AddNoteTip = React.createClass({
-    componentDidMount:function () {
-        // $(this.getDOMNode()).modal("show");
-        
-    },
-    render:function () {
-        return (
-            <div className="add-note-menu" onClick={this.props.onAddNote}>
-                <div className={"menu-content fade "+this.props.fadein} style={{left:this.props.left}} role="tooltip" ><div className="arrow"></div><div className="action" ><a href="#add-note">Add Note</a></div></div>
-            </div> 
-        );
-    }
-});
 
 var NoteBar = React.createClass({
     getInitialState:function () {
@@ -909,11 +883,20 @@ var Notes = React.createClass({
             noteDetailsClass:"",
             activeNote:null,
             showAddNoteModal:false,
+            showCalendarModal:false,
+            noteEditCalendar:false,
             selectedDate:null,
             noteList:{},
             editNote:null,
             authorList:{}
         }
+    },
+    closeCalendarModal(e) {
+        // console.log(e);
+        this.setState({showCalendarModal:false});
+    },
+    closeAddNoteOpenCalendar(e) {
+        this.setState({showAddNoteModal:false, showCalendarModal:true, noteEditCalendar:false});
     },
     closeAddNoteModal(e) {
         this.setState({showAddNoteModal:false});
@@ -924,6 +907,10 @@ var Notes = React.createClass({
 	},
     onNoteEdit:function(note) {
         this.setState({showAddNoteModal:true, editNote:note});
+    },
+    onNoteEditCalendar:function(note) {
+        this.setState({noteEditCalendar:true});
+        this.onNoteEdit(note);
     },
     addNote:function(e) {
         // console.log(e.target, e.currentTarget);
@@ -938,6 +925,9 @@ var Notes = React.createClass({
     },
     hideNoteTipIcon:function (e) {
         this.setState({noteTipIcon:"out"});
+    },
+    showCalendar:function (e) {
+        this.setState({showCalendarModal:true});
     },
     showNotes:function (event, n) {
         event.stopPropagation();
@@ -971,10 +961,12 @@ var Notes = React.createClass({
             authorList[author.id] = author.name;
         }
         this.setState({authorList:authorList});
-        this.updateNoteList(this.props);
+        this.updateNoteList();
     },
     updateNoteList:function (props) {
         // console.log(props.startDate, props.endDate);
+        if (!props) props = this.props;
+        
         KAPI.notes.list(wnt.venueID, props.startDate, props.endDate, this.onNoteListUpdated);
     },
     onNoteListUpdated(response) {
@@ -1051,6 +1043,11 @@ var Notes = React.createClass({
     componentDidMount:function () {
         this.updateAuthorList();
     },
+    componentDidUpdate:function () {
+        if ($('div.modal-backdrop.fade.in').length > 1) {
+            $($('div.modal-backdrop.fade.in')[0]).detach();
+        }
+    },
     render:function () {
         var noteList = this.state.noteList;
         var noteBars = [];
@@ -1080,7 +1077,7 @@ var Notes = React.createClass({
                 
                 noteColumns.push(
                     <div  key={i} className="col-xs-3">
-                        <NoteColumn note={currentNotes[i]} onNoteEdit={this.onNoteEdit} onNoteDeleted={this.updateNoteList.bind(this, this.props)} />
+                        <NoteColumn note={currentNotes[i]} onNoteEdit={this.onNoteEdit} onNoteDeleted={this.updateNoteList} />
                     </div>
                 )
             }
@@ -1091,7 +1088,7 @@ var Notes = React.createClass({
         
         return (
             <div className="notes">
-                <div id="calendar-button-container">
+                <div id="calendar-button-container" onClick={this.showCalendar}>
                     <div id="calendar-button"> <img src="/img/icon_calendar.svg" /> </div>
                 </div>
                 <div id="notebars">
@@ -1113,8 +1110,28 @@ var Notes = React.createClass({
                     </div>
                 </div>
                 
-                {this.state.showAddNoteModal ? <AddNoteModal editNote={this.state.editNote} selectedDate={this.state.selectedDate} date={this.props.startDate} onSave={this.updateNoteList.bind(this, this.props)} onClose={this.closeAddNoteModal}/> : <div></div>}
+                <NotesCalendarModal 
+                    defaultDate={this.state.activeNote || this.props.date.currentDate} 
+                    onSave={this.updateNoteList} 
+                    onClose={this.closeCalendarModal}
+                    authorList={this.state.authorList}
+                    onNoteEdit={this.onNoteEditCalendar}
+                    onSelectDate={this.onSelectDate}
+                    onNoteDeleted={this.updateNoteList}
+                    show={ this.state.showCalendarModal && !this.state.showAddNoteModal }
+                /> 
                 
+                {this.state.showAddNoteModal ? 
+                    <AddNoteModal 
+                        editNote={this.state.editNote} 
+                        selectedDate={this.state.selectedDate} 
+                        date={this.props.startDate} 
+                        onSave={this.updateNoteList} 
+                        onClose={this.state.noteEditCalendar ? this.closeAddNoteOpenCalendar :  this.closeAddNoteModal }
+                    /> 
+                    : <div></div>
+                }
+
             </div>
         );
     }

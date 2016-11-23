@@ -60,6 +60,345 @@
     float:right;
 }
 
+//CALENDAR MODAL
+
+#revenue2 .modal-dialog#calendar-modal {
+    .modal-content {
+        .modal-header {
+            padding-left:0;
+            padding-right:0;
+            .top-bar {
+                padding-left:20px;
+                padding-right:20px;
+                text-align:center;
+                height:50px;
+                button.close {
+                    position:absolute;
+                    right:10px;
+                    top:10px;
+                }
+                h3 {
+                    width:40%;
+                    float:left;
+                    margin:0;
+                    text-align:left;
+                }
+                #month-switch {
+                    width:20%;
+                    margin-top:8px;
+                    cursor:pointer;
+                    svg {
+                        fill:@white;
+                        height:8px;
+                    }
+                    svg.left-caret {
+                        -ms-transform: rotate(90deg);
+                        transform:rotate(90deg);
+                    }
+                    svg.right-caret {
+                        -ms-transform: rotate(-90deg);
+                        transform:rotate(-90deg);
+                    }
+                }
+                #select-wrapper {
+                    width:40%;
+                    min-height:24px;
+                    float:right;
+                    text-align:left;
+                    .Select-control {
+                        border-radius:0;
+                        height:24px;
+                        .Select-arrow-zone {
+                            svg {
+                                top:50%;
+                                right:6px;
+                                margin-top:-3px;
+                            }
+                        }
+                    }
+                }
+            }
+            .calendar.folded {
+                max-height:10px;
+                transition: max-height .5s ease-out;
+            }
+            .calendar {
+                transition: max-height .5s ease-in;
+                max-height:1024px;
+                overflow-y:hidden;
+                .rbc-calendar {
+                    font-size:14px;
+                    background-color:@white;
+                    color:@black;
+                    padding:20px;
+                    .rbc-month-view {
+                        border:none;
+                        .rbc-header {
+                            height:50px;
+                            border:none;
+                        }
+                        .rbc-month-row {
+                            border:none;
+                            height:50px;
+                            overflow:inherit;
+                            .rbc-row-content {
+                                .rbc-date-cell {
+                                    position:relative;
+                                    .DayBG {
+                                        position:absolute;
+                                        width:40px;
+                                        height:40px;
+                                        border-radius:40px;
+                                        background-color:@lightgrey;
+                                        z-index: -1;
+                                        top:-10px;
+                                        left:50%;
+                                        margin-left:-20px;
+                                    }
+                                }
+                                .rbc-row:first-child,
+                                .rbc-row:nth-child(2) {
+                                    // display: -ms-flexbox;
+                                    // display: flex;
+                                }
+                                .rbc-row {
+                                    // display:none;
+                                    line-height:18px;
+                                    .rbc-row-segment {
+                                        height:9px;
+                                        .rbc-show-more {
+                                            height:auto;
+                                            text-align:center;
+                                            background:none;
+                                            margin-top: -4px;
+                                        }
+                                        .NoteEvent.multiday {
+                                            display:block;
+                                            width:100%;
+                                            height:4px;
+                                            background-color:@cobalt;
+                                        }
+                                        .NoteEvent {
+                                            fill:@cobalt;
+                                            display:none;
+                                            width:16px;
+                                            height:16px;
+                                            border-radius:16px;
+                                        }
+                                        .rbc-event {
+                                            background:none;
+                                            text-align:center;
+                                            .rbc-event-content {
+                                                // font-size:80%;
+                                                // display:none;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .rbc-date-cell {
+                                text-align:center;
+                                padding-left:5px;
+                            }
+                            .rbc-row-bg {
+                                border:none;
+                                .rbc-day-bg {
+                                    border:none;
+                                }
+                            }
+                        }
+                        .rbc-header {
+                            text-transform: uppercase;
+                            font-weight: 400;
+                        }
+                    }
+                }
+            }
+            .date-bar {
+                padding:10px 20px;
+                height:25px;
+                font-size:110%;
+                svg {
+                    fill:@white;
+                }
+                #add-note {
+                }
+                #toggle-expand {
+                    padding-left: 10px;
+                    padding-top:2px;
+                    cursor:pointer;
+                    svg {
+                        width: 18px;
+                        -ms-transform: rotate(180deg);
+                        transform:rotate(180deg);
+                    }
+                }
+                #toggle-expand.active {
+                    svg {
+                        -ms-transform: rotate(0deg);
+                        transform:rotate(0deg);
+                    }
+                }
+            }
+        }
+        .modal-body.expanded {
+            max-height:696px;
+            transition: max-height .5s ease-in;
+            .note-rows-container {
+                min-height:654px;
+            }
+        }
+        .modal-body {
+            transition: max-height .5s ease-out;
+            max-height:316px;
+            overflow-y:scroll;
+            .note-rows-container {
+                min-height:280px;
+                .note-row.expanded {
+                    .edit-delete {
+                        svg.edit-icon {
+                            display:inline-block;
+                        }
+                        .svg-button {
+                            display:inline-block;
+                        }
+                    }
+                    .expand-note {
+                        .caret-container {
+                            svg {
+                                -ms-transform: rotate(0deg);
+                                transition: transform .2s ease-out;
+                                transform:rotate(0deg);
+                            }
+                        }
+                    }
+                    .note-description {
+                        min-height:51px;
+                        height:auto;
+                        .related-events {
+                            display:block;
+                        }
+                    }
+                }
+                .note-row {
+                    border-bottom: 1px solid @halflightmediumgrey;
+                    margin-bottom:1em;
+                    .date-container,
+                    .caret-container{
+                        display:table-cell;
+                        vertical-align: middle;
+                        height:120px;
+                    }
+                    .date-container {
+                        font-size:200%;
+                        display:table-cell;
+                        vertical-align: middle;
+                        height:120px;
+                    }
+                    .expand-note {
+                        .caret-container {
+                            width:24px;
+                            text-align:center;
+                            cursor:pointer;
+                            svg {
+                                display:inline-block;
+                                -ms-transform: rotate(-90deg);
+                                transform:rotate(-90deg);
+                                transition: transform .2s ease-out;
+                                width:12px;
+                            }
+                        }
+                    }
+                    
+                    .note-content {
+                        margin-bottom:0;
+                        div {
+                            margin-bottom:.4em;
+                        }
+                        .note-header {
+                             font-weight:600;
+                             font-size:120%;
+                        }
+                        .note-time {
+                             color:@halfdarkmediumgrey;
+                        }
+                        .edit-delete {
+                            height:17px;
+                            svg.edit-icon {
+                                width:16px;
+                                height:16px;
+                                margin-right:4px;
+                                display:none;
+                                cursor:pointer;
+                            }
+                            .svg-button {
+                                display:none;
+                                vertical-align:top;
+                            }
+                        }
+                        .note-author {
+                             color:@pink;
+                             font-weight:600;
+                             font-style: italic;
+                        }
+                    }
+                    .note-description {
+                        height:51px;
+                        overflow-y:hidden;
+                        margin-bottom:0;
+                        .related-events {
+                            display:none;
+                            border-top: 1px solid @halflightmediumgrey;
+                            padding-top: 10px;
+                            font-size:85%;
+                        }
+                    }
+                    .tag {
+                        font-style: italic;
+                        font-weight:600;
+                        color:@pink;
+                        margin-right:.2em;
+                        font-size:85%;
+                        height:14px;
+                        line-height:14px;
+                    }
+                    .tags {
+                        text-align:right;
+                        .tag {
+                            display:block;
+                        }
+                    }
+                    .channels {
+                        margin-top:2px;
+                        .channel {
+                            width:10px;
+                            height:10px;
+                            border-radius:10px;
+                            background-color:@lightgrey;
+                            display:block;
+                            margin-bottom:4px;
+                        }
+                        .channel.gate {
+                            background-color:@boxoffice;
+                        }
+                        .channel.membership {
+                            background-color:@membership;
+                        }
+                        .channel.cafe {
+                            background-color:@cafe;
+                        }
+                        .channel.store {
+                            background-color:@giftstore;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+//MODAL DIALOG
+
 #revenue2 .modal-dialog {
     width:50em;
     .modal-content {
@@ -546,6 +885,7 @@ table.jCalendar td.no-data {
         #calendar-button-container {
             position:relative;
             #calendar-button {
+                z-index:1;
                 position:absolute;
                 height:21px;
                 top:1px;
@@ -613,19 +953,6 @@ table.jCalendar td.no-data {
                 padding-top:1em;
                 #note-details-header {
                     font-size:120%;
-                    #add-note {
-                        display:inline-block;
-                        position:relative;
-                        z-index:1;
-                        cursor:pointer;
-                        font-size:83.333333333333%;
-                        svg.note-icon {
-                            width:17px;
-                            height:17px;
-                            vertical-align: text-bottom;
-                            margin-right:4px;
-                        }
-                    }
                 }
                 #note-columns {
                     margin-top:1em;
@@ -652,20 +979,6 @@ table.jCalendar td.no-data {
                         .note-time {
                              color:@halfdarkmediumgrey;
                         }
-                        .edit-delete {
-                            height:17px;
-                            svg.edit-icon {
-                                width:16px;
-                                height:16px;
-                                margin-right:4px;
-                                display:none;
-                                cursor:pointer;
-                            }
-                            .svg-button {
-                                display:none;
-                                vertical-align:top;
-                            }
-                        }
                         .note-author {
                              // margin-top:1em;
                              color:@pink;
@@ -678,6 +991,33 @@ table.jCalendar td.no-data {
                         }
                      }
                 }
+            }
+        }
+        .edit-delete {
+            height:17px;
+            svg.edit-icon {
+                width:16px;
+                height:16px;
+                margin-right:4px;
+                display:none;
+                cursor:pointer;
+            }
+            .svg-button {
+                display:none;
+                vertical-align:top;
+            }
+        }
+        #add-note {
+            display:inline-block;
+            position:relative;
+            z-index:1;
+            cursor:pointer;
+            font-size:83.333333333333%;
+            svg.note-icon {
+                width:17px;
+                height:17px;
+                vertical-align: text-bottom;
+                margin-right:4px;
             }
         }
         .note-circle {
