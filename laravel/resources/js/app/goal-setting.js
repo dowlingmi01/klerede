@@ -8,6 +8,8 @@ var ReactDOM = require('react-dom');
 
 var $ = require("jquery");
 
+var moment=require("moment");
+
 (Function('return this')()).jQuery = require('jquery');
 require("bootstrap").collapse;
 
@@ -17,7 +19,42 @@ var goals = require("./kapi/goals.js");
 var ButtonExpand = require('./reusable-parts').ButtonExpand;
 
 
+var Month = React.createClass({
+    render:function() {
+        return (
+            <span className={this.props.className}>
+                <label htmlFor={"goal-"+this.props.order} className="col-sm-2 control-label">{this.props.month}:</label>
+                <div className="col-sm-4">
+                    <input 
+                        type="text" 
+                        id={"goal-"+this.props.order} 
+                        data-channel={this.props.channel} 
+                        data-subchannel={this.props.subchannel} 
+                        placeholder={this.props.placeholder} 
+                        className={"form-control month-total "+this.props.num} 
+                        onBlur={this.props.monthChange} 
+                        tabIndex={this.props.order} 
+                    />
+                </div>
+            </span>
+        );
+    }
+});
+
 var GoalsMonths = React.createClass({
+    getInitialState:function(){
+        var monthNames=[];
+        var month = moment().month(wnt.venue.fiscal_year_start_month-1);
+        
+        for (var i=0; i<12; i++) {
+            monthNames.push(month.format('MMM'));
+            month.add(1, 'M');
+        }
+        console.log(monthNames);
+        return {
+            monthNames:monthNames
+        }
+    },
 	setGoals: function (data, year, channel, type, subChannel) {
 
 		goals.sales.put(wnt.venueID, year, this.onGoalsSet, data, channel, type, subChannel);
@@ -65,14 +102,14 @@ var GoalsMonths = React.createClass({
                 superTotal += Number($(this).val().replace(/[^0-9\.]+/g,""));
             });
             if($(event.target).hasClass('dollars')){
-                self.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
+                self.setGoals(data, wnt.thisFiscalYear, channel, 'amount', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             } else {
-                self.setGoals(data, wnt.thisYear, channel, 'units', subchannel);
+                self.setGoals(data, wnt.thisFiscalYear, channel, 'units', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
         }
-        self.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
+        self.setGoals(data, wnt.thisFiscalYear, channel, 'amount', subchannel);
         // Convert the number back to a string and format it for display
         if($(event.target).hasClass('dollars')){
             $(event.target).val(parseInt($(event.target).val()).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
@@ -81,6 +118,17 @@ var GoalsMonths = React.createClass({
         }
     },
     render: function() {
+        var groups = [], monthNames=this.state.monthNames;
+        
+        for (var i=0; i<monthNames.length/2; i++) {
+            groups.push(
+                <div key={i} className="form-group">
+                    <Month order={i+1} month={monthNames[i]}  channel={this.props.channel} subchannel={this.props.subchannel} />
+                    <Month order={i+7} month={monthNames[i+6]}  channel={this.props.channel} subchannel={this.props.subchannel} />
+                </div>
+            );
+        }
+        
         return (
             <div className="collapse" id={this.props.id}>
                 <div className="form-group">
@@ -88,66 +136,7 @@ var GoalsMonths = React.createClass({
                         By Month:
                     </div>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="goal-1" className="col-sm-2 control-label">Jan:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-1" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="1" />
-                    </div>
-                    <label htmlFor="goal-7" className="col-sm-2 control-label">Jul:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-7" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="7" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-2" className="col-sm-2 control-label">Feb:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-2" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="2" />
-                    </div>
-                    <label htmlFor="goal-8" className="col-sm-2 control-label">Aug:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-8" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="8" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-3" className="col-sm-2 control-label">Mar:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-3" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="3" />
-                    </div>
-                    <label htmlFor="goal-9" className="col-sm-2 control-label">Sep:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-9" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="9" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-4" className="col-sm-2 control-label">Apr:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-4" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="4" />
-                    </div>
-                    <label htmlFor="goal-10" className="col-sm-2 control-label">Oct:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-10" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="10" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-5" className="col-sm-2 control-label">May:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-5" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="5" />
-                    </div>
-                    <label htmlFor="goal-11" className="col-sm-2 control-label">Nov:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-11" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="11" />
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="goal-6" className="col-sm-2 control-label">Jun:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-6" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="6" />
-                    </div>
-                    <label htmlFor="goal-12" className="col-sm-2 control-label">Dec:</label>
-                    <div className="col-sm-4">
-                        <input type="text" id="goal-12" data-channel={this.props.channel} data-subchannel={this.props.subchannel} placeholder={this.props.placeholder} className={"form-control month-total "+this.props.num} onBlur={this.monthChange} tabIndex="12" />
-                    </div>
-                </div>
+                {groups}
             </div>
         );
     }
@@ -240,12 +229,12 @@ var GoalSetting = React.createClass({
         });
     },
     componentDidMount: function(){
-		goals.sales.get(wnt.venueID, wnt.thisYear, this.onGoalsGet);
+		goals.sales.get(wnt.venueID, wnt.thisFiscalYear, this.onGoalsGet);
 	},
     componentDidMountOLD: function(){
         var self = this;
         wnt.gettingGoalsData = $.Deferred();
-        wnt.getGoals(wnt.thisYear, wnt.gettingGoalsData);
+        wnt.getGoals(wnt.thisFiscalYear, wnt.gettingGoalsData);
         // Set fields with goals data from server
         $.when(wnt.gettingGoalsData).done(function(goals) {
             // Set global for easy reuse
@@ -348,10 +337,10 @@ var GoalSetting = React.createClass({
             console.log(data);
             // Set goals on server and format number for display
             if($(event.target).hasClass('dollars')){
-                self.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
+                self.setGoals(data, wnt.thisFiscalYear, channel, 'amount', subchannel);
                 $(this).val(parseInt(total).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             } else {
-                self.setGoals(data, wnt.thisYear, channel, 'units', subchannel);
+                self.setGoals(data, wnt.thisFiscalYear, channel, 'units', subchannel);
                 $(this).val(parseInt(total).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
         });
@@ -366,7 +355,7 @@ var GoalSetting = React.createClass({
         var data = {};
         var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
         // When a total is changed, remove the special characters for processing and equalize the goal across the months
-        var total = $(event.target).val().replace(/\D/g,'');
+        var total = $(event.target).val().replace(/\D/g,'') || 0;
         $(event.target).val(total);
         var monthTotal = Math.round(total / 12);
         data.months = {
@@ -400,14 +389,14 @@ var GoalSetting = React.createClass({
                 superTotal += Number($(this).val().replace(/[^0-9\.]+/g,""));
             });
             if($(event.target).hasClass('dollars')){
-                self.setGoals(data, wnt.thisYear, channel, 'amount', subchannel);
+                self.setGoals(data, wnt.thisFiscalYear, channel, 'amount', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             } else {
-                self.setGoals(data, wnt.thisYear, channel, 'units', subchannel);
+                self.setGoals(data, wnt.thisFiscalYear, channel, 'units', subchannel);
                 $(event.target).closest('.super-set').find('.super-total').val(parseInt(superTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
             }
         } else {
-            self.setGoals(data, wnt.thisYear, channel, 'amount');
+            self.setGoals(data, wnt.thisFiscalYear, channel, 'amount');
         }
         // Convert the number back to a string and format it for display
         if($(event.target).hasClass('dollars')){
@@ -434,7 +423,7 @@ var GoalSetting = React.createClass({
                     </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="goal-gate" className="col-sm-2 control-label">Box Office:</label>
+                    <label htmlFor="goal-gate" className="col-sm-2 control-label">Guest Services:</label>
                     <div className="col-sm-4 goal-section">
                         <input type="text" id="goal-gate" data-channel="gate" placeholder="$000,000" className="form-control total dollars" onBlur={this.totalChange} /><ButtonExpand target="#months-gate" />
                         <GoalsMonths id="months-gate" placeholder="$0" num="dollars" channel="gate" />

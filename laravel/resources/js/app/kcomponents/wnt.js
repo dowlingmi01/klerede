@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var moment = require('moment');
 
 var wnt = {
     gettingVenueData:$.Deferred(),
@@ -11,6 +12,9 @@ var wnt = {
         // All date manipulation after pulling date from API for venue
         // ********
         wnt.thisYear = wnt.today.getFullYear();
+        
+        wnt.thisFiscalYear = moment(wnt.today).add( wnt.venue.fiscal_year_start_month - 1, "M").format("YYYY");
+        
         wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
         wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
         wnt.thisDate = wnt.today.getDate();
