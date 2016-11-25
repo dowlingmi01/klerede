@@ -13,6 +13,8 @@ var moment=require("moment");
 (Function('return this')()).jQuery = require('jquery');
 require("bootstrap").collapse;
 
+require("number-to-locale-string");
+
 var wnt = require ('./kcomponents/wnt.js');
 var goals = require("./kapi/goals.js");
 
@@ -31,7 +33,7 @@ var Month = React.createClass({
                         data-channel={this.props.channel} 
                         data-subchannel={this.props.subchannel} 
                         placeholder={this.props.placeholder} 
-                        className={"form-control month-total "+this.props.num} 
+                        className={"form-control month-total "+this.props.num+" "+this.props.order} 
                         onBlur={this.props.monthChange}
                         tabIndex={this.props.order} 
                     />
@@ -126,8 +128,8 @@ var GoalsMonths = React.createClass({
         for (var i=0; i<monthNames.length/2; i++) {
             groups.push(
                 <div key={i} className="form-group">
-                    <Month monthChange={this.monthChange} order={i+1} month={monthNames[i]}  channel={this.props.channel} subchannel={this.props.subchannel} />
-                    <Month monthChange={this.monthChange} order={i+7} month={monthNames[i+6]}  channel={this.props.channel} subchannel={this.props.subchannel} />
+                    <Month num={this.props.num} monthChange={this.monthChange} order={i+1} month={monthNames[i]}  channel={this.props.channel} subchannel={this.props.subchannel} />
+                    <Month num={this.props.num} monthChange={this.monthChange} order={i+7} month={monthNames[i+6]}  channel={this.props.channel} subchannel={this.props.subchannel} />
                 </div>
             );
         }
