@@ -68,6 +68,10 @@ var GoalsMonths = React.createClass({
     monthChange: function(event){
         // Remove the special characters for processing
         $(event.target).val($(event.target).val().replace(/\D/g,''));
+
+        if($(event.target).val() == "")  {
+            $(event.target).val(0);
+        };
         var channel = $(event.target).data('channel');
         // Initialize subchannel to false
         var subchannel = ($(event.target).closest('.super-set').length > 0) ? true : false;
