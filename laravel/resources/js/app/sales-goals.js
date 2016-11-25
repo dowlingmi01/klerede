@@ -11,6 +11,7 @@ require('../libs/jquery.easing.1.3.js');
 require('../libs/jquery.numberformatter-1.2.4.jsmin.js');
 
 var wnt = require ('./kcomponents/wnt.js');
+var reorderFiscalMonths = require ('./kcomponents/reorder-fiscal-months');
 
 var KAPI = {};
 KAPI.auth = require("./kapi/auth.js");
@@ -62,8 +63,10 @@ var SalesGoals = React.createClass({
     },
 	onGoalsResult:function(goals) {
         console.log('Sales Goals onGoalsResult using KAPI...');
-		
-        var periodStart = wnt.yearStart;
+        
+        reorderFiscalMonths(goals);
+        
+        var periodStart = wnt.thisFiscalYearStart;
         var periodEnd = wnt.today;
         var periodDays = 365;
         if(wnt.filter.sgPeriod === 'quarter'){
@@ -142,11 +145,11 @@ var SalesGoals = React.createClass({
         result.sales = {amount:(bo + cafe + store)};
         
         wnt.sales = result;
-		KAPI.goals.sales.get(wnt.venueID,wnt.thisYear,this.onGoalsResult);
+		KAPI.goals.sales.get(wnt.venueID,wnt.thisFiscalYear,this.onGoalsResult);
 	},
     callAPI: function(){
         var self = this;
-        var periodStart = wnt.yearStart;
+        var periodStart = wnt.thisFiscalYearStart;
         var periodEnd = wnt.today;
         var periodDays = 365;
         if(wnt.filter.sgPeriod === 'quarter'){
@@ -280,8 +283,8 @@ var SalesGoals = React.createClass({
                     <ActionMenu actions={this.state.actions}/>
                     <form>
                         <select className="form-control" onChange={this.filterPeriod}>
-                            <option value="year">Current Year ({wnt.thisYear})</option>
-                            <option value="quarter">Current Quarter ({wnt.thisQuarterText})</option>
+                            <option value="year">Current Year ({wnt.thisFiscalYear})</option>
+                            <option value="quarter">Current Quarter (Q{wnt.thisFiscalQuarter})</option>
                             <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
                         </select>
                         <Caret className="filter-caret" />

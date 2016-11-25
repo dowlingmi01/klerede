@@ -13,8 +13,23 @@ var wnt = {
         // ********
         wnt.thisYear = wnt.today.getFullYear();
         
-        wnt.thisFiscalYear = moment(wnt.today).add( wnt.venue.fiscal_year_start_month - 1, "M").format("YYYY");
+        /********************************************/
+        /*********Fiscal Dates Calculation***********/
+        /********************************************/
         
+        wnt.fiscalDate = moment(wnt.today).add( wnt.venue.fiscal_year_start_month - 1, "M");
+        wnt.thisFiscalYear = wnt.fiscalDate.year();
+        wnt.thisFiscalQuarter = wnt.fiscalDate.format("Q");
+        
+        var thisFiscalYearStart = moment(wnt.today).startOf('year').add( wnt.venue.fiscal_year_start_month - 1, "M");
+
+        if(thisFiscalYearStart.isAfter(wnt.today)) {
+            thisFiscalYearStart.add(-1, "y")
+        }
+        wnt.thisFiscalYearStart = thisFiscalYearStart.format("YYYY-MM-DD")
+        
+        /********************************************/
+
         wnt.thisMonthNum = wnt.today.getMonth();   // Get month and keep as 0-11 to use in quarter calculations
         wnt.thisMonthText = wnt.months[wnt.thisMonthNum];   // Set month to string
         wnt.thisDate = wnt.today.getDate();
