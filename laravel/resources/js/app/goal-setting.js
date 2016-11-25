@@ -32,7 +32,7 @@ var Month = React.createClass({
                         data-subchannel={this.props.subchannel} 
                         placeholder={this.props.placeholder} 
                         className={"form-control month-total "+this.props.num} 
-                        onBlur={this.props.monthChange} 
+                        onBlur={this.props.monthChange}
                         tabIndex={this.props.order} 
                     />
                 </div>
@@ -123,7 +123,7 @@ var GoalsMonths = React.createClass({
             groups.push(
                 <div key={i} className="form-group">
                     <Month monthChange={this.monthChange} order={i+1} month={monthNames[i]}  channel={this.props.channel} subchannel={this.props.subchannel} />
-                    <Month order={i+7} month={monthNames[i+6]}  channel={this.props.channel} subchannel={this.props.subchannel} />
+                    <Month monthChange={this.monthChange} order={i+7} month={monthNames[i+6]}  channel={this.props.channel} subchannel={this.props.subchannel} />
                 </div>
             );
         }
