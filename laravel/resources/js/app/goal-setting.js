@@ -50,7 +50,6 @@ var GoalsMonths = React.createClass({
             monthNames.push(month.format('MMM'));
             month.add(1, 'M');
         }
-        console.log(monthNames);
         return {
             monthNames:monthNames
         }
@@ -123,7 +122,7 @@ var GoalsMonths = React.createClass({
         for (var i=0; i<monthNames.length/2; i++) {
             groups.push(
                 <div key={i} className="form-group">
-                    <Month order={i+1} month={monthNames[i]}  channel={this.props.channel} subchannel={this.props.subchannel} />
+                    <Month monthChange={this.monthChange} order={i+1} month={monthNames[i]}  channel={this.props.channel} subchannel={this.props.subchannel} />
                     <Month order={i+7} month={monthNames[i+6]}  channel={this.props.channel} subchannel={this.props.subchannel} />
                 </div>
             );
