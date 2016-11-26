@@ -17,7 +17,7 @@ class AddFiscalYearStartMonthToVenueTable extends Migration
             $table->integer('fiscal_year_start_month')->after('long')->default(1);
 
         });
-        DB::table('venue')->update(['fiscal_year_start_month' => 1]);
+         
         DB::table('venue')->where('id', 1204)->update(['fiscal_year_start_month' => 7]);
     }
 
