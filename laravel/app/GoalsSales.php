@@ -14,8 +14,9 @@ class GoalsSales {
 			if($calculated_month < $fiscal_year_start_month)
 					$calculated_year  = $year+1;
 			$q['month'] = $calculated_year * 100 + $calculated_month;
+			 
 			$goal = GoalSalesMonthly::firstOrNew($q);
-			$months[$calculated_month] = $goal->goal  ;
+			$months[$month] = $goal->goal  ;
 		} 
 		return $months;
 	}
@@ -54,8 +55,6 @@ class GoalsSales {
 			]
 		];
 		$venue = Venue::find($venue_id);
-		
-
 		$fiscal_year_start_month = $venue->fiscal_year_start_month;
 
 		foreach($channels as &$channel) {
@@ -74,11 +73,20 @@ class GoalsSales {
 		return $channels;
 	}
 	static function set($venue_id, $year, $channel, $type, $sub_channel, $months) {
+		$venue = Venue::find($venue_id);
+		$fiscal_year_start_month = $venue->fiscal_year_start_month;
+
 		$channel_id = Channel::getFor($channel)->id;
 		$sub_channel_id = $sub_channel ? MembershipKind::getFor($sub_channel)->id : 0;
 		$q = ['venue_id'=>$venue_id, 'channel_id'=>$channel_id, 'type'=>$type, 'sub_channel_id'=>$sub_channel_id, 'year'=>$year];
+		if($fiscal_year_start_month > 1)
+			$year--;
+		$calculated_year  = $year;
 		for( $month = 1; $month <= 12; $month++ ) {
-			$q['month'] = $year * 100 + $month;
+			$calculated_month = (($month  + $fiscal_year_start_month - 2) % 12) + 1;
+			if($calculated_month < $fiscal_year_start_month)
+				$calculated_year  = $year+1;
+			$q['month'] = $calculated_year * 100 + $calculated_month;
 			$goal = GoalSalesMonthly::firstOrNew($q);
 			$goal->goal = $months[$month];
 			$goal->save();
