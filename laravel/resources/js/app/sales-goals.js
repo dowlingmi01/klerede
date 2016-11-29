@@ -161,7 +161,7 @@ var SalesGoals = React.createClass({
         }
 		var queries = {
             // sales: { specs: { type: 'sales' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-	        boxoffice: { specs: { type: 'sales', channel: 'gate' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
+	        boxoffice: { specs: { type: 'sales', channel: 'gate', kinds: ['ga', 'group'] }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
 	        cafe: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
 	        giftstore: { specs: { type: 'sales', channel: 'store' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
 	        visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } }
