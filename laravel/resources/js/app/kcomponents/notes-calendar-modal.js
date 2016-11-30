@@ -82,6 +82,7 @@ function ShowMore(n) {
 
 
 var DayBG = $('<div class="DayBG"></div>');
+var WeekBG = $('<div class="DayBG WeekBG"></div>');
 
 var NoteRow = React.createClass({
     getInitialState:function () {
@@ -127,6 +128,7 @@ var NoteRow = React.createClass({
         var start = moment(data.time_start);
         var end = moment(data.time_end);
         var lengthInDays = event.length;
+        var splitted = (event.splitted);
         var author = this.props.authorList[data.owner_id];
         var hours = "All Day";
         
@@ -163,7 +165,7 @@ var NoteRow = React.createClass({
             <div className={"note-row clearfix" + (expanded ? " expanded":"")}>
                 <div className="col-xs-2 note-date">
                     <div className="date-container">
-                    {start.format("MM.DD")}{(lengthInDays > 0) ? "- "+end.format("MM.DD") :  ""}
+                    {start.format("MM.DD")}{(lengthInDays > 1 || splitted) ? "- "+end.format("MM.DD") :  ""}
                     </div>
                 </div>
                 <div className="col-xs-9">
@@ -212,16 +214,21 @@ var NotesCalendarModal = React.createClass({
     getInitialState:function () {
         var defaultDate = new Date(this.props.defaultDate);
         var week = this.getWeek(defaultDate);
+        var month = this.getMonth(defaultDate);
+        var quarter = this.getQuarter(defaultDate);
         var today = new Date(du.localFormat(wnt.today));
                 
         var state = {
 			currentDate:moment(defaultDate),
             events:[],
             week:week,
+            month:month,
+            quarter:quarter,
+            periodType:this.props.periodType,
+            periodStart:null,
             calendarView:true,
             today:today,
-            noteExpandedData:null,
-            monthStart:null
+            noteExpandedData:null
         };
         return(
             state
@@ -232,14 +239,28 @@ var NotesCalendarModal = React.createClass({
         var end = moment(date).endOf('week');
         return {start:start, end:end};
     },
-    getNotes(date, events) {
-        if (!events) {
-            events = this.state.events;
-        }
+    getQuarter:function (date) {
+        var start = moment(date).startOf('quarter');
+        var end = moment(date).endOf('quarter');
+        return {start:start, end:end};
+    },
+    getMonth:function (date) {
+        var start = moment(date).startOf('month');
+        var end = moment(date).endOf('month');
+        return {start:start, end:end};
+    },
+    getNotes(date, events, periodType) {
         
-        var dateStart = moment(date).startOf('day');
-        var dateEnd = moment(date).endOf('day');
-        var notes = []
+        date = date || this.state.currentDate;
+        
+        events = events || this.state.events;
+
+        periodType = periodType || this.state.periodType;
+        
+        // console.log(date, events, periodType);
+        var dateStart = moment(date).startOf(periodType);
+        var dateEnd = moment(date).endOf(periodType);
+        var notes = [];
         // console.log(events);
         for (var i=0; i<events.length; i++) {
             var evt = events[i];
@@ -261,16 +282,23 @@ var NotesCalendarModal = React.createClass({
         return notes;
     },
     updateNotes:function (date, forceUpdate) {
-        var monthStart = moment(date).startOf('month').format('YYYY-MM-DD');
-        var monthEnd = moment(date).endOf('month').format('YYYY-MM-DD');
+        if (this.props.periodType == "week")
+            var period = "month";
+        else 
+            period = this.props.periodType;
         
-        if (!forceUpdate && monthStart == this.state.monthStart) return;
+        var periodStart = moment(date).startOf(period).format('YYYY-MM-DD');
+        var periodEnd = moment(date).endOf(period).format('YYYY-MM-DD');
+        // console.log(period, periodStart, periodEnd);
         
-        this.setState({monthStart:monthStart});
+        if (!forceUpdate && periodStart == this.state.periodStart) return;
         
-        KAPI.notes.list(wnt.venueID, monthStart, monthEnd, this.onNotesUpdated);
+        this.setState({periodStart:periodStart});
+        
+        KAPI.notes.list(wnt.venueID, periodStart, periodEnd, this.onNotesUpdated);
     },
     onNotesUpdated:function (result) {
+        // console.log(result);
         var events = [];
         
         var lastDate = "";
@@ -363,12 +391,20 @@ var NotesCalendarModal = React.createClass({
         }
         console.log(events);
         
-        this.setState({events:events, notes:this.getNotes(this.state.currentDate, events)});
+        this.setState({events:events, notes:this.getNotes(null, events)});
     },
-    updateDate:function (date) {
+    updateDate:function (date, periodType) {
+        periodType = periodType || this.props.periodType;
         this.updateNotes(date);
         this.props.onSelectDate(date);
-        this.setState({currentDate:moment(date), week:this.getWeek(date), notes:this.getNotes(date)});
+        this.setState({
+            periodType:periodType,
+            currentDate:moment(date), 
+            week:this.getWeek(date), 
+            month:this.getMonth(date), 
+            quarter:this.getQuarter(date), 
+            notes:this.getNotes(date, null, periodType)
+        });
     },
     monthChange:function (e, n) {
         var newDate = new Date(du.addMonths(this.state.currentDate.toDate(), n));
@@ -379,10 +415,16 @@ var NotesCalendarModal = React.createClass({
         e.preventDefault();
         this.props.onNoteEdit(null);
     },
+    exitDayMode:function (e) {
+        // console.log(e);
+        e.preventDefault();
+        this.setState({notes:this.getNotes(null, null, this.props.periodType), periodType:this.props.periodType});
+        
+    },
     onDateChange:function (e) {
         // console.log(e);
         // e.preventDefault();
-        this.updateDate(e);
+        this.updateDate(e, "day");
     },
     onSelectNote:function (e) {
         // console.log(e);
@@ -390,9 +432,10 @@ var NotesCalendarModal = React.createClass({
     },
     onSelectSlot:function (e) {
         // console.log(e);
+        this.updateDate(e.start, this.props.periodType);
     },
     onSelecting:function (e) {
-        // console.log(e);
+        console.log(e);
     },
     expandNote:function(note) {
         this.setState({noteExpandedData:note});
@@ -402,6 +445,7 @@ var NotesCalendarModal = React.createClass({
     },
     show:function() {
         $(getDOMNode(this)).modal("show");
+        this.setState({periodType:this.props.periodType});
         this.props.onSelectDate(this.state.currentDate);
         this.updateNotes(this.state.currentDate, true);
     },
@@ -431,13 +475,21 @@ var NotesCalendarModal = React.createClass({
         }
     },
 	componentDidUpdate:function(){
+        
+        WeekBG.detach();
+        DayBG.detach();
+        
+        if (this.state.periodType != "week" && this.state.periodType !="day") return;
+        
+        var bg = this.state.periodType == "week" ? WeekBG : DayBG;
         var current = $(getDOMNode(this.refs.BigCalendar)).find(".rbc-current");
         // console.log(this.refs.BigCalendar, current, DayBG);
-        $(current).append(DayBG);
+        $(this.state.periodType == "week" ? current.parent() : current).append(bg);
 	},
     render:function () {
         
-        var currentDate = this.state.currentDate.format("MMMM, YYYY")
+        var currentDate = this.state.currentDate.format("MMMM, YYYY");
+        var currentPeriod = this.state[this.props.periodType];
         
         return(
             <div className="modal fade" tabIndex="-1" role="dialog">
@@ -478,7 +530,7 @@ var NotesCalendarModal = React.createClass({
                         </div>
                     </div>
                     <div className="clearfix"></div>
-                    <div className={this.state.calendarView? "calendar": "calendar folded"}>
+                    <div className={(this.state.calendarView? "calendar": "calendar folded")+" "+this.props.periodType }>
                         <BigCalendar
                             ref="BigCalendar"
                             components={{event:NoteEvent}}
@@ -500,10 +552,14 @@ var NotesCalendarModal = React.createClass({
                     </div>
                     <div className="clearfix"></div>
                     <div className="date-bar">
-                        <a href="#" onClick={null}><div className="week inline-block">
-                            {this.state.week.start.format("MMM DD")} - {this.state.week.end.format("MMM DD")}, {this.state.week.start.format("YYYY")}
+                        <a href="#" onClick={this.exitDayMode}><div className="week inline-block">
+                            {currentPeriod.start.format("MMM DD")} - {currentPeriod.end.format("MMM DD")}, {this.state.week.start.format("YYYY")}
                         </div></a>
-                        <div className="date inline-block">&nbsp;&nbsp;|&nbsp;&nbsp;{this.state.currentDate.format("dddd MMM Do, YYYY")}</div>
+                            {this.state.periodType == "day" ?
+                                <div className="date inline-block">&nbsp;&nbsp;|&nbsp;&nbsp;{this.state.currentDate.format("dddd MMM Do, YYYY")}</div>
+                            :
+                                <div className="date inline-block"></div>
+                            }
                         <div className={"float-right" + (this.state.calendarView ? "":" active") } id="toggle-expand" onClick={this.toggleCalendarView}>
                             <Caret className=""/>
                         </div>

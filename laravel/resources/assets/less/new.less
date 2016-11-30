@@ -122,6 +122,17 @@
                 max-height:10px;
                 transition: max-height .5s ease-out;
             }
+            // .calendar.week {
+            //     .rbc-month-row:hover {
+            //         background-color:@ultralightgrey !important;
+            //     }
+            // }
+            // .calendar.month,
+            // .calendar.quarter {
+            //     .rbc-month-view:hover {
+            //         background-color:@ultralightgrey !important;
+            //     }
+            // }
             .calendar {
                 transition: max-height .5s ease-in;
                 max-height:1024px;
@@ -138,25 +149,32 @@
                             height:50px;
                             border:none;
                         }
+                        
                         .rbc-month-row {
                             border:none;
                             height:50px;
                             position: relative;
                             overflow: visible;
                             .rbc-row-content {
+                                .DayBG {
+                                    position:absolute;
+                                    width:40px;
+                                    height:40px;
+                                    border-radius:40px;
+                                    background-color:@lightgrey;
+                                    z-index: -1;
+                                    top:-10px;
+                                    left:50%;
+                                    margin-left:-20px;
+                                }
+                                .DayBG.WeekBG {
+                                    margin-left:0;
+                                    left:0;
+                                    width:560px;
+                                    height:55px;
+                                }
                                 .rbc-date-cell {
                                     position:relative;
-                                    .DayBG {
-                                        position:absolute;
-                                        width:40px;
-                                        height:40px;
-                                        border-radius:40px;
-                                        background-color:@lightgrey;
-                                        z-index: -1;
-                                        top:-10px;
-                                        left:50%;
-                                        margin-left:-20px;
-                                    }
                                 }
                                 .rbc-row:first-child,
                                 .rbc-row:nth-child(2) {

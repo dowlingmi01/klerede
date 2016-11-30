@@ -881,7 +881,7 @@ var Notes = React.createClass({
             noteDetailsClass:"",
             activeNote:null,
             showAddNoteModal:false,
-            showCalendarModal:true,
+            showCalendarModal:false,
             noteEditCalendar:false,
             selectedDate:null,
             noteList:{},
@@ -1120,6 +1120,7 @@ var Notes = React.createClass({
                     onSelectDate={this.onSelectDate}
                     onNoteDeleted={this.updateNoteList}
                     show={ this.state.showCalendarModal && !this.state.showAddNoteModal }
+                    periodType={this.props.periodType}
                 /> 
                 
                 {this.state.showAddNoteModal ? 
