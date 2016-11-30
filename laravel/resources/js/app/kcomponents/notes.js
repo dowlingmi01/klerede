@@ -811,7 +811,8 @@ var NoteColumn = React.createClass({
         return {
             permissions: KAPI.auth.getUserPermissions(),
             userID: KAPI.auth.getUser().id,
-            description:""
+            description:"",
+            readMore:false
         }
     },
     onNoteEdit:function (e) {
@@ -833,9 +834,19 @@ var NoteColumn = React.createClass({
             this.addEllipses(nextProps.note.description);
         }
     },
+    onEllipsesAdded:function(isTruncated, orgContent) {
+        this.setState({readMore:isTruncated});
+    },
+    readMore:function () {
+        // console.log(this.props.note)
+        this.props.readMore(this.props.note);
+    },
     addEllipses:function (description) {
         $(this.refs.noteDescription).text(description);
-        $(this.refs.noteDescription).dotdotdot();
+        $(this.refs.noteDescription).dotdotdot({
+            callback:this.onEllipsesAdded,
+            ellipsis:""
+        });
         this.setState({description:$(this.refs.noteDescription).text()});
     },
     componentDidMount:function () {
@@ -869,7 +880,14 @@ var NoteColumn = React.createClass({
                 }
                 </div>
                 <div className="note-author">{note.author}</div>
-                <div ref="noteDescription" className="note-description">{description}</div>
+                <div ref="noteDescription" className="note-description">
+                    {description}
+                </div>
+                {this.state.readMore ?
+                    <a onClick={this.readMore} className="readMore">...</a>
+                    :
+                    <span></span>
+                }
             </div>
         );
     }
@@ -882,6 +900,7 @@ var Notes = React.createClass({
             activeNote:null,
             showAddNoteModal:false,
             showCalendarModal:false,
+            readMoreNote:null,
             noteEditCalendar:false,
             selectedDate:null,
             noteList:{},
@@ -891,7 +910,7 @@ var Notes = React.createClass({
     },
     closeCalendarModal(e) {
         // console.log(e);
-        this.setState({showCalendarModal:false});
+        this.setState({showCalendarModal:false, readMoreNote:null});
     },
     closeAddNoteOpenCalendar(e) {
         this.setState({showAddNoteModal:false, showCalendarModal:true, noteEditCalendar:false});
@@ -926,6 +945,10 @@ var Notes = React.createClass({
     },
     showCalendar:function (e) {
         this.setState({showCalendarModal:true});
+    },
+    readMore:function(note) {
+        // console.log("notes->setState:",{readMoreNote:note, showCalendarModal:true})
+        this.setState({readMoreNote:note, showCalendarModal:true});
     },
     showNotes:function (event, n) {
         event.stopPropagation();
@@ -1075,14 +1098,13 @@ var Notes = React.createClass({
                 
                 noteColumns.push(
                     <div  key={i} className="col-xs-3">
-                        <NoteColumn note={currentNotes[i]} onNoteEdit={this.onNoteEdit} onNoteDeleted={this.updateNoteList} />
+                        <NoteColumn readMore={this.readMore} note={currentNotes[i]} onNoteEdit={this.onNoteEdit} onNoteDeleted={this.updateNoteList} />
                     </div>
                 )
             }
             var formattedDate = moment(this.state.activeNote).format("dddd, MMM D, YYYY");
         
         }
-        
         
         return (
             <div className="notes">
@@ -1119,6 +1141,7 @@ var Notes = React.createClass({
                     onNoteEdit={this.onNoteEditCalendar}
                     onSelectDate={this.onSelectDate}
                     onNoteDeleted={this.updateNoteList}
+                    readMoreNote={this.state.readMoreNote}
                     show={ this.state.showCalendarModal && !this.state.showAddNoteModal }
                     periodType={this.props.periodType}
                 /> 

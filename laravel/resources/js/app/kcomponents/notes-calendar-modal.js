@@ -118,6 +118,10 @@ var NoteRow = React.createClass({
         // this.props.event;
         // console.log(this.props.event.data.description);
         this.addEllipses(this.props.event.data.description);
+        console.log(this.props.readMoreNote , this.props.readMoreNote.id ,this.props.event.data.id)
+        if(this.props.readMoreNote && this.props.readMoreNote.id == this.props.event.data.id ) {
+            this.expandNote();
+        }
     },
     render:function () {
         
@@ -228,7 +232,8 @@ var NotesCalendarModal = React.createClass({
             periodStart:null,
             calendarView:true,
             today:today,
-            noteExpandedData:null
+            noteExpandedData:null,
+            readMoreNote:null
         };
         return(
             state
@@ -276,7 +281,7 @@ var NotesCalendarModal = React.createClass({
                 ||
                 dateEnd.isBetween(evtStart,evtEnd)                                              //el evento abarca la finalizacion del dia
             ) {
-                notes.push(<NoteRow onNoteEdit={this.props.onNoteEdit} onNoteDeleted={()=>this.updateNotes(this.state.currentDate, true)} expandNote={this.expandNote} key={i} event={evt} authorList={this.props.authorList} />)
+                notes.push(<NoteRow readMoreNote={this.state.readMoreNote} onNoteEdit={this.props.onNoteEdit} onNoteDeleted={()=>this.updateNotes(this.state.currentDate, true)} expandNote={this.expandNote} key={i} event={evt} authorList={this.props.authorList} />)
             }
         }
         return notes;
@@ -443,9 +448,9 @@ var NotesCalendarModal = React.createClass({
     toggleCalendarView:function (e) {
         this.setState({calendarView:!this.state.calendarView})
     },
-    show:function() {
+    show:function(readMoreNote) {
         $(getDOMNode(this)).modal("show");
-        this.setState({periodType:this.props.periodType});
+        this.setState({periodType:this.props.periodType, readMoreNote:readMoreNote});
         this.props.onSelectDate(this.state.currentDate);
         this.updateNotes(this.state.currentDate, true);
     },
@@ -461,9 +466,8 @@ var NotesCalendarModal = React.createClass({
         
         if (nextProps.show  == this.props.show) return;
         
-        
         if(nextProps.show) {
-            this.show();
+            this.show(nextProps.readMoreNote);
         } else {
             this.hide();
         }
