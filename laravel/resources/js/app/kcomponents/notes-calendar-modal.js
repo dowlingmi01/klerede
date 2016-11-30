@@ -497,7 +497,7 @@ var NotesCalendarModal = React.createClass({
                 <div className="modal-content" >
                   <div className="modal-header modal-section">
                     <div className="top-bar">
-                        <button type="button" style={{display:"none"}} className="close" data-dismiss="modal" aria-label="Close"><CloseIcon className="close-icon"/></button>
+                        <button type="button" style={null} className="close" data-dismiss="modal" aria-label="Close"><CloseIcon className="close-icon"/></button>
                         <h3 className="modal-title inline-block">{currentDate}</h3>
                         <div id="month-switch" className="inline-block">
                             <div className="inline-block" onClick={(e) => this.monthChange(e, -1)}>
