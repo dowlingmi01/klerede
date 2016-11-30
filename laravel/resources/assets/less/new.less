@@ -141,7 +141,8 @@
                         .rbc-month-row {
                             border:none;
                             height:50px;
-                            overflow:inherit;
+                            position: relative;
+                            overflow: visible;
                             .rbc-row-content {
                                 .rbc-date-cell {
                                     position:relative;
@@ -173,11 +174,15 @@
                                             background:none;
                                             margin-top: -4px;
                                         }
-                                        .NoteEvent.multiday {
-                                            display:block;
-                                            width:100%;
+                                        .NoteEvent.multiday,
+                                        .NoteEvent.multiday.revealed {
+                                            display:block !important;
                                             height:4px;
-                                            background-color:@cobalt;
+                                            fill:transparent;
+                                            background-color:#047ecc;
+                                            position: absolute;
+                                            top:20px;
+                                            opacity: .7;
                                         }
                                         .NoteEvent.revealed, 
                                         .NoteEvent.ShowMore 
@@ -190,6 +195,8 @@
                                             width:16px;
                                             height:16px;
                                             border-radius:16px;
+                                            position: absolute;
+                                            top: 25px;
                                         }
                                         .rbc-event {
                                             background:none;
@@ -261,14 +268,14 @@
             .note-rows-container {
                 min-height:280px;
                 .note-row.expanded {
-                    .edit-delete {
-                        svg.edit-icon {
-                            display:inline-block;
-                        }
-                        .svg-button {
-                            display:inline-block;
-                        }
-                    }
+                    // .edit-delete {
+                    //     svg.edit-icon {
+                    //         display:inline-block;
+                    //     }
+                    //     .svg-button {
+                    //         display:inline-block;
+                    //     }
+                    // }
                     .expand-note {
                         .caret-container {
                             svg {
@@ -279,8 +286,10 @@
                         }
                     }
                     .note-description {
-                        min-height:51px;
-                        height:auto;
+                        p {
+                            min-height:51px;
+                            height:auto;
+                        }
                         .related-events {
                             display:block;
                         }
@@ -328,29 +337,31 @@
                         .note-time {
                              color:@halfdarkmediumgrey;
                         }
-                        .edit-delete {
-                            height:17px;
-                            svg.edit-icon {
-                                width:16px;
-                                height:16px;
-                                margin-right:4px;
-                                display:none;
-                                cursor:pointer;
-                            }
-                            .svg-button {
-                                display:none;
-                                vertical-align:top;
-                            }
-                        }
                         .note-author {
                              color:@pink;
                              font-weight:600;
                              font-style: italic;
                         }
                     }
+                    .edit-delete {
+                        height:17px;
+                        svg.edit-icon {
+                            width:16px;
+                            height:16px;
+                            margin-right:4px;
+                            display:inline-block;
+                            cursor:pointer;
+                        }
+                        .svg-button {
+                            display:inline-block;
+                            vertical-align:top;
+                        }
+                    }
                     .note-description {
-                        height:51px;
-                        overflow-y:hidden;
+                        p {
+                            height:51px;
+                            overflow-y:hidden;
+                        }
                         margin-bottom:0;
                         .related-events {
                             display:none;
@@ -369,9 +380,9 @@
                         line-height:14px;
                     }
                     .tags {
-                        text-align:right;
+                        text-align:left;
                         .tag {
-                            display:block;
+                            display:inline-block;
                         }
                     }
                     .channels {
@@ -993,7 +1004,7 @@ table.jCalendar td.no-data {
                         }
                         .note-description {
                             height:51px;
-                            overflow-y:hidden;
+                            overflow-y:auto;
                         }
                      }
                 }

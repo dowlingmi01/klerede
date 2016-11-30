@@ -9,6 +9,7 @@ var NotesCalendarModal = require('../kcomponents/notes-calendar-modal.js');
 
 require('bootstrap');
 require ('jquery-placeholder');
+require('dotdotdot');
 
 var KAPI={
     notes:require("../kapi/notes.js"),
@@ -205,10 +206,10 @@ var AddNoteModal = React.createClass({
     },
     onDescriptionChange:function (e) {
         var value = e.target.value;
-        // if(value.length>120) {
-        //     alert("120 character limit reached.")
-        //     value = value.substring(0, 120);
-        // };
+        if(!features.notes_calendar && value.length>120) {
+            alert("120 character limit reached.")
+            value = value.substring(0, 120);
+        };
         this.setChanged();
         this.setState({description:value});
     },
@@ -591,7 +592,7 @@ var AddNoteModal = React.createClass({
                             <Asterisc className="required-circle note-header" />
                         </div>
                         <div className="form-group">
-                            <TextArea autoComplete="off" minHeight={34} id="description" className="form-control" placeholder="Description - 120 character limit" value={this.state.description} onChange={this.onDescriptionChange} />
+                            <TextArea autoComplete="off" minHeight={34} id="description" className="form-control" placeholder={"Description"+ (features.notes_calendar ? "":" - 120 character limit")} value={this.state.description} onChange={this.onDescriptionChange} />
                             <Asterisc className="required-circle" />
                         </div>
                         <div className="form-group" id="date-time">
@@ -810,8 +811,7 @@ var NoteColumn = React.createClass({
         return {
             permissions: KAPI.auth.getUserPermissions(),
             userID: KAPI.auth.getUser().id,
-            description:this.props.note.description
-            
+            description:""
         }
     },
     onNoteEdit:function (e) {
@@ -829,19 +829,17 @@ var NoteColumn = React.createClass({
         this.props.onNoteDeleted();
     },
     componentWillReceiveProps:function (nextProps) {
-        this.setState({description:nextProps.note.description});
+        if(this.props.note.description != nextProps.note.description) {
+            this.addEllipses(nextProps.note.description);
+        }
     },
-    componentDidUpdate:function () {
-        if (this.refs.noteDescription.scrollHeight <= $(this.refs.noteDescription).height())
-            return;
-        
-        while(this.refs.noteDescription.scrollHeight > $(this.refs.noteDescription).height()) {
-            var array = $(this.refs.noteDescription).text().split(" ");
-            array.pop();
-            $(this.refs.noteDescription).text(array.join(" "));
-        };
-        
+    addEllipses:function (description) {
+        $(this.refs.noteDescription).text(description);
+        $(this.refs.noteDescription).dotdotdot();
         this.setState({description:$(this.refs.noteDescription).text()});
+    },
+    componentDidMount:function () {
+        this.addEllipses(this.props.note.description);
     },
     render:function() {
         var note = this.props.note;
@@ -849,7 +847,7 @@ var NoteColumn = React.createClass({
         var description = this.state.description;
         
         
-        if (this.state.permissions["users-manage"] || note.owner_id == this.state.userID) {
+        if (this.state.permissions["notes-manage"] || note.owner_id == this.state.userID) {
             var editable = true;
         }
         
@@ -883,7 +881,7 @@ var Notes = React.createClass({
             noteDetailsClass:"",
             activeNote:null,
             showAddNoteModal:false,
-            showCalendarModal:false,
+            showCalendarModal:true,
             noteEditCalendar:false,
             selectedDate:null,
             noteList:{},
