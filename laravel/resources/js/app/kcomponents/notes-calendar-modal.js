@@ -90,13 +90,21 @@ var NoteRow = React.createClass({
             expanded:false,
             userID: KAPI.auth.getUser().id,
             permissions: KAPI.auth.getUserPermissions(),
-            description:""
+            description:"",
+            showExpandCaret:false
         } 
     },
-    expandNote:function() {
+    toggleExpandNote:function() {
         this.setState({
             expanded:!this.state.expanded
         });
+    },
+    defaultExpandNote:function () {
+        this.setState({
+            expanded:true
+        });
+        this.props.onDefaultExpanded();
+        
     },
     onNoteDelete:function (e) {
         if (!confirm("Delete this note?")) {
@@ -109,18 +117,25 @@ var NoteRow = React.createClass({
         alert("The note has been deleted.");
         this.props.onNoteDeleted();
     },
+    onEllipsesAdded:function(isTruncated, orgContent) {
+        this.setState({showExpandCaret:isTruncated});
+    },
     addEllipses:function (description) {
         $(this.refs.noteDescription).text(description);
-        $(this.refs.noteDescription).dotdotdot();
+        $(this.refs.noteDescription).dotdotdot({
+            callback:this.onEllipsesAdded
+        });
         this.setState({description:$(this.refs.noteDescription).text()});
     },
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.defaultExpanded) {
+            this.defaultExpandNote();
+        };
+    },
     componentDidMount(){
-        // this.props.event;
-        // console.log(this.props.event.data.description);
         this.addEllipses(this.props.event.data.description);
-        console.log(this.props.readMoreNote , this.props.readMoreNote.id ,this.props.event.data.id)
-        if(this.props.readMoreNote && this.props.readMoreNote.id == this.props.event.data.id ) {
-            this.expandNote();
+        if(this.props.defaultExpanded) {
+            this.defaultExpandNote();
         }
     },
     render:function () {
@@ -166,7 +181,7 @@ var NoteRow = React.createClass({
         // console.log(lengthInDays);
         
         return (
-            <div className={"note-row clearfix" + (expanded ? " expanded":"")}>
+            <div id={this.props.id} className={"note-row clearfix" + (expanded ? " expanded":"")}>
                 <div className="col-xs-2 note-date">
                     <div className="date-container">
                     {start.format("MM.DD")}{(lengthInDays > 1 || splitted) ? "- "+end.format("MM.DD") :  ""}
@@ -207,7 +222,13 @@ var NoteRow = React.createClass({
                         </div>
                     </div>
                 </div>
-                <div className="col-xs-1 expand-note"><div onClick={this.expandNote} className="caret-container"><Caret className=""/></div></div>
+                <div className="col-xs-1 expand-note">
+                    {this.state.showExpandCaret ? 
+                        <div onClick={this.toggleExpandNote} className="caret-container"><Caret className=""/></div>
+                        :
+                        <div></div>
+                    }
+                </div>
                 
             </div>
         );
@@ -232,8 +253,8 @@ var NotesCalendarModal = React.createClass({
             periodStart:null,
             calendarView:true,
             today:today,
-            noteExpandedData:null,
-            readMoreNote:null
+            readMoreNoteID:null,
+            scrollToExpanded:false
         };
         return(
             state
@@ -281,7 +302,19 @@ var NotesCalendarModal = React.createClass({
                 ||
                 dateEnd.isBetween(evtStart,evtEnd)                                              //el evento abarca la finalizacion del dia
             ) {
-                notes.push(<NoteRow readMoreNote={this.state.readMoreNote} onNoteEdit={this.props.onNoteEdit} onNoteDeleted={()=>this.updateNotes(this.state.currentDate, true)} expandNote={this.expandNote} key={i} event={evt} authorList={this.props.authorList} />)
+                var defaultExpanded = this.state.readMoreNoteID == evt.data.id;
+                notes.push(
+                    <NoteRow 
+                        defaultExpanded={defaultExpanded}
+                        onDefaultExpanded={this.onDefaultExpanded} 
+                        onNoteEdit={this.props.onNoteEdit} 
+                        onNoteDeleted={()=>this.updateNotes(this.state.currentDate, true)} 
+                        id={"noteRow"+evt.data.id}
+                        key={i} 
+                        event={evt} 
+                        authorList={this.props.authorList}
+                    />
+                );
             }
         }
         return notes;
@@ -396,7 +429,20 @@ var NotesCalendarModal = React.createClass({
         }
         console.log(events);
         
-        this.setState({events:events, notes:this.getNotes(null, events)});
+        this.setState({events:events, notes:this.getNotes(null, events), scrollToExpanded:Boolean(this.state.readMoreNoteID)});
+    },
+    updateDateBackground(periodType) {
+        WeekBG.detach();
+        DayBG.detach();
+      
+        periodType = periodType || this.state.periodType;
+
+        if (periodType != "week" && periodType !="day") return;
+        
+        var bg = periodType == "week" ? WeekBG : DayBG;
+        var current = $(getDOMNode(this.refs.BigCalendar)).find(".rbc-current");
+        // console.log(this.refs.BigCalendar, current, DayBG);
+        $(periodType == "week" ? current.parent() : current).append(bg);
     },
     updateDate:function (date, periodType) {
         periodType = periodType || this.props.periodType;
@@ -410,6 +456,7 @@ var NotesCalendarModal = React.createClass({
             quarter:this.getQuarter(date), 
             notes:this.getNotes(date, null, periodType)
         });
+        this.updateDateBackground(periodType);
     },
     monthChange:function (e, n) {
         var newDate = new Date(du.addMonths(this.state.currentDate.toDate(), n));
@@ -442,17 +489,20 @@ var NotesCalendarModal = React.createClass({
     onSelecting:function (e) {
         console.log(e);
     },
-    expandNote:function(note) {
-        this.setState({noteExpandedData:note});
-    },
     toggleCalendarView:function (e) {
         this.setState({calendarView:!this.state.calendarView})
     },
-    show:function(readMoreNote) {
+    onDefaultExpanded:function () {
+        this.setState({readMoreNoteID:null});
+    },
+    show:function(readMoreNoteID) {
+        
         $(getDOMNode(this)).modal("show");
-        this.setState({periodType:this.props.periodType, readMoreNote:readMoreNote});
-        this.props.onSelectDate(this.state.currentDate);
-        this.updateNotes(this.state.currentDate, true);
+        var currentDate = moment(this.props.defaultDate);
+        this.setState({periodType:this.props.periodType, readMoreNoteID:readMoreNoteID, currentDate:currentDate});
+        this.props.onSelectDate(currentDate);
+        this.updateNotes(currentDate, true);
+        
     },
     hide:function() {
         $(getDOMNode(this)).modal("hide");
@@ -467,7 +517,7 @@ var NotesCalendarModal = React.createClass({
         if (nextProps.show  == this.props.show) return;
         
         if(nextProps.show) {
-            this.show(nextProps.readMoreNote);
+            this.show(nextProps.readMoreNoteID);
         } else {
             this.hide();
         }
@@ -479,16 +529,15 @@ var NotesCalendarModal = React.createClass({
         }
     },
 	componentDidUpdate:function(){
-        
-        WeekBG.detach();
-        DayBG.detach();
-        
-        if (this.state.periodType != "week" && this.state.periodType !="day") return;
-        
-        var bg = this.state.periodType == "week" ? WeekBG : DayBG;
-        var current = $(getDOMNode(this.refs.BigCalendar)).find(".rbc-current");
-        // console.log(this.refs.BigCalendar, current, DayBG);
-        $(this.state.periodType == "week" ? current.parent() : current).append(bg);
+        this.updateDateBackground();
+        if (this.state.scrollToExpanded) {
+            var container = this.refs.notesWindow;
+            var noteRow = document.getElementById('noteRow'+this.state.readMoreNoteID);
+            if (noteRow) {
+                this.setState({scrollToExpanded:false});
+                container.scrollTop = noteRow.offsetTop - 12;
+            }
+        }
 	},
     render:function () {
         
@@ -573,8 +622,8 @@ var NotesCalendarModal = React.createClass({
                         </div>
                     </div>
                   </div>
-                  <div className={"modal-body modal-section" + (this.state.calendarView? "": " expanded")}>
-                        <div className="note-rows-container">
+                  <div ref="notesWindow" className={"modal-body modal-section" + (this.state.calendarView? "": " expanded")}>
+                        <div ref="notesContainer" className="note-rows-container">
                             {this.state.notes}
                         </div>
                   </div>

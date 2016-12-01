@@ -900,7 +900,7 @@ var Notes = React.createClass({
             activeNote:null,
             showAddNoteModal:false,
             showCalendarModal:false,
-            readMoreNote:null,
+            readMoreNoteID:null,
             noteEditCalendar:false,
             selectedDate:null,
             noteList:{},
@@ -910,7 +910,7 @@ var Notes = React.createClass({
     },
     closeCalendarModal(e) {
         // console.log(e);
-        this.setState({showCalendarModal:false, readMoreNote:null});
+        this.setState({showCalendarModal:false, readMoreNoteID:null});
     },
     closeAddNoteOpenCalendar(e) {
         this.setState({showAddNoteModal:false, showCalendarModal:true, noteEditCalendar:false});
@@ -947,8 +947,8 @@ var Notes = React.createClass({
         this.setState({showCalendarModal:true});
     },
     readMore:function(note) {
-        // console.log("notes->setState:",{readMoreNote:note, showCalendarModal:true})
-        this.setState({readMoreNote:note, showCalendarModal:true});
+        // console.log("notes->setState:",{defaultExpanded:note, showCalendarModal:true})
+        this.setState({readMoreNoteID:note.id, showCalendarModal:true});
     },
     showNotes:function (event, n) {
         event.stopPropagation();
@@ -1141,7 +1141,7 @@ var Notes = React.createClass({
                     onNoteEdit={this.onNoteEditCalendar}
                     onSelectDate={this.onSelectDate}
                     onNoteDeleted={this.updateNoteList}
-                    readMoreNote={this.state.readMoreNote}
+                    readMoreNoteID={this.state.readMoreNoteID}
                     show={ this.state.showCalendarModal && !this.state.showAddNoteModal }
                     periodType={this.props.periodType}
                 /> 
