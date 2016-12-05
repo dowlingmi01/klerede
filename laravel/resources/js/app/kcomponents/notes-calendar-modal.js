@@ -325,8 +325,8 @@ var NotesCalendarModal = React.createClass({
         else 
             period = this.props.periodType;
         
-        var periodStart = moment(date).startOf(period).format('YYYY-MM-DD');
-        var periodEnd = moment(date).endOf(period).format('YYYY-MM-DD');
+        var periodStart = moment(date).startOf(period).startOf("week").format('YYYY-MM-DD');
+        var periodEnd = moment(date).endOf(period).endOf("week").format('YYYY-MM-DD');
         // console.log(period, periodStart, periodEnd);
         
         if (!forceUpdate && periodStart == this.state.periodStart) return;
@@ -338,7 +338,6 @@ var NotesCalendarModal = React.createClass({
     onNotesUpdated:function (result) {
         // console.log(result);
         var events = [];
-        
         var lastDate = "";
         var dateCount = 0;
         var firstFound = false;
@@ -379,7 +378,7 @@ var NotesCalendarModal = React.createClass({
                     splitted = true;
 
                     var internalStart = moment(end).startOf("week");
-
+                    
                     var eventLength1 = (moment(internalEnd).startOf("day").diff(moment(start).startOf("day"), 'days')) + r.all_day;
                     var eventLength2 = (moment(end).startOf("day").diff(moment(internalStart).startOf("day"), 'days')) + r.all_day;
                     
@@ -389,7 +388,7 @@ var NotesCalendarModal = React.createClass({
                         'start': start.toDate(),
                         'end': internalEnd.toDate(),
                         'splitted':splitted,
-                        'part2':true,
+                        'part':1,
                         'length': eventLength1,
                         'data': r,
                         dateCount:dateCount,
@@ -397,6 +396,26 @@ var NotesCalendarModal = React.createClass({
                         firstOneDay:firstOneDay
                     })
                     
+                    var intWeeksLength = internalStart.diff(internalEnd,'weeks');
+                    for(var j=1; j<=intWeeksLength; j++) {
+                        var wStart = moment(start).startOf("week").add(j,'w');
+                        var wEnd = moment(start).endOf("week").add(j,'w');
+                        // console.log(wStart.format(), wEnd.format());
+                        events.push({
+                            'title': r.header,
+                            'allDay': r.all_day ? true : false,
+                            'start': wStart.toDate(),
+                            'end': wEnd.toDate(),
+                            'splitted':splitted,
+                            'part':j+1,
+                            'length': 7,
+                            'data': r,
+                            dateCount:dateCount,
+                            lastInDate:true,
+                            firstOneDay:firstOneDay
+                        })
+                    }
+
                     eventLength = eventLength2;
                     start = internalStart;
                 }
@@ -498,7 +517,9 @@ var NotesCalendarModal = React.createClass({
     show:function(readMoreNoteID) {
         
         $(getDOMNode(this)).modal("show");
-        var currentDate = moment(this.props.defaultDate);
+
+        var currentDate = moment(readMoreNoteID ? this.props.defaultDate : this.state.currentDate);
+
         this.setState({periodType:this.props.periodType, readMoreNoteID:readMoreNoteID, currentDate:currentDate});
         this.props.onSelectDate(currentDate);
         this.updateNotes(currentDate, true);
