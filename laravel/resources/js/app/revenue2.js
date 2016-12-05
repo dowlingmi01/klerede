@@ -152,9 +152,9 @@ var ChannelPopup = React.createClass({
         var numFormat = KUtils.number.formatAmount;
         var key = this.props.channelUnits;
         var sign = "$";
-        // if (this.props.units == "dollars") {
-        //     key = "amount";
-        // }
+        if (this.props.units == "percap") {
+            key = "percap";
+        }
         if (this.props.units == "attendance-tab") {
             // key = "amount";
             sign = "";
