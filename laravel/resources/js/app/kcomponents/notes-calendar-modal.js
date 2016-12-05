@@ -50,17 +50,20 @@ function NoteEvent({ event }) {
         // }
     } else {
         var count = Math.min(4, event.dateCount);
-        var size = 5.5 * Math.pow(1.45454545454545, count);
+        var size = 5.5 * Math.pow(1.3, count);
         // size = Math.min(25, size);
         // console.log(event.dateCount, (1.25 ^ event.dateCount), size);
         style.width = size+"px";
         style.height = size+"px";
         style.marginLeft = (-size/2)+"px";
-        style.marginTop = (-count)+"px"
+        style.marginTop = (-count+2)+"px"
         
         // if(event.firstOneDay && event.dateCount<=2) {
+        if(event.lastInDate) {
             className += " revealed";
-        // }
+        } else {
+            // console.debug(event);
+        }
         
     };
     return (
@@ -71,9 +74,10 @@ function NoteEvent({ event }) {
 function ShowMore(n) {
     // console.log(n);
     n = Math.min(4, n);
-    var size = 5.5 * Math.pow(1.45454545454545, n+1);
+    var size = 5.5 * Math.pow(1.3, n+1);
+    // var size = 5.5 * Math.pow(1.45454545454545, n+1);
     // size = Math.min(25, size);
-    var style = {width:size+"px", height:size+"px", marginLeft:(-size/2)+"px", marginTop:(-n)+"px"};
+    var style = {width:size+"px", height:size+"px", marginLeft:(-size/2)+"px", marginTop:(-n+1)+"px"};
     var className = "NoteEvent ShowMore";
     return (
         <Circle style={style} className={className}/>
@@ -163,7 +167,7 @@ var NoteRow = React.createClass({
         for (var k in data.tags) {
             var tag = data.tags[k];
             tags.push(
-                <div key={k} className={"tag"} id={tag.id}>#{tag.description}</div>
+                <div onClick={(e)=>this.props.sortBy("tag", tag.description, tag.id)} key={k} className={"tag"} id={tag.id}>#{tag.description}</div>
             );
         }
         
@@ -191,7 +195,7 @@ var NoteRow = React.createClass({
                     <div className="col-xs-11 note-content">
                         <div className="note-header">{data.header}</div>
                         <div className="note-time">{hours}</div>
-                        <div className="note-author">{author}</div>
+                        <div onClick={(e)=>this.props.sortBy("author", author, data.owner_id)} className="note-author">{author}</div>
                     </div>
                     <div className="col-xs-1 channels">{channels}</div>
                     <div >
@@ -251,6 +255,8 @@ var NotesCalendarModal = React.createClass({
             quarter:quarter,
             periodType:this.props.periodType,
             periodStart:null,
+            notes:null,
+            sortBy:null,
             calendarView:true,
             today:today,
             readMoreNoteID:null,
@@ -274,6 +280,37 @@ var NotesCalendarModal = React.createClass({
         var start = moment(date).startOf('month');
         var end = moment(date).endOf('month');
         return {start:start, end:end};
+    },
+    sortBy:function(type, description, id) {
+        
+        var notes = this.state.notes;
+        var sorted = [];
+        
+        for (var i in notes) {
+            var data = notes[i].props.event.data;
+
+            if(type == "tag") {
+                var tags = data.tags;
+                for (var j in tags) {
+                    if (tags[j].id == id) {
+                        sorted.push(notes[i]);
+                    }
+                }
+            } else if (type=="author") {
+                if(data.owner_id == id) {
+                    sorted.push(notes[i]);
+                }
+            }
+        }
+        
+        sorted.sort(function(a, b){
+            var aStart = a.props.event.start;
+            var bStart = b.props.event.start;
+            return a>b;
+            // console.log(a.props.event.data);
+        });
+        
+        this.setState({sortBy:{type:type, description:description, id:id, sorted:sorted}});
     },
     getNotes(date, events, periodType) {
         
@@ -313,6 +350,7 @@ var NotesCalendarModal = React.createClass({
                         key={i} 
                         event={evt} 
                         authorList={this.props.authorList}
+                        sortBy={this.sortBy}
                     />
                 );
             }
@@ -336,7 +374,7 @@ var NotesCalendarModal = React.createClass({
         KAPI.notes.list(wnt.venueID, periodStart, periodEnd, this.onNotesUpdated);
     },
     onNotesUpdated:function (result) {
-        // console.log(result);
+        console.log(result);
         var events = [];
         var lastDate = "";
         var dateCount = 0;
@@ -473,7 +511,8 @@ var NotesCalendarModal = React.createClass({
             week:this.getWeek(date), 
             month:this.getMonth(date), 
             quarter:this.getQuarter(date), 
-            notes:this.getNotes(date, null, periodType)
+            notes:this.getNotes(date, null, periodType),
+            sortBy:null
         });
         this.updateDateBackground(periodType);
     },
@@ -489,7 +528,7 @@ var NotesCalendarModal = React.createClass({
     exitDayMode:function (e) {
         // console.log(e);
         e.preventDefault();
-        this.setState({notes:this.getNotes(null, null, this.props.periodType), periodType:this.props.periodType});
+        this.setState({sortBy:null, notes:this.getNotes(null, null, this.props.periodType), periodType:this.props.periodType});
         
     },
     onDateChange:function (e) {
@@ -520,7 +559,7 @@ var NotesCalendarModal = React.createClass({
 
         var currentDate = moment(readMoreNoteID ? this.props.defaultDate : this.state.currentDate);
 
-        this.setState({periodType:this.props.periodType, readMoreNoteID:readMoreNoteID, currentDate:currentDate});
+        this.setState({periodType:this.props.periodType, readMoreNoteID:readMoreNoteID, currentDate:currentDate, sortBy:null});
         this.props.onSelectDate(currentDate);
         this.updateNotes(currentDate, true);
         
@@ -629,8 +668,12 @@ var NotesCalendarModal = React.createClass({
                         <a href="#" onClick={this.exitDayMode}><div className="week inline-block">
                             {currentPeriod.start.format("MMM DD")} - {currentPeriod.end.format("MMM DD")}, {this.state.week.start.format("YYYY")}
                         </div></a>
-                            {this.state.periodType == "day" ?
+                            {
+                            this.state.periodType == "day" ?
                                 <div className="date inline-block">&nbsp;&nbsp;|&nbsp;&nbsp;{this.state.currentDate.format("dddd MMM Do, YYYY")}</div>
+                            :
+                            this.state.sortBy ?
+                                <div className="date inline-block">&nbsp;&nbsp;|&nbsp;&nbsp;{this.state.sortBy.description}</div>
                             :
                                 <div className="date inline-block"></div>
                             }
@@ -645,7 +688,12 @@ var NotesCalendarModal = React.createClass({
                   </div>
                   <div ref="notesWindow" className={"modal-body modal-section" + (this.state.calendarView? "": " expanded")}>
                         <div ref="notesContainer" className="note-rows-container">
-                            {this.state.notes}
+                            {
+                            this.state.sortBy ?
+                                this.state.sortBy.sorted
+                                :
+                                this.state.notes
+                            }
                         </div>
                   </div>
                 </div>
