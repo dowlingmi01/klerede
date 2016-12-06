@@ -52,38 +52,13 @@ class NoteController extends Controller
 	        }
 	        $venues[] = $request->venue_id;
         }
-       
-
-    	/*return Note::with(['channels', 'tags'])
-    				->where('time_start', '>=', $request->start)
-    				->where('time_end', '<', $request->end)
-    				->whereIn('venue_id', $venues)
-					->orderBy('time_start')
-    				->get();
-        */
-
-
+ 
         return Note::with(['channels', 'tags'])
-                    ->where(function($p) {
-                        $p->where(function($q) {
-                              $q->where('time_start', '>=', $request->start)
-                                ->orWhere('time_start', '<', $request->end);
-                          })
-                         ->orWhere(function($q) {
-                              $q->where('time_end', '>=', $request->start)
-                                ->orWhere('time_end', '<', $request->end);
-                          });
-                    })
-
+                    ->where('time_start', '>', $request->end)
+                    ->where('time_end', '>', $request->start)
                     ->whereIn('venue_id', $venues)
                     ->orderBy('time_start')
                     ->get();
-
-
-
-
-
-
 
 
     }
