@@ -37,6 +37,11 @@ class BoxOfficeAddMemberInfo extends Migration
 		DB::table('import_query_class')->insert([
 			['id'=>2200, 'name'=>'siriusware_box_office_transaction_member_info'],
 		]);
+		$sps = ['sp_compute_stats_visits', 'sp_compute_stats_box_office'];
+		foreach($sps as $sp) {
+			$sql = file_get_contents(database_path(sprintf('migrations/sp/%s.sql', $sp)));
+			DB::unprepared($sql);
+		}
 	}
 
     /**

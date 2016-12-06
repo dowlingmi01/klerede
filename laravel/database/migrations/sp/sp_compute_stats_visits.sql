@@ -24,7 +24,8 @@ BEGIN
                , year(v.valid_date)*100 + quarter(v.valid_date)
                , year(v.valid_date)*100 + month(v.valid_date)
                , yearweek(v.valid_date, 3)
-               , m.box_office_product_kind_id, sum(quantity)
+               , IF(m.box_office_product_kind_id = 1 AND v.membership_id IS NOT NULL, 2, m.box_office_product_kind_id) as product_kind_id
+               , sum(quantity)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM box_office_transaction_line v
             STRAIGHT_JOIN box_office_transaction t ON v.box_office_transaction_id = t.id
@@ -37,7 +38,7 @@ BEGIN
              AND p.kind != 'pass'
              AND t.venue_id = in_venue_id
              AND v.valid_date = in_date
-           GROUP BY p.venue_id, v.valid_date, m.box_office_product_kind_id
+           GROUP BY p.venue_id, v.valid_date, product_kind_id
           ;
      ELSE
           INSERT stat_visits
@@ -47,7 +48,8 @@ BEGIN
                , year(v.time)*100 + quarter(v.time)
                , year(v.time)*100 + month(v.time)
                , yearweek(v.time, 3)
-               , m.box_office_product_kind_id, sum(quantity)
+               , m.box_office_product_kind_id
+               , sum(quantity)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM visit v
             STRAIGHT_JOIN box_office_product p ON v.box_office_product_id = p.id
