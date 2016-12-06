@@ -54,8 +54,8 @@ class NoteController extends Controller
         }
        
         return Note::with(['channels', 'tags'])
-                    ->where('time_start', '<', $request->end)
-                    ->where('time_end', '>', $request->start)
+                    ->where('time_start', '<=', $request->end)
+                    ->where('time_end', '>=', $request->start)
                     ->whereIn('venue_id', $venues)
                     ->orderBy('time_start')
                     ->get();
