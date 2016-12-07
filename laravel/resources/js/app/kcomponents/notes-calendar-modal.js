@@ -25,12 +25,14 @@ require('dotdotdot');
 
 //local components
 var AddNoteTip = require('./add-note-tip');
+var ChannelNames = require('../kcomponents/channel-names');
 var SVGButton = require('./svg-button');
 var wnt = require('../kcomponents/wnt');
 var du = require('../kutils/date-utils');
 var KAPI = {
     notes:require('../kapi/notes'),
-    auth:require('../kapi/auth')
+    auth:require('../kapi/auth'),
+    tags:require('../kapi/tags')
 };
 
 BigCalendar.momentLocalizer(moment);
@@ -95,7 +97,8 @@ var NoteRow = React.createClass({
             userID: KAPI.auth.getUser().id,
             permissions: KAPI.auth.getUserPermissions(),
             description:"",
-            showExpandCaret:false
+            showExpandCaret:false,
+            channelNames:ChannelNames
         } 
     },
     toggleExpandNote:function() {
@@ -142,6 +145,11 @@ var NoteRow = React.createClass({
             this.defaultExpandNote();
         }
     },
+    onChannelClick(e) {
+        var description = $(e.target).attr("title");
+        var id = $(e.target).attr("id");
+        this.props.sortBy("channel", this.state.channelNames[description], id);
+    },
     render:function () {
         
         var expanded = this.state.expanded;
@@ -174,10 +182,13 @@ var NoteRow = React.createClass({
         var channels = [];
         for (var l in data.channels) {
             var channel = data.channels[l];
+            // console.log("channel", channel.code, channel.id);
             channels.push(
-                <div key={l} className={"channel "+channel.code} id={channel.id} title={channel.code}></div>
+                // <div onClick={(e)=>this.props.sortBy("channel", channel.code, channel.id, e)} key={l} className={"channel "+channel.code} id={channel.id} title={channel.code}></div>
+                <div onClick={this.onChannelClick} key={l} className={"channel "+channel.code} id={channel.id} title={channel.code}></div>
             );
         }
+        // console.log(channels);
         
         if (this.state.permissions["users-manage"] || data.owner_id == this.state.userID) {
             var editable = true;
@@ -239,6 +250,12 @@ var NoteRow = React.createClass({
     }
 });
 
+var SingleDayDiv = React.createClass({
+    render:function (){
+        return <div className="date inline-block">&nbsp;&nbsp;<span style={{color:"white"}} >|</span>&nbsp;&nbsp;{this.props.date}</div>
+    }
+})
+
 var NotesCalendarModal = React.createClass({
     getInitialState:function () {
         var defaultDate = new Date(this.props.defaultDate);
@@ -249,14 +266,17 @@ var NotesCalendarModal = React.createClass({
                 
         var state = {
 			currentDate:moment(defaultDate),
+            rawEvents:[],
             events:[],
+            categoryList:null,
             week:week,
             month:month,
             quarter:quarter,
             periodType:this.props.periodType,
             periodStart:null,
             notes:null,
-            sortBy:null,
+            sortBy:{},
+            filterBy:{},
             calendarView:true,
             today:today,
             readMoreNoteID:null,
@@ -281,50 +301,61 @@ var NotesCalendarModal = React.createClass({
         var end = moment(date).endOf('month');
         return {start:start, end:end};
     },
+    filterBy:function(type, description, id) {
+        this.setState({sortBy:{}, filterBy:{type:type, description:description, id:id}}, ()=>this.updateEvents(this.state.rawEvents));
+    },
     sortBy:function(type, description, id) {
+        this.setState({sortBy:{type:type, description:description, id:id}}, this.refreshNotes);
+    },
+    doFilterBy:function (type, id, notes,e) {
         
-        var notes = this.state.notes;
-        var sorted = [];
+        if (id == 0) return notes;
         
+        // console.log(type, id, notes, e);
+        var filtered = [];
         for (var i in notes) {
             var data = notes[i].props.event.data;
-
-            if(type == "tag") {
+            switch (type) {
+            case "tag":
                 var tags = data.tags;
                 for (var j in tags) {
                     if (tags[j].id == id) {
-                        sorted.push(notes[i]);
+                        // console.log(notes[i], tags[j].id, id);
+                        filtered.push(notes[i]);
                     }
                 }
-            } else if (type=="author") {
+                break;
+            case "author":
                 if(data.owner_id == id) {
-                    sorted.push(notes[i]);
+                    filtered.push(notes[i]);
                 }
+                break;
+            case "channel":
+                var channels = data.channels;
+                for (var j in channels) {
+                    if (channels[j].id == id) {
+                        filtered.push(notes[i]);
+                    }
+                }
+                break;
+            default:
+                return notes;
             }
-        }
-        
-        sorted.sort(function(a, b){
-            var aStart = a.props.event.start;
-            var bStart = b.props.event.start;
-            return a>b;
-            // console.log(a.props.event.data);
-        });
-        
-        this.setState({sortBy:{type:type, description:description, id:id, sorted:sorted}});
+        }        
+        return filtered;
     },
-    getNotes(date, events, periodType) {
+    refreshNotes(events) {
+        // console.log("refreshNotes");
+        var date = this.state.currentDate,
+            events = events || this.state.events,
+            periodType = this.state.periodType;
         
-        date = date || this.state.currentDate;
-        
-        events = events || this.state.events;
-
-        periodType = periodType || this.state.periodType;
-        
+        // BUILD NOTES
         // console.log(date, events, periodType);
         var dateStart = moment(date).startOf(periodType);
         var dateEnd = moment(date).endOf(periodType);
         var notes = [];
-        // console.log(events);
+
         for (var i=0; i<events.length; i++) {
             var evt = events[i];
             var evtStart = moment(evt.start);
@@ -345,7 +376,7 @@ var NotesCalendarModal = React.createClass({
                         defaultExpanded={defaultExpanded}
                         onDefaultExpanded={this.onDefaultExpanded} 
                         onNoteEdit={this.props.onNoteEdit} 
-                        onNoteDeleted={()=>this.updateNotes(this.state.currentDate, true)} 
+                        onNoteDeleted={()=>this.loadNotes(this.state.currentDate, true)} 
                         id={"noteRow"+evt.data.id}
                         key={i} 
                         event={evt} 
@@ -355,9 +386,31 @@ var NotesCalendarModal = React.createClass({
                 );
             }
         }
-        return notes;
+        
+        // console.log(notes);
+        // // FILTER NOTES
+        // var type = this.state.filterBy.type;
+        // var id = this.state.filterBy.id;
+        //
+        // var filtered = this.doFilterBy(type, id, notes);
+        
+        // console.log(filtered);
+        // SORT NOTES
+        var typeSort = this.state.sortBy.type;
+        var idSort = this.state.sortBy.id;
+        
+        var sorted = this.doFilterBy(typeSort, idSort, notes);
+        
+        sorted.sort(function(a, b){
+            var aStart = a.props.event.start;
+            var bStart = b.props.event.start;
+            return a>b;
+        });
+        // console.log(sorted);
+        this.setState({notes:sorted}, this.forceUpdate);
+        // this.forceUpdate();
     },
-    updateNotes:function (date, forceUpdate) {
+    loadNotes:function (date, forceUpdate) {
         if (this.props.periodType == "week")
             var period = "month";
         else 
@@ -371,10 +424,10 @@ var NotesCalendarModal = React.createClass({
         
         this.setState({periodStart:periodStart});
         
-        KAPI.notes.list(wnt.venueID, periodStart, periodEnd, this.onNotesUpdated);
+        KAPI.notes.list(wnt.venueID, periodStart, periodEnd, this.updateEvents);
     },
-    onNotesUpdated:function (result) {
-        console.log(result);
+    updateEvents:function (result) {
+        // console.log(result);
         var events = [];
         var lastDate = "";
         var dateCount = 0;
@@ -382,6 +435,22 @@ var NotesCalendarModal = React.createClass({
         
         for (var i=0; i<result.length; i++) {
             var r = result[i];
+            
+            //filter by tags first
+            var id = this.state.filterBy.id;
+            if (id && id!=0) {
+                var tags = r.tags;
+                var found = false;
+                for (var j in tags) {
+                    if (tags[j].id == id) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) continue;
+            }
+            
+            
             var start = moment(r.time_start);
             var end = moment(r.time_end);
             var currentDate = start.format('YYYY-MM-DD');
@@ -484,9 +553,27 @@ var NotesCalendarModal = React.createClass({
                 e.dateCount = lastCount;
             }
         }
-        console.log(events);
+        // console.log(events);
         
-        this.setState({events:events, notes:this.getNotes(null, events), scrollToExpanded:Boolean(this.state.readMoreNoteID)});
+        this.setState({rawEvents:result, events:events, scrollToExpanded:Boolean(this.state.readMoreNoteID)}, this.refreshNotes);
+    },
+    loadTags:function () {
+        KAPI.tags.list(wnt.venueID, this.onTagsLoaded);
+    },
+    onTagsLoaded:function (tags) {
+        var categoryList = [{value:0, label:"ALL", global:true}];
+        for (var i=0 ; i<tags.length ; i++) {
+            var tag = tags[i];
+            categoryList.push(
+                {
+                    value:tag.id,
+                    label:tag.description,
+                    global:(tag.venue_id == 0) ? true : false
+                }
+            )
+        }
+        // console.log(categoryList);
+        this.setState({categoryList:categoryList});
     },
     updateDateBackground(periodType) {
         WeekBG.detach();
@@ -503,23 +590,22 @@ var NotesCalendarModal = React.createClass({
     },
     updateDate:function (date, periodType) {
         periodType = periodType || this.props.periodType;
-        this.updateNotes(date);
+        this.loadNotes(date);
         this.props.onSelectDate(date);
         this.setState({
             periodType:periodType,
             currentDate:moment(date), 
             week:this.getWeek(date), 
             month:this.getMonth(date), 
-            quarter:this.getQuarter(date), 
-            notes:this.getNotes(date, null, periodType),
-            sortBy:null
-        });
+            quarter:this.getQuarter(date),
+            sortBy:{}
+        }, this.refreshNotes);
         this.updateDateBackground(periodType);
     },
     monthChange:function (e, n) {
         var newDate = new Date(du.addMonths(this.state.currentDate.toDate(), n));
         this.updateDate(newDate);
-        this.updateNotes(newDate);
+        this.loadNotes(newDate);
     },
     addNote:function(e) {
         e.preventDefault();
@@ -528,7 +614,7 @@ var NotesCalendarModal = React.createClass({
     exitDayMode:function (e) {
         // console.log(e);
         e.preventDefault();
-        this.setState({sortBy:null, notes:this.getNotes(null, null, this.props.periodType), periodType:this.props.periodType});
+        this.setState({sortBy:{}, periodType:this.props.periodType}, this.refreshNotes);
         
     },
     onDateChange:function (e) {
@@ -559,9 +645,10 @@ var NotesCalendarModal = React.createClass({
 
         var currentDate = moment(readMoreNoteID ? this.props.defaultDate : this.state.currentDate);
 
-        this.setState({periodType:this.props.periodType, readMoreNoteID:readMoreNoteID, currentDate:currentDate, sortBy:null});
+        this.setState({periodType:this.props.periodType, readMoreNoteID:readMoreNoteID, currentDate:currentDate, sortBy:{}}, this.refreshNotes);
         this.props.onSelectDate(currentDate);
-        this.updateNotes(currentDate, true);
+        this.loadNotes(currentDate, true);
+        this.loadTags();
         
     },
     hide:function() {
@@ -603,6 +690,8 @@ var NotesCalendarModal = React.createClass({
         
         var currentDate = this.state.currentDate.format("MMMM, YYYY");
         var currentPeriod = this.state[this.props.periodType];
+        var _self = this;
+        // var singleDayDiv = ;
         
         return(
             <div className="modal fade" tabIndex="-1" role="dialog">
@@ -622,13 +711,15 @@ var NotesCalendarModal = React.createClass({
                             </div>
                         </div>
                         <div id="select-wrapper" className="inline-block">
-                        {false ? 
+                        {true ? 
                             <Select
                                 ref="categorySelect"
                                 name="category-select"
                                 placeholder="Choose a category"
                                 options={this.state.categoryList}
-                                onChange={this.onCategorySelect}
+                                onClick={function(e){console.log(e)}}
+                                onChange={ (data) => this.filterBy("tag", data.label, data.value) }
+                                value={this.state.filterBy.id ? this.state.filterBy.id : 0}
                                 clearable={false}
                                 searchable={false}
                                 openOnFocus={true}
@@ -670,10 +761,19 @@ var NotesCalendarModal = React.createClass({
                         </div></a>
                             {
                             this.state.periodType == "day" ?
-                                <div className="date inline-block">&nbsp;&nbsp;|&nbsp;&nbsp;{this.state.currentDate.format("dddd MMM Do, YYYY")}</div>
-                            :
-                            this.state.sortBy ?
-                                <div className="date inline-block">&nbsp;&nbsp;|&nbsp;&nbsp;{this.state.sortBy.description}</div>
+                                (
+                                     this.state.sortBy.id ?
+                                        <a href="#" onClick={function(e) {e.preventDefault(); _self.sortBy(null, null, null)}}>
+                                            <SingleDayDiv date={this.state.currentDate.format("dddd MMM Do, YYYY")} />
+                                        </a>
+                                    :
+                                        <SingleDayDiv date={this.state.currentDate.format("dddd MMM Do, YYYY")} />
+                                    
+                                )
+                            : null }
+                            {
+                                this.state.sortBy.id ?
+                                    <div className="date inline-block">&nbsp;&nbsp;|&nbsp;&nbsp;{this.state.sortBy.description}</div>
                             :
                                 <div className="date inline-block"></div>
                             }
@@ -689,9 +789,6 @@ var NotesCalendarModal = React.createClass({
                   <div ref="notesWindow" className={"modal-body modal-section" + (this.state.calendarView? "": " expanded")}>
                         <div ref="notesContainer" className="note-rows-container">
                             {
-                            this.state.sortBy ?
-                                this.state.sortBy.sorted
-                                :
                                 this.state.notes
                             }
                         </div>

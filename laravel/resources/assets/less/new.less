@@ -101,18 +101,22 @@
                     }
                 }
                 #select-wrapper {
-                    width:40%;
+                    width:37%;
                     min-height:24px;
                     float:right;
+                    margin-right:12px;
                     text-align:left;
-                    .Select-control {
-                        border-radius:0;
-                        height:24px;
-                        .Select-arrow-zone {
-                            svg {
-                                top:50%;
-                                right:6px;
-                                margin-top:-3px;
+                    .Select {
+                        z-index: 10;
+                        .Select-control {
+                            border-radius:0;
+                            height:24px;
+                            .Select-arrow-zone {
+                                svg {
+                                    top:50%;
+                                    right:6px;
+                                    margin-top:-3px;
+                                }
                             }
                         }
                     }
@@ -414,6 +418,7 @@
                             background-color:@lightgrey;
                             display:block;
                             margin-bottom:4px;
+                            cursor:pointer;
                         }
                         .channel.gate {
                             background-color:@boxoffice;

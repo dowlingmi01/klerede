@@ -1,0 +1,1 @@
+module.exports = {gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"};

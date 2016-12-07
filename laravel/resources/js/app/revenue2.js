@@ -18,6 +18,7 @@ var saveImage = require ('./kutils/save-image.js');
 
 var wnt = require ('./kcomponents/wnt.js');
 var Channel = require('./kcomponents/channel.js');
+var ChannelNames = require('./kcomponents/channel-names');
 var Notes = require('./kcomponents/notes.js');
 
 var CalendarIcon = require('./svg-icons').CalendarIcon;
@@ -488,7 +489,7 @@ var Revenue2 = React.createClass({
         }
         
         var regularUnitsData = {
-            channelNames:{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
+            channelNames:ChannelNames,
             channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
             childCategories:{ga:"General admission", group:"Groups", donation:"Donation", other_attendance:"Other Attendance", other:"Other"},
             childCategoriesQdetails:{prefix:"gate_bars_by_", channel:"gate", type:'sales'},
