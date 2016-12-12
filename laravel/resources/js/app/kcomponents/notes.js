@@ -854,7 +854,9 @@ var NoteColumn = React.createClass({
     },
     render:function() {
         var note = this.props.note;
-        var formatedTime = note.all_day ? "All day" : moment(note.time_start).format("ha")+"-"+moment(note.time_end).format("ha")
+        var eventLength = note.all_day +  moment(note.time_end).diff(moment(note.time_start), 'days');
+        //console.log("eventLength",eventLength);
+        var formatedTime = eventLength >= 2 ?  eventLength+"-day" : note.all_day ? "All day" : moment(note.time_start).format("ha")+"-"+moment(note.time_end).format("ha");
         var description = this.state.description;
         
         
@@ -991,6 +993,7 @@ var Notes = React.createClass({
         KAPI.notes.list(wnt.venueID, props.startDate, props.endDate, this.onNoteListUpdated);
     },
     onNoteListUpdated(response) {
+        var multiDay = [];
         var noteList = {};
         var count = 0;
         var currentDate = moment(this.props.startDate);
@@ -1008,18 +1011,26 @@ var Notes = React.createClass({
             while(response.length) {
                 var note = response.shift();
                 var noteStartDate = moment(note.time_start);
+                var noteEndDate = moment(note.time_end);
                 if( noteStartDate.isBefore(currentDatePlusOne) ) {
 
                     var author = this.state.authorList[note.owner_id];
                     if (author)
                         note.author = author;
-                    
                     dateNotes.push(note);
+                    
+                    if(noteEndDate.isSameOrAfter(currentDatePlusOne)) {
+                        multiDay.unshift(note);
+                    }
+                    
                 } else {
                     response.unshift(note);
                     break;
                 }
             }
+            response = multiDay.concat(response);
+            multiDay = [];
+            
             
             noteList[currentDate.format()] = dateNotes;
             count++;
