@@ -856,7 +856,7 @@ var NoteColumn = React.createClass({
         var note = this.props.note;
         var eventLength = note.all_day +  moment(note.time_end).diff(moment(note.time_start), 'days');
         //console.log("eventLength",eventLength);
-        var formatedTime = eventLength >= 2 ?  eventLength+"-day" : note.all_day ? "All day" : moment(note.time_start).format("ha")+"-"+moment(note.time_end).format("ha");
+        var formatedTime = eventLength >= 2 ?  eventLength+" days" : note.all_day ? "All day" : moment(note.time_start).format("ha")+"-"+moment(note.time_end).format("ha");
         var description = this.state.description;
         
         

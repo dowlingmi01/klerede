@@ -756,9 +756,16 @@ var NotesCalendarModal = React.createClass({
                     </div>
                     <div className="clearfix"></div>
                     <div className="date-bar">
-                        <a href="#" onClick={this.exitDayMode}><div className="week inline-block">
-                            {currentPeriod.start.format("MMM DD")} - {currentPeriod.end.format("MMM DD")}, {this.state.week.start.format("YYYY")}
-                        </div></a>
+                            {
+                                this.state.periodType == "day" || this.state.sortBy.id ?
+                                <a href="#" onClick={this.exitDayMode}><div className="week inline-block">
+                                    {currentPeriod.start.format("MMM DD")} - {currentPeriod.end.format("MMM DD")}, {this.state.week.start.format("YYYY")}
+                                </div></a>
+                                :
+                                <div className="week inline-block">
+                                    {currentPeriod.start.format("MMM DD")} - {currentPeriod.end.format("MMM DD")}, {this.state.week.start.format("YYYY")}
+                                </div>
+                            }
                             {
                             this.state.periodType == "day" ?
                                 (
