@@ -146,6 +146,8 @@ var NoteRow = React.createClass({
         }
     },
     onChannelClick(e) {
+        if (this.props.sortByType == "channel") return;
+        
         var description = $(e.target).attr("title");
         var id = $(e.target).attr("id");
         this.props.sortBy("channel", this.state.channelNames[description], id);
@@ -175,7 +177,7 @@ var NoteRow = React.createClass({
         for (var k in data.tags) {
             var tag = data.tags[k];
             tags.push(
-                <div onClick={(e)=>this.props.sortBy("tag", tag.description, tag.id)} key={k} className={"tag"} id={tag.id}>#{tag.description}</div>
+                <div onClick={this.props.sortByType == "tag" ? null : (e)=>this.props.sortBy("tag", tag.description, tag.id)} key={k} className={"tag"} id={tag.id}>#{tag.description}</div>
             );
         }
         
@@ -196,7 +198,7 @@ var NoteRow = React.createClass({
         // console.log(lengthInDays);
         
         return (
-            <div id={this.props.id} className={"note-row clearfix" + (expanded ? " expanded":"")}>
+            <div id={this.props.id} className={"note-row clearfix " + (this.props.sortByType ? this.props.sortByType+"-sort" : "") + (expanded ? " expanded":"")}>
                 <div className="col-xs-2 note-date">
                     <div className="date-container">
                     {start.format("MM.DD")}{(lengthInDays > 1 || splitted) ? "- "+end.format("MM.DD") :  ""}
@@ -206,7 +208,7 @@ var NoteRow = React.createClass({
                     <div className="col-xs-11 note-content">
                         <div className="note-header">{data.header}</div>
                         <div className="note-time">{hours}</div>
-                        <div onClick={(e)=>this.props.sortBy("author", author, data.owner_id)} className="note-author">{author}</div>
+                        <div onClick={this.props.sortByType == "author" ? null : (e)=>this.props.sortBy("author", author, data.owner_id)} className="note-author">{author}</div>
                     </div>
                     <div className="col-xs-1 channels">{channels}</div>
                     <div >
@@ -345,7 +347,6 @@ var NotesCalendarModal = React.createClass({
         return filtered;
     },
     refreshNotes(events) {
-        // console.log("refreshNotes");
         var date = this.state.currentDate,
             events = events || this.state.events,
             periodType = this.state.periodType;
@@ -382,6 +383,7 @@ var NotesCalendarModal = React.createClass({
                         event={evt} 
                         authorList={this.props.authorList}
                         sortBy={this.sortBy}
+                        sortByType = {this.state.sortBy.type}
                     />
                 );
             }
