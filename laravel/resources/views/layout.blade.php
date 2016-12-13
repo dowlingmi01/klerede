@@ -7,12 +7,21 @@
 <!--[if !IE]><!--> <html> <!--<![endif]-->
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script src="js/preload.js"></script>
         <link rel="stylesheet" href="css/app.css">
         <link rel="stylesheet" href="css/new.css">
         <link href="//fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800" rel="stylesheet" type="text/css">
     </head>
     <body class="printable-block">
-
+        <div id="preloader">
+            <div id="bar-container">
+                <div id="bar">
+                    <div id="progress"></div>
+                </div>
+            </div>
+        </div>
+        <div id="hide-preloader-js"><!-- calls hide-preloader-js --></div>
+        
         <div id="header"><!-- ReactJS component: Header --></div>
         <section class="container-fluid">
             <div class="row main-row">
@@ -44,7 +53,24 @@
             var global_ga_id ='{{$ga_id}}';
             var features = {!! json_encode(config('features')) !!};
         </script>
-        <script src="js/app.js"></script>
+        <script type="text/javascript">
+            var progress = document.getElementById('progress');
+            var barContainer = document.getElementById('bar-container');
+            var queue = new createjs.LoadQueue();
+
+             queue.on("progress", handleProgress, this);
+             queue.loadFile({id:"app", src:"js/app.js"});
+             
+             function handleProgress(e) {
+                 var p = e.progress*100;
+                 progress.setAttribute("style","width:"+p+"%");
+                 progress.style.width=p+'%';
+                 if (p>0 && p<100) {
+                     barContainer.setAttribute("style","opacity:1");
+                     barContainer.style.opacity='1';
+                 }
+             }
+        </script>
 		@yield('scripts')
     </body>
 </html>

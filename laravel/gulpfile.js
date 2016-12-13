@@ -8,7 +8,12 @@ elixir.config.sourcemaps = false;
 elixir(function(mix) {
     mix.less('app.less', './public/css/app.css')
         .less('new.less', './public/css/new.css')
+        .copy( 
+            './resources/js/libs/preloadjs-0.6.2.min.js',
+            "./public/js/preload.js"
+        )
         .browserify([
+                './resources/js/app/hide-preloader.js',
                 './resources/js/app/analytics.js',
                 './resources/js/app/global.js',
                 './resources/js/app/header.js',

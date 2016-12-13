@@ -1,5 +1,34 @@
 @import "colors";
 
+#preloader {
+    position:fixed;
+    width:100%;
+    display:table;
+    height:100%;
+    min-height: 100%;
+    background-color:@black;
+    z-index:999;
+    #bar-container {
+        opacity:0;
+        display:table-cell;
+        vertical-align: middle;
+        text-align:center;
+        #bar {
+            display:inline-block;
+            width:50%;
+            height:30px;
+            border-radius:30px;
+            overflow:hidden;
+            background-color:@mediumgrey;
+            #progress {
+                background-color:@cobalt;
+                width:0;
+                height:100%;
+            }
+        }
+    }
+}
+
 .placeholder { color: #aaa; }
 
 .modal-backdrop.fade.in {
