@@ -201,8 +201,13 @@ var AddNoteModal = React.createClass({
         }
     },
     onHeaderChange:function (e) {
+        var value = e.target.value;
+        if(value.length>50) {
+            alert("50 character limit reached.")
+            value = value.substring(0, 50);
+        };
         this.setChanged();
-        this.setState({header:e.target.value});
+        this.setState({header:value});
     },
     onDescriptionChange:function (e) {
         var value = e.target.value;
@@ -588,7 +593,7 @@ var AddNoteModal = React.createClass({
                     <div className="required-text"><Asterisc className="required-circle" /> Indicates Required Field</div>
                     <form ref="addNoteForm" className="" onFocus={null}>
                         <div className="form-group">
-                            <input autoComplete="off" type="text" id="header" className="form-control" placeholder="Add Note Header" value={this.state.header} onChange={this.onHeaderChange} />
+                            <input autoComplete="off" type="text" id="header" className="form-control" placeholder="Add Note Header - 50 character limit" value={this.state.header} onChange={this.onHeaderChange} />
                             <Asterisc className="required-circle note-header" />
                         </div>
                         <div className="form-group">
@@ -830,7 +835,7 @@ var NoteColumn = React.createClass({
         this.props.onNoteDeleted();
     },
     componentWillReceiveProps:function (nextProps) {
-        if(this.props.note.description != nextProps.note.description) {
+        if(this.props.note.description != nextProps.note.description || this.props.note.header != nextProps.note.header) {
             this.addEllipses(nextProps.note.description);
         }
     },
@@ -843,6 +848,12 @@ var NoteColumn = React.createClass({
     },
     addEllipses:function (description) {
         $(this.refs.noteDescription).text(description);
+        if($(this.refs.noteHeader).height()>34) {
+            $(this.refs.noteDescription).css("height","34px")
+        } else {
+            $(this.refs.noteDescription).css("height","51px")
+        };
+        
         $(this.refs.noteDescription).dotdotdot({
             callback:this.onEllipsesAdded,
             ellipsis:""
@@ -866,7 +877,7 @@ var NoteColumn = React.createClass({
         
         return(
             <div className="note-column" >
-                <div className="note-header">{note.header}</div>
+                <div className="note-header" ref="noteHeader">{note.header}</div>
                 <div className="note-time">{formatedTime}</div>
                 <div className="edit-delete">
                 {(editable) ?

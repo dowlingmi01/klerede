@@ -97,6 +97,7 @@ var NoteRow = React.createClass({
             userID: KAPI.auth.getUser().id,
             permissions: KAPI.auth.getUserPermissions(),
             description:"",
+            fullDescription:"",
             showExpandCaret:false,
             channelNames:ChannelNames
         } 
@@ -106,12 +107,14 @@ var NoteRow = React.createClass({
             expanded:!this.state.expanded
         });
     },
-    defaultExpandNote:function () {
+    defaultExpandNote:function (defaultExpanded) {
+        
+        if(!defaultExpanded) return;
+        
         this.setState({
             expanded:true
         });
-        this.props.onDefaultExpanded();
-        
+
     },
     onNoteDelete:function (e) {
         if (!confirm("Delete this note?")) {
@@ -125,25 +128,31 @@ var NoteRow = React.createClass({
         this.props.onNoteDeleted();
     },
     onEllipsesAdded:function(isTruncated, orgContent) {
-        this.setState({showExpandCaret:isTruncated});
+        var state = {showExpandCaret:isTruncated, description:$(this.refs.noteDescription).text(), fullDescription:orgContent.text()};
+        this.setState(state);
     },
     addEllipses:function (description) {
+        
+        if(this.state.fullDescription == description) {
+            this.log("addEllipses(): description didnt change");
+            return;
+        }
+        
+        $(this.refs.noteRow).removeClass("expanded");
         $(this.refs.noteDescription).text(description);
         $(this.refs.noteDescription).dotdotdot({
             callback:this.onEllipsesAdded
         });
-        this.setState({description:$(this.refs.noteDescription).text()});
     },
     componentWillReceiveProps(nextProps) {
-        if (nextProps.defaultExpanded) {
-            this.defaultExpandNote();
-        };
+        if(nextProps.event.data.description != this.state.fullDescription) {
+            this.addEllipses(nextProps.event.data.description);
+        }
+        this.defaultExpandNote(nextProps.defaultExpanded);
     },
     componentDidMount(){
         this.addEllipses(this.props.event.data.description);
-        if(this.props.defaultExpanded) {
-            this.defaultExpandNote();
-        }
+        this.defaultExpandNote(this.props.defaultExpanded);
     },
     onChannelClick(e) {
         if (this.props.sortByType == "channel") return;
@@ -155,7 +164,6 @@ var NoteRow = React.createClass({
     render:function () {
         
         var expanded = this.state.expanded;
-        
         var event = this.props.event;
         var data = event.data;
         var start = moment(data.time_start);
@@ -198,7 +206,7 @@ var NoteRow = React.createClass({
         // console.log(lengthInDays);
         
         return (
-            <div id={this.props.id} className={"note-row clearfix " + (this.props.sortByType ? this.props.sortByType+"-sort" : "") + (expanded ? " expanded":"")}>
+            <div id={this.props.id} ref="noteRow" className={"note-row clearfix " + (this.props.sortByType ? this.props.sortByType+"-sort" : "") + (expanded ? " expanded":"")}>
                 <div className="col-xs-2 note-date">
                     <div className="date-container">
                     {start.format("MM.DD")}{(lengthInDays > 1 || splitted) ? "- "+end.format("MM.DD") :  ""}
@@ -281,8 +289,7 @@ var NotesCalendarModal = React.createClass({
             filterBy:{},
             calendarView:true,
             today:today,
-            readMoreNoteID:null,
-            scrollToExpanded:false
+            readMoreNoteID:null
         };
         return(
             state
@@ -375,7 +382,6 @@ var NotesCalendarModal = React.createClass({
                 notes.push(
                     <NoteRow 
                         defaultExpanded={defaultExpanded}
-                        onDefaultExpanded={this.onDefaultExpanded} 
                         onNoteEdit={this.props.onNoteEdit} 
                         onNoteDeleted={()=>this.loadNotes(this.state.currentDate, true)} 
                         id={"noteRow"+evt.data.id}
@@ -557,7 +563,7 @@ var NotesCalendarModal = React.createClass({
         }
         // console.log(events);
         
-        this.setState({rawEvents:result, events:events, scrollToExpanded:Boolean(this.state.readMoreNoteID)}, this.refreshNotes);
+        this.setState({rawEvents:result, events:events}, this.refreshNotes);
     },
     loadTags:function () {
         KAPI.tags.list(wnt.venueID, this.onTagsLoaded);
@@ -638,11 +644,7 @@ var NotesCalendarModal = React.createClass({
     toggleCalendarView:function (e) {
         this.setState({calendarView:!this.state.calendarView})
     },
-    onDefaultExpanded:function () {
-        this.setState({readMoreNoteID:null});
-    },
     show:function(readMoreNoteID) {
-        
         $(getDOMNode(this)).modal("show");
 
         var currentDate = moment(readMoreNoteID ? this.props.defaultDate : this.state.currentDate);
@@ -674,17 +676,17 @@ var NotesCalendarModal = React.createClass({
     componentDidMount:function () {
         $(getDOMNode(this)).on('hide.bs.modal', this.props.onClose);
         if(this.props.show) {
-            this.show();
+            this.show(this.props.readMoreNoteID);
         }
     },
 	componentDidUpdate:function(){
         this.updateDateBackground();
-        if (this.state.scrollToExpanded) {
+        if (this.state.readMoreNoteID) {
             var container = this.refs.notesWindow;
             var noteRow = document.getElementById('noteRow'+this.state.readMoreNoteID);
-            if (noteRow) {
-                this.setState({scrollToExpanded:false});
+            if (noteRow && noteRow.offsetTop != 0) {
                 container.scrollTop = noteRow.offsetTop - 12;
+                this.setState({readMoreNoteID:null});
             }
         }
 	},
