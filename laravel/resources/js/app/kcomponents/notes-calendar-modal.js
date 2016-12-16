@@ -176,6 +176,7 @@ var NoteRow = React.createClass({
         var splitted = (event.splitted);
         var author = this.props.authorList[data.owner_id];
         var hours = "All Day";
+        var relatedEvents = this.props.relatedEvents;
         
         if (!event.allDay) {
             var startFormat = ("h");
@@ -210,6 +211,33 @@ var NoteRow = React.createClass({
         }
         // console.log(lengthInDays);
         
+        
+        // console.log(relatedEvents);
+        
+        var relatedList = [];
+        var alreadyListed = {};
+        
+        alreadyListed[data.id] = true;
+        
+        for (var m=relatedEvents.length-1; m>=0; m--) {
+            var relatedEvent = relatedEvents[m];
+            var relatedStart = moment(relatedEvent.time_start);
+            var eventTags = relatedEvent.tags;
+            var tagList = [];
+            for (var p=0; p<eventTags.length; p++) {
+                var eventTag = eventTags[p];
+                tagList.push("#"+eventTag.description);
+            }
+            
+            if(alreadyListed[relatedEvent.id]) continue;
+            
+            alreadyListed[relatedEvent.id] = true;
+            // console.log(tagList);
+            
+            relatedList.push(<div className="related-event" key={m}><span className="tag">{tagList.join(" ")}&nbsp;&nbsp;{relatedStart.format("MMM DD, YYYY")}</span> <strong>{relatedEvent.header}</strong></div>);
+            
+        }
+        
         return (
             <div id={this.props.id} ref="noteRow" className={"note-row clearfix " + (this.props.sortByType ? this.props.sortByType+"-sort" : "") + (expanded ? " expanded":"")}>
                 <div className="col-xs-2 note-date">
@@ -228,6 +256,13 @@ var NoteRow = React.createClass({
                         <div className="col-xs-11 note-description" >
                             <p ref="noteDescription">{expanded ? data.description : this.state.description}</p>
                             <div className="tags">{tags}</div>
+                    { relatedList.length ?
+                            <div className="related-events">
+                                 {relatedList}   
+                            </div>
+                        :
+                        <div></div>
+                    }
                     { false ?
                             <div className="related-events">
                                 <div><span className="tag">Facility Sep 02, 2016</span> <strong>Fire in the hall</strong></div>
@@ -253,7 +288,7 @@ var NoteRow = React.createClass({
                     </div>
                 </div>
                 <div className="col-xs-1 expand-note">
-                    {this.state.showExpandCaret ? 
+                    {this.state.showExpandCaret ||  relatedList.length? 
                         <div onClick={this.toggleExpandNote} className="caret-container"><Caret className=""/></div>
                         :
                         <div></div>
@@ -283,6 +318,7 @@ var NotesCalendarModal = React.createClass({
 			currentDate:moment(defaultDate),
             rawEvents:[],
             events:[],
+            eventsByTagID:{},
             categoryList:null,
             week:week,
             month:month,
@@ -385,6 +421,23 @@ var NotesCalendarModal = React.createClass({
                 dateEnd.isBetween(evtStart,evtEnd)                                              //el evento abarca la finalizacion del dia
             ) {
                 var defaultExpanded = this.state.readMoreNoteID == evt.data.id;
+                var relatedEvents = [], tags = evt.data.tags;
+                for (var j=0; j<tags.length; j++) {
+                    var tag = tags[j];
+                    var related = this.state.eventsByTagID[tag.id];
+                    
+                    relatedEvents = relatedEvents.concat(related);
+                }
+                
+                relatedEvents.sort(function(a, b){
+                    // return a.id-b.id;
+                    var aStart = moment(a.time_start);
+                    var bStart = moment(b.time_start);
+                    // console.log(aStart.isBefore(bStart));
+                    return aStart.diff(bStart);
+                });
+                
+                
                 notes.push(
                     <NoteRow 
                         defaultExpanded={defaultExpanded}
@@ -397,6 +450,7 @@ var NotesCalendarModal = React.createClass({
                         sortBy={this.sortBy}
                         sortByType = {this.state.sortBy.type}
                         sortByID = {this.state.sortBy.id}
+                        relatedEvents = {relatedEvents}
                     />
                 );
             }
@@ -448,6 +502,7 @@ var NotesCalendarModal = React.createClass({
     updateEvents:function (result) {
         // console.log(result);
         var events = [];
+        var byTagID = {};
         var lastDate = "";
         var dateCount = 0;
         var firstFound = false;
@@ -455,19 +510,24 @@ var NotesCalendarModal = React.createClass({
         for (var i=0; i<result.length; i++) {
             var r = result[i];
             
-            //filter by tags first
+            //filter by tags first AND bind to eventsByTagID
             var id = this.state.filterBy.id;
-            if (id && id!=0) {
-                var tags = r.tags;
-                var found = false;
-                for (var j in tags) {
-                    if (tags[j].id == id) {
-                        found = true;
-                        break;
-                    }
+            var tags = r.tags;
+            var found = !(id && id!=0) ;
+            for (var j in tags) {
+                var tag = tags[j];
+                
+                if (!byTagID[tag.id]) {
+                    byTagID[tag.id] = [];
                 }
-                if(!found) continue;
+                byTagID[tag.id].push(r);
+                
+                if (tag.id == id) {
+                    found = true;
+                }
             }
+            if(!found) continue;
+            
             
             
             var start = moment(r.time_start);
@@ -573,8 +633,11 @@ var NotesCalendarModal = React.createClass({
             }
         }
         // console.log(events);
+        // console.log(byTagID);
         
-        this.setState({rawEvents:result, events:events}, this.refreshNotes);
+        
+        
+        this.setState({eventsByTagID:byTagID, rawEvents:result, events:events}, this.refreshNotes);
     },
     loadTags:function () {
         KAPI.tags.list(wnt.venueID, this.onTagsLoaded);
