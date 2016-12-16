@@ -209,6 +209,7 @@
                                 }
                                 .rbc-date-cell {
                                     position:relative;
+                                    -webkit-flex:1;
                                 }
                                 .rbc-row:first-child,
                                 .rbc-row:nth-child(2) {
@@ -219,6 +220,7 @@
                                     // display:none;
                                     line-height:18px;
                                     .rbc-row-segment {
+                                        -webkit-flex:1;
                                         height:9px;
                                         .rbc-show-more {
                                             height:auto;
@@ -272,9 +274,13 @@
                                 }
                             }
                         }
-                        .rbc-header {
-                            text-transform: uppercase;
-                            font-weight: 400;
+                        .rbc-row {
+                            display:-webkit-flex;
+                            .rbc-header {
+                                text-transform: uppercase;
+                                font-weight: 400;
+                                -webkit-flex:1;
+                            }
                         }
                     }
                 }
