@@ -862,6 +862,7 @@ var NoteColumn = React.createClass({
     },
     componentDidMount:function () {
         this.addEllipses(this.props.note.description);
+        $(window).on('resize', (e)=>this.addEllipses(this.props.note.description));
     },
     render:function() {
         var note = this.props.note;

@@ -63,8 +63,8 @@
              
              function handleProgress(e) {
                  var p = e.progress*100;
-                 progress.setAttribute("style","width:"+p+"%");
-                 progress.style.width=p+'%';
+                 progress.setAttribute("style","min-width:"+p+"%");
+                 progress.style.minWidth=p+'%';
                  if (p>0 && p<100) {
                      barContainer.setAttribute("style","opacity:1");
                      barContainer.style.opacity='1';
