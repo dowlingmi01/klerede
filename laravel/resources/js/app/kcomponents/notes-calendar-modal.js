@@ -667,8 +667,12 @@ var NotesCalendarModal = React.createClass({
     componentWillReceiveProps:function (nextProps) {
         if(nextProps.defaultDate != this.props.defaultDate) {
             var currentDate = new Date(du.localFormat(nextProps.defaultDate));
-            
-            this.setState({currentDate:moment(currentDate)})
+
+            var week = this.getWeek(currentDate);
+            var month = this.getMonth(currentDate);
+            var quarter = this.getQuarter(currentDate);
+
+            this.setState({currentDate:moment(currentDate), week:week, month:month, quarter:quarter})
         }
         
         if (nextProps.show  == this.props.show) return;
