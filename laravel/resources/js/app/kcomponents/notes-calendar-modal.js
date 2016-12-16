@@ -692,7 +692,7 @@ var NotesCalendarModal = React.createClass({
     onCalendarClick:function(e) {
         // console.log(e.target == getDOMNode(this.refs.BigCalendar), e.target , getDOMNode(this.refs.BigCalendar));
         if (e.target == getDOMNode(this.refs.BigCalendar)) {
-            this.setState({periodType:this.props.periodType == "quarter" ? "quarter":"month", dayMode:false});
+            this.setState({periodType:this.props.periodType == "quarter" ? "quarter":"month", dayMode:false}, this.refreshNotes);
         };
     },
     addNote:function(e) {
