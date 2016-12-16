@@ -154,6 +154,10 @@ var NoteRow = React.createClass({
         this.addEllipses(this.props.event.data.description);
         this.defaultExpandNote(this.props.defaultExpanded);
     },
+    onTagClick(e) {
+        // (e)=>this.props.sortBy("tag", tag.description, tag.id)
+        this.props.sortBy("tag", $(e.currentTarget).text(), $(e.currentTarget).attr('id'));
+    },
     onChannelClick(e) {
         if (this.props.sortByType == "channel") return;
         
@@ -184,8 +188,9 @@ var NoteRow = React.createClass({
         var tags = [];
         for (var k in data.tags) {
             var tag = data.tags[k];
+            var notClickable = (this.props.sortByType == "tag" && this.props.sortByID == tag.id);
             tags.push(
-                <div onClick={this.props.sortByType == "tag" ? null : (e)=>this.props.sortBy("tag", tag.description, tag.id)} key={k} className={"tag"} id={tag.id}>#{tag.description}</div>
+                <div onClick={ notClickable ? null : this.onTagClick} key={k} className={"tag"+ (notClickable ? " not-clickable": "")} id={tag.id}>#{tag.description}</div>
             );
         }
         
@@ -390,6 +395,7 @@ var NotesCalendarModal = React.createClass({
                         authorList={this.props.authorList}
                         sortBy={this.sortBy}
                         sortByType = {this.state.sortBy.type}
+                        sortByID = {this.state.sortBy.id}
                     />
                 );
             }
