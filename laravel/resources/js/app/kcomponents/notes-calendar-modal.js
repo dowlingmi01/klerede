@@ -288,6 +288,7 @@ var NotesCalendarModal = React.createClass({
             month:month,
             quarter:quarter,
             periodType:this.props.periodType,
+            dayMode:false,
             periodStart:null,
             notes:null,
             sortBy:{},
@@ -361,7 +362,7 @@ var NotesCalendarModal = React.createClass({
     refreshNotes(events) {
         var date = this.state.currentDate,
             events = events || this.state.events,
-            periodType = this.state.periodType;
+            periodType = this.state.dayMode ? "day" : this.state.periodType;
         
         // BUILD NOTES
         // console.log(date, events, periodType);
@@ -425,6 +426,7 @@ var NotesCalendarModal = React.createClass({
         // this.forceUpdate();
     },
     loadNotes:function (date, forceUpdate) {
+        // console.log(date, forceUpdate);
         if (this.props.periodType == "week")
             var period = "month";
         else 
@@ -434,7 +436,10 @@ var NotesCalendarModal = React.createClass({
         var periodEnd = moment(date).endOf(period).endOf("week").format('YYYY-MM-DD');
         // console.log(period, periodStart, periodEnd);
         
-        if (!forceUpdate && periodStart == this.state.periodStart) return;
+        if (!forceUpdate && periodStart == this.state.periodStart) {
+            this.refreshNotes()
+            return;
+        };
         
         this.setState({periodStart:periodStart});
         
@@ -593,9 +598,9 @@ var NotesCalendarModal = React.createClass({
         WeekBG.detach();
         DayBG.detach();
       
-        periodType = periodType || this.state.periodType;
+        periodType = this.state.dayMode ? "day" : periodType ? periodType : this.state.periodType;
 
-        if (periodType != "week" && periodType !="day") return;
+        if (periodType != "week" && !this.state.dayMode ) return;
         
         var bg = periodType == "week" ? WeekBG : DayBG;
         var current = $(getDOMNode(this.refs.BigCalendar)).find(".rbc-current");
@@ -603,8 +608,8 @@ var NotesCalendarModal = React.createClass({
         $(periodType == "week" ? current.parent() : current).append(bg);
     },
     updateDate:function (date, periodType) {
-        periodType = periodType || this.props.periodType;
-        this.loadNotes(date);
+        periodType = periodType || this.state.periodType;//this.props.periodType;
+        // this.loadNotes(date);
         this.props.onSelectDate(date);
         this.setState({
             periodType:periodType,
@@ -613,13 +618,19 @@ var NotesCalendarModal = React.createClass({
             month:this.getMonth(date), 
             quarter:this.getQuarter(date),
             sortBy:{}
-        }, this.refreshNotes);
+        }, ()=>this.loadNotes(date));
         this.updateDateBackground(periodType);
     },
     monthChange:function (e, n) {
         var newDate = new Date(du.addMonths(this.state.currentDate.toDate(), n));
-        this.updateDate(newDate);
-        this.loadNotes(newDate);
+        this.updateDate(newDate, this.props.periodType == "quarter" ? "quarter":"month");
+        // this.loadNotes(newDate);
+    },
+    onCalendarClick:function(e) {
+        // console.log(e.target == getDOMNode(this.refs.BigCalendar), e.target , getDOMNode(this.refs.BigCalendar));
+        if (e.target == getDOMNode(this.refs.BigCalendar)) {
+            this.setState({periodType:this.props.periodType == "quarter" ? "quarter":"month", dayMode:false});
+        };
     },
     addNote:function(e) {
         e.preventDefault();
@@ -628,13 +639,14 @@ var NotesCalendarModal = React.createClass({
     exitDayMode:function (e) {
         // console.log(e);
         e.preventDefault();
-        this.setState({sortBy:{}, periodType:this.props.periodType}, this.refreshNotes);
+        this.setState({sortBy:{}, dayMode:false}, this.refreshNotes);
         
     },
     onDateChange:function (e) {
         // console.log(e);
         // e.preventDefault();
-        this.updateDate(e, "day");
+        this.setState({dayMode:true});
+        this.updateDate(e, this.state.periodType);
     },
     onSelectNote:function (e) {
         // console.log(e);
@@ -642,7 +654,8 @@ var NotesCalendarModal = React.createClass({
     },
     onSelectSlot:function (e) {
         // console.log(e);
-        this.updateDate(e.start, this.props.periodType);
+        this.setState({dayMode:false});
+        this.updateDate(e.start, "week");
     },
     onSelecting:function (e) {
         console.log(e);
@@ -703,7 +716,7 @@ var NotesCalendarModal = React.createClass({
     render:function () {
         
         var currentDate = this.state.currentDate.format("MMMM, YYYY");
-        var currentPeriod = this.state[this.props.periodType];
+        var currentPeriod = this.state[this.state.periodType];
         var _self = this;
         // var singleDayDiv = ;
         
@@ -748,7 +761,7 @@ var NotesCalendarModal = React.createClass({
                         </div>
                     </div>
                     <div className="clearfix"></div>
-                    <div className={(this.state.calendarView? "calendar": "calendar folded")+" "+this.props.periodType }>
+                    <div onClick={this.onCalendarClick} className={(this.state.calendarView? "calendar": "calendar folded")+" "+this.state.periodType }>
                         <BigCalendar
                             ref="BigCalendar"
                             components={{event:NoteEvent}}
@@ -771,7 +784,7 @@ var NotesCalendarModal = React.createClass({
                     <div className="clearfix"></div>
                     <div className="date-bar">
                             {
-                                this.state.periodType == "day" || this.state.sortBy.id ?
+                                this.state.dayMode || this.state.sortBy.id ?
                                 <a href="#" onClick={this.exitDayMode}><div className="week inline-block">
                                     {currentPeriod.start.format("MMM DD")} - {currentPeriod.end.format("MMM DD")}, {this.state.week.start.format("YYYY")}
                                 </div></a>
@@ -781,7 +794,7 @@ var NotesCalendarModal = React.createClass({
                                 </div>
                             }
                             {
-                            this.state.periodType == "day" ?
+                            this.state.dayMode ?
                                 (
                                      this.state.sortBy.id ?
                                         <a href="#" onClick={function(e) {e.preventDefault(); _self.sortBy(null, null, null)}}>
