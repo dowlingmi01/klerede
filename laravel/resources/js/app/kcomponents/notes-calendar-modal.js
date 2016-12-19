@@ -159,7 +159,7 @@ var NoteRow = React.createClass({
         this.props.sortBy("tag", $(e.currentTarget).text(), $(e.currentTarget).attr('id'));
     },
     onChannelClick(e) {
-        if (this.props.sortByType == "channel") return;
+        // if (this.props.sortByType == "channel") return;
         
         var description = $(e.target).attr("title");
         var id = $(e.target).attr("id");
@@ -199,9 +199,11 @@ var NoteRow = React.createClass({
         for (var l in data.channels) {
             var channel = data.channels[l];
             // console.log("channel", channel.code, channel.id);
+            var notClickable = (this.props.sortByType == "channel" && this.props.sortByID == channel.id);
+            
             channels.push(
                 // <div onClick={(e)=>this.props.sortBy("channel", channel.code, channel.id, e)} key={l} className={"channel "+channel.code} id={channel.id} title={channel.code}></div>
-                <div onClick={this.onChannelClick} key={l} className={"channel "+channel.code} id={channel.id} title={channel.code}></div>
+                <div onClick={this.onChannelClick} key={l} className={"channel "+channel.code + (notClickable ? " not-clickable": "")} id={channel.id} title={channel.code}></div>
             );
         }
         // console.log(channels);
