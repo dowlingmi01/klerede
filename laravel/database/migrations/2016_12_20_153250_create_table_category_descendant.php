@@ -18,6 +18,12 @@ class CreateTableCategoryDescendant extends Migration
             $table->primary(['category_id', 'descendant_category_id']);
             
         });
+
+        $sps = ['triggers_category_descendant'];
+        foreach($sps as $sp) {
+            $sql = file_get_contents(database_path(sprintf('migrations/sp/%s.sql', $sp)));
+            DB::unprepared($sql);
+        }
     }
 
     /**
