@@ -23,9 +23,12 @@ class GetUserFromTokenCustom extends GetUserFromToken
     {
         if(config('jwt.active')){
             $result = parent::handle($request, $next);
-            if($result->status() >= 400){
+            return $result;
+            /*if($result->status() >= 400){
                 $responseData = json_decode($result->content(), true);
-                if($responseData == null)  return Response::json(['result'=>'error'], 500);
+                if($responseData == null)  {
+                    return Response::json(['result'=>'error'], 500);
+                }
                 if(array_key_exists ( 'error' , $responseData )){
                     return Response::json(['result'=>'error', 'message'=>$responseData['error']], $result->status())  ;
                 } else {
@@ -33,7 +36,7 @@ class GetUserFromTokenCustom extends GetUserFromToken
                 }
             } else {
                 return  $result;
-            }
+            }*/
             
  
         } else {
