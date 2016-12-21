@@ -1,0 +1,164 @@
+{
+	"guest_services": {
+		"name": "Guest Services",
+		"visits_type": "unique",
+		"sub_categories": {
+			"exhibit": {
+				"name": "Total Exhibit",
+				"visits_type": "unique",
+				"sub_categories": {
+					"ga": {
+						"name": "General Admission",
+						"visits_type": "unique"
+					},
+					"group": {
+						"name": "Group Admissions",
+						"visits_type": "unique"
+					},
+					"education": {
+						"name": "Education Admissions",
+						"visits_type": "unique"
+					},
+					"member_attendance": {
+						"name": "Member Admissions",
+						"visits_type": "unique"
+					},
+					"other_attendance": {
+						"name": "Other Admissions",
+						"visits_type": "unique"
+					}
+				}
+			},
+			"special_exhibit": {
+				"name": "Special Exhibit",
+				"visits_type": "total"
+			},
+			"tours": {
+				"name": "Tours",
+				"visits_type": "total"
+			},
+			"experiences": {
+				"name": "Experiences",
+				"visits_type": "total"
+			},
+			"other_sales": {
+				"name": "Other Sales",
+				"visits_type": "none"
+			}
+		}
+	},
+	"programming": {
+		"name": "Programming",
+		"visits_type": "unique",
+		"sub_categories": {
+			"imax": {
+				"name": "IMAX",
+				"visits_type": "total",
+				"sub_categories": {
+					"imax_studio": {
+						"name": "Studio",
+						"visits_type": "total"
+					},
+					"imax_non_studio": {
+						"name": "Non Studio",
+						"visits_type": "total"
+					}
+				}
+			},
+			"laser_show": {
+				"name": "Laser Show",
+				"visits_type": "total",
+				"sub_categories": {
+					"laser_day": {
+						"name": "Day",
+						"visits_type": "total"
+					},
+					"laser_night": {
+						"name": "Night",
+						"visits_type": "total"
+					}
+				}
+			},
+			"planetarium": {
+				"name": "Planetarium",
+				"visits_type": "total"
+			}
+		}
+	},
+	"membership": {
+		"name": "Membership",
+		"visits_type": "none",
+		"sub_categories": {
+			"membership_new": {
+				"name": "New",
+				"visits_type": "none",
+				"sub_categories": {
+					"membership_new_individual": {
+						"name": "Individual",
+						"visits_type": "none"
+					},
+					"membership_new_couple": {
+						"name": "Couple",
+						"visits_type": "none"
+					},
+					"membership_new_family": {
+						"name": "Family",
+						"visits_type": "none"
+					},
+					"membership_new_premium": {
+						"name": "Premium",
+						"visits_type": "none"
+					},
+					"membership_new_corporate": {
+						"name": "Corporate",
+						"visits_type": "none"
+					}
+				}
+			},
+			"membership_renewal": {
+				"name": "Renewals",
+				"visits_type": "none",
+				"sub_categories": {
+					"membership_ren_individual": {
+						"name": "Individual",
+						"visits_type": "none"
+					},
+					"membership_ren_couple": {
+						"name": "Couple",
+						"visits_type": "none"
+					},
+					"membership_ren_family": {
+						"name": "Family",
+						"visits_type": "none"
+					},
+					"membership_ren_premium": {
+						"name": "Premium",
+						"visits_type": "none"
+					},
+					"membership_ren_corporate": {
+						"name": "Corporate",
+						"visits_type": "none"
+					}
+				}
+			}
+		}
+	},
+	"fb": {
+		"name": "Food & Beverage",
+		"visits_type": "none",
+		"sub_categories": {
+			"cafe": {
+				"name": "Cafe",
+				"visits_type": "none"
+			},
+			"fb_other": {
+				"name": "Other",
+				"visits_type": "none"
+			}
+		}
+	},
+	"store": {
+		"name": "Gift Store",
+		"visits_type": "none"
+	}
+}
