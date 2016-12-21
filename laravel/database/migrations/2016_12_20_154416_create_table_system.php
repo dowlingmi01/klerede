@@ -13,9 +13,18 @@ class CreateTableSystem extends Migration
     public function up()
     {
         Schema::create('system', function (Blueprint $table) {
-            $table->increments('id');
+            $table->integer('id');
             $table->string('code');
         });
+
+
+        $roles = array(
+                ['id'=>1, 'code' => 'xstore'],
+                ['id'=>2, 'code' => 'siriusware'],
+                ['id'=>3, 'code' => 'galaxy'],
+        );
+        DB::table('system')->insert($roles);
+
     }
 
     /**
