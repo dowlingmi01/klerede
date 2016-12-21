@@ -16,7 +16,9 @@ class FillTableCategory extends Migration
         $categories = json_decode(file_get_contents(database_path('migrations/data/categories.json')));
         $this->createTopCategory($categories, 0,0 );
        
-
+        $sql = file_get_contents(database_path('migrations/sp/sp_compute_category_descendant.sql'));
+        DB::unprepared($sql);
+        DB::unprepared('call sp_compute_category_descendant');
     }
 
     private function createTopCategory($categories, $parent_id, $level ){
