@@ -25,11 +25,11 @@ class Category extends Model {
 
     static public function hierarchyByVenue($venue_id){
         
-        $hierarchy = Category::addSons($venue_id, 0); //can start with other parent than 0?
+        $hierarchy = Category::getChildren($venue_id, 0); //can start with other parent than 0?
         return $hierarchy;
     }
 
-    static private function addSons( $venue_id, $parent_id){
+    static private function getChildren( $venue_id, $parent_id){
         
         $venue = Venue::find($venue_id);
         $categories = $venue->categories()->where('parent_category_id', $parent_id)->get();
@@ -45,9 +45,9 @@ class Category extends Model {
                 $result['goals_period_type'] = $category->pivot->goals_period_type;
                 $result['goals_amount'] = $category->pivot->goals_amount;
                 $result['goals_units'] = $category->pivot->goals_units;
-                $sub_category= Category::addSons($venue_id, $category->id);
+                $sub_category= Category::getChildren($venue_id, $category->id);
                 if(count($sub_category) > 0)
-                    $result['sub_category'] = $sub_category;
+                    $result['sub_categories'] = $sub_category;
                 $hierarchy[$category->code] = $result; 
             //}
         }

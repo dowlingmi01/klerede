@@ -62,7 +62,9 @@ Route::group(['prefix'=>'api/v1'], function() {
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
 	})->middleware(['jwt.auth']);
 
-	Route::get('category/hierarchy/{venue_id}', function($venue_id) {
+	Route::get('category/hierarchy', function( ) {
+		$input = Request::all();
+		$venue_id = $input['venue_id'];
 		if (Gate::denies('validate-venue', $venue_id)) {
             return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
