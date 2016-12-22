@@ -24,6 +24,7 @@ class CreateTableProduct extends Migration
             $table->boolean('is_unique_visitor');
             $table->boolean('is_visitor');
             $table->boolean('is_unit');
+            $table->timestamps();
         });
     }
 

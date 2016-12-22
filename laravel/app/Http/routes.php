@@ -11,6 +11,7 @@
 |
 */
 
+use App\Category;
 use App\GoalsSales;
 use App\StoreTransaction, App\Stats, App\Channel;
 use App\WeatherDaily;
@@ -76,6 +77,12 @@ Route::group(['prefix'=>'api/v1'], function() {
 	Route::resource('roles', 'RoleController', ['only' => ['index']]);
 
 	Route::controller('import', 'ImportController');
+
+
+	Route::get('testimportcat', function(){
+		Category::import();
+	});
+
 
 	Route::get('channels', function() {
 		//FIXME: Move to own controller

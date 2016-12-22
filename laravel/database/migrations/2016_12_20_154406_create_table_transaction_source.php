@@ -15,6 +15,7 @@ class CreateTableTransactionSource extends Migration
         Schema::create('transaction_source', function (Blueprint $table) {
             $table->integer('transaction_id');
             $table->mediumText('source_text');
+            $table->timestamps();
         });
     }
 

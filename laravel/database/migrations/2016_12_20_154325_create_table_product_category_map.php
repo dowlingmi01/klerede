@@ -13,6 +13,7 @@ class CreateTableProductCategoryMap extends Migration
     public function up()
     {
         Schema::create('product_category_map', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('venue_id');
             $table->integer('system_id');
             $table->integer('category_id');
@@ -21,7 +22,8 @@ class CreateTableProductCategoryMap extends Migration
             $table->boolean('is_unique_visitor');
             $table->boolean('is_visitor');
             $table->boolean('is_unit');
-            $table->primary(['venue_id', 'system_id', 'category_id']);
+            $table->timestamps();
+            
         });
     }
 

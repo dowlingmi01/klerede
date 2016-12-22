@@ -18,6 +18,7 @@ class CreateTableVenueCategory extends Migration
             $table->enum('goals_period_type', ['monthly', 'daily', 'none']);
             $table->boolean('goals_amount');
             $table->boolean('goals_units');
+             $table->timestamps();
             $table->primary(['category_id', 'venue_id']);
         });
     }

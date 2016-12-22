@@ -25,6 +25,7 @@ class CreateTableStatVisits extends Migration
             $table->boolean('members');
             $table->integer('visits');
             $table->integer('visits_unique');
+            $table->timestamps();
         });
     }
 

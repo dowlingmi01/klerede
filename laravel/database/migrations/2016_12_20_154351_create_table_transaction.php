@@ -25,6 +25,7 @@ class CreateTableTransaction extends Migration
             $table->integer('operator_id');
             $table->integer('batch_id');
             $table->integer('member_xstore_id')->nullable();
+            $table->timestamps();
         });
     }
 

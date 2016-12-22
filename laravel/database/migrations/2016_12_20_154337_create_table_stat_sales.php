@@ -27,6 +27,7 @@ class CreateTableStatSales extends Migration
             $table->double('amount');
             $table->integer('units');
             $table->integer('transactions');
+            $table->timestamps();
 
         });
     }

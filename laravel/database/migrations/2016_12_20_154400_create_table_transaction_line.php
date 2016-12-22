@@ -22,6 +22,7 @@ class CreateTableTransactionLine extends Migration
             $table->integer('quantity');
             $table->integer('member_id')->nullable();
             $table->integer('membership_id')->nullable();
+            $table->timestamps();
         });
     }
 
