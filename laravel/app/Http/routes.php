@@ -63,11 +63,11 @@ Route::group(['prefix'=>'api/v1'], function() {
 	})->middleware(['jwt.auth']);
 
 	Route::get('category/hierarchy/{venue_id}', function($venue_id) {
-		if (Gate::denies('validate-venue', $venue_id)) {
-            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
-        }
+		//if (Gate::denies('validate-venue', $venue_id)) {
+        //    return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
+        //}
 		return Response::json(Category::hierarchyByVenue($venue_id));
-	})->middleware(['jwt.auth']);
+	}); //->middleware(['jwt.auth']);
 
 	Route::post('auth/login', 'AuthenticateController@authenticate');
 	Route::get('auth/logged', 'AuthenticateController@getAuthenticatedUser');

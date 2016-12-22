@@ -3,13 +3,20 @@
  
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\VenueCategory;
+use App\Venue;
 
 
 class Category extends Model {
 
     protected $table = 'category';
     protected $guarded = [];
+    protected $category_venue = [];
+
+    public function venues()
+    {
+        return $this->belongsToMany('App\Venue', 'venue_category')
+            ->withPivot('goals_period_type','goals_amount','goals_units');
+    }
  	 
     static function getFor($code) {
         return self::where('code', '=', $code)->first();
@@ -23,25 +30,26 @@ class Category extends Model {
     }
 
     static private function addSons( $venue_id, $parent_id){
-        //find all categories with father $parent_id and with (venud_id, )
-        $categories = Category::where('parent_category_id', $parent_id)->get();
+        
+        $venue = Venue::find($venue_id);
+        $categories = $venue->categories()->where('parent_category_id', $parent_id)->get();
         $hierarchy = [];
         foreach ($categories as $category) {
-            $relation = VenueCategory::where('venue_id', $venue_id)
-                    ->where('category_id', $category->id)->first();;
-            if($relation != null){
+            //$relation = VenueCategory::where('venue_id', $venue_id)
+            //        ->where('category_id', $category->id)->first();
+            //if($relation != null){
                 $result = [];
                 $result['name'] = $category['name'];
                 $result['visits_type'] = $category['name'];
                 $result['level'] = $category['level'];
-                $result['goals_period_type'] = $relation['goals_period_type'];
-                $result['goals_amount'] = $relation['goals_amount'];
-                $result['goals_units'] = $relation['goals_units'];
-                $sub_category= Category::addSons($venue_id, $relation->category_id);
+                $result['goals_period_type'] = $category->pivot->goals_period_type;
+                $result['goals_amount'] = $category->pivot->goals_amount;
+                $result['goals_units'] = $category->pivot->goals_units;
+                $sub_category= Category::addSons($venue_id, $category->id);
                 if(count($sub_category) > 0)
-                    $result['sub_category'] = $sub_category
+                    $result['sub_category'] = $sub_category;
                 $hierarchy[$category->code] = $result; 
-            }
+            //}
         }
         return $hierarchy;
     }

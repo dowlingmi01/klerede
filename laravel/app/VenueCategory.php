@@ -15,7 +15,7 @@ class VenueCategory extends Model {
 	    DB::table('venue_category')->truncate();
         $map_data = \App\Helpers\Helper::readCSV(database_path('migrations/data/'.$file_name));
         $insert_data = [];
-        for ($i = 1; $i < count($map_data); $i++) {
+        for ($i = 0; $i < count($map_data); $i++) {
             $category = Category::getFor($map_data[$i]['category']);
             if($category != null) {
                 $insert_data[$i]['category_id'] = $category->id;
