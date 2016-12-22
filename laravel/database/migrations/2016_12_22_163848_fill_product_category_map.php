@@ -2,8 +2,9 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\ProductCategoryMap;
 
-class CreateSpCategoryDescendant extends Migration
+class FillProductCategoryMap extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +13,7 @@ class CreateSpCategoryDescendant extends Migration
      */
     public function up()
     {
-        $sql = file_get_contents(database_path('migrations/sp/sp_compute_category_descendant.sql'));
-        DB::unprepared($sql);
+        ProductCategoryMap::import('pkm_psc.csv');
     }
 
     /**
@@ -23,6 +23,6 @@ class CreateSpCategoryDescendant extends Migration
      */
     public function down()
     {
-        DB::unprepared('drop procedure sp_compute_category_descendant');
+        //
     }
 }

@@ -5,10 +5,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Category extends Model {
+
+    protected $table = 'category';
+    protected $guarded = [];
  	 
-	static public function import() {
+    static function getFor($code) {
+        return self::where('code', '=', $code)->first();
+        
+    }
+
+    static public function import($file_name) {
 	    DB::table('category')->truncate();
-        $categories = json_decode(file_get_contents(database_path('migrations/data/categories.json')));
+        $categories = json_decode(file_get_contents(database_path('migrations/data/'.$file_name)));
         Category::createTopCategory($categories, 0,0 );
        
         DB::unprepared('call sp_compute_category_descendant');
