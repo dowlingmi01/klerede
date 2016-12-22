@@ -13,7 +13,7 @@
 
 
 use App\GoalsSales;
-use App\StoreTransaction, App\Stats, App\Channel;
+use App\StoreTransaction, App\Stats, App\Channel, App\Category;
 use App\WeatherDaily;
 use App\Helpers\PermissionHelper;
  
@@ -60,6 +60,13 @@ Route::group(['prefix'=>'api/v1'], function() {
         }
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
+	})->middleware(['jwt.auth']);
+
+	Route::get('category/hierarchy/{venue_id}', function($venue_id) {
+		if (Gate::denies('validate-venue', $venue_id)) {
+            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
+        }
+		return Response::json(Category::hierarchyByVenue($venue_id));
 	})->middleware(['jwt.auth']);
 
 	Route::post('auth/login', 'AuthenticateController@authenticate');

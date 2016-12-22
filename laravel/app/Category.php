@@ -3,6 +3,8 @@
  
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\VenueCategory;
+
 
 class Category extends Model {
 
@@ -12,6 +14,36 @@ class Category extends Model {
     static function getFor($code) {
         return self::where('code', '=', $code)->first();
         
+    }
+
+    static public function hierarchyByVenue($venue_id){
+        
+        $hierarchy = Category::addSons($venue_id, 0); //can start with other parent than 0?
+        return $hierarchy;
+    }
+
+    static private function addSons( $venue_id, $parent_id){
+        //find all categories with father $parent_id and with (venud_id, )
+        $categories = Category::where('parent_category_id', $parent_id)->get();
+        $hierarchy = [];
+        foreach ($categories as $category) {
+            $relation = VenueCategory::where('venue_id', $venue_id)
+                    ->where('category_id', $category->id)->first();;
+            if($relation != null){
+                $result = [];
+                $result['name'] = $category['name'];
+                $result['visits_type'] = $category['name'];
+                $result['level'] = $category['level'];
+                $result['goals_period_type'] = $relation['goals_period_type'];
+                $result['goals_amount'] = $relation['goals_amount'];
+                $result['goals_units'] = $relation['goals_units'];
+                $sub_category= Category::addSons($venue_id, $relation->category_id);
+                if(count($sub_category) > 0)
+                    $result['sub_category'] = $sub_category
+                $hierarchy[$category->code] = $result; 
+            }
+        }
+        return $hierarchy;
     }
 
     static public function import($file_name) {
