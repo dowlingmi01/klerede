@@ -40,7 +40,7 @@ class Category extends Model {
             //if($relation != null){
                 $result = [];
                 $result['name'] = $category['name'];
-                $result['visits_type'] = $category['name'];
+                $result['visits_type'] = $category['visits_type'];
                 $result['level'] = $category['level'];
                 $result['goals_period_type'] = $category->pivot->goals_period_type;
                 $result['goals_amount'] = $category->pivot->goals_amount;
