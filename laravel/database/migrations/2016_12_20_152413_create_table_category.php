@@ -18,6 +18,7 @@ class CreateTableCategory extends Migration
             $table->string('code');
             $table->string('name');
             $table->integer('level')->default(0);
+            $table->integer('order');
             $table->enum('visits_type', ['none', 'unique', 'total']);
             $table->timestamps();
         });
