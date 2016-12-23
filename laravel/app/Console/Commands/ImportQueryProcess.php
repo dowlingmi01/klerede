@@ -43,7 +43,7 @@ class ImportQueryProcess extends Command {
 		$q = ImportQuery::find($query_id);
 
 		/** @var ImportQueryHandler $h */
-		$h = $q->query_class->getHandler($q);
+		$h = $q->import_query_class->getHandler($q);
 		$h->load();
 		$h->setNumRecords();
 		$h->updateVariables();

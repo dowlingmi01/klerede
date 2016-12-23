@@ -30,7 +30,7 @@ class ImportQuery extends Model {
 	function process() {
 		$fs = filesize($this->getGZPath());
 		/** @var ImportQueryHandler $handler */
-		$handler = $this->query_class->getHandler($this);
+		$handler = $this->import_query_class->getHandler($this);
 		if($fs > 0) {
 			$cmd = 'gzip -fd ' . $this->getGZPath();
 			$process = new Process($cmd);
@@ -43,7 +43,7 @@ class ImportQuery extends Model {
 			$this->processed();
 		}
 	}
-	public function query_class() {
+	public function import_query_class() {
 		return $this->belongsTo('App\ImportQueryClass', 'import_query_class_id');
 	}
 	public function processed() {

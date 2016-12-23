@@ -16,7 +16,7 @@ abstract class ImportQueryHandler {
 		$this->query = $query;
 	}
 	function getTableName() {
-		return 'import_' . $this->query->query_class->name;
+		return 'import_' . $this->query->import_query_class->name;
 	}
 	public function handle() {
 		$this->load();
@@ -53,13 +53,13 @@ SET query_id = $query_id, status = 'pending', venue_id = $venue_id, created_at =
 		$this->query->num_records_imported = $num_records;
 	}
 	function getQueryText() {
-		$path = base_path('resources/sql/import_queries/' . $this->query->query_class->name . '.sql');
+		$path = base_path('resources/sql/import_queries/' . $this->query->import_query_class->name . '.sql');
 		$text = file_get_contents($path);
 		return VenueVariable::substituteFor($this->query->venue_id, $text);
 	}
 	public function insertNextQuery($delay = 60) {
 		$query = new ImportQuery();
-		$query->query_class()->associate($this->query->query_class);
+		$query->import_query_class()->associate($this->query->import_query_class);
 		$query->venue_id = $this->query->venue_id;
 		$query->query_text = $this->getQueryText();
 		$query->status = 'pending';

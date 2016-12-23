@@ -53,7 +53,7 @@ class ImportQueryInit extends Command {
 				$iqc = ImportQueryClass::find($iqcId);
 				$q = new ImportQuery();
 				$q->venue_id = $venue_id;
-				$q->query_class()->associate($iqc);
+				$q->import_query_class()->associate($iqc);
 				$h = $iqc->getHandler($q);
 				$h->insertNextQuery(0);
 			}
