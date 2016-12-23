@@ -40,11 +40,10 @@ class ProductCategoryMap extends Model {
         }
 
         DB::table('product_category_map')->insert($insert_data);
-        
-       
-         
     }
-
-
-     
+	static public function getFor($venue_id, $system_id, $code) {
+		$result = self::where('venue_id', $venue_id)->where('system_id', $system_id)
+			->where('code_from', '<=', $code)->where('code_to', '>=', $code)->first();
+		return $result;
+	}
 }
