@@ -42,6 +42,7 @@ class Category extends Model {
                 $result['name'] = $category['name'];
                 $result['visits_type'] = $category['visits_type'];
                 $result['level'] = $category['level'];
+                $result['order'] = $category['order'];
                 $result['goals_period_type'] = $category->pivot->goals_period_type;
                 $result['goals_amount'] = $category->pivot->goals_amount;
                 $result['goals_units'] = $category->pivot->goals_units;
@@ -63,6 +64,7 @@ class Category extends Model {
     }
 
     static private function createTopCategory($categories, $parent_id, $level ){
+        $order = 0;
         foreach ($categories as $key => $value) {
             $element = $value;
              
@@ -71,11 +73,15 @@ class Category extends Model {
                     'code' => $key,
                     'name' => $element->name,
                     'level' => $level,
-                    'visits_type' =>  $element->visits_type
+                    'visits_type' =>  $element->visits_type,
+                    'order' => $order,
+                    'created_at' => date('y-m-d G:i'),
+                    'updated_at' => date('y-m-d G:i')
                 ]);
             if(isset($element->sub_categories)){
                 Category::createTopCategory($element->sub_categories, $id, $level+1 );
             }
+            $order++;
         }
     }
 }
