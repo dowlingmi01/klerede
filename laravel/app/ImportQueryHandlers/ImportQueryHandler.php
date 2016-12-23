@@ -82,9 +82,9 @@ SET query_id = $query_id, status = 'pending', venue_id = $venue_id, created_at =
 			$class::getFor($this->query->venue_id, $code->{$column});
 		}
 	}
-	function setStatStatus($dates, $channel_id) {
+	function setStatStatus($dates) {
 		foreach($dates as $date) {
-			StatStatus::newData($channel_id, $date, $this->query->venue_id);
+			StatStatus::newData($date, $this->query->venue_id);
 		}
 	}
 }

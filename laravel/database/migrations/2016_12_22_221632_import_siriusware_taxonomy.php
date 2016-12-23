@@ -13,6 +13,10 @@ class ImportSiriuswareTaxonomy extends Migration
      */
     public function up()
     {
+		Schema::table('stat_status', function(Blueprint $table)
+		{
+			$table->dropColumn('channel_id');
+		});
 		Schema::table('import_query_class', function(Blueprint $table)
 		{
 			$table->integer('system_id')->default(0);
