@@ -62,7 +62,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
 	})->middleware(['jwt.auth']);
 
-	Route::get('category/hierarchy', function( ) {
+	Route::get('categories', function( ) {
 		$input = Request::all();
 		$venue_id = $input['venue_id'];
 		if (Gate::denies('validate-venue', $venue_id)) {
