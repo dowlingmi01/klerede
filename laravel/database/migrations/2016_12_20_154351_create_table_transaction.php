@@ -27,6 +27,7 @@ class CreateTableTransaction extends Migration
             $table->integer('query_id')->nullable();
             $table->integer('member_xstore_id')->nullable();
             $table->timestamps();
+            $table->index(['venue_id', 'system_id', 'source_id']);
         });
     }
 

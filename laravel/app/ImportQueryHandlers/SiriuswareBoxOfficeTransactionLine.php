@@ -12,24 +12,13 @@ class SiriuswareBoxOfficeTransactionLine extends ImportQueryHandler {
 	protected $updateVarColumn = 'sequence';
 	protected $updateVarName = 'BOX_OFFICE_LAST_TRAN_DETAIL_ID';
 	function process() {
-		$cols = ['l.id', 't.id as box_office_transaction_id', 'l.sequence', 'l.valid_date', 'p.id as box_office_product_id'
+		$cols = ['l.id', 't.id as transaction_id', 'l.sequence', 'l.valid_date', 'p.id as product_id'
 			, 'l.sale_price', 'l.quantity', 'l.created_at', 't.time'];
-/*
-		$sel = DB::table('import_galaxy_box_office_transaction_line as l')
-			->where('query_id', $this->query->id)
-			->join('box_office_transaction as t', function(JoinClause $join) {
-				$join->on('l.source_id', '=', 't.source_id')
-					->on('l.venue_id', '=', 't.venue_id');
-			})->join('box_office_product as p', function(JoinClause $join) {
-				$join->on('box_office_product_code', '=', 'p.code')
-					->on('l.venue_id', '=', 'p.venue_id');
-			})->select($cols)
-			->orderBy('l.id');
-*/
-		$sel = DB::table(DB::raw('import_siriusware_box_office_transaction_line as l
-		straight_join box_office_transaction as t on l.source_id = t.source_id and l.venue_id = t.venue_id
-		straight_join box_office_product as p on box_office_product_code = p.code and l.venue_id = p.venue_id') )
-			->where('query_id', $this->query->id)
+		$system_id = $this->query->import_query_class->system_id;
+		$sel = DB::table(DB::raw("import_siriusware_box_office_transaction_line as l
+		straight_join transaction as t on l.source_id = t.source_id and l.venue_id = t.venue_id and t.system_id = $system_id
+		straight_join product as p on box_office_product_code = p.code and l.venue_id = p.venue_id and p.system_id = $system_id") )
+			->where('l.query_id', $this->query->id)
 			->select($cols)
 			->orderBy('l.id');
 		$dates = [];
@@ -40,17 +29,15 @@ class SiriuswareBoxOfficeTransactionLine extends ImportQueryHandler {
 				$lineA = (array) $line;
 				unset($lineA['id']);
 				unset($lineA['time']);
-				$lineA['ticket_code'] = '';
 				$inserts[] = $lineA;
 				$ids[] = $line->id;
 				$date = $line->valid_date;
 				$dates[$date] = true;
 			}
-			DB::table('box_office_transaction_line')->insert($inserts);
+			DB::table('transaction_line')->insert($inserts);
 			DB::table($this->getTableName())->whereIn('id', $ids)->update(['status'=>'imported']);
 		});
 		$dates = array_keys($dates);
-		$this->setStatStatus($dates, Channel::getFor('gate')->id);
-		$this->setStatStatus($dates, -1);
+		$this->setStatStatus($dates);
 	}
 }
