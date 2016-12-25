@@ -18,73 +18,45 @@ BEGIN
      ;
      IF visits_source = 'sales' THEN
           INSERT stat_visits
-               ( venue_id, date, year, quarter, month, week, box_office_product_kind_id, units
+               ( venue_id, date, year, quarter, month, week, category_id, members, visits, visits_unique
                , created_at, updated_at )
           SELECT p.venue_id, v.valid_date, year(v.valid_date)
                , year(v.valid_date)*100 + quarter(v.valid_date)
                , year(v.valid_date)*100 + month(v.valid_date)
                , yearweek(v.valid_date, 3)
-               , IF(m.box_office_product_kind_id = 1 AND v.membership_id IS NOT NULL, 2, m.box_office_product_kind_id) as product_kind_id
-               , sum(quantity)
+               , p.category_id
+               , IF(v.membership_id IS NOT NULL, 1, 0) as members
+               , sum(quantity*p.is_visitor), sum(quantity*p.is_unique_visitor)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-            FROM box_office_transaction_line v
-            STRAIGHT_JOIN box_office_transaction t ON v.box_office_transaction_id = t.id
-            STRAIGHT_JOIN box_office_product p ON v.box_office_product_id = p.id
-            STRAIGHT_JOIN box_office_product_kind_map m
-                  ON p.venue_id = m.venue_id
-                 AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-                 AND box_office_product_kind_id IN (1, 2, 3, 6)
-           WHERE p.is_ga = 1
-             AND p.kind != 'pass'
+            FROM transaction_line v
+            STRAIGHT_JOIN transaction t ON v.transaction_id = t.id
+            STRAIGHT_JOIN product p ON v.product_id = p.id
+           WHERE p.is_visitor = 1  
              AND t.venue_id = in_venue_id
              AND v.valid_date = in_date
-           GROUP BY p.venue_id, v.valid_date, product_kind_id
+           GROUP BY p.venue_id, v.valid_date, p.category_id
           ;
      ELSE
           INSERT stat_visits
-               ( venue_id, date, year, quarter, month, week, box_office_product_kind_id, units
+               ( venue_id, date, year, quarter, month, category_id, week, members, visits, visits_unique
                , created_at, updated_at )
           SELECT p.venue_id, date(v.time), year(v.time)
                , year(v.time)*100 + quarter(v.time)
                , year(v.time)*100 + month(v.time)
                , yearweek(v.time, 3)
-               , m.box_office_product_kind_id
-               , sum(quantity)
+               , p.category_id
+               , IF(v.membership_id IS NOT NULL, 1, 0) as members
+               , sum(quantity*p.is_visitor), sum(quantity*p.is_unique_visitor)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM visit v
-            STRAIGHT_JOIN box_office_product p ON v.box_office_product_id = p.id
-            STRAIGHT_JOIN box_office_product_kind_map m
-                  ON p.venue_id = m.venue_id
-                 AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-                 AND box_office_product_kind_id IN (1, 2, 3, 6)
+            STRAIGHT_JOIN product p ON v.box_office_product_id = p.id
             STRAIGHT_JOIN facility f ON v.facility_id = f.id
            WHERE f.is_ga = 1
              AND v.venue_id = in_venue_id
              AND v.time >= in_date
              AND v.time < in_date + interval 1 day
-           GROUP BY p.venue_id, date(v.time), m.box_office_product_kind_id
+           GROUP BY p.venue_id, date(v.time), p.category_id
           ;
-          INSERT stat_hourly_visits
-               ( venue_id, date, hour, year, quarter, month, week, box_office_product_kind_id, units
-               , created_at, updated_at )
-          SELECT p.venue_id, date(v.time), hour(v.time), year(v.time)
-               , year(v.time)*100 + quarter(v.time)
-               , year(v.time)*100 + month(v.time)
-               , yearweek(v.time, 3)
-               , m.box_office_product_kind_id, sum(quantity)
-               , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-            FROM visit v
-            STRAIGHT_JOIN box_office_product p ON v.box_office_product_id = p.id
-            STRAIGHT_JOIN box_office_product_kind_map m
-                  ON p.venue_id = m.venue_id
-                 AND p.account_code BETWEEN m.account_code_from AND m.account_code_to
-                 AND box_office_product_kind_id IN (1, 2, 3, 6)
-             STRAIGHT_JOIN facility f ON v.facility_id = f.id
-           WHERE f.is_ga = 1
-             AND v.venue_id = in_venue_id
-             AND v.time >= in_date
-             AND v.time < in_date + interval 1 day
-           GROUP BY p.venue_id, date(v.time), hour(v.time), m.box_office_product_kind_id
-          ;
+           
      END IF;
 END;
