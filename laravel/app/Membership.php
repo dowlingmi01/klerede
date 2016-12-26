@@ -11,7 +11,7 @@ class Membership extends Model {
 		$member = Member::getFor($data->venue_id, $data->member_code);
 		if(!$member)
 			return false;
-		$product = BoxOfficeProduct::getFor($data->venue_id, $data->box_office_product_code);
+		$product = Product::getFor($data->venue_id, $data->system_id, $data->box_office_product_code);
 		if(!$product)
 			return false;
 		$membership = self::firstOrNew(['venue_id'=>$data->venue_id, 'code'=>$data->code]);
@@ -20,10 +20,10 @@ class Membership extends Model {
 		$data = (array) $data;
 		$location = MemberLocation::getFor($data);
 		$data = Helper::array_remove_keys($data, MemberLocation::$cols);
-		$data = Helper::array_remove_keys($data, ['member_code', 'box_office_product_code']);
+		$data = Helper::array_remove_keys($data, ['member_code', 'box_office_product_code', 'system_id']);
 		$data['member_location_id'] = $location->id;
 		$data['member_id'] = $member->id;
-		$data['box_office_product_id'] = $product->id;
+		$data['product_id'] = $product->id;
 		$membership->fill($data);
 		$membership->save();
 		return true;
