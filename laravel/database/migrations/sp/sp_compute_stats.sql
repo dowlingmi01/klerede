@@ -27,8 +27,8 @@ BEGIN
                , p.category_id
                , IF(l.membership_id IS NOT NULL, 1, 0) as members
                , o.is_online as online
-               , sum(quantity), sum(sale_price)
-               , count(t.id)
+               , sum(quantity*p.is_unit), sum(sale_price)
+               , count(distinct t.id)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM transaction_line l
             STRAIGHT_JOIN transaction t ON l.transaction_id = t.id
@@ -52,8 +52,8 @@ BEGIN
                , p.category_id
                , IF(l.membership_id IS NOT NULL, 1, 0) as members
                , o.is_online as online
-               , sum(quantity), sum(sale_price)
-               , count(t.id)
+               , sum(quantity*p.is_unit), sum(sale_price)
+               , count(distinct t.id)
                , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             FROM transaction_line l
             STRAIGHT_JOIN transaction t ON l.transaction_id = t.id
