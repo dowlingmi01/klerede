@@ -10,12 +10,14 @@ class SiriuswareBoxOfficeTransactionMemberInfo extends ImportQueryHandler {
 	protected $updateVarColumn = 'info_id';
 	protected $updateVarName = 'BOX_OFFICE_LAST_TRAN_MEMBER_INFO_ID';
 	function process() {
-		$cols = ['i.id', 't.id as box_office_transaction_id', 'i.sequence',
+		$cols = ['i.id', 't.id as transaction_id', 'i.sequence',
 			'm.id as member_id', 's.id as membership_id'];
+		$system_id = $this->query->import_query_class->system_id;
 		$sel = DB::table('import_siriusware_box_office_transaction_member_info as i')
-			->join('box_office_transaction as t', function(JoinClause $join) {
+			->join('transaction as t', function(JoinClause $join) use ($system_id) {
 				$join->on('t.source_id', '=', 'i.source_id')
-					->on('t.venue_id', '=', 'i.venue_id');
+					->on('t.venue_id', '=', 'i.venue_id')
+					->where('t.system_id', '=', $system_id);
 			})
 			->join('member as m', function(JoinClause $join) {
 				$join->on('m.code', '=', 'i.member_code')
@@ -25,7 +27,7 @@ class SiriuswareBoxOfficeTransactionMemberInfo extends ImportQueryHandler {
 				$join->on('s.code', '=', 'i.membership_code')
 					->on('s.venue_id', '=', 'i.venue_id');
 			})
-			->where('query_id', $this->query->id)->select($cols)->orderBy('i.id');
+			->where('i.query_id', $this->query->id)->select($cols)->orderBy('i.id');
 
 		$sel->chunk(10000, function($lines) {
 			$ids = [];
@@ -34,8 +36,8 @@ class SiriuswareBoxOfficeTransactionMemberInfo extends ImportQueryHandler {
 				if($line->membership_id) {
 					$upd['membership_id'] = $line->membership_id;
 				}
-				DB::table('box_office_transaction_line')
-					->where('box_office_transaction_id', $line->box_office_transaction_id)
+				DB::table('transaction_line')
+					->where('transaction_id', $line->transaction_id)
 					->where('sequence', $line->sequence)
 					->update($upd);
 				$ids[] = $line->id;

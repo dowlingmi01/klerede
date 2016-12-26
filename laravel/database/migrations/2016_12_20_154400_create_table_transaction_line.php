@@ -23,6 +23,8 @@ class CreateTableTransactionLine extends Migration
             $table->integer('member_id')->nullable();
             $table->integer('membership_id')->nullable();
             $table->timestamps();
+            $table->index('transaction_id');
+            $table->index('valid_date');
         });
     }
 
