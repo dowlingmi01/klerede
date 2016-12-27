@@ -107,7 +107,7 @@ class Stats {
 				$dbquery->addSelect(DB::raw('sum(visits) as visits, sum(visits_unique) as visits_unique'));
 			} else {
 				if($specs->type == 'sales') {
-					$dbquery->addSelect(DB::raw('sum(amount) as amount'));
+					$dbquery->addSelect(DB::raw('sum(amount) as amount, sum(units) as units, sum(transactions) as transactions'));
 				}
 			}
 
@@ -118,7 +118,7 @@ class Stats {
 				if($specs->type == 'visits') {
 					$dbquery->addSelect(DB::raw('avg(visits) as visits, avg(visits_unique) as visits_unique'));
 				} else if($specs->type == 'sales')
-					$dbquery->addSelect(DB::raw('avg(amount) as amount'));
+					$dbquery->addSelect(DB::raw('avg(amount) as amount, avg(units) as units, avg(transactions) as transactions'));
 				$includePeriod = false;
 			}
 		}

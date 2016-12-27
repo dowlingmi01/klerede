@@ -24,7 +24,7 @@ BEGIN
                , year(l.valid_date)*100 + quarter(l.valid_date)
                , year(l.valid_date)*100 + month(l.valid_date)
                , yearweek(l.valid_date, 3)
-               , p.category_id
+               , cd.category_id
                , IF(l.membership_id IS NOT NULL, 1, 0) as members
                , o.is_online as online
                , sum(quantity*p.is_unit), sum(sale_price)
@@ -34,9 +34,10 @@ BEGIN
             STRAIGHT_JOIN transaction t ON l.transaction_id = t.id
             STRAIGHT_JOIN operator o ON t.operator_id = o.id
             STRAIGHT_JOIN product p ON p.id = l.product_id
+            STRAIGHT_JOIN category_descendant cd ON cd.descendant_category_id = p.category_id
            WHERE t.venue_id = in_venue_id
              AND l.valid_date = in_date
-           GROUP BY t.venue_id, l.valid_date, members, online, p.category_id
+           GROUP BY t.venue_id, l.valid_date, members, online, cd.category_id
           ;
      ELSE
           INSERT stat_sales
@@ -49,7 +50,7 @@ BEGIN
                , year(l.valid_date)*100 + quarter(l.valid_date)
                , year(l.valid_date)*100 + month(l.valid_date)
                , yearweek(l.valid_date, 3)
-               , p.category_id
+               , cd.category_id
                , IF(l.membership_id IS NOT NULL, 1, 0) as members
                , o.is_online as online
                , sum(quantity*p.is_unit), sum(sale_price)
@@ -59,10 +60,11 @@ BEGIN
             STRAIGHT_JOIN transaction t ON l.transaction_id = t.id
             STRAIGHT_JOIN operator o ON t.operator_id = o.id
             STRAIGHT_JOIN product p ON p.id = l.product_id
+            STRAIGHT_JOIN category_descendant cd ON cd.descendant_category_id = p.category_id
            WHERE t.venue_id = in_venue_id
              AND t.time >= in_date
              AND t.time < in_date + interval 1 day
-           GROUP BY t.venue_id, l.valid_date, members, online, p.category_id
+           GROUP BY t.venue_id, l.valid_date, members, online, cd.category_id
           ;
      END IF;
 END;
