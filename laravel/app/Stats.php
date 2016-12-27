@@ -17,6 +17,7 @@ class Stats {
 			$period = sprintf('%04d-%02d', $period / 100, $period % 100);
 	}
 	static function querySingle($venue_id, $query) {
+		
 		if(is_string($query->periods))
 			$periods = (object) ['period'=>$query->periods];
 		else
@@ -59,22 +60,26 @@ class Stats {
 			else
 				$includePeriod = false;
 		}
-		if(isset($specs->kinds)) {
+		/*if(isset($specs->kinds)) {
 			$dbquery->join('box_office_product_kind', 'box_office_product_kind_id', '=', 'box_office_product_kind.id')
 				->whereIn('box_office_product_kind.code', $specs->kinds);
+		}*/
+		if(isset($specs->category)) {
+			$dbquery->join('category', 'category_id', '=', 'category.id')
+				->where('category.code', $specs->category);
 		}
-		if(isset($specs->channel)) {
+		/*if(isset($specs->channel)) {
 			$dbquery->join('channel', 'channel_id', '=', 'channel.id')
 				->where('channel.code', $specs->channel);
-		}
+		}*/
 		if(isset($specs->members)) {
 			$specs->members = filter_var($specs->members, FILTER_VALIDATE_BOOLEAN);
 			$dbquery->where('members', $specs->members ? 1 : 0);
 		}
-		if(isset($specs->membership_type)) {
+		/*if(isset($specs->membership_type)) {
 			$dbquery->join('membership_kind', 'membership_kind_id', '=', 'membership_kind.id')
 				->where('membership_kind.code', $specs->membership_type);
-		}
+		}*/
 		if(isset($specs->online)) {
 			$specs->online = filter_var($specs->online, FILTER_VALIDATE_BOOLEAN);
 			$dbquery->where('online', $specs->online ? 1 : 0);
@@ -98,18 +103,21 @@ class Stats {
 				$dbquery->addSelect(['current_members', 'current_memberships', 'frequency', 'recency']);
 			}
 		} else {
-			$dbquery->addSelect(DB::raw('sum(units) as units'));
-			if($specs->type == 'sales') {
-				$dbquery->whereNotIn('box_office_product_kind_id', [4, 5]);
-				$dbquery->addSelect(DB::raw('sum(amount) as amount'));
+			if($specs->type == 'visits') {
+				$dbquery->addSelect(DB::raw('sum(visits) as visits, sum(visits_unique) as visits_unique'));
+			} else {
+				if($specs->type == 'sales') {
+					$dbquery->addSelect(DB::raw('sum(amount) as amount'));
+				}
 			}
 
 			if($periods->kind == 'average') {
 				$subquery = $dbquery;
 				$dbquery = DB::table(DB::raw("({$subquery->toSql()}) as sub"))
 					->mergeBindings($subquery);
-				$dbquery->addSelect(DB::raw('avg(units) as units'));
-				if($specs->type == 'sales')
+				if($specs->type == 'visits') {
+					$dbquery->addSelect(DB::raw('avg(visits) as visits, avg(visits_unique) as visits_unique'));
+				} else if($specs->type == 'sales')
 					$dbquery->addSelect(DB::raw('avg(amount) as amount'));
 				$includePeriod = false;
 			}
@@ -124,6 +132,7 @@ class Stats {
 		return $result;
 	}
 	static function queryMulti($venue_id, $queries) {
+		
 		$result = [];
 		foreach($queries as $name=>$query)
 			$result[$name] = self::querySingle($venue_id, (object) $query);
