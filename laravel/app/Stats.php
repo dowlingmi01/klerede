@@ -34,6 +34,7 @@ class Stats {
 		$includePeriod = $periods->type;
 
 		$specs = (object) $query->specs;
+
 		if($specs->type == 'visits')
 			$table = $periods->hourly ? 'stat_hourly_visits' : 'stat_visits';
 		else if($specs->type == 'sales')
@@ -60,26 +61,15 @@ class Stats {
 			else
 				$includePeriod = false;
 		}
-		/*if(isset($specs->kinds)) {
-			$dbquery->join('box_office_product_kind', 'box_office_product_kind_id', '=', 'box_office_product_kind.id')
-				->whereIn('box_office_product_kind.code', $specs->kinds);
-		}*/
-		if(isset($specs->category)) {
+	 	if(isset($specs->category)) {
 			$dbquery->join('category', 'category_id', '=', 'category.id')
 				->where('category.code', $specs->category);
 		}
-		/*if(isset($specs->channel)) {
-			$dbquery->join('channel', 'channel_id', '=', 'channel.id')
-				->where('channel.code', $specs->channel);
-		}*/
-		if(isset($specs->members)) {
+	 	if(isset($specs->members)) {
 			$specs->members = filter_var($specs->members, FILTER_VALIDATE_BOOLEAN);
 			$dbquery->where('members', $specs->members ? 1 : 0);
 		}
-		/*if(isset($specs->membership_type)) {
-			$dbquery->join('membership_kind', 'membership_kind_id', '=', 'membership_kind.id')
-				->where('membership_kind.code', $specs->membership_type);
-		}*/
+	 
 		if(isset($specs->online)) {
 			$specs->online = filter_var($specs->online, FILTER_VALIDATE_BOOLEAN);
 			$dbquery->where('online', $specs->online ? 1 : 0);
@@ -124,11 +114,36 @@ class Stats {
 		}
 
 		$result = $dbquery->get();
+		 
 		if($includePeriod)
 			foreach($result as &$res)
 				self::formatPeriod($res->period, $includePeriod);
 		if(count($result) == 1)
 			$result = $result[0];
+		if($specs->expanded == 'true'){
+			$parent_id = Category::where('code', $specs->category)->first()->id;
+			$venue = Venue::find($venue_id);
+        	$categories = $venue->categories()->where('parent_category_id', $parent_id)->get();
+			$subcategories = [];
+		 	
+			foreach ($categories as $category) {
+				$query = (array)$query;
+				$query['specs']['category'] = $category['code'];
+				$children = self::querySingle($venue_id, (object) $query);
+				if($children)
+					$subcategories[$category['code']] = $children;
+			}
+			
+
+			if(count($subcategories) > 0 ){
+				$result = (array)$result;
+				$result["sub_categories "] = $subcategories;
+				$result = (object)$result;
+			}
+			 
+		}
+
+
 		return $result;
 	}
 	static function queryMulti($venue_id, $queries) {
