@@ -27,6 +27,8 @@ class ImportSiriuswareTaxonomy extends Migration
 			$table->dropColumn('box_office_product_id');
 			$table->integer('product_id')->default(0)->after('facility_id');
 		});
+		$sql = file_get_contents(database_path('migrations/sp/sp_compute_stats_members.sql'));
+		DB::unprepared($sql);
 		Schema::table('import_query_class', function(Blueprint $table)
 		{
 			$table->integer('system_id')->default(0);

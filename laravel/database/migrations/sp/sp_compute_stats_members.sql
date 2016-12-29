@@ -18,20 +18,20 @@ WHILE @mydate >= d_from DO
                SELECT DISTINCT member_id
                  FROM visit u
                  JOIN membership p ON u.membership_id = p.id
-                 JOIN box_office_product o ON u.box_office_product_id = o.id
+                 JOIN product o ON u.product_id = o.id
 				        WHERE u.time between @mydate and date_add(@mydate, interval 1 day)
                   AND u.venue_id = in_venue_id
                   AND p.venue_id = in_venue_id
-                  AND o.membership_kind_id != 3
+                  AND o.category_id != 26
              ) m
 			      JOIN membership p ON m.member_id = p.member_id
             JOIN visit u ON u.membership_id = p.id
-            JOIN box_office_product o ON u.box_office_product_id = o.id
+            JOIN product o ON u.product_id = o.id
            WHERE u.time < @mydate
              AND u.kind = 'pass'
              AND u.venue_id = in_venue_id
              AND p.venue_id = in_venue_id
-             AND o.membership_kind_id != 3
+             AND o.category_id != 26
            GROUP BY p.member_id
       ) as x
      ON DUPLICATE KEY
