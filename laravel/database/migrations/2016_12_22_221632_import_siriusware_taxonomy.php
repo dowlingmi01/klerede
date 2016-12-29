@@ -22,6 +22,11 @@ class ImportSiriuswareTaxonomy extends Migration
 			$table->dropColumn('box_office_product_id');
 			$table->integer('product_id')->default(0);
 		});
+		Schema::table('visit', function(Blueprint $table)
+		{
+			$table->dropColumn('box_office_product_id');
+			$table->integer('product_id')->default(0)->after('facility_id');
+		});
 		Schema::table('import_query_class', function(Blueprint $table)
 		{
 			$table->integer('system_id')->default(0);
