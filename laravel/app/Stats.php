@@ -64,6 +64,11 @@ class Stats {
 	 	if(isset($specs->category)) {
 			$dbquery->join('category', 'category_id', '=', 'category.id')
 				->where('category.code', $specs->category);
+		} else {
+			if($specs->type != 'members') {
+					$dbquery->join('category', 'category_id', '=', 'category.id')
+					->where('category.level', 0);
+			}
 		}
 	 	if(isset($specs->members)) {
 			$specs->members = filter_var($specs->members, FILTER_VALIDATE_BOOLEAN);
@@ -120,7 +125,7 @@ class Stats {
 				self::formatPeriod($res->period, $includePeriod);
 		if(count($result) == 1)
 			$result = $result[0];
-		if($specs->expanded == 'true'){
+		if(isset($specs->expanded) && isset($specs->category) && $specs->expanded == 'true'){
 			$parent_id = Category::where('code', $specs->category)->first()->id;
 			$venue = Venue::find($venue_id);
         	$categories = $venue->categories()->where('parent_category_id', $parent_id)->get();
@@ -130,8 +135,14 @@ class Stats {
 				$query = (array)$query;
 				$query['specs']['category'] = $category['code'];
 				$children = self::querySingle($venue_id, (object) $query);
-				if($children)
-					$subcategories[$category['code']] = $children;
+				if($children){
+					if($specs->type == 'visits' && $children->visits){
+						$subcategories[$category['code']] = $children;
+					} else if($specs->type == 'sales' && $children->transactions) {
+						$subcategories[$category['code']] = $children;
+					}
+
+				}
 			}
 			
 
