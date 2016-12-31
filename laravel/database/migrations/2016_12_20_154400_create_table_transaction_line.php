@@ -35,6 +35,6 @@ class CreateTableTransactionLine extends Migration
      */
     public function down()
     {
-        Schema::drop('transaction_line');
+        Schema::dropIfExists('transaction_line');
     }
 }

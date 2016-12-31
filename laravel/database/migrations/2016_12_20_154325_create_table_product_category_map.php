@@ -34,6 +34,6 @@ class CreateTableProductCategoryMap extends Migration
      */
     public function down()
     {
-        Schema::drop('product_category_map');
+        Schema::dropIfExists('product_category_map');
     }
 }

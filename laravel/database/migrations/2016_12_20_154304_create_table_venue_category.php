@@ -30,6 +30,6 @@ class CreateTableVenueCategory extends Migration
      */
     public function down()
     {
-        Schema::drop('venue_category');
+        Schema::dropIfExists('venue_category');
     }
 }

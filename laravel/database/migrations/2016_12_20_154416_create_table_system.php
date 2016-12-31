@@ -35,6 +35,6 @@ class CreateTableSystem extends Migration
      */
     public function down()
     {
-        Schema::drop('system');
+        Schema::dropIfExists('system');
     }
 }

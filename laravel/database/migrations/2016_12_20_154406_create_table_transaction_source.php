@@ -26,6 +26,6 @@ class CreateTableTransactionSource extends Migration
      */
     public function down()
     {
-        Schema::drop('transaction_source');
+        Schema::dropIfExists('transaction_source');
     }
 }

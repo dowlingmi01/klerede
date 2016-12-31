@@ -34,6 +34,6 @@ class StatMembersTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('stat_members');
+		Schema::dropIfExists('stat_members');
 	}
 }

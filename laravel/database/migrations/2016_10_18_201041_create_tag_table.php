@@ -44,6 +44,6 @@ class CreateTagTable extends Migration
      */
     public function down()
     {
-        Schema::drop('tag');
+        Schema::dropIfExists('tag');
     }
 }

@@ -26,6 +26,6 @@ class CreateChannelNoteTable extends Migration
      */
     public function down()
     {
-        Schema::drop('channel_note');
+        Schema::dropIfExists('channel_note');
    }
 }

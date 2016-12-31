@@ -29,6 +29,6 @@ class CreateTableCategoryDescendant extends Migration
      */
     public function down()
     {
-         Schema::drop('category_descendant');
+         Schema::dropIfExists('category_descendant');
     }
 }
