@@ -12,7 +12,7 @@ class CreateTableStatVisits extends Migration
      */
     public function up()
     {
-        Schema::drop('stat_visits');
+        Schema::rename('stat_visits', 'old_stat_visits');
         Schema::create('stat_visits', function (Blueprint $table) {
             $table->increments('id');
             $table->date('date');
@@ -36,6 +36,9 @@ class CreateTableStatVisits extends Migration
      */
     public function down()
     {
-        //create old table?
+		if( Schema::hasTable('old_stat_visits')) {
+			Schema::dropIfExists('stat_visits');
+			Schema::rename('old_stat_visits', 'stat_visits');
+		}
     }
 }

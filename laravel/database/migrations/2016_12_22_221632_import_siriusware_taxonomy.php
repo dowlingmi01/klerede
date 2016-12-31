@@ -13,19 +13,41 @@ class ImportSiriuswareTaxonomy extends Migration
      */
     public function up()
     {
-		Schema::table('stat_status', function(Blueprint $table)
+		Schema::rename('stat_status', 'old_stat_status');
+		Schema::create('stat_status', function(Blueprint $table)
 		{
-			$table->dropColumn('channel_id');
+			$table->increments('id');
+			$table->integer('venue_id');
+			$table->date('date');
+			$table->enum('status', ['new_data', 'computed']);
+			$table->dateTime('time_new_data')->nullable();
+			$table->dateTime('time_computed')->nullable();
+			$table->timestamps();
+			$table->unique(['venue_id', 'date']);
 		});
 		Schema::table('membership', function(Blueprint $table)
 		{
 			$table->dropColumn('box_office_product_id');
 			$table->integer('product_id')->default(0)->after('sequence');
 		});
-		Schema::table('visit', function(Blueprint $table)
+		Schema::rename('visit', 'old_visit');
+		Schema::create('visit', function(Blueprint $table)
 		{
-			$table->dropColumn('box_office_product_id');
-			$table->integer('product_id')->default(0)->after('facility_id');
+			$table->increments('id');
+			$table->integer('source_id');
+			$table->integer('venue_id');
+			$table->integer('workstation_id');
+			$table->integer('facility_id');
+			$table->integer('product_id');
+			$table->string('ticket_code');
+			$table->integer('membership_id')->nullable();
+			$table->enum('kind', ['ticket', 'pass', 'other']);
+			$table->integer('quantity');
+			$table->integer('use_no');
+			$table->dateTime('time');
+			$table->timestamps();
+			$table->index(['membership_id']);
+			$table->index(['time']);
 		});
 		$sql = file_get_contents(database_path('migrations/sp/sp_compute_stats_members.sql'));
 		DB::unprepared($sql);
@@ -110,6 +132,11 @@ class ImportSiriuswareTaxonomy extends Migration
      */
     public function down()
     {
-        //
+        if( Schema::hasTable('old_stat_status')) {
+			Schema::rename('old_stat_status', 'stat_status');
+		}
+		if( Schema::hasTable('old_visit')) {
+			Schema::rename('old_visit', 'visit');
+		}
     }
 }
