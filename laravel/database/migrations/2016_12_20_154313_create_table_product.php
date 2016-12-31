@@ -25,6 +25,7 @@ class CreateTableProduct extends Migration
             $table->boolean('is_visitor');
             $table->boolean('is_unit');
             $table->timestamps();
+            $table->unique(['venue_id', 'system_id', 'code']);
         });
     }
 
