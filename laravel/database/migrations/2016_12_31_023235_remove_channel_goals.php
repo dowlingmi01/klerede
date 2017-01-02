@@ -12,14 +12,19 @@ class RemoveChannelGoals extends Migration
      */
     public function up()
     {
-        DB::table('goal_sales_monthly')->truncate();
         
-        Schema::table('goal_sales_monthly', function(Blueprint $table)
+        Schema::rename('goal_sales_monthly', 'old_goal_sales_monthly');
+        
+        Schema::create('goal_sales_monthly', function(Blueprint $table)
         {
-            $table->dropUnique('goal_settings_monthly_unique');
-            $table->dropColumn('channel_id');
-            $table->dropColumn('sub_channel_id');
-            $table->integer('category_id')->after('month');
+            $table->increments('id');
+            $table->integer('venue_id');
+            $table->smallInteger('year');
+            $table->mediumInteger('month');
+            $table->smallInteger('category_id')
+            $table->enum('type', ['amount', 'units']);
+            $table->double('goal');
+            $table->timestamps();
             $table->unique(['venue_id', 'month', 'category_id', 'type'], 'goal_settings_monthly_unique');
         });
     }
@@ -31,14 +36,7 @@ class RemoveChannelGoals extends Migration
      */
     public function down()
     {
-        DB::table('goal_sales_monthly')->truncate();
-        Schema::table('goal_sales_monthly', function(Blueprint $table)
-        {
-           $table->dropUnique('goal_settings_monthly_unique');
-           $table->dropColumn('category_id');
-           $table->integer('channel_id')->after('month');
-           $table->integer('sub_channel_id')->after('sub_channel_id');
-           $table->unique(['venue_id', 'month', 'channel_id', 'sub_channel_id', 'type'], 'goal_settings_monthly_unique');
-        });
+        Schema::dropIfExists('goal_sales_monthly');
+        Schema::rename('old_goal_sales_monthly', 'goal_sales_monthly');
     }
 }

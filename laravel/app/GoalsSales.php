@@ -20,7 +20,11 @@ class GoalsSales {
 		} 
 		return $months;
 	}
-	static function get($venue_id, $year, $channel = null, $type = null, $sub_channel = null) {
+	static function get($venue_id, $year, $category, $type = null) {
+		/*TODO:
+			get category tree from vanue_category, get amount/unist from gaols_amount/goals_units fields
+			creat query for each node and call getMonths with proper query
+		*/
 		$channels = [
 			'gate/amount' => [
 				'channel'=>'gate',
@@ -72,13 +76,13 @@ class GoalsSales {
 		}
 		return $channels;
 	}
-	static function set($venue_id, $year, $channel, $type, $sub_channel, $months) {
+	static function set($venue_id, $year, $category, $type, $months) {
 		$venue = Venue::find($venue_id);
 		$fiscal_year_start_month = $venue->fiscal_year_start_month;
 
-		$channel_id = Channel::getFor($channel)->id;
-		$sub_channel_id = $sub_channel ? MembershipKind::getFor($sub_channel)->id : 0;
-		$q = ['venue_id'=>$venue_id, 'channel_id'=>$channel_id, 'type'=>$type, 'sub_channel_id'=>$sub_channel_id, 'year'=>$year];
+		$category_id = Caregory::getFor($category)->id;
+		 
+		$q = ['venue_id'=>$venue_id, 'category_id'=>$category_id, 'type'=>$type, 'year'=>$year];
 		if($fiscal_year_start_month > 1)
 			$year--;
 		$calculated_year  = $year;
