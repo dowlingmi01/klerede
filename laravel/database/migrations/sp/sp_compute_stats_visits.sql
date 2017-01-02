@@ -32,7 +32,7 @@ BEGIN
             STRAIGHT_JOIN transaction t ON v.transaction_id = t.id
             STRAIGHT_JOIN product p ON v.product_id = p.id
             STRAIGHT_JOIN category_descendant cd ON cd.descendant_category_id = p.category_id
-           WHERE p.is_visitor = 1  
+           WHERE (p.is_visitor = 1 OR p.is_unique_visitor = 1)
              AND t.venue_id = in_venue_id
              AND v.valid_date = in_date
            GROUP BY t.venue_id, v.valid_date, cd.category_id
