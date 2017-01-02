@@ -22,7 +22,7 @@ Route::get('/', 'WelcomeController@index');
 Route::get('home', 'HomeController@index');
 
 Route::group(['prefix'=>'api/v1'], function() {
-	Route::post('stats/query', function() {
+	Route::match(['get', 'post'], 'stats/query', function() {
 		$input = Request::all();
         if (Gate::denies('validate-venue', $input['venue_id'])) {
             return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
