@@ -135,73 +135,18 @@ class Stats {
 			
 			$venue = Venue::find($venue_id);
         	$categories = $venue->categories()->where('parent_category_id', $parent_id)->get();
-			$subcategories = [];
 		 	if(count($result) > 1){
-
 		 		foreach ($result as $key => $unit) {
 		 			$query = (array)$query;
 		 	 		$query['periods']['period'] = $unit->period;
-		 	 		foreach ($categories as $category) {
-						$query['specs']['category'] = $category['code'];
-						$children = self::querySingle($venue_id, (object) $query);
-						if($children){
-							$children = (array)$children;
-							unset($children['period']);
-							$children = (object)$children;
-							if($specs->type == 'visits' && $children->visits){
-								$subcategories[$category['code']] = $children;
-							} else if($specs->type == 'sales' && $children->transactions) {
-								$subcategories[$category['code']] = $children;
-							}
-						
-						}
-					}
-					 
-					if(count($subcategories) > 0 ){
-						$unit = (array)$unit;
-						$unit["sub_categories "] = $subcategories;
-						$unit = (object)$unit;
-					}
+		 	 		self::getChildren($categories, $query, $venue_id, $specs, $unit);
 					$result = (array)$result;
 					$result[$key] = $unit;
 					$result = (object)$result;
-					
-
 				}
 		 	} else {
 		 		$query = (array)$query;
-				foreach ($categories as $category) {
-					$query['specs']['category'] = $category['code'];
-					$children = self::querySingle($venue_id, (object) $query);
-					if($children){
-						$children = (array)$children;
-						unset($children['period']);
-						$children = (object)$children;
-						/*if(is_array($children)){
-							foreach ($children as $child) {
-								if($specs->type == 'visits' && $child->visits){
-									$subcategories[$category['code']] = $child;
-								} else if($specs->type == 'sales' && $child->transactions) {
-									$subcategories[$category['code']] = $child;
-								}
-							}
-						} else {*/
-							if($specs->type == 'visits' && $children->visits){
-								$subcategories[$category['code']] = $children;
-							} else if($specs->type == 'sales' && $children->transactions) {
-								$subcategories[$category['code']] = $children;
-							}
-						//}
-
-					}
-				}
-				
-
-				if(count($subcategories) > 0 ){
-					$result = (array)$result;
-					$result["sub_categories "] = $subcategories;
-					$result = (object)$result;
-				}
+		 		self::getChildren($categories, $query, $venue_id, $specs, $result);
 			}
 			 
 		}
@@ -209,6 +154,30 @@ class Stats {
 
 		return $result;
 	}
+
+	static private function getChildren($categories, $query, $venue_id, $specs, &$parent){
+		$subcategories = [];
+		foreach ($categories as $category) {
+			$query['specs']['category'] = $category['code'];
+			$children = self::querySingle($venue_id, (object) $query);
+			if($children){
+				$children = (array)$children;
+				unset($children['period']);
+				$children = (object)$children;
+				if($specs->type == 'visits' && $children->visits){
+					$subcategories[$category['code']] = $children;
+				} else if($specs->type == 'sales' && $children->transactions) {
+					$subcategories[$category['code']] = $children;
+				}
+			}
+		}
+		if(count($subcategories) > 0 ){
+			$parent = (array)$parent;
+			$parent["sub_categories "] = $subcategories;
+			$parent = (object)$parent;
+		}
+	}
+
 	static function queryMulti($venue_id, $queries) {
 		
 		$result = [];
