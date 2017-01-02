@@ -44,6 +44,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 		$result = WeatherDaily::queryD($input);
 		return Response::json($result);
 	})->middleware(['jwt.auth']);
+	/*
 	Route::get('goals/sales/{venue_id}/{year}', function($venue_id, $year) {
         if (Gate::denies('validate-venue', $venue_id)) {
             return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
@@ -60,6 +61,25 @@ Route::group(['prefix'=>'api/v1'], function() {
         }
 		$months = Request::input('months');
 		return Response::json(GoalsSales::set($venue_id, $year, $channel, $type, $sub_channel, $months));
+	})->middleware(['jwt.auth']);
+	*/
+
+	Route::get('goals/sales/{venue_id}/{year}', function($venue_id, $year) {
+        if (Gate::denies('validate-venue', $venue_id)) {
+            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
+        }
+		return Response::json(GoalsSales::get($venue_id, $year));
+	})->middleware(['jwt.auth']);;
+	Route::put('goals/sales/{venue_id}/{year}/{category}/{type}',
+		function($venue_id, $year, $category, $type) {
+        if (Gate::denies('validate-venue', $venue_id)) {
+            return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
+        }
+        if (Gate::denies('has-permission', PermissionHelper::GOALS_SET)) {
+            return Response::json(['result'=> 'error', 'message'=>"insufficient_privileges"],400);  
+        }
+		$months = Request::input('months');
+		return Response::json(GoalsSales::set($venue_id, $year, $category, $type, $months));
 	})->middleware(['jwt.auth']);
 
 	Route::get('categories', function( ) {
