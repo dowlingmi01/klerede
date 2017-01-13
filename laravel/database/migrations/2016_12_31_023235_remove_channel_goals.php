@@ -21,7 +21,7 @@ class RemoveChannelGoals extends Migration
             $table->integer('venue_id');
             $table->smallInteger('year');
             $table->mediumInteger('month');
-            $table->smallInteger('category_id')
+            $table->smallInteger('category_id');
             $table->enum('type', ['amount', 'units']);
             $table->double('goal');
             $table->timestamps();
