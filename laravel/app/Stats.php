@@ -61,13 +61,32 @@ class Stats {
 			else
 				$includePeriod = false;
 		}
-	 	if(isset($specs->category)) {
-			$dbquery->join('category', 'category_id', '=', 'category.id')
-				->where('category.code', $specs->category);
-		} else {
-			if($specs->type != 'members') {
-					$dbquery->join('category', 'category_id', '=', 'category.id')
-					->where('category.level', 0);
+		if($specs->type != 'members') {
+			if(isset($specs->expanded))
+				$specs->expanded = filter_var($specs->expanded, FILTER_VALIDATE_BOOLEAN);
+			else
+				$specs->expanded = false;
+
+			if(isset($specs->category)) {
+				$category = Category::getFor($specs->category);
+				$category_id = $category->id;
+				$parent_category_id = $category->parent_category_id;
+			} else {
+				$category_id = 0;
+				$parent_category_id = 0;
+			}
+
+			if($specs->expanded) {
+				$dbquery->join('category_descendant as cd', "$table.category_id", '=', 'cd.descendant_category_id')
+					->join('category', "$table.category_id", '=', 'category.id');
+				$dbquery->groupBy("$table.category_id");
+				$dbquery->addSelect(['category.code', "$table.category_id", 'parent_category_id']);
+				$dbquery->where('cd.category_id', $category_id);
+			} else if($category_id) {
+				$dbquery->where('category_id', $category_id);
+			} else {
+				$dbquery->join('category', "$table.category_id", '=', 'category.id')
+					->where('parent_category_id', $category_id);
 			}
 		}
 	 	if(isset($specs->members)) {
@@ -110,6 +129,10 @@ class Stats {
 				$subquery = $dbquery;
 				$dbquery = DB::table(DB::raw("({$subquery->toSql()}) as sub"))
 					->mergeBindings($subquery);
+				if($specs->expanded) {
+					$dbquery->groupBy('category_id');
+					$dbquery->addSelect(['code', 'category_id', 'parent_category_id']);
+				}
 				if($specs->type == 'visits') {
 					$dbquery->addSelect(DB::raw('avg(visits) as visits, avg(visits_unique) as visits_unique'));
 				} else if($specs->type == 'sales')
@@ -120,62 +143,52 @@ class Stats {
 
 		$result = $dbquery->get();
 		 
-		if($includePeriod)
+		if($includePeriod) {
 			foreach($result as &$res)
 				self::formatPeriod($res->period, $includePeriod);
-		if(count($result) == 1)
-			$result = $result[0];
-
-		if(isset($specs->expanded)  && $specs->expanded == 'true'){
-			if(isset($specs->category)){
-				$parent_id = Category::where('code', $specs->category)->first()->id;
-			} else {
-				$parent_id = 0;
-			}
-			
-			$venue = Venue::find($venue_id);
-        	$categories = $venue->categories()->where('parent_category_id', $parent_id)->get();
-		 	if(count($result) > 1){
-		 		foreach ($result as $key => $unit) {
-		 			$query = (array)$query;
-		 	 		$query['periods']['period'] = $unit->period;
-		 	 		self::getChildren($categories, $query, $venue_id, $specs, $unit);
-					$result = (array)$result;
-					$result[$key] = $unit;
-					$result = (object)$result;
-				}
-		 	} else {
-		 		$query = (array)$query;
-		 		self::getChildren($categories, $query, $venue_id, $specs, $result);
-			}
-			 
+			unset($res);
 		}
-
-
+		if($specs->expanded) {
+			$periods = [];
+			if($includePeriod) {
+				foreach($result as $res) {
+					$period = $res->period;
+					unset($res->period);
+					$periods[$period][] = $res;
+				}
+			} else {
+				$periods[0] = $result;
+			}
+			foreach($periods as &$periodr) {
+				$parents = [];
+				foreach($periodr as $res) {
+					$parents[$res->parent_category_id][] = $res;
+				}
+				$periodr = self::getChildren($parents, $parent_category_id);
+				if($category_id)
+					$periodr = array_values($periodr)[0];
+			}
+			$result = $periods;
+		}
+		if(count($result) == 1)
+			$result = array_values($result)[0];
 		return $result;
 	}
 
-	static private function getChildren($categories, $query, $venue_id, $specs, &$parent){
-		$subcategories = [];
-		foreach ($categories as $category) {
-			$query['specs']['category'] = $category['code'];
-			$children = self::querySingle($venue_id, (object) $query);
-			if($children){
-				$children = (array)$children;
-				unset($children['period']);
-				$children = (object)$children;
-				if($specs->type == 'visits' && $children->visits){
-					$subcategories[$category['code']] = $children;
-				} else if($specs->type == 'sales' && $children->transactions) {
-					$subcategories[$category['code']] = $children;
-				}
+	static private function getChildren($parents, $category_id){
+		$result = [];
+		if(array_key_exists($category_id, $parents))
+			foreach($parents[$category_id] as $res) {
+				$sub_categories = self::getChildren($parents, $res->category_id);
+				if(count($sub_categories))
+					$res->sub_categories = $sub_categories;
+				$code = $res->code;
+				unset($res->category_id);
+				unset($res->parent_category_id);
+				unset($res->code);
+				$result[$code] = $res;
 			}
-		}
-		if(count($subcategories) > 0 ){
-			$parent = (array)$parent;
-			$parent["sub_categories "] = $subcategories;
-			$parent = (object)$parent;
-		}
+		return $result;
 	}
 
 	static function queryMulti($venue_id, $queries) {
@@ -204,7 +217,6 @@ class Stats {
 			->where('category.level', 0)
 			->where('venue_id', $venue_id)->groupBy('date')
 			->select(['date', DB::raw('count(distinct category_id) as num_categories')])
-
 			->orderBy('num_categories', 'desc')->orderBy('date', 'desc')->first()->date;
 		return $last_date;
 	}
