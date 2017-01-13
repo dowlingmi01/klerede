@@ -142,23 +142,27 @@ class Stats {
 		}
 
 		$result = $dbquery->get();
-		 
+
+		$periods = [];
 		if($includePeriod) {
 			foreach($result as &$res)
 				self::formatPeriod($res->period, $includePeriod);
 			unset($res);
+			foreach($result as $res) {
+				$period = $res->period;
+				unset($res->period);
+				if($specs->expanded) {
+					$periods[$period][] = $res;
+				} else {
+					$periods[$period] = $res;
+				}
+			}
+		} else if($specs->expanded) {
+			$periods[0] = $result;
+		} else {
+			$periods = $result;
 		}
 		if($specs->expanded) {
-			$periods = [];
-			if($includePeriod) {
-				foreach($result as $res) {
-					$period = $res->period;
-					unset($res->period);
-					$periods[$period][] = $res;
-				}
-			} else {
-				$periods[0] = $result;
-			}
 			foreach($periods as &$periodr) {
 				$parents = [];
 				foreach($periodr as $res) {
@@ -168,8 +172,9 @@ class Stats {
 				if($category_id)
 					$periodr = array_values($periodr)[0];
 			}
-			$result = $periods;
+			unset($periodr);
 		}
+		$result = $periods;
 		if(count($result) == 1)
 			$result = array_values($result)[0];
 		return $result;
