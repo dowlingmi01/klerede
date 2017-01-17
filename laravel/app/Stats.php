@@ -1,6 +1,5 @@
 <?php namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use DB;
 
 class Stats {
@@ -175,7 +174,7 @@ class Stats {
 			unset($periodr);
 		}
 		$result = $periods;
-		if(count($result) == 1)
+		if(!$includePeriod && count($result) == 1)
 			$result = array_values($result)[0];
 		return $result;
 	}
