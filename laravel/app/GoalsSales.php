@@ -20,67 +20,61 @@ class GoalsSales {
 		} 
 		return $months;
 	}
-	static function get($venue_id, $year, $category, $type = null) {
-		/*TODO:
-			get category tree from vanue_category, get amount/unist from gaols_amount/goals_units fields
-			creat query for each node and call getMonths with proper query
-		*/
-		$channels = [
-			'gate/amount' => [
-				'channel'=>'gate',
-				'name'=>'Box Office',
-				'type'=>'amount',
-			], 'membership/amount' => [
-				'channel'=>'membership',
-				'name'=>'Total Membership $',
-				'type'=>'amount',
-				'sub_channels'=>[
-					'individual'=>['name'=>'Individual'],
-					'family'=>['name'=>'Family'],
-					'corporate'=>['name'=>'Corporate'],
-				],
-			], 'membership/units' => [
-				'channel'=>'membership',
-				'name'=>'Total Membership #',
-				'type'=>'units',
-				'sub_channels'=>[
-					'individual'=>['name'=>'Individual'],
-					'family'=>['name'=>'Family'],
-					'corporate'=>['name'=>'Corporate'],
-				],
-			], 'cafe/amount' => [
-				'channel'=>'cafe',
-				'name'=>'Cafe',
-				'type'=>'amount',
-			], 'store/amount' => [
-				'channel'=>'store',
-				'name'=>'Store',
-				'type'=>'amount',
-			]
-		];
+	static function get($venue_id, $year, $category = null, $type = null) {
 		$venue = Venue::find($venue_id);
 		$fiscal_year_start_month = $venue->fiscal_year_start_month;
-
-		foreach($channels as &$channel) {
-			$channel_id = Channel::getFor($channel['channel'])->id;
-			$q = ['venue_id'=>$venue_id, 'channel_id'=>$channel_id, 'type'=>$channel['type'], 'sub_channel_id'=>0];
-			if(array_key_exists('sub_channels', $channel)) {
-				foreach($channel['sub_channels'] as $sub_channel_code=>&$sub_channel) {
-					$sub_channel_id = MembershipKind::getFor($sub_channel_code)->id;
-					$q['sub_channel_id'] = $sub_channel_id;
-					$sub_channel['months'] = self::getMonths($q, $year,$fiscal_year_start_month);
+		$hierarchy = Category::hierarchyByVenue($venue_id);
+		self::getChildren($hierarchy, $venue_id, $year, $fiscal_year_start_month);
+		return $hierarchy;
+	}
+	static function getChildren(&$hierarchy, $venue_id, $year, $fiscal_year_start_month) {
+		$types = ['units', 'amount'];
+		$ret = [];
+		foreach($hierarchy as $name => &$category) {
+			$has = [];
+			if($category['goals_period_type'] == 'monthly') {
+				foreach($types as $type) {
+					if($category["goals_$type"]) {
+						$q = ['venue_id'=>$venue_id, 'category_id'=>$category['id'], 'type'=>$type];
+						$has[$type] = self::getMonths($q, $year, $fiscal_year_start_month);
+						$category["goals_$type"] = $has[$type];
+					}
+				}
+			}
+			if(array_key_exists('sub_categories', $category)) {
+				$hasCh = self::getChildren($category['sub_categories'], $venue_id, $year, $fiscal_year_start_month);
+				if(count($hasCh) > 0) {
+					$has = $hasCh;
+					foreach ($types as $type) {
+						if (array_key_exists($type, $has)) {
+							$category["goals_sum_$type"] = $has[$type];
+						}
+					}
+				}
+			}
+			if(count($has) > 0) {
+				foreach($types as $type) {
+					if(array_key_exists($type, $has)) {
+						if(array_key_exists($type, $ret)) {
+							foreach ($ret[$type] as $key => &$value) {
+								$value += $has[$type][$key];
+							}
+						} else {
+							$ret[$type] = $has[$type];
+						}
+					}
 				}
 			} else {
-				$channel['months'] = self::getMonths($q, $year,$fiscal_year_start_month);
+				unset($hierarchy[$name]);
 			}
 		}
-		return $channels;
+		return $ret;
 	}
 	static function set($venue_id, $year, $category, $type, $months) {
 		$venue = Venue::find($venue_id);
 		$fiscal_year_start_month = $venue->fiscal_year_start_month;
 
-		$category_id = Caregory::getFor($category)->id;
+		$category_id = Category::getFor($category)->id;
 		 
 		$q = ['venue_id'=>$venue_id, 'category_id'=>$category_id, 'type'=>$type, 'year'=>$year];
 		if($fiscal_year_start_month > 1)
