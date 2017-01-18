@@ -11,7 +11,7 @@ class Stats {
 			$period = sprintf('%04d-%02d-%02d', (int)$match[1], (int)$match[2], (int)$match[3]);
 		}
 	}
-	static protected function formatPeriod(&$period, $type) {
+	static public function formatPeriod(&$period, $type) {
 		if($type != 'date' && $type != 'year')
 			$period = sprintf('%04d-%02d', $period / 100, $period % 100);
 	}

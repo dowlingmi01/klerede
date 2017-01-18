@@ -13,21 +13,24 @@
 
 
 use App\GoalsSales;
-use App\StoreTransaction, App\Stats, App\Channel, App\Category;
+use App\Stats, App\Channel, App\Category;
 use App\WeatherDaily;
 use App\Helpers\PermissionHelper;
- 
+
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
 
 Route::group(['prefix'=>'api/v1'], function() {
 	Route::match(['get', 'post'], 'stats/query', function() {
+		$start = microtime(true);
 		$input = Request::all();
         if (Gate::denies('validate-venue', $input['venue_id'])) {
             return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
 		$result = Stats::queryMulti($input['venue_id'], $input['queries']);
+		$result['time_start']=$start;
+		$result['time_end']=microtime(true);
 		return Response::json($result);
 	})->middleware(['jwt.auth']);
 	Route::resource('venue', 'VenueController',
@@ -68,7 +71,9 @@ Route::group(['prefix'=>'api/v1'], function() {
         if (Gate::denies('validate-venue', $venue_id)) {
             return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
-		return Response::json(GoalsSales::get($venue_id, $year));
+		$actuals = filter_var(Request::input('actuals', false), FILTER_VALIDATE_BOOLEAN);
+		$limit_date = Request::input('limit_date', null);
+		return Response::json(GoalsSales::get($venue_id, $year, $actuals, $limit_date));
 	})->middleware(['jwt.auth']);;
 	Route::put('goals/sales/{venue_id}/{year}/{category}/{type}',
 		function($venue_id, $year, $category, $type) {
