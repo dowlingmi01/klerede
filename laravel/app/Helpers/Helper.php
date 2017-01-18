@@ -5,7 +5,6 @@ namespace App\Helpers;
 use Illuminate\Database\Eloquent\Model;
 
 class Helper {
- 
 	public static function readCSV($filename) {
 		$rows = array_map('str_getcsv', file($filename));
 		$header = array_shift($rows);
@@ -27,5 +26,11 @@ class Helper {
 	}
 	public static function array_remove_keys($array, $keys) {
 		return array_diff_key($array, array_flip($keys));
+	}
+	public static function getFiscalYearForMonth($month, $fiscal_year_start_month) {
+		$year = (int) $month / 100;
+		if($fiscal_year_start_month > 1 && $fiscal_year_start_month <= $month % 100)
+			$year++;
+		return $year;
 	}
 }

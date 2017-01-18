@@ -104,4 +104,15 @@ class GoalsSales {
 		}
 		return true;
 	}
+	static function import($venue_id, $file_name) {
+		$data = Helper::readCSV($file_name);
+		foreach($data as $line) {
+			$q = ['venue_id'=>$venue_id, 'category_id'=>Category::getFor($line['category_code'])->id,
+				'type'=>$line['type'], 'month'=>$line['month']];
+			$goal = GoalSalesMonthly::firstOrNew($q);
+			$goal->month = $line['month'];
+			$goal->goal = $line['goal'];
+			$goal->save();
+		}
+	}
 }
