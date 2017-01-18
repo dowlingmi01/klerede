@@ -7,17 +7,10 @@ use App\Helpers\Helper;
 class GoalsSales {
 	private static function getMonths($q, $year, $fiscal_year_start_month) {
 		$months = [];
-		if($fiscal_year_start_month > 1)
-			$year--;
- 		$calculated_year  = $year;
-		for( $month = 1; $month <= 12; $month++ ) {
-			$calculated_month = (($month  + $fiscal_year_start_month - 2) % 12) + 1;
-			if($calculated_month < $fiscal_year_start_month)
-					$calculated_year  = $year+1;
-			$q['month'] = $calculated_year * 100 + $calculated_month;
-			 
+		foreach(Helper::getMonthsForFiscalYear($year, $fiscal_year_start_month) as $num => $month) {
+			$q['month'] = $month;
 			$goal = GoalSalesMonthly::firstOrNew($q);
-			$months[$month] = $goal->goal  ;
+			$months[$num] = $goal->goal;
 		} 
 		return $months;
 	}
@@ -84,22 +77,13 @@ class GoalsSales {
 		return $ret;
 	}
 	static function set($venue_id, $year, $category, $type, $months) {
-		$venue = Venue::find($venue_id);
-		$fiscal_year_start_month = $venue->fiscal_year_start_month;
-
+		$fiscal_year_start_month = Venue::find($venue_id)->fiscal_year_start_month;
 		$category_id = Category::getFor($category)->id;
-		 
 		$q = ['venue_id'=>$venue_id, 'category_id'=>$category_id, 'type'=>$type, 'year'=>$year];
-		if($fiscal_year_start_month > 1)
-			$year--;
-		$calculated_year  = $year;
-		for( $month = 1; $month <= 12; $month++ ) {
-			$calculated_month = (($month  + $fiscal_year_start_month - 2) % 12) + 1;
-			if($calculated_month < $fiscal_year_start_month)
-				$calculated_year  = $year+1;
-			$q['month'] = $calculated_year * 100 + $calculated_month;
+		foreach(Helper::getMonthsForFiscalYear($year, $fiscal_year_start_month) as $num => $month) {
+			$q['month'] = $month;
 			$goal = GoalSalesMonthly::firstOrNew($q);
-			$goal->goal = $months[$month];
+			$goal->goal = $months[$num];
 			$goal->save();
 		}
 		return true;

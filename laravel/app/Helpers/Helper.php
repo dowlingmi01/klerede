@@ -33,4 +33,17 @@ class Helper {
 			$year++;
 		return $year;
 	}
+	public static function getMonthsForFiscalYear($year, $fiscal_year_start_month) {
+		$months = [];
+		if($fiscal_year_start_month > 1)
+			$year--;
+		$calculated_year  = $year;
+		for( $month = 1; $month <= 12; $month++ ) {
+			$calculated_month = (($month  + $fiscal_year_start_month - 2) % 12) + 1;
+			if($calculated_month < $fiscal_year_start_month)
+				$calculated_year  = $year+1;
+			$months[$month] = $calculated_year * 100 + $calculated_month;
+		}
+		return $months;
+	}
 }
