@@ -43,7 +43,9 @@ class Stats {
 
 		$dbquery = DB::table($table);
 		$dbquery->where('venue_id', $venue_id);
-		 
+		if(isset($periods->limit_date)) {
+			$dbquery->where('date', '<=', $periods->limit_date);
+		}
 		if(isset($periods->period)) {
 			self::validatePeriod($periods->period, $periods->type);
 			$dbquery->where($periods->type, $periods->period);
