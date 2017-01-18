@@ -39,6 +39,7 @@ class Category extends Model {
             //        ->where('category_id', $category->id)->first();
             //if($relation != null){
                 $result = [];
+                $result['id'] = $category['id'];
                 $result['name'] = $category['name'];
                 $result['visits_type'] = $category['visits_type'];
                 $result['level'] = $category['level'];
