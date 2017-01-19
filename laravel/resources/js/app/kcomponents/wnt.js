@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var moment = require('moment');
+var listCategories = require('../kapi/categories').list;
 
 var wnt = {
     gettingVenueData:$.Deferred(),
@@ -74,7 +75,11 @@ var wnt = {
         wnt.weekago = wnt.formatDate(wnt.weekago, 'double');
         wnt.selectedMonthDays = wnt.daysInMonth(wnt.thisMonthNum+1, wnt.thisYear);
         wnt.barDates = wnt.getMonth(wnt.today);
-	
+        
+        listCategories(wnt.venueID, wnt.onCategoriesGet);
+	},
+    onCategoriesGet:function(data){
+        wnt.categories = data;
     	// Resolve deffered object.
         console.log('Resolve deferred wnt.gettingVenueData');
     	wnt.gettingVenueData.resolve(data);

@@ -21,7 +21,8 @@ module.exports = {
         channel,    //null for all channels
         type,       //'sales'|'visits' | {type:'sales'|'visits', kinds:[]} 
         operation,  //'detail'|'sum'
-        periodType  //'date'|'week'
+        periodType,  //'date'|'week'
+        expanded    // true | false/null
     ) { 
 
         if (periodType == 'week') {
@@ -32,6 +33,8 @@ module.exports = {
             to = serverFormat(to);
         }
 
+        if (!expanded) expanded = false;
+        
         var query = {
             periods: {
                 type: periodType,
@@ -42,7 +45,8 @@ module.exports = {
             specs: {
                 type: type,
                 channel: channel,
-                members: members
+                members: members,
+                expanded: expanded
             }
         };
 
