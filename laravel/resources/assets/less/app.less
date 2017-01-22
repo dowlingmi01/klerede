@@ -3247,6 +3247,13 @@ a.dp-choose-date {
 #revenue2 .details #table .child-details-wrapper.active .table-item  {
     border-top: 1px solid #CCC;
 }
+#revenue2 .details #table .child-details-wrapper > .child-details {
+    display:none;
+}
+#revenue2 .details #table .child-details-wrapper.active > .child-details {
+    display:block;
+    overflow:auto;
+}
 #revenue2 .details #table .child-details-wrapper .table-item div {
     height:20px;
     line-height:20px;
@@ -3255,9 +3262,9 @@ a.dp-choose-date {
     margin-left:10%;
 }
 #revenue2 .details #table .table-item #filter-caret-wrapper {
-    position:absolute;
-    right:12px;
-    top:6px;
+    // position:absolute;
+    // right:12px;
+    // top:6px;
     width:30px;
     text-align:center;
 }
@@ -3265,7 +3272,11 @@ a.dp-choose-date {
     position:static;
     transform: rotate(0);
     transition: .3s;
-    width:11px;
+    width:12px;
+}
+#revenue2 .details #table .child-details-wrapper .table-item #filter-caret-wrapper .filter-caret {
+    width:10px;
+    height:6px;
 }
 #revenue2 .details #table .table-item #filter-caret-wrapper .filter-caret.active {
     transform: rotate(180deg);

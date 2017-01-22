@@ -405,11 +405,12 @@ var DetailsRow = React.createClass({
                         formatNumber={this.props.formatNumber}
                         sign={this.props.sign}
                         details={detail.details}
+                        level={this.props.level + 1}
                     />
                 )
             }
             
-            detailsHandler = <div id="filter-caret-wrapper" className="left-line" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
+            detailsHandler = <div id="filter-caret-wrapper" className="left-line col-xs-1" onClick={this.togleDetails}><CaretHandler className={this.state.detailsClass} /></div>;
             
         }
         
@@ -422,7 +423,7 @@ var DetailsRow = React.createClass({
                                 {this.props.title}
                             </div>
                         </div>
-                        <div className="col-xs-8 title">
+                        <div className="col-xs-7 title">
                             <div className="col-xs-4 left-line" >
                                 <div className="" style={changeStyle}>
                                     <ChangeArrow className={"change multicolorfl "+upDownClass} />
@@ -738,7 +739,7 @@ var Revenue2 = React.createClass({
         var channels = state[state.units].channelActive;
         var channelEmpty = {};
         var result = state.result;
-        console.debug(channels);
+
         for (var channel in channels) {
             // console.debug(channel);
             // console.debug(result.sales_totals);
@@ -1656,6 +1657,7 @@ var Revenue2 = React.createClass({
                                     formatNumber = {detailsFormatNumber}
                                     details={subDetails}
                                     sign={sign}
+                                    level={0}
                                 />
                             );
                             theOtherDetailsRows.push(<div key={k} ></div>);
