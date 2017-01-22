@@ -7,6 +7,7 @@ function sortCats(cats) {
     for(var k in cats) {
         var c = cats[k];
         c.key = k;
+        c.subCategories = c.sub_categories;
         c.sub_categories = sortCats(c.sub_categories);
         sorted.push(c);
     }
@@ -23,3 +24,15 @@ module.exports = function() {
     }
     return categories;
 }
+
+
+// function buildCats(catsArr) {
+//     var cats = {};
+//     for (var i=0; i<catsArr.length; i++) {
+//         //{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"};
+//         var c = catsArr[i];
+//         cats[c.key] = c;
+//         cats[c.key].subCategories = buildCats(c.sub_categories);
+//     }
+//     return cats;
+// }

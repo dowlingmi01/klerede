@@ -129,11 +129,7 @@ var GBar = React.createClass({
         
         var onMouseDown = isEmpty ? "" : this.props.onMouseDown;
         
-        
         var weatherDiv =<WeatherPopup id={"weather-popup-"+this.props.id} ref="popup" bottom={height+37} units={this.props.units} channelUnits={channelUnits} channels={channels} date={this.props.date} periodType={this.props.periodType} data={this.props.weather} attendance={this.props.attendance} />;
-        
-        console.debug(this.props.date);
-        
         
         return(
             <div id={this.props.id} onMouseDown={onMouseDown} className="gbar" style={{width:width+"%", "marginRight":marginRight+"%", "marginLeft":marginLeft+"%", cursor: isEmpty?'initial':'pointer'}}>
@@ -517,13 +513,9 @@ var Revenue2 = React.createClass({
             childCategoriesQdetails:{prefix:"visitors_non_members_bars_by_", channel:"ALL", type:'visits'},
             attendanceDetailTitle:"Revenue"
         }
-        
         return {
             actions:actions,
-            channelEmpty:{
-                gate:true, cafe: true, store: true, membership: true
-                ,visitors_non_members:true, visitors_members:true
-            },
+            channelEmpty:{},
             dollars:regularUnitsData,
             percap:regularUnitsData,
             'attendance-tab':attendanceData,
@@ -743,17 +735,21 @@ var Revenue2 = React.createClass({
     },
     //receives state, so it can be called outside react lifecyle
     updateEmptyChannels:function (state) {
-        var channelEmpty = state.channelEmpty;
+        var channels = state[state.units].channelActive;
+        var channelEmpty = {};
         var result = state.result;
-        
-        for (var channel in channelEmpty) {
-            if (!result[channel+"_bars"] || result[channel+"_bars"].length == 0) {
+        console.debug(channels);
+        for (var channel in channels) {
+            // console.debug(channel);
+            // console.debug(result.sales_totals);
+            console.debug(channel, result.sales_totals[channel]);
+            if (!result.sales_totals || !result.sales_totals[channel]) {
                 channelEmpty[channel] = true;
             } else {
                 channelEmpty[channel] = false;
             }
         }
-        
+        state.channelEmpty = channelEmpty;
         return state;
     },
     //receives state, so it can be called outside react lifecyle
@@ -780,7 +776,7 @@ var Revenue2 = React.createClass({
         var queries = state.lastQueries;
 
         for(var k in result) {
-            if ( !(/total/).test(k) || k == "total_bars" ) {
+            if ( !(/total/).test(k) || k == "sales" ) {
                 var r = result[k];
                 
                 if (!r || r.length == 0)  {
@@ -905,24 +901,25 @@ var Revenue2 = React.createClass({
         var result = state.result;
         
         var channelActive = state[state.units].channelActive;
-        var total_bars = result.total_bars;
+        var sales = result.sales;
         var visitors = result.visitors;
         var partial_sum = {};
         var partial_sum_percap = {};
         var max = 0;
         var maxPercap = 0;
+        var count = 0;
 
         var unitSufix = this.state.units == 'attendance-tab'?'units':'amount';
 
-        for (var i in total_bars) {
+        for (var i in sales) {
             
             //Save sum, only active channels
             //And calculate percaps
             var barSum = 0;
             var percapSum = 0;
-            for (var k in total_bars[i]) {
+            for (var k in sales[i]) {
                 
-                var bar = total_bars[i][k];
+                var bar = sales[i][k];
                 
                 if(channelActive[k] == "active") {
                     barSum += parseInt( bar[unitSufix] );
@@ -940,13 +937,14 @@ var Revenue2 = React.createClass({
             
             partial_sum[i] = barSum;
             partial_sum_percap[i] = percapSum;
+            count++;
 
             //calculate max for the height of bars
             max = Math.max(barSum, max);
             maxPercap = Math.max(percapSum, maxPercap);
             
         }
-        
+        state.resultLength = count;
         result.partial_sum = partial_sum;
         result.partial_sum_percap = partial_sum_percap;
         state.max = max;
@@ -958,9 +956,7 @@ var Revenue2 = React.createClass({
         var du = KUtils.date;
         
         var result = state.result;
-        var total_bars = result.total_bars;
-        
-        state.resultLength = total_bars.length;
+        var sales = result.sales;
         
         switch (state.periodType) {
         case "quarter":
@@ -975,7 +971,7 @@ var Revenue2 = React.createClass({
             while(1) {
                 lastDay = du.addDays(lastDay, 7, true);
                 if (lastDay > end) break;
-                total_bars.push({period:du.dateToWeek(lastDay), units:0, amount:0})
+                sales.push({period:du.dateToWeek(lastDay), units:0, amount:0})
             }
             
             break;
@@ -998,282 +994,11 @@ var Revenue2 = React.createClass({
             lastDay = firstDay;
                 
         while(lastDay <= end) {
-            total_bars.push({period:du.serverFormat(lastDay), units:0, amount:0})
+            sales[du.serverFormat(lastDay)] =  {};
             lastDay = du.addDays(lastDay, 1, true);
+            state.resultLength++;
         }
         state.lastDay = lastDay;
-    },
-    updateDataOld:function (state) {
-
-        var membership = (state.members == "members") ? true : (state.members == "nonmembers") ? false : null ;
-        
-        var p = state.date;
-        
-        
-        switch (state.periodType) {
-        case "week":
-            
-            var barInterval = 'date';
-            var from = p.thisWeekStart;
-            var to = p.thisWeekLimit;
-            var operation = 'detail';
-            
-            var lastFrom1 = p.lastWeekStart;
-            var lastTo1 = p.lastWeekLimit;
-            var lastOperation1 = 'sum';
-            var lastInterval1 = 'date';
-
-            var lastFrom2 = p.weekStart13weekAgo;
-            var lastTo2 = p.lastWeekLimit;
-            var lastOperation2 = 'average';
-            var lastInterval2 = 'week';
-            
-            var lastFrom3 = p.thisWeekStartMinusOneYear;
-            var lastTo3 = p.thisWeekLimitMinusOneYear;
-            var lastOperation3 = 'sum';
-            var lastInterval3 = 'date';
-            
-            var lastBarFrom1 = p.lastWeekStart;
-            var lastBarTo1 = p.lastWeekLimit;
-            var lastBarOperation1 = 'detail';
-            var lastBarInterval1 = 'date';
-
-            var lastBarFrom2 = p.thisWeekStartMinusOneYear;
-            var lastBarTo2 = p.thisWeekLimitMinusOneYear;
-            var lastBarOperation2 = 'detail';
-            var lastBarInterval2 = 'date';
-            
-            var lastBarFrom3 = p.weekStart13weekAgo;
-            var lastBarTo3 = p.lastWeekLimit;
-            var lastBarOperation3 = 'detail';
-            var lastBarInterval3 = 'date';
-            
-            break;
-        case "month":
-            
-            var barInterval = 'date';
-            var from = p.thisMonthStart;
-            var to = p.thisMonthLimit;
-            var operation = 'detail';
-            
-            var lastFrom1 = p.lastMonthStart;
-            var lastTo1 = p.lastMonthLimit;
-            var lastOperation1 = 'sum';
-            var lastInterval1 = 'date';
-
-            var lastFrom2 = p.lastYearSameMonthStart;
-            var lastTo2 = p.lastYearSameMonthLimit;
-            var lastOperation2 = 'sum';
-            var lastInterval2 = 'date';
-            
-            var lastBarFrom1 = p.lastYearSameMonthStart;
-            var lastBarTo1 = p.lastYearSameMonthLimit;
-            var lastBarOperation1 = 'detail';
-            var lastBarInterval1 = 'date';
-            
-            var lastBarFrom2 = p.thisMonthStart13WeekAgo;
-            var lastBarTo2 = p.thisMonthLimitMinusOneWeek;
-            var lastBarOperation2 = 'detail';
-            var lastBarInterval2 = 'date';
-            
-            break;
-            
-        case "quarter":
-            
-            var barInterval = 'week';
-            var from = p.thisQuarterStart;
-            var to = p.thisQuarterLimit;
-            var operation = 'detail';
-            
-            var lastFrom1 = p.lastQuarterStart;
-            var lastTo1 = p.lastQuarterLimit;
-            var lastOperation1 = 'sum';
-            var lastInterval1 = 'date';
-
-            var lastFrom2 = p.lastYearSameQuarterStart;
-            var lastTo2 = p.lastYearSameQuarterLimit;
-            var lastOperation2 = 'sum';
-            var lastInterval2 = 'date';
-            
-            var lastBarFrom1 = p.lastQuartersWholeWeekStart;
-            var lastBarTo1 = p.thisQuartersWholeWeekEnd;
-            var lastBarOperation1 = 'detail';
-            var lastBarInterval1 = 'week';
-            
-            var lastBarFrom2 = p.lastQuarterStart;
-            var lastBarTo2 = p.thisQuarterLimit;
-            var lastBarOperation2 = 'detail';
-            var lastBarInterval2 = 'week';
-            
-            break;
-            
-        default:
-            
-        }
-        //for weather and other uses
-        state.periodFrom = from;
-        state.periodTo = to;
-        state.barEnter = null;
-        state.comparePeriodType = "lastperiod_1";
-        
-        //
-        //barInterval
-        
-        
-        var getQuery = KAPI.stats.getQuery;
-        // getQuery(from, to, members, channel, type, operation, periodType)
-        
-        var queries = {};
-        
-        //GENERAL QUERIES -> CURRENT PERIOD
-        
-        queries.total_bars = getQuery(from, to, membership, 'ALL', 'sales', 'detail', barInterval);
-        
-        queries.visitors = getQuery(from, to, membership, 'ALL', 'visits', 'detail', barInterval);
-        
-        queries.visitors_totals = getQuery(from, to, membership, 'ALL', 'visits', 'sum', 'date');
-        
-        queries.visitors_revenue = getQuery(from, to, membership, 'gate', {type:'sales'}, 'detail', barInterval);
-        
-        queries.visitors_revenue_totals = getQuery(from, to, membership, 'gate', {type:'sales'}, 'sum', 'date');
-        
-        
-
-        //GENERAL QUERIES -> PAST PERIODS
-
-        queries.visitors_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'visits', 'detail', lastBarInterval1);
-        
-        queries.visitors_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'visits', 'sum', 'date');
-
-        queries.visitors_revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval1);
-        
-        queries.visitors_revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'gate', {type:'sales'}, 'sum', 'date');
-
-
-        queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
-
-        queries.visitors_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', 'sum', 'date');
-        
-        queries.visitors_revenue_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval2);
-        
-        queries.visitors_revenue_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', {type:'sales'}, 'sum', 'date');
-
-        if (lastBarFrom3) {
-
-            queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
-            
-            queries.visitors_revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval3);
-        
-        }
-
-        if (lastFrom3) {
-            
-            queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
-            
-            queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', {type:'sales'}, 'sum', 'date');
-            
-        }
-        //PER CHANNEL QUERIES
-        var channelActive = state[state.units].channelActive;
-        for (var channel in channelActive) {
-            
-            //TODO: be more explicit defining the type of query
-            var type = 'sales';
-            if((/^visitors/i).test(channel))
-                type = 'visits';
-            
-            //CURRENT PERIOD
-            var query = getQuery(from, to, membership, channel, type, 'detail', barInterval);
-            
-            var totals = getQuery(from, to, membership, channel, type, 'sum', 'date');
-            
-
-            //LAST PERIOD
-            //this results will be processed on client 13-Week-Average-(Day for week and month and Week for quarter)
-        
-            var lastBar1 = getQuery(lastBarFrom1, lastBarTo1, membership, channel, type, lastBarOperation1, lastBarInterval1);
-            
-            var lastBar2 = getQuery(lastBarFrom2, lastBarTo2, membership, channel, type, lastBarOperation2, lastBarInterval2);
-            
-            if(lastBarFrom3)
-                var lastBar3 = getQuery(lastBarFrom3, lastBarTo3, membership, channel, type, lastBarOperation3, lastBarInterval3);
-
-
-            
-            //LAST PERIOD TOTALS
-            var lastPeriod1_totals = getQuery(lastFrom1, lastTo1, membership, channel, type, lastOperation1, lastInterval1);
-
-            var lastPeriod2_totals = getQuery(lastFrom2, lastTo2, membership, channel, type, lastOperation2, lastInterval2);
-            
-            if(lastFrom3) 
-                var lastPeriod3_totals = getQuery(lastFrom3, lastTo3, membership, channel, type, lastOperation3, lastInterval3);
-            
-            
-            //WRITE VARS
-            queries[channel+"_bars"] = query;
-            queries[channel+"_bars_totals"] = totals;
-
-            queries[channel+"_bars_lastperiod_1"] = lastBar1;
-            queries[channel+"_bars_lastperiod_2"] = lastBar2;
-            if(lastBarFrom3)
-                queries[channel+"_bars_lastperiod_3"] = lastBar3;
-
-            queries[channel+"_bars_lastperiod_1_totals"] = lastPeriod1_totals;
-            queries[channel+"_bars_lastperiod_2_totals"] = lastPeriod2_totals;
-            if(lastFrom3)
-                queries[channel+"_bars_lastperiod_3_totals"] = lastPeriod3_totals;
-            
-                
-        }
-        
-        //PRODUCT TYPE QUERIES 
-        var childCategories = state[state.units].childCategories;
-        var qDetails = state[state.units].childCategoriesQdetails;
-        var prefix = qDetails.prefix;
-        var channel = qDetails.channel;
-        var type = qDetails.type;
-        
-        for (var kind in childCategories) {
-            //current period
-            queries[prefix+kind] = getQuery(
-                    from, to, membership, channel, {type:type, kinds:[kind]}, 'detail', barInterval
-            );
-            queries[prefix+kind+"_totals"] = getQuery(
-                    from, to, membership, channel, {type:type, kinds:[kind]}, 'sum', 'date'
-            );
-            
-            //Last period I
-            queries[prefix+kind+"_lastperiod_1"] = getQuery(
-                    lastBarFrom1, lastBarTo1, membership, channel, {type:type, kinds:[kind]}, lastBarOperation1, lastBarInterval1
-            );
-            queries[prefix+kind+"_lastperiod_1_totals"] = getQuery(
-                    lastFrom1, lastTo1, membership, channel, {type:type, kinds:[kind]}, lastOperation1, lastInterval1
-            );
-            
-            //Last period II
-            queries[prefix+kind+"_lastperiod_2"] = getQuery(
-                    lastBarFrom2, lastBarTo2, membership, channel, {type:type, kinds:[kind]}, lastBarOperation2, lastBarInterval2
-            );
-            queries[prefix+kind+"_lastperiod_2_totals"] = getQuery(
-                    lastFrom2, lastTo2, membership, channel, {type:type, kinds:[kind]}, lastOperation2, lastInterval2
-            );
-            
-            //Last period III
-            queries[prefix+kind+"_lastperiod_3"] = getQuery(
-                    lastBarFrom3, lastBarTo3, membership, channel, {type:type, kinds:[kind]}, lastBarOperation3, lastBarInterval3
-            );
-            if(lastFrom3)
-                queries[prefix+kind+"_lastperiod_3_totals"] = getQuery(
-                        lastFrom3, lastTo3, membership, channel, {type:type, kinds:[kind]}, lastOperation3, lastInterval3
-                );
-            
-            
-        }
-        
-        console.log("Revenue2 sending queries...", queries);
-        state.lastQueries = queries;
-        KAPI.stats.query(wnt.venueID, queries, this.onDataUpdate);        
-                
     },
     updateData:function (state) {
 
@@ -1399,8 +1124,11 @@ var Revenue2 = React.createClass({
         
         //GENERAL QUERIES -> CURRENT PERIOD
         
-        queries.total_bars = getQuery(from, to, membership, 'ALL', 'sales', 'detail', barInterval, true);
-        
+        queries.sales = getQuery(from, to, membership, 'ALL', 'sales', 'detail', barInterval, true);
+
+        queries.sales_totals = getQuery(from, to, membership, 'ALL', 'sales', 'sum', barInterval, true);
+
+
         queries.visitors = getQuery(from, to, membership, 'ALL', 'visits', 'detail', barInterval);
 
         queries.visitors_expanded = getQuery(from, to, membership, 'ALL', 'visits', 'detail', barInterval, true);
@@ -1415,13 +1143,20 @@ var Revenue2 = React.createClass({
 
         //GENERAL QUERIES -> PAST PERIODS
 
+        queries.sales_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'sales', 'detail', lastBarInterval1, true);
+
+        queries.sales_lastperiod_1_totals = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'sales', 'sum', lastBarInterval1, true);
+        
+
         queries.visitors_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'visits', 'detail', lastBarInterval1);
         
         queries.visitors_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'visits', 'sum', 'date');
+        
 
         queries.visitors_revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval1);
         
         queries.visitors_revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'gate', {type:'sales'}, 'sum', 'date');
+
 
 
         queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
@@ -1560,12 +1295,12 @@ var Revenue2 = React.createClass({
         // this.singleResultsToArray(state);
 
         // this.fillHoles(state);
-        // this.updateEmptyChannels(state);
+        this.updateEmptyChannels(state);
         
         this.updateSums(state);
         // this.updateQuarter13WeekAverage(state);
         // this.update13WeekDayAverage(state);
-        // this.fillPartialPeriod(state);
+        this.fillPartialPeriod(state);
         state.dirty = -1;
         
         this.setState(state);
@@ -1636,12 +1371,11 @@ var Revenue2 = React.createClass({
     render:function () {
         var isNotAttendanceTab = this.state.units != 'attendance-tab';
         var unitsData = this.state[this.state.units];
-        var channelTypes = unitsData.channelNames;
+        var channelNames = unitsData.channelNames;
         var channelActive = unitsData.channelActive;
         var channelControls = [];
         
-
-        for (var k in channelTypes) {
+        for (var k in channelActive) {
             
             var onClick;
             var empty;
@@ -1654,7 +1388,7 @@ var Revenue2 = React.createClass({
             }
             
             channelControls.push(
-                <Channel key={k} empty={empty} name={channelTypes[k]} active={channelActive[k]} onClick={onClick} />
+                <Channel key={k} empty={empty} name={channelNames[k]} active={channelActive[k]} onClick={onClick} />
             );
         }
         
@@ -1668,15 +1402,15 @@ var Revenue2 = React.createClass({
             
             //Build BARS
             try {
-                var total_bars = result.total_bars;
+                var sales = result.sales;
                 var visitors = result.visitors;
                 var partial_sum = result.partial_sum;
                 var partial_sum_percap = result.partial_sum_percap;
-                var barWidth = 100/total_bars.length;
+                var barWidth = 100/this.state.resultLength;
                 
-                for (var i in total_bars) {
+                for (var i in sales) {
                     
-                    var total_bar = total_bars[i];
+                    var total_bar = sales[i];
                     var barIsEmpty = (total_bar[rUnits] <= 0);
                     //Collect Bar Data by Channel
                     var channels = [];
@@ -1684,8 +1418,8 @@ var Revenue2 = React.createClass({
                         for(var k in channelActive) {
                             if (!barIsEmpty && channelActive[k] == "active" ) {
                                 channels.push({
-                                    name:channelTypes[k],
-                                    data:total_bars[i][k]
+                                    name:channelNames[k],
+                                    data:sales[i][k]
                                 })
                             } else {
                                 channels.push({});
@@ -1694,12 +1428,16 @@ var Revenue2 = React.createClass({
                     } catch (e) {
                         console.log("Collect Bar Data by Channel Error -> "+e, this.state);
                     }
-                    console.debug(channels);
+
                     //Collect Weather Data
                     try {
                         var weather;
-                        if (!barIsEmpty &&  this.state.periodType != "quarter" && wResult && wResult.length > i) {
-                            weather = wResult[i];
+                        if (!barIsEmpty &&  this.state.periodType != "quarter" && wResult ) {
+                            for (var wi=0; wi<wResult.length; wi++) {
+                                if (wResult[wi].date == i) {
+                                    weather = wResult[wi];
+                                }
+                            }
                         }
                     } catch (e) {
                         console.log("Collect Weather Data Error -> "+e, this.state);
@@ -1711,14 +1449,13 @@ var Revenue2 = React.createClass({
                         var formatAmount = KUtils.number.formatAmount;
                         if (!barIsEmpty) {
                             attendance = isNotAttendanceTab ? 
-                                "Attendance: "+formatAmount(visitors[i].units, 0) 
+                                "Attendance: "+formatAmount(visitors[i].visits_unique, 0) 
                                     : 
                                 "Revenue: $"+formatAmount(result.visitors_revenue[i].amount) ;
                         }
                     } catch (e) {
                         // console.log("Collect Weather Data Error -> "+e, this.state);
                     }
-                    
                     
                     //Create GBars
                     try {
@@ -1753,36 +1490,54 @@ var Revenue2 = React.createClass({
                 
                 var lastPeriodFormattedDate = KUtils.date.detailsFormat(this.state.periodFrom, this.state.periodTo);
                 var showPeriodFormattedDate = "";
-                var dataIndex = this.state.barEnter;
+                var dateSelected = this.state.barEnter;
+                var lastDateSelected = null;
                 
-                if(dataIndex === null) {
-                    var toSufix = "_bars_totals";
-                    var fromSufix = "_bars_"+this.state.comparePeriodType+"_totals";
-                    var visitors = parseInt(result.visitors_totals.units);
+                if (dateSelected) {
+                    var c = 0;
+                    for (var d in result.sales) {
+                        if(d==dateSelected) {
+                            var lastSales = result["sales_"+this.state.comparePeriodType]; 
+                            var c2 = 0;
+                            for(var d2 in lastSales) {
+                                if(c2==c) {
+                                    lastDateSelected = d2;
+                                    break;
+                                };
+                                c2++;
+                            }
+                            break;
+                        };
+                        c++;
+                    }
+                }
+                
+                if(dateSelected === null) {
+                    var toSufix = "sales_totals";
+                    var fromSufix = "sales_"+this.state.comparePeriodType+"_totals";
+                    var visitors = parseInt(result.visitors_totals.visits_unique);
                     var revenue = parseInt(result.visitors_revenue_totals.amount);
-                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].units);
+                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].visits_unique);
                     var lastRevenue = parseInt(result["visitors_revenue_"+this.state.comparePeriodType+"_totals"].amount);
                     var ttTotals = "_totals";
                 } else {
                     
-                    toSufix = "_bars";
-                    fromSufix = "_bars_"+this.state.comparePeriodType;
+                    toSufix = "sales";
+                    fromSufix = "sales_"+this.state.comparePeriodType;
                 
-                    var visitorsDetail = this.state.result["total_bars"][dataIndex];
-                    
                     if(this.state.periodType == "quarter") {
-                        showPeriodFormattedDate = KUtils.date.weatherFormat (visitorsDetail.period, "quarter" );
+                        showPeriodFormattedDate = KUtils.date.weatherFormat (dateSelected, "quarter" );
                     } else {
-                        showPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(visitorsDetail.period) );
+                        showPeriodFormattedDate = KUtils.date.weatherFormat ( KUtils.date.localFormat(dateSelected) );
                     }
                     
                     lastPeriodFormattedDate = <span><a onClick={this.onBarLeave}>{lastPeriodFormattedDate}</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span>;
                     
-                    var visitors = parseInt(result.visitors[dataIndex].units);
-                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][dataIndex].units);
+                    var visitors = parseInt(result.visitors[dateSelected].visits_unique);
+                    var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][lastDateSelected].visits_unique);
 
-                    var revenue = parseInt(result.visitors_revenue[dataIndex].amount);
-                    var lastRevenue = parseInt(result["visitors_revenue_"+this.state.comparePeriodType][dataIndex].amount);
+                    var revenue = parseInt(result.visitors_revenue[dateSelected].amount);
+                    var lastRevenue = parseInt(result["visitors_revenue_"+this.state.comparePeriodType][lastDateSelected].amount);
                 
                     ttTotals = "";
                 };
@@ -1841,105 +1596,57 @@ var Revenue2 = React.createClass({
                     if (channelActive[k] == "active" && !this.state.channelEmpty[k]) {
                     
                         count++; //count only displayed channels
-                    
-                        //Collect To data for Detail Rows
+                        
+                        //Collect From/To data for Detail Rows
                         try {
-                            var toData = result[k+toSufix];
-
-                            if (dataIndex !== null) {
-                                var to = toData[dataIndex][rUnits];
+                            if (dateSelected !== null) {
+                                var toData = result[toSufix][dateSelected][k];
+                                var fromData = result[fromSufix][lastDateSelected][k];
                             } else {
-                                to = toData[rUnits];
+                                toData = result[toSufix][k];
+                                fromData = result[fromSufix][k];
                             }
+
+                            var to = toData[rUnits];
+                            var from = fromData[rUnits];
                             
                             if(this.state.units == "percap") {
                                 to /= visitors;
-                            }
-                            
-                        } catch (e) {
-                            console.log("Collect To data for Detail Rows Error -> "+e, this.state);
-                        }
-                        //Collect From data for Detail Rows
-                        try {
-                            var fromData = result[k+fromSufix];
-                            
-                            if (dataIndex !== null) {
-                                var from = fromData[dataIndex][rUnits];
-                            } else {
-                                from = fromData[rUnits];
-                            }
-                            
-                            if(this.state.units == "percap") {
                                 from /= lastVisitors;
                             }
                             
                         } catch (e) {
-                            console.log("Collect From data for Detail Rows Error -> "+e, this.state);
+                            console.log("Collect From/To data for Detail Rows Error -> "+e, this.state);
                         }
-                    
-                        //Collect Ticket Type Data for Detail Rows
-                        try {
+                        
+                        function getSubDetails(ttFromData, ttToData) {
+                            
                             var subDetails = [];
-                            var childCategories = this.state[this.state.units].childCategories;
-
-                            for (var tt in childCategories) {
-                        
-                                var ttSufix = k+"_bars_by_"+tt;
-                        
-                                var ttToData = this.state.result[ttSufix+ttTotals];
-                                var ttFromData = this.state.result[ttSufix+"_"+this.state.comparePeriodType+ttTotals];
-                                if ( 
-                                    (!ttToData && !ttFromData) || 
-                                    (ttToData.length===0 && ttFromData.length===0 )|| 
-                                    (ttToData[rUnits]===null && ttFromData[rUnits]===null )
-                                ) {
-                                    continue;
-                                }
-                                // console.log(ttToData, ttFromData, ttSufix+ttTotals, ttSufix+"_"+this.state.comparePeriodType+ttTotals);
-                                if (ttFromData && ttToData) {
-                                    
-                                    
-                                    //Collect To/From by Ticket Type Detail Rows
-                                    try {
-                                        if (dataIndex !== null) {
-                                            if(ttFromData[dataIndex]) {
-                                                var ttFrom = ttFromData[dataIndex][rUnits];
-                                            } else {
-                                                ttFrom = 0;
-                                            }
-                                            
-                                            if(ttFromData[dataIndex]) {
-                                                var ttTo = ttToData[dataIndex][rUnits];
-                                            } else {
-                                                ttTo = 0;
-                                            }
-                                            
-                                        } else {
-                                            ttFrom = ttFromData[rUnits];
-                                            ttTo = ttToData[rUnits];
-                                        }
-                                        
-                                        if(this.state.units == "percap") {
-                                            ttFrom /= lastVisitors;
-                                            ttTo /= visitors;
-                                        }
-                                        
-                                        var title = childCategories[tt];
-                                        subDetails.push({
-                                            title:title,
-                                            from:ttFrom,
-                                            to:ttTo,
-                                            details:[]              //recursive DetailsRow requires details
-                                        });
-                                    } catch (e) {
-                                        console.log("Collect To/From by Ticket Type Detail Rows Error -> "+e, this.state);
-                                    }
-                                }
+                            var fromSubcats = ttFromData ? ttFromData.sub_categories : {};
+                            var toSubcats = ttToData ? ttToData.sub_categories : {};
+                            
+                            for (var subCat in toSubcats) {
+                                var fromSubcat = fromSubcats[subCat] || {};
+                                var toSubcat = toSubcats[subCat] || {};
+                                var title = channelNames[subCat];//childCategories[tt];
+                                subDetails.push({
+                                    title:title,
+                                    from:fromSubcat[rUnits],
+                                    to:toSubcat[rUnits],
+                                    details:getSubDetails(fromSubcat, toSubcat)
+                                });
                             }
-                        } catch(e) {
-                            console.log("Collect Ticket Type Data for Detail Rows Error -> "+e, this.state);
+                            
+                            return subDetails;
+                            
                         }
-                        
+
+                        try {
+                            var subDetails = getSubDetails(toData, fromData);
+                        } catch (e) {
+                            console.log("getSubDetails() Error -> "+e, subDetails);
+                        }
+
                         //Create Detail Rows
                         try {
                             detailsRows.push(
@@ -2086,7 +1793,7 @@ var Revenue2 = React.createClass({
                                         showFirstNote = {this.state.showFirstNote}
                                         onShowFristNoteComplete = {this.onShowFristNoteComplete}
                                         isQuarter = {this.state.periodType == "quarter" }
-                                        barCount={result.total_bars.length}
+                                        barCount={result.sales.length}
                                         periodType = {this.state.periodType}
                                     />
                                 </div>
