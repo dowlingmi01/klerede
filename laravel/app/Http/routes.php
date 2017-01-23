@@ -12,6 +12,7 @@
 */
 
 
+use App\DashboardBoxVenue;
 use App\GoalsSales;
 use App\Stats, App\Channel, App\Category;
 use App\WeatherDaily;
@@ -94,6 +95,15 @@ Route::group(['prefix'=>'api/v1'], function() {
             return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
         }
 		return Response::json(Category::hierarchyByVenue($venue_id));
+	})->middleware(['jwt.auth']);
+
+	Route::get('dashboard/boxes', function( ) {
+		$input = Request::all();
+		$venue_id = $input['venue_id'];
+		if (Gate::denies('validate-venue', $venue_id)) {
+			return Response::json(['result'=> 'error', 'message'=>"invalid_venue_id"],400);
+		}
+		return Response::json(DashboardBoxVenue::getFor($venue_id));
 	})->middleware(['jwt.auth']);
 
 	Route::post('auth/login', 'AuthenticateController@authenticate');

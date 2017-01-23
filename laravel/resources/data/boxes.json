@@ -1,0 +1,100 @@
+{
+	"exhibit_visits": {
+		"specs": {
+			"category": "exhibit",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "Total exhibit admissions"
+	},
+	"member_visits": {
+		"specs": {
+			"category": "member_attendance",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "Member admissions"
+	},
+	"general_visits": {
+		"specs": {
+			"category": "ga",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "General admissions"
+	},
+	"group_visits": {
+		"specs": {
+			"category": "group",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "Group admissions"
+	},
+	"education_visits": {
+		"specs": {
+			"category": "education",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "Education admissions"
+	},
+	"exhibit_amount": {
+		"specs": {
+			"category": "exhibit",
+			"type": "sales"
+		},
+		"result_type": "amount",
+		"title": "Total exhibit revenue"
+	},
+	"special_exhibit_member_visits": {
+		"specs": {
+			"category": "special_exhibit",
+			"type": "visits",
+			"members": true
+		},
+		"result_type": "units",
+		"title": "Special exhibit member admissions"
+	},
+	"special_exhibit_nonmember_visits": {
+		"specs": {
+			"category": "special_exhibit",
+			"type": "visits",
+			"members": false
+		},
+		"result_type": "units",
+		"title": "Special exhibit non-member admissions"
+	},
+	"imax_non_studio_visits": {
+		"specs": {
+			"category": "imax_non_studio",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "IMAX Documentary"
+	},
+	"imax_studio_visits": {
+		"specs": {
+			"category": "imax_studio",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "IMAX Studio"
+	},
+	"laser_day_visits": {
+		"specs": {
+			"category": "laser_day",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "Laser dome day"
+	},
+	"laser_night_visits": {
+		"specs": {
+			"category": "laser_night",
+			"type": "visits"
+		},
+		"result_type": "units",
+		"title": "Laser dome evening"
+	}
+}
