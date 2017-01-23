@@ -741,9 +741,6 @@ var Revenue2 = React.createClass({
         var result = state.result;
 
         for (var channel in channels) {
-            // console.debug(channel);
-            // console.debug(result.sales_totals);
-            console.debug(channel, result.sales_totals[channel]);
             if (!result.sales_totals || !result.sales_totals[channel]) {
                 channelEmpty[channel] = true;
             } else {
@@ -858,44 +855,53 @@ var Revenue2 = React.createClass({
     update13WeekDayAverage:function (state) {
         if (state.periodType == "quarter")
             return;
-
-        var periodTypeReg = /lastperiod_3$/;
         
-        var result = state.result;
-        for (var query in result) {
-            if ( (periodTypeReg).test(query) ) {
-                var r = result[query];
-                
-                if (r.length==0) continue;
-
-                //first fill with 0 if any date is missing
-                var lastDate = new Date(r[0].period);
-                for (var k=0; k<r.length; k++) {
-                    var thisDate = new Date(r[k].period);
-                    var diff = (thisDate - lastDate)/86400000;
-                    while(diff >= 2) {
-                        r.splice(k, 0, {period:"empty", units:"0", amount:0});
-                        k++;
-                        diff--;
-                    }
-                    lastDate = thisDate;
+            // 0           +1 +2 +3
+            // 7           +1 +2 +3
+            // 14          +1 +2 +3
+            // ...         +1 +2 +3
+            // 12x7        +1 +2 +3
+            // -> 12x7+1   +1 +2 +3 hasta que sea nulo
+            
+        function addAvg(sum, channels) {
+            for(var channel in channels) {
+                if (!sum[channel]) {
+                    sum[channel] = {amount:0, units:0, transactions:0, sub_categories:{}};
                 }
-                
-                var w13av = [];
-                for (var i=0; i < r.length - (12*7); i++) {
-                    var from = r[i].period;
-                    var usum = 0;
-                    var asum = 0;
-                    for (var j=0; j<13; j++) {
-                        var sub = i+(j*7);
-                         usum += parseInt(r[sub].units);
-                        asum += parseFloat(r[sub].amount);
-                    }
-                    w13av.push({periodFrom:from, periodTo:r[sub].period , units:usum/13, amount:asum/13});
-                }
-                result[query] = w13av;
+                sum[channel].amount += parseFloat(channels[channel].amount)/13;
+                sum[channel].units += parseInt(channels[channel].units)/13;
+                sum[channel].transactions += parseInt(channels[channel].transactions)/13;
+                // console.debug(sum.sub_categories);
+                addAvg(sum[channel].sub_categories, channels[channel].sub_categories);
             }
         }
+        
+        var sufix = state.periodType == "month" ? "_lastperiod_2" :  "_lastperiod_3" ;
+        var result = state.result;
+        var sales = result["sales"+sufix];
+        var visitors = result["visitors"+sufix];
+        var dates = Object.keys(sales);
+        var w13avg = {};
+        var visitorsAvg = {};
+        
+        for (var i=0; 12*7+i < dates.length; i++) {
+            var sum = {};
+            var vSum = {visits:0, visits_unique:0};
+            for (var j=0; j<=12; j++) {
+                var date = dates[j*7 + i];
+                // console.debug(date, r[date].guest_services);
+                addAvg(sum, sales[date]);
+                vSum.visits += parseInt(visitors[date].visits)/13;
+                vSum.visits_unique += parseInt(visitors[date].visits_unique)/13;
+            }
+            w13avg[ dates[12*7+i] ] = sum;
+            visitorsAvg[ dates[12*7+i] ] = vSum;
+            
+            // console.debug(12*7+i+1)
+        }
+
+        result["sales"+sufix] = w13avg;
+        result["visitors"+sufix] = visitorsAvg;
         return state;
     },
     updateSums:function (state) {
@@ -972,7 +978,8 @@ var Revenue2 = React.createClass({
             while(1) {
                 lastDay = du.addDays(lastDay, 7, true);
                 if (lastDay > end) break;
-                sales.push({period:du.dateToWeek(lastDay), units:0, amount:0})
+                sales[du.dateToWeek(lastDay)] =  {};
+                state.resultLength++;
             }
             
             break;
@@ -1160,6 +1167,11 @@ var Revenue2 = React.createClass({
 
 
 
+        queries.sales_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'sales', 'detail', lastBarInterval2, true);
+
+        queries.sales_lastperiod_2_totals = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'sales', 'sum', lastBarInterval2, true);
+        
+
         queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
 
         queries.visitors_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', 'sum', 'date');
@@ -1170,6 +1182,8 @@ var Revenue2 = React.createClass({
 
         if (lastBarFrom3) {
 
+            queries.sales_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'sales', 'detail', lastBarInterval3, true);
+
             queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
             
             queries.visitors_revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval3);
@@ -1178,6 +1192,8 @@ var Revenue2 = React.createClass({
 
         if (lastFrom3) {
             
+            queries.sales_lastperiod_3_totals = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'sales', 'sum', lastBarInterval3, true);
+
             queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
             
             queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', {type:'sales'}, 'sum', 'date');
@@ -1300,7 +1316,7 @@ var Revenue2 = React.createClass({
         
         this.updateSums(state);
         // this.updateQuarter13WeekAverage(state);
-        // this.update13WeekDayAverage(state);
+        this.update13WeekDayAverage(state);
         this.fillPartialPeriod(state);
         state.dirty = -1;
         
@@ -1623,13 +1639,17 @@ var Revenue2 = React.createClass({
                         function getSubDetails(ttFromData, ttToData) {
                             
                             var subDetails = [];
-                            var fromSubcats = ttFromData ? ttFromData.sub_categories : {};
-                            var toSubcats = ttToData ? ttToData.sub_categories : {};
+                            var fromSubcats = ttFromData ? ttFromData.sub_categories || {} : {};
+                            var toSubcats = ttToData ? ttToData.sub_categories || {} : {};
                             
                             for (var subCat in toSubcats) {
-                                var fromSubcat = fromSubcats[subCat] || {};
-                                var toSubcat = toSubcats[subCat] || {};
-                                var title = channelNames[subCat];//childCategories[tt];
+                                try {
+                                    var fromSubcat = fromSubcats[subCat] || {};
+                                    var toSubcat = toSubcats[subCat] || {};
+                                    var title = channelNames[subCat];//childCategories[tt];
+                                } catch(e) {
+                                    console.log("getSubDetails() for error -> "+e, ttFromData, fromSubcats);
+                                }
                                 subDetails.push({
                                     title:title,
                                     from:fromSubcat[rUnits],
@@ -1645,7 +1665,7 @@ var Revenue2 = React.createClass({
                         try {
                             var subDetails = getSubDetails(toData, fromData);
                         } catch (e) {
-                            console.log("getSubDetails() Error -> "+e, subDetails);
+                            console.log("getSubDetails() Error -> "+e,toData, fromData, subDetails);
                         }
 
                         //Create Detail Rows
