@@ -4,7 +4,7 @@
 			"category": "exhibit",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Total exhibit admissions"
 	},
 	"member_visits": {
@@ -12,7 +12,7 @@
 			"category": "member_attendance",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Member admissions"
 	},
 	"general_visits": {
@@ -20,7 +20,7 @@
 			"category": "ga",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "General admissions"
 	},
 	"group_visits": {
@@ -28,7 +28,7 @@
 			"category": "group",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Group admissions"
 	},
 	"education_visits": {
@@ -36,7 +36,7 @@
 			"category": "education",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Education admissions"
 	},
 	"exhibit_amount": {
@@ -44,7 +44,7 @@
 			"category": "exhibit",
 			"type": "sales"
 		},
-		"result_type": "amount",
+		"result_field": "amount",
 		"title": "Total exhibit revenue"
 	},
 	"special_exhibit_member_visits": {
@@ -53,7 +53,7 @@
 			"type": "visits",
 			"members": true
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Special exhibit member admissions"
 	},
 	"special_exhibit_nonmember_visits": {
@@ -62,7 +62,7 @@
 			"type": "visits",
 			"members": false
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Special exhibit non-member admissions"
 	},
 	"imax_non_studio_visits": {
@@ -70,7 +70,7 @@
 			"category": "imax_non_studio",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "IMAX Documentary"
 	},
 	"imax_studio_visits": {
@@ -78,7 +78,7 @@
 			"category": "imax_studio",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "IMAX Studio"
 	},
 	"laser_day_visits": {
@@ -86,7 +86,7 @@
 			"category": "laser_day",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Laser dome day"
 	},
 	"laser_night_visits": {
@@ -94,7 +94,7 @@
 			"category": "laser_night",
 			"type": "visits"
 		},
-		"result_type": "units",
+		"result_field": "visits",
 		"title": "Laser dome evening"
 	}
 }
