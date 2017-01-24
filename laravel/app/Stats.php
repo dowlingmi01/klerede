@@ -52,6 +52,8 @@ class Stats {
 			if(isset($periods->subperiod)) {
 				$dbquery->groupBy($periods->subperiod);
 				$includePeriod = $periods->subperiod;
+			} else {
+				$includePeriod = false;
 			}
 		} else {
 			self::validatePeriod($periods->from, $periods->type);
