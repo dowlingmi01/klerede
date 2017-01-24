@@ -373,9 +373,12 @@ var DetailsRow = React.createClass({
         var from = this.props.from;
         var to = this.props.to;
         
-        if(from==0 && to==0) {
-            return null;
-        }
+        // if((from==0 || from==undefined) && (to==0 || to == undefined) ) {
+        //     return null;
+        // }
+        // if (this.props.title == "Studio") {
+        //     // console.debug("Studio",from==undefined)
+        // }
         
         var fromStyle = this.getFontStyle(from);
         var toStyle = this.getFontStyle(to);
@@ -518,7 +521,7 @@ var Revenue2 = React.createClass({
 
         var attendanceData = {
             channelNames:regularUnitsData.channelNames,
-            channelActive:ActivatedChannels(["guest_services", "membership"]),
+            channelActive:ActivatedChannels(["guest_services", "programming"]),
             attendanceDetailTitle:"Revenue"
         }
         return {
@@ -527,6 +530,7 @@ var Revenue2 = React.createClass({
             dollars:regularUnitsData,
             percap:regularUnitsData,
             'attendance-tab':attendanceData,
+            resultPrefix:'sales',
             periodType:"week",
             members:"totals",
             units:"dollars",
@@ -712,8 +716,11 @@ var Revenue2 = React.createClass({
         
         if (units == 'attendance-tab') {
             newState.members = "totals";
+            newState.resultPrefix = "visitors_revenue";
             // this.updateSums(newState);
             // newState.dirty = 1;
+        } else {
+            newState.resultPrefix = "sales";
         }
         //  else if( this.state.units == 'attendance-tab' ) {
         //     // newState.dirty = 1;
@@ -749,9 +756,10 @@ var Revenue2 = React.createClass({
         var channels = state[state.units].channelActive;
         var channelEmpty = {};
         var result = state.result;
-
+        var resultPrefix = state.resultPrefix;
+        
         for (var channel in channels) {
-            if (!result.sales_totals || !result.sales_totals[channel]) {
+            if (!result[resultPrefix+"_totals"] || !result[resultPrefix+"_totals"][channel]) {
                 channelEmpty[channel] = true;
             } else {
                 channelEmpty[channel] = false;
@@ -875,11 +883,13 @@ var Revenue2 = React.createClass({
         function addAvg(sum, channels) {
             for(var channel in channels) {
                 if (!sum[channel]) {
-                    sum[channel] = {amount:0, units:0, transactions:0, sub_categories:{}};
+                    sum[channel] = {amount:0, units:0, transactions:0, visits:0, visits_unique:0, sub_categories:{}};
                 }
                 sum[channel].amount += parseFloat(channels[channel].amount)/13;
                 sum[channel].units += parseInt(channels[channel].units)/13;
                 sum[channel].transactions += parseInt(channels[channel].transactions)/13;
+                sum[channel].visits += parseInt(channels[channel].visits)/13;
+                sum[channel].visits_unique += parseInt(channels[channel].visits_unique)/13;
                 // console.debug(sum.sub_categories);
                 addAvg(sum[channel].sub_categories, channels[channel].sub_categories);
             }
@@ -888,28 +898,35 @@ var Revenue2 = React.createClass({
         var sufix = state.periodType == "month" ? "_lastperiod_2" :  "_lastperiod_3" ;
         var result = state.result;
         var sales = result["sales"+sufix];
+        var visitors_revenue = result["visitors_revenue"+sufix];
         var visitors = result["visitors"+sufix];
         var dates = Object.keys(sales);
         var w13avg = {};
+        var revenueW13avg = {};
         var visitorsAvg = {};
         
         for (var i=0; 12*7+i < dates.length; i++) {
             var sum = {};
+            var rSum = {};
             var vSum = {visits:0, visits_unique:0};
             for (var j=0; j<=12; j++) {
                 var date = dates[j*7 + i];
                 // console.debug(date, r[date].guest_services);
                 addAvg(sum, sales[date]);
+                addAvg(rSum, visitors_revenue[date]);
+                
                 vSum.visits += parseInt(visitors[date].visits)/13;
                 vSum.visits_unique += parseInt(visitors[date].visits_unique)/13;
             }
             w13avg[ dates[12*7+i] ] = sum;
+            revenueW13avg[ dates[12*7+i] ] = rSum;
             visitorsAvg[ dates[12*7+i] ] = vSum;
             
             // console.debug(12*7+i+1)
         }
 
         result["sales"+sufix] = w13avg;
+        result["visitors_revenue"+sufix] = revenueW13avg;
         result["visitors"+sufix] = visitorsAvg;
         return state;
     },
@@ -917,7 +934,7 @@ var Revenue2 = React.createClass({
         var result = state.result;
         
         var channelActive = state[state.units].channelActive;
-        var sales = result.sales;
+        var barData = result[state.resultPrefix];
         var visitors = result.visitors;
         var partial_sum = {};
         var partial_sum_percap = {};
@@ -925,17 +942,17 @@ var Revenue2 = React.createClass({
         var maxPercap = 0;
         var count = 0;
 
-        var unitSufix = this.state.units == 'attendance-tab'?'units':'amount';
+        var unitSufix = this.state.units == 'attendance-tab'?'visits_unique':'amount';
 
-        for (var i in sales) {
+        for (var i in barData) {
             
             //Save sum, only active channels
             //And calculate percaps
             var barSum = 0;
             var percapSum = 0;
-            for (var k in sales[i]) {
+            for (var k in barData[i]) {
                 
-                var bar = sales[i][k];
+                var bar = barData[i][k];
                 
                 if(channelActive[k] == "active") {
                     barSum += parseInt( bar[unitSufix] );
@@ -973,6 +990,7 @@ var Revenue2 = React.createClass({
         
         var result = state.result;
         var sales = result.sales;
+        var visitors_revenue = result.visitors_revenue;
         
         switch (state.periodType) {
         case "quarter":
@@ -987,6 +1005,7 @@ var Revenue2 = React.createClass({
             while(1) {
                 lastDay = du.addDays(lastDay, 7, true);
                 if (lastDay > end) break;
+                visitors_revenue[du.dateToWeek(lastDay)] =  {};
                 sales[du.dateToWeek(lastDay)] =  {};
                 state.resultLength++;
             }
@@ -1011,6 +1030,7 @@ var Revenue2 = React.createClass({
             lastDay = firstDay;
                 
         while(lastDay <= end) {
+            visitors_revenue[du.serverFormat(lastDay)] =  {};
             sales[du.serverFormat(lastDay)] =  {};
             lastDay = du.addDays(lastDay, 1, true);
             state.resultLength++;
@@ -1146,15 +1166,20 @@ var Revenue2 = React.createClass({
         queries.sales_totals = getQuery(from, to, membership, 'ALL', 'sales', 'sum', barInterval, true);
 
 
+        queries.revenue = getQuery(from, to, membership, 'ALL', 'sales', 'detail', barInterval);
+
+        queries.revenue_totals = getQuery(from, to, membership, 'ALL', 'sales', 'sum', barInterval);
+
+        
+        queries.visitors_revenue = getQuery(from, to, membership, 'ALL', 'visits', 'detail', barInterval, true);
+
+        queries.visitors_revenue_totals = getQuery(from, to, membership, 'ALL', 'visits', 'sum', barInterval, true);
+
+        
         queries.visitors = getQuery(from, to, membership, 'ALL', 'visits', 'detail', barInterval);
 
-        queries.visitors_expanded = getQuery(from, to, membership, 'ALL', 'visits', 'detail', barInterval, true);
-        
         queries.visitors_totals = getQuery(from, to, membership, 'ALL', 'visits', 'sum', 'date');
-        
-        // queries.visitors_revenue = getQuery(from, to, membership, 'guest_services', {type:'sales'}, 'detail', barInterval);
-        //
-        // queries.visitors_revenue_totals = getQuery(from, to, membership, 'guest_services', {type:'sales'}, 'sum', 'date');
+
         
         
 
@@ -1165,14 +1190,20 @@ var Revenue2 = React.createClass({
         queries.sales_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'sales', lastOperation1, lastInterval1, true);
         
 
+        queries.revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'sales', 'detail', lastBarInterval1);
+
+        queries.revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'sales', lastOperation1, lastInterval1);
+        
+
+        queries.visitors_revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'visits', 'detail', lastBarInterval1, true);
+
+        queries.visitors_revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'visits', lastOperation1, lastInterval1, true);
+
+
         queries.visitors_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'visits', 'detail', lastBarInterval1);
         
         queries.visitors_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'visits', 'sum', 'date');
         
-
-        // queries.visitors_revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval1);
-        //
-        // queries.visitors_revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'gate', {type:'sales'}, 'sum', 'date');
 
 
 
@@ -1181,31 +1212,43 @@ var Revenue2 = React.createClass({
         queries.sales_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'sales', lastOperation2, lastInterval2, true);
         
 
+        queries.revenue_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'sales', 'detail', lastBarInterval2);
+
+        queries.revenue_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'sales', lastOperation2, lastInterval2);
+        
+
+        queries.visitors_revenue_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2, true);
+
+        queries.visitors_revenue_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', lastOperation2, lastInterval2, true);
+
+
         queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
 
         queries.visitors_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', 'sum', 'date');
         
-        // queries.visitors_revenue_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval2);
-        //
-        // queries.visitors_revenue_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', {type:'sales'}, 'sum', 'date');
+
 
         if (lastBarFrom3) {
 
             queries.sales_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'sales', 'detail', lastBarInterval3, true);
 
+            queries.revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'sales', 'detail', lastBarInterval3);
+
+            queries.visitors_revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3, true);
+        
             queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
             
-            // queries.visitors_revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval3);
-        
         }
 
         if (lastFrom3) {
             
             queries.sales_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'sales', lastOperation3, lastInterval3, true);
             
-            queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
+            queries.revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'sales', lastOperation3, lastInterval3);
             
-            // queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', {type:'sales'}, 'sum', 'date');
+            queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', lastOperation3, lastInterval3, true);
+            
+            queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
             
         }
         
@@ -1420,23 +1463,24 @@ var Revenue2 = React.createClass({
         
         var bars = [];
         var result = this.state.result;
+        var resultPrefix = this.state.resultPrefix;
         var wResult = this.state.wResult;
         var max = this.state.max;
-        var rUnits = this.state.units != "attendance-tab" ? "amount" : "units";
+        var rUnits = this.state.units != "attendance-tab" ? "amount" : "visits_unique";
 
         if (result) {
             
             //Build BARS
             try {
-                var sales = result.sales;
+                var barData = result[resultPrefix];
                 var visitors = result.visitors;
                 var partial_sum = result.partial_sum;
                 var partial_sum_percap = result.partial_sum_percap;
                 var barWidth = 100/this.state.resultLength;
                 
-                for (var i in sales) {
+                for (var i in barData) {
                     
-                    var total_bar = sales[i];
+                    var total_bar = barData[i];
                     var barIsEmpty = (total_bar[rUnits] <= 0);
                     //Collect Bar Data by Channel
                     var channels = [];
@@ -1445,7 +1489,7 @@ var Revenue2 = React.createClass({
                             if (!barIsEmpty && channelActive[k] == "active" ) {
                                 channels.push({
                                     name:channelNames[k],
-                                    data:sales[i][k]
+                                    data:barData[i][k]
                                 })
                             } else {
                                 channels.push({});
@@ -1477,7 +1521,7 @@ var Revenue2 = React.createClass({
                             attendance = isNotAttendanceTab ? 
                                 "Attendance: "+formatAmount(visitors[i].visits_unique, 0) 
                                     : 
-                                "Revenue: $"+formatAmount(result.sales[i].guest_services.amount) ;
+                                "Revenue: $"+formatAmount(result.revenue[i].amount) ;
                         }
                     } catch (e) {
                         // console.log("Collect Weather Data Error -> "+e, this.state);
@@ -1510,7 +1554,6 @@ var Revenue2 = React.createClass({
             } catch(e) {
                console.log("Build Bars Error -> "+e, this.state);
             }
-            
             //Collect General Data for Details
             try {
                 
@@ -1521,9 +1564,9 @@ var Revenue2 = React.createClass({
                 
                 if (dateSelected) {
                     var c = 0;
-                    for (var d in result.sales) {
+                    for (var d in barData) {
                         if(d==dateSelected) {
-                            var lastSales = result["sales_"+this.state.comparePeriodType]; 
+                            var lastSales = result[resultPrefix+"_"+this.state.comparePeriodType]; 
                             var c2 = 0;
                             for(var d2 in lastSales) {
                                 if(c2==c) {
@@ -1539,17 +1582,17 @@ var Revenue2 = React.createClass({
                 }
                 
                 if(dateSelected === null) {
-                    var toSufix = "sales_totals";
-                    var fromSufix = "sales_"+this.state.comparePeriodType+"_totals";
+                    var toSufix = resultPrefix+"_totals";
+                    var fromSufix = resultPrefix+"_"+this.state.comparePeriodType+"_totals";
                     var visitors = parseInt(result.visitors_totals.visits_unique);
-                    var revenue = parseInt(result.sales_totals.guest_services.amount);
+                    var revenue = parseInt(result.revenue_totals.amount);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].visits_unique);
-                    var lastRevenue = parseInt(result["sales_"+this.state.comparePeriodType+"_totals"].guest_services.amount);
+                    var lastRevenue = parseInt(result["revenue_"+this.state.comparePeriodType+"_totals"].amount);
                     var ttTotals = "_totals";
                 } else {
                     
-                    toSufix = "sales";
-                    fromSufix = "sales_"+this.state.comparePeriodType;
+                    toSufix = resultPrefix;
+                    fromSufix = resultPrefix+"_"+this.state.comparePeriodType;
                 
                     if(this.state.periodType == "quarter") {
                         showPeriodFormattedDate = KUtils.date.weatherFormat (dateSelected, "quarter" );
@@ -1562,8 +1605,8 @@ var Revenue2 = React.createClass({
                     var visitors = parseInt(result.visitors[dateSelected].visits_unique);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][lastDateSelected].visits_unique);
 
-                    var revenue = parseInt(result.sales[dateSelected].guest_services.amount);
-                    var lastRevenue = parseInt(result["sales_"+this.state.comparePeriodType][lastDateSelected].guest_services.amount);
+                    var revenue = parseInt(result.revenue[dateSelected].amount);
+                    var lastRevenue = parseInt(result["revenue_"+this.state.comparePeriodType][lastDateSelected].amount);
                 
                     ttTotals = "";
                 };
@@ -1659,10 +1702,17 @@ var Revenue2 = React.createClass({
                                 } catch(e) {
                                     console.log("getSubDetails() for error -> "+e, ttFromData, fromSubcats);
                                 }
+                                var fromNumber = fromSubcat[rUnits];
+                                var toNumber = toSubcat[rUnits];
+                                
+                                if((fromNumber==0 || fromNumber==undefined) && (toNumber==0 || toNumber == undefined) ) {
+                                    continue;
+                                }
+                                
                                 subDetails.push({
                                     title:title,
-                                    from:fromSubcat[rUnits],
-                                    to:toSubcat[rUnits],
+                                    from:fromNumber,
+                                    to:toNumber,
                                     details:getSubDetails(fromSubcat, toSubcat)
                                 });
                             }
@@ -1824,7 +1874,7 @@ var Revenue2 = React.createClass({
                                         showFirstNote = {this.state.showFirstNote}
                                         onShowFristNoteComplete = {this.onShowFristNoteComplete}
                                         isQuarter = {this.state.periodType == "quarter" }
-                                        barCount={result.sales.length}
+                                        barCount={Object.keys(result[resultPrefix]).length}
                                         periodType = {this.state.periodType}
                                     />
                                 </div>
