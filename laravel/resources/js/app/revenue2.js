@@ -477,12 +477,19 @@ var DetailsHeader = React.createClass({
     }
 });
 
-var ActivatedChannels = function() {
+var ActivatedChannels = function(filter) {
     var cList = categories();
     var channels = {};
     
     for (var i in cList) {
         var ch = cList[i];
+
+        if (filter) {
+            if (filter.indexOf(ch.key)<0) {
+                continue;
+            }
+        }
+
         channels[ch.key] = 'active';
     }
     return channels;
@@ -506,16 +513,12 @@ var Revenue2 = React.createClass({
         var regularUnitsData = {
             channelNames:ChannelNames(),
             channelActive:ActivatedChannels(),//{gate:"active", cafe: "active", store: "active", membership: "active"},
-            childCategories:{ga:"General admission", group:"Groups", donation:"Donation", other_attendance:"Other Attendance", other:"Other"},
-            childCategoriesQdetails:{prefix:"gate_bars_by_", channel:"gate", type:'sales'},
             attendanceDetailTitle:"Attendance"
         }
 
         var attendanceData = {
-            channelNames:{visitors_non_members:"Guest Services", visitors_members:"Membership"},
-            channelActive:{visitors_non_members:"active", visitors_members:"active"},
-            childCategories:{ga:"General admission", group:"Groups", other_attendance:"Other Attendance"},
-            childCategoriesQdetails:{prefix:"visitors_non_members_bars_by_", channel:"ALL", type:'visits'},
+            channelNames:regularUnitsData.channelNames,
+            channelActive:ActivatedChannels(["guest_services", "membership"]),
             attendanceDetailTitle:"Revenue"
         }
         return {
@@ -704,15 +707,18 @@ var Revenue2 = React.createClass({
             
         analytics.addEvent('Earned Revenue', 'Units Changed', units);
         
-        var newState = {};
+        var newState = this.state;
         newState.units = units;
         
         if (units == 'attendance-tab') {
             newState.members = "totals";
-            newState.dirty = 1;
-        } else if( this.state.units == 'attendance-tab' ) {
-            newState.dirty = 1;
+            // this.updateSums(newState);
+            // newState.dirty = 1;
         }
+        //  else if( this.state.units == 'attendance-tab' ) {
+        //     // newState.dirty = 1;
+        // }
+        this.updateSums(newState);
         
         this.setState(newState);
         
@@ -788,7 +794,6 @@ var Revenue2 = React.createClass({
                 
                 var q = queries[k];
                 if (!q) {
-                    // var prefix = state[state.units].childCategoriesQdetails.prefix;
                     var l = k.replace(prefix, "gate_bars");
                     q = queries[l];
                     if (!q) {
@@ -1147,9 +1152,9 @@ var Revenue2 = React.createClass({
         
         queries.visitors_totals = getQuery(from, to, membership, 'ALL', 'visits', 'sum', 'date');
         
-        queries.visitors_revenue = getQuery(from, to, membership, 'guest_services', {type:'sales'}, 'detail', barInterval);
-        
-        queries.visitors_revenue_totals = getQuery(from, to, membership, 'guest_services', {type:'sales'}, 'sum', 'date');
+        // queries.visitors_revenue = getQuery(from, to, membership, 'guest_services', {type:'sales'}, 'detail', barInterval);
+        //
+        // queries.visitors_revenue_totals = getQuery(from, to, membership, 'guest_services', {type:'sales'}, 'sum', 'date');
         
         
 
@@ -1165,9 +1170,9 @@ var Revenue2 = React.createClass({
         queries.visitors_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'visits', 'sum', 'date');
         
 
-        queries.visitors_revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval1);
-        
-        queries.visitors_revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'gate', {type:'sales'}, 'sum', 'date');
+        // queries.visitors_revenue_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval1);
+        //
+        // queries.visitors_revenue_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'gate', {type:'sales'}, 'sum', 'date');
 
 
 
@@ -1180,9 +1185,9 @@ var Revenue2 = React.createClass({
 
         queries.visitors_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'visits', 'sum', 'date');
         
-        queries.visitors_revenue_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval2);
-        
-        queries.visitors_revenue_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', {type:'sales'}, 'sum', 'date');
+        // queries.visitors_revenue_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval2);
+        //
+        // queries.visitors_revenue_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', {type:'sales'}, 'sum', 'date');
 
         if (lastBarFrom3) {
 
@@ -1190,7 +1195,7 @@ var Revenue2 = React.createClass({
 
             queries.visitors_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'visits', 'detail', lastBarInterval3);
             
-            queries.visitors_revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval3);
+            // queries.visitors_revenue_lastperiod_3 = getQuery(lastBarFrom3, lastBarTo3, membership, 'gate', {type:'sales'}, 'detail', lastBarInterval3);
         
         }
 
@@ -1200,7 +1205,7 @@ var Revenue2 = React.createClass({
             
             queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
             
-            queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', {type:'sales'}, 'sum', 'date');
+            // queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', {type:'sales'}, 'sum', 'date');
             
         }
         
@@ -1472,7 +1477,7 @@ var Revenue2 = React.createClass({
                             attendance = isNotAttendanceTab ? 
                                 "Attendance: "+formatAmount(visitors[i].visits_unique, 0) 
                                     : 
-                                "Revenue: $"+formatAmount(result.visitors_revenue[i].amount) ;
+                                "Revenue: $"+formatAmount(result.sales[i].guest_services.amount) ;
                         }
                     } catch (e) {
                         // console.log("Collect Weather Data Error -> "+e, this.state);
@@ -1537,9 +1542,9 @@ var Revenue2 = React.createClass({
                     var toSufix = "sales_totals";
                     var fromSufix = "sales_"+this.state.comparePeriodType+"_totals";
                     var visitors = parseInt(result.visitors_totals.visits_unique);
-                    var revenue = parseInt(result.visitors_revenue_totals.amount);
+                    var revenue = parseInt(result.sales_totals.guest_services.amount);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType+"_totals"].visits_unique);
-                    var lastRevenue = parseInt(result["visitors_revenue_"+this.state.comparePeriodType+"_totals"].amount);
+                    var lastRevenue = parseInt(result["sales_"+this.state.comparePeriodType+"_totals"].guest_services.amount);
                     var ttTotals = "_totals";
                 } else {
                     
@@ -1557,8 +1562,8 @@ var Revenue2 = React.createClass({
                     var visitors = parseInt(result.visitors[dateSelected].visits_unique);
                     var lastVisitors = parseInt(result["visitors_"+this.state.comparePeriodType][lastDateSelected].visits_unique);
 
-                    var revenue = parseInt(result.visitors_revenue[dateSelected].amount);
-                    var lastRevenue = parseInt(result["visitors_revenue_"+this.state.comparePeriodType][lastDateSelected].amount);
+                    var revenue = parseInt(result.sales[dateSelected].guest_services.amount);
+                    var lastRevenue = parseInt(result["sales_"+this.state.comparePeriodType][lastDateSelected].guest_services.amount);
                 
                     ttTotals = "";
                 };
