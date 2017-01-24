@@ -62,12 +62,13 @@ class Stats {
 			else
 				$includePeriod = false;
 		}
-		if($specs->type != 'members') {
-			if(isset($specs->expanded))
-				$specs->expanded = filter_var($specs->expanded, FILTER_VALIDATE_BOOLEAN);
-			else
-				$specs->expanded = false;
 
+		if(isset($specs->expanded))
+			$specs->expanded = filter_var($specs->expanded, FILTER_VALIDATE_BOOLEAN);
+		else
+			$specs->expanded = false;
+
+		if($specs->type != 'members') {
 			if(isset($specs->category)) {
 				$category = Category::getFor($specs->category);
 				$category_id = $category->id;
