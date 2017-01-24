@@ -373,6 +373,10 @@ var DetailsRow = React.createClass({
         var from = this.props.from;
         var to = this.props.to;
         
+        if(from==0 && to==0) {
+            return null;
+        }
+        
         var fromStyle = this.getFontStyle(from);
         var toStyle = this.getFontStyle(to);
 
@@ -1153,7 +1157,7 @@ var Revenue2 = React.createClass({
 
         queries.sales_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'sales', 'detail', lastBarInterval1, true);
 
-        queries.sales_lastperiod_1_totals = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'sales', 'sum', lastBarInterval1, true);
+        queries.sales_lastperiod_1_totals = getQuery(lastFrom1, lastTo1, membership, 'ALL', 'sales', lastOperation1, lastInterval1, true);
         
 
         queries.visitors_lastperiod_1 = getQuery(lastBarFrom1, lastBarTo1, membership, 'ALL', 'visits', 'detail', lastBarInterval1);
@@ -1169,7 +1173,7 @@ var Revenue2 = React.createClass({
 
         queries.sales_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'sales', 'detail', lastBarInterval2, true);
 
-        queries.sales_lastperiod_2_totals = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'sales', 'sum', lastBarInterval2, true);
+        queries.sales_lastperiod_2_totals = getQuery(lastFrom2, lastTo2, membership, 'ALL', 'sales', lastOperation2, lastInterval2, true);
         
 
         queries.visitors_lastperiod_2 = getQuery(lastBarFrom2, lastBarTo2, membership, 'ALL', 'visits', 'detail', lastBarInterval2);
@@ -1192,8 +1196,8 @@ var Revenue2 = React.createClass({
 
         if (lastFrom3) {
             
-            queries.sales_lastperiod_3_totals = getQuery(lastBarFrom3, lastBarTo3, membership, 'ALL', 'sales', 'sum', lastBarInterval3, true);
-
+            queries.sales_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'sales', lastOperation3, lastInterval3, true);
+            
             queries.visitors_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', 'visits', 'sum', 'date');
             
             queries.visitors_revenue_lastperiod_3_totals = getQuery(lastFrom3, lastTo3, membership, 'ALL', {type:'sales'}, 'sum', 'date');
@@ -1663,7 +1667,7 @@ var Revenue2 = React.createClass({
                         }
 
                         try {
-                            var subDetails = getSubDetails(toData, fromData);
+                            var subDetails = getSubDetails(fromData, toData);
                         } catch (e) {
                             console.log("getSubDetails() Error -> "+e,toData, fromData, subDetails);
                         }
