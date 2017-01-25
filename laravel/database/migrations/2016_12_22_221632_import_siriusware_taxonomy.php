@@ -133,9 +133,11 @@ class ImportSiriuswareTaxonomy extends Migration
     public function down()
     {
         if( Schema::hasTable('old_stat_status')) {
+			Schema::dropIfExists('stat_status');
 			Schema::rename('old_stat_status', 'stat_status');
 		}
 		if( Schema::hasTable('old_visit')) {
+			Schema::dropIfExists('visit');
 			Schema::rename('old_visit', 'visit');
 		}
     }
