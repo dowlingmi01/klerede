@@ -1439,6 +1439,7 @@ var Revenue2 = React.createClass({
     },
     render:function () {
         var isNotAttendanceTab = this.state.units != 'attendance-tab';
+        var isPercap = this.state.units == "percap";
         var unitsData = this.state[this.state.units];
         var channelNames = unitsData.channelNames;
         var channelActive = unitsData.channelActive;
@@ -1679,7 +1680,7 @@ var Revenue2 = React.createClass({
                             var to = toData[rUnits];
                             var from = fromData[rUnits];
                             
-                            if(this.state.units == "percap") {
+                            if(isPercap) {
                                 to /= visitors;
                                 from /= lastVisitors;
                             }
@@ -1707,6 +1708,10 @@ var Revenue2 = React.createClass({
                                 
                                 if((fromNumber==0 || fromNumber==undefined) && (toNumber==0 || toNumber == undefined) ) {
                                     continue;
+                                }
+                                if(isPercap) {
+                                    fromNumber /= lastVisitors;
+                                    toNumber /= visitors;
                                 }
                                 
                                 subDetails.push({
