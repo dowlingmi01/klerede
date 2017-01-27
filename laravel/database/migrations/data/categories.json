@@ -82,6 +82,10 @@
 			"planetarium": {
 				"name": "Planetarium",
 				"visits_type": "total"
+			},
+			"4d_theater": {
+				"name": "4D Theater",
+				"visits_type": "total"
 			}
 		}
 	},
