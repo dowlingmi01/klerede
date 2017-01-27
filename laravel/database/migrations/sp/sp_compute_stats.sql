@@ -3,10 +3,14 @@ CREATE PROCEDURE sp_compute_stats(IN in_venue_id integer, IN in_date date)
 BEGIN
      DECLARE revenue_date varchar(255)
      ;
+     DECLARE store_category_id int
+     ;
+     SELECT id INTO store_category_id FROM category WHERE code = 'store'
+     ;
      DELETE FROM stat_sales
       WHERE venue_id = in_venue_id
         AND date = in_date
-       
+        AND category_id != store_category_id
      ;
      SELECT value INTO revenue_date
        FROM venue_variable
