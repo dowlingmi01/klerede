@@ -2,6 +2,10 @@ DROP PROCEDURE IF EXISTS sp_compute_stats_members;
 CREATE PROCEDURE sp_compute_stats_members(IN in_venue_id integer, IN d_from date, IN d_to date)
 BEGIN
 SET @mydate = d_to;
+DECLARE corporate_category_id int
+;
+SELECT id INTO corporate_category_id FROM category WHERE code = 'membership_new_corporate'
+;
 WHILE @mydate >= d_from DO
      INSERT stat_members
      ( venue_id, date, recency, frequency, returning_members, current_memberships, current_members
@@ -22,7 +26,7 @@ WHILE @mydate >= d_from DO
 				        WHERE u.time between @mydate and date_add(@mydate, interval 1 day)
                   AND u.venue_id = in_venue_id
                   AND p.venue_id = in_venue_id
-                  AND o.category_id != 26
+                  AND o.category_id != corporate_category_id
              ) m
 			      JOIN membership p ON m.member_id = p.member_id
             JOIN visit u ON u.membership_id = p.id
@@ -31,7 +35,7 @@ WHILE @mydate >= d_from DO
              AND u.kind = 'pass'
              AND u.venue_id = in_venue_id
              AND p.venue_id = in_venue_id
-             AND o.category_id != 26
+             AND o.category_id != corporate_category_id
            GROUP BY p.member_id
       ) as x
      ON DUPLICATE KEY
