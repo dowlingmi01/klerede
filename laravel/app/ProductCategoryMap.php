@@ -2,7 +2,7 @@
 
  
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use DB;
 use App\Category;
 use App\System;
 
@@ -11,8 +11,8 @@ class ProductCategoryMap extends Model {
     protected $table = 'product_category_map';
     protected $guarded = [];
  	 
-	static public function import($file_name) {
-	    DB::table('product_category_map')->truncate();
+	static public function import($venue_id, $file_name) {
+	    DB::table('product_category_map')->where('venue_id', $venue_id)->delete();
         $map_data = \App\Helpers\Helper::readCSV(database_path('migrations/data/'.$file_name));
         $insert_data = [];
         for ($i = 0; $i < count($map_data); $i++) {
