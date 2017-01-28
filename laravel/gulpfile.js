@@ -22,7 +22,6 @@ elixir(function(mix) {
                 './resources/js/app/main-action-menu.js',
                 './resources/js/app/visits-blocks.js',
                 './resources/js/app/sales-goals.js',
-                './resources/js/app/membership-goals.js',
                 './resources/js/app/revenue2.js',
                 './resources/js/app/attendance.js',
                 './resources/js/app/members-blocks.js',

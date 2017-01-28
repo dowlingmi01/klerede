@@ -998,7 +998,8 @@ div.user-wrapper {
 .bar-meter-fill {
     background-color: @mediumgrey;
     height: 100%;
-    width: 0;
+    transition: min-width .5s ease-in-out;
+    max-width: 0%;
 }
 /* LEFT OFF HERE: Redoing dials as bars */
 #meter-sales-total,
@@ -1008,12 +1009,9 @@ div.user-wrapper {
 #meter-sales-box {
     float: left;
     width: 48%;
+    margin-right: 2%;
     .bar-meter {
         height: 27px;
-    }
-    .bar-meter-fill {
-        background-color: @boxoffice;
-        width: 10%;
     }
 }
 #meter-sales-cafe {
@@ -1023,7 +1021,6 @@ div.user-wrapper {
         height: 27px;
     }
     .bar-meter-fill {
-        background-color: @cafe;
         width: 10%;
     }
 }
@@ -1034,7 +1031,6 @@ div.user-wrapper {
         height: 27px;
     }
     .bar-meter-fill {
-        background-color: @giftstore;
         width: 10%;
     }
 }
@@ -1045,7 +1041,6 @@ div.user-wrapper {
         height: 27px;
     }
     .bar-meter-fill {
-        background-color: @membership2;
         width: 10%;
     }
 }
@@ -1056,7 +1051,6 @@ div.user-wrapper {
         height: 27px;
     }
     .bar-meter-fill {
-        background-color: @membership2;
         width: 10%;
     }
 }
@@ -1064,6 +1058,7 @@ div.user-wrapper {
     background-color: @darkgrey;
     border-radius: 3px;
     color: @white;
+    transition: left .5s ease-in-out;
     left: 0;
     position: absolute;
     top: 16px;

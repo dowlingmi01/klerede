@@ -152,18 +152,33 @@ var Dial = React.createClass({
     }
 });
 
+var numeral = require('numeral');
+
+
 var Meter = React.createClass({
+    formatNumber(n) {
+        switch (this.props.units) {
+        case "amount":
+            return numeral(n).format('$0,0');
+            break;
+        case "units":
+            return numeral(n).format('0,0');
+            break;
+        default:
+            return n;
+        }
+    },
     render: function() {
         return (
             <div id={this.props.divID} className="meter-group" data-completed={this.props.completed}>
                 <div className="meter-label">{this.props.label}</div>
-                <div className="meter-status"></div>
-                <div className="bar-meter-marker"></div>
+                <div className="meter-status">{this.props.meterStatus}</div>
+                <div className="bar-meter-marker" style={{left:this.props.advance*100+"%"}}></div>
                 <div className="bar-meter clear">
-                    <div className="bar-meter-fill"></div>
+                    <div className="bar-meter-fill multicolorbg" style={{minWidth:(this.props.amount/this.props.goal)*100+"%"}}></div>
                 </div>
                 <div className="meter-reading">
-                    (<span className="current-amount">{this.props.amount}</span> of <span className="goal-amount">{this.props.goal}</span>)
+                    (<span className="current-amount">{this.formatNumber(this.props.amount)}</span> of <span className="goal-amount">{this.formatNumber(this.props.goal)}</span>)
                 </div>
             </div>
         );

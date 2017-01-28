@@ -1,14 +1,17 @@
-/*********************************/
-/******** SALES GOALS ROW ********/
-/*********************************/
-
 var React = require('react');
 var ReactDOM = require('react-dom');
 
 
 var $ = require('jquery');
-require('../libs/jquery.easing.1.3.js');
-require('../libs/jquery.numberformatter-1.2.4.jsmin.js');
+// require('../libs/jquery.easing.1.3.js');
+// require('../libs/jquery.numberformatter-1.2.4.jsmin.js');
+
+var moment = require('moment');
+moment.updateLocale('en',{
+    week:{
+        dow:1
+    }
+});
 
 var wnt = require ('./kcomponents/wnt.js');
 var reorderFiscalMonths = require ('./kcomponents/reorder-fiscal-months');
@@ -28,284 +31,298 @@ var Caret = require('./svg-icons').Caret;
 var ChangeArrow = require('./svg-icons').ChangeArrow;
 var analytics = require("./analytics.js");
 
-var SalesGoals = React.createClass({
+var Goals = React.createClass({
+    getInitialState:function () {
+        return {
+            period:'year',
+            units:'amount'
+        }
+    },
+    setUnits:function(units){
+        this.setState({units:units});
+    },
+    setPeriod:function(e){
+        this.setState({period:e.currentTarget.value});
+    },
+    getMeterStatus:function(amount, goal, advance) {
+        var differenceCompleted = amount/(goal*advance);
+        
+        if(differenceCompleted < .5) {
+            return 'Behind';
+        } else if(differenceCompleted < .75) {
+            return 'Behind';
+        } else if(differenceCompleted < .90) {
+            return 'Slightly Behind';
+        } else if(differenceCompleted < 1.10) {
+            return 'On Track';
+        } else {
+            return 'Ahead';
+        }
+        
+    },
+    render:function() {
+        
+        var data = this.props.data;
+        var units = this.state.units;
+        var period = this.state.period;
+        var advance = this.props.advance[period];
+        
+        var channels = [];
+        var channelsData = data.sub_categories;
+        
+        for (var k in channelsData) {
+            var cd = channelsData[k];
+            var amount = cd.progress[period][units]; 
+            var goal = cd.goals[period][units];
+            var meterStatus = this.getMeterStatus(amount, goal, advance);
+            channels.push(
+                <Meter key={k} label={cd.name} divID="meter-sales-box" meterStatus={meterStatus} units={this.state.units} advance={advance} amount={amount} goal={goal} completed='sgGoalBoxComplete' />
+            )
+        }
+
+        var amount = data.progress[period][units]; 
+        var goal = data.goals[period][units];
+        var meterStatus = this.getMeterStatus(amount, goal, advance);
+        
+        // console.debug(this.state.units);
+        var amountClass = this.state.units=="amount" ? "filter-units selected" : "filter-units";
+        var unitsClass = this.state.units=="units" ? "filter-units selected" : "filter-units";
+        
+        // console.debug(amountClass, unitsClass);
+        
+        return(
+            <div className="widget  multicolor-wrapper" id="sales-goals" style={{width:"100%", marginBottom:"15px"}}>
+                <h2>{data.name}</h2>                    
+                <ActionMenu actions={this.props.actions}/>
+                <form>
+                    <select className="form-control" onChange={this.setPeriod}>
+                        <option value="year">Current Year ({wnt.thisFiscalYear})</option>
+                        <option value="quarter">Current Quarter (Q{wnt.thisFiscalQuarter})</option>
+                        <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
+                    </select>
+                    <Caret className="filter-caret" />
+                </form>
+                <div id="sg-units">
+                        <div data-value="amount" className={amountClass} onClick={(e)=>this.setUnits('amount')}>
+                            Dollars
+                            <div className="filter-highlight"></div>
+                        </div>
+                        <div data-value="amount" className={unitsClass} onClick={(e)=>this.setUnits('units')}>
+                            Units
+                            <div className="filter-highlight"></div>
+                        </div>
+                </div>
+                <Meter label="TOTAL" divID="meter-sales-total" meterStatus={meterStatus} units={this.state.units} advance={advance} amount={amount} goal={goal} completed='sgGoalTotalComplete' />
+                {channels.length ?
+                    <div> 
+                        <h3>BY TYPE</h3>
+                        <div className="channels">
+                            {channels}
+                        </div>
+                    </div>
+                            :
+                    null
+                }
+            </div>
+        );
+    }
+});
+
+function sumObjects(values, units, keys) {
+    if(!values) {
+        return 0;
+    }
+    var sum = 0;
+    if (!keys) {
+        for (var i in values) {
+            var obj = values[i];
+            if (!obj) continue;
+            sum+= obj[units];
+        }
+    } else {
+        for (var i in keys) {
+            var obj = values[keys[i]];
+            if (!obj) continue;
+            sum += obj[units];
+        }
+    }
+    return sum;
+}
+
+function sumValues(values, keys) {
+    if(!values) {
+        return 0;
+    }
+    var sum = 0;
+    if (!keys) {
+        for (var i in values) {
+            sum += values[i];
+        }
+    } else {
+        for (var i in keys) {
+            sum += values[keys[i]];
+        }
+    }
+    return sum;
+}
+
+function calculatePartials(goals, advance, thisMonth, thisQuarterMonths) {
+
+    // console.debug(goals, advance, thisMonth, thisQuarterMonths);
     
+    for (var k in goals) {
+        var channel = goals[k];
+        channel.goals = {
+            year:{
+                amount:sumValues(channel.goals_amount),
+                units:sumValues(channel.goals_units)
+            },
+            quarter: {
+                amount:sumValues(channel.goals_amount, thisQuarterMonths),
+                units:sumValues(channel.goals_units, thisQuarterMonths)
+            },
+            month: {
+                amount:channel.goals_amount ? channel.goals_amount[thisMonth] : 0,
+                units:channel.goals_units ? channel.goals_units[thisMonth] : 0
+            }
+        }
+        // try {
+            channel.progress = {
+                year:{
+                    amount:sumObjects(channel.actuals, 'amount'),
+                    units:sumObjects(channel.actuals, 'units')
+                },
+                quarter: {
+                    amount:sumObjects(channel.actuals, 'amount', thisQuarterMonths),
+                    units:sumObjects(channel.actuals, 'units', thisQuarterMonths)
+                },
+                month: {
+                    amount:channel.actuals ? channel.actuals[thisMonth] ? channel.actuals[thisMonth].amount : 0 : 0,
+                    units:channel.actuals ? channel.actuals[thisMonth] ? channel.actuals[thisMonth].units : 0 : 0
+                }
+            }
+        // } catch(e) {
+        //     console.debug(e, channel.actuals);
+        // }
+        // console.debug(k, channel.actuals);
+        calculatePartials(channel.sub_categories, advance, thisMonth, thisQuarterMonths);
+        
+    }
+    
+}
+
+var SalesGoals = React.createClass({
     getInitialState: function() {
         var actions = [];
         var permissions = KAPI.auth.getUserPermissions();
         if (permissions["goals-set"]) {
             actions.push({href:"goals", text:"Edit Goals", handler:this.onActionClick});
         };
-        
+    
         if(features.save) {
             actions.push({href:"#save", text:"Save", handler:this.onActionClick});
         }
         if (features.print) {
             actions.push({href:"#print", text:"Print", handler:this.onActionClick});
         }
+
     
-        
         return {
             actions:actions,
-            
-            goalTotal: 0,
-            goalBox: 0,
-            goalCafe: 0,
-            goalGift: 0,
-
-            boxoffice: 0,
-            cafe: 0,
-            giftstore: 0,
-
-            markerPosition: this.markerPosition(wnt.yearStart, wnt.today, 365)
-            
+            goals:{}
         };
     },
-	onGoalsResult:function(goals) {
-        console.log('Sales Goals onGoalsResult using KAPI...');
+    loadGoals:function(){
+        KAPI.goals.sales.get(wnt.venueID, wnt.thisFiscalYear, this.onGoalsLoaded, true, wnt.today);
+    },
+    onGoalsLoaded:function(goals){
         
-        reorderFiscalMonths(goals);
+        var today = wnt.today;
         
-        var periodStart = wnt.thisFiscalYearStart;
-        var periodEnd = wnt.today;
-        var periodDays = 365;
-        if(wnt.filter.sgPeriod === 'quarter'){
-            periodStart = wnt.quarterStart;
-            periodDays = 91;
-        } else if(wnt.filter.sgPeriod === 'month'){
-            periodStart = wnt.monthStart;
-            periodDays = wnt.daysInMonth(wnt.monthStart.split('-')[1], wnt.monthStart.split('-')[0]);
-        }
+        var startOfYear = moment(wnt.thisFiscalYearStart);
 
-		var result = wnt.sales;
-        // Set globals for easy reuse
-        wnt.filter.sgGoalTotal = 0;
-        wnt.filter.sgGoalBox = 0;
-        wnt.filter.sgGoalCafe = 0;
-        wnt.filter.sgGoalGift = 0;
-        if(wnt.filter.sgPeriod === 'quarter'){
-            // Loop through array of months in quarter, matching to cooresponding month in the goals, and totalling the amount for the quarter 
-            for(var i=0; i<3; i++){
-                var month = wnt.thisQuarterMonths[i];
-                var monthTotal;
-                // Gate / Guest Services
-                monthTotal = goals['gate/amount'].months[month];
-                wnt.filter.sgGoalBox += monthTotal;
-                // Cafe
-                monthTotal = goals['cafe/amount'].months[month];
-                wnt.filter.sgGoalCafe += monthTotal;
-                // Store
-                monthTotal = goals['store/amount'].months[month];
-                wnt.filter.sgGoalGift += monthTotal;
-            }
-            wnt.filter.sgGoalTotal = wnt.filter.sgGoalBox + wnt.filter.sgGoalCafe + wnt.filter.sgGoalGift;
-        } else if(wnt.filter.sgPeriod === 'month'){
-            var month = wnt.thisMonthNum + 1;
-            wnt.filter.sgGoalTotal = goals['gate/amount'].months[month] + goals['cafe/amount'].months[month] + goals['store/amount'].months[month];
-            wnt.filter.sgGoalBox = goals['gate/amount'].months[month];
-            wnt.filter.sgGoalCafe = goals['cafe/amount'].months[month];
-            wnt.filter.sgGoalGift = goals['store/amount'].months[month];
+        var startOfQuarter = moment(today).startOf('quarter');
+        var endOfQuarter = moment(today).endOf('quarter');
+        var quarterLength = endOfQuarter.diff(startOfQuarter, 'days');
+
+        var startOfMonth = moment(today).startOf('month');
+        var endOfMonth = moment(today).endOf('month');
+        var monthLength = endOfMonth.diff(startOfMonth, 'days');
+        
+        var yearAdvance = moment(today).diff(startOfYear, 'days')/365 ;
+        var quarterAdvance = moment(today).diff(startOfQuarter, 'days') / quarterLength ;
+        var monthAdvance = moment(today).diff(startOfMonth, 'days')/monthLength;
+        
+        
+        var thisMonth = moment(today).diff(startOfYear, 'months')+1;
+        
+        var qm = startOfQuarter.diff(startOfYear, 'months');
+        
+        // var thisQuarterMonths = [qm+1, qm+2, qm+3];
+        var thisQuarterMonths = [qm+1, qm+2, qm+3];
+            
+        var advance = {
+            year:yearAdvance, 
+            quarter:quarterAdvance, 
+            month:monthAdvance
+        }
+        
+        console.debug({goals:goals, advance:advance, thisMonth:thisMonth, thisQuarterMonths:thisQuarterMonths});
+        calculatePartials(goals, advance, thisMonth, thisQuarterMonths);
+        
+        
+        this.setState({
+            goals:goals,
+            advance:advance,
+            thisMonth:thisMonth,
+            thisQuarterMonths:thisQuarterMonths
+        });
+    },
+    componentDidUpdate:function () {
+        var left = $('#goalsLeft').height();
+        var right = $('#goalsRight').height();
+        if (left>right) {
+            var diff = left - right;
+            var last = $('#goalsRight .widget');
         } else {
-            // ELSE: Set goals to year totals
-            // Loop through months to calculate goal totals
-            for(var i=1; i<13; i++){
-                var month = i;
-                wnt.filter.sgGoalBox += goals['gate/amount'].months[month];
-                wnt.filter.sgGoalCafe += goals['cafe/amount'].months[month];
-                wnt.filter.sgGoalGift += goals['store/amount'].months[month];
-            }
-            wnt.filter.sgGoalTotal = wnt.filter.sgGoalBox + wnt.filter.sgGoalCafe + wnt.filter.sgGoalGift;
+            diff = right - left;
+            last = $('#goalsLeft .widget');
         }
-        wnt.filter.sgGoalTotalComplete = Math.round((result.sales.amount / wnt.filter.sgGoalTotal) * 100);
-        wnt.filter.sgGoalBoxComplete = Math.round((result.boxoffice.amount / wnt.filter.sgGoalBox) * 100);
-        wnt.filter.sgGoalCafeComplete = Math.round((result.cafe.amount / wnt.filter.sgGoalCafe) * 100);
-        wnt.filter.sgGoalGiftComplete = Math.round((result.giftstore.amount / wnt.filter.sgGoalGift) * 100);
-        if(this.isMounted()) {
-            this.setState({
-                goalTotal: wnt.filter.sgGoalTotal,
-                goalBox: wnt.filter.sgGoalBox,
-                goalCafe: wnt.filter.sgGoalCafe,
-                goalGift: wnt.filter.sgGoalGift,
-                sales: result.sales.amount,
-                boxoffice: result.boxoffice.amount,
-                cafe: result.cafe.amount,
-                giftstore: result.giftstore.amount,
-                markerPosition: this.markerPosition(periodStart, wnt.today, periodDays)
-            });
-            this.formatNumbers();
-        }
-    },
-	onStatsResult:function (result) {
-        console.log('Sales Goals onStatsResult using KAPI...');
+        var div = $(last[last.length-1]);
+        $(div.css('height', div.height()+diff+56+"px" ));
         
-        var bo = parseFloat(result.boxoffice.amount) || 0;
-        var cafe = parseFloat(result.cafe.amount) || 0;
-        var store = parseFloat(result.giftstore.amount) || 0;
-        
-        result.sales = {amount:(bo + cafe + store)};
-        
-        wnt.sales = result;
-		KAPI.goals.sales.get(wnt.venueID,wnt.thisFiscalYear,this.onGoalsResult);
-	},
-    callAPI: function(){
-        var self = this;
-        var periodStart = wnt.thisFiscalYearStart;
-        var periodEnd = wnt.today;
-        var periodDays = 365;
-        if(wnt.filter.sgPeriod === 'quarter'){
-            periodStart = wnt.quarterStart;
-            periodDays = 91;
-        } else if(wnt.filter.sgPeriod === 'month'){
-            periodStart = wnt.monthStart;
-            periodDays = wnt.daysInMonth(wnt.monthStart.split('-')[1], wnt.monthStart.split('-')[0]);
-        }
-		var queries = {
-            // sales: { specs: { type: 'sales' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-	        boxoffice: { specs: { type: 'sales', channel: 'gate', kinds: ['ga', 'group'] }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-	        cafe: { specs: { type: 'sales', channel: 'cafe' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-	        giftstore: { specs: { type: 'sales', channel: 'store' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } },
-	        visits: { specs: { type: 'visits' }, periods: { from: periodStart, to: periodEnd, kind: 'sum' } }
-		};
-				
-		KAPI.stats.query(wnt.venueID, queries, this.onStatsResult);
-		
+        // $('.widget.multicolor-wrapper#sales-goals').css('height','200px');
     },
-    markerPosition: function(startDate, endDate, periodLength) {
-        // Needed to switch date format for cross-browser parsing
-        startDate = startDate.split('-');
-        startDate = startDate[1]+'/'+startDate[2]+'/'+startDate[0];
-        endDate = endDate.split('-');
-        endDate = endDate[1]+'/'+endDate[2]+'/'+endDate[0];
-        // Now it can be parsed in Firefox and Safari too
-        var days = Math.floor(( Date.parse(endDate) - Date.parse(startDate) ) / 86400000);
-        days += 1;  // Fix for miscalculation
-        wnt.filter.sgPeriodComplete = (days / periodLength) * 100;
-        return wnt.filter.sgPeriodComplete;
-    },
-    componentDidMount: function() {
-        wnt.filter.sgUnits = 'amount';   // amount
-        wnt.filter.sgPeriod = 'year';   // year, quarter, month
-        this.callAPI();
-    },
-    filterPeriod: function(event) {
-        // year, quarter, month
-        wnt.filter.sgPeriod = event.target.value;
-        this.callAPI();
-        event.target.blur();
-        analytics.addEvent('Sales Goals', 'Period Changed', wnt.filter.sgPeriod);
-    },
-    formatNumbers: function(){
-        $('#meter-sales-total .goal-amount').parseNumber({format:"$#,###", locale:"us"});
-        $('#meter-sales-total .goal-amount').formatNumber({format:"$#,###", locale:"us"});
-        $('#meter-sales-total .current-amount').parseNumber({format:"$#,###", locale:"us"});
-        $('#meter-sales-total .current-amount').formatNumber({format:"$#,###", locale:"us"});
-        // Fix for 0 (null) values
-        if($('#meter-sales-total .current-amount').html() === '$'){
-            $('#meter-sales-total .current-amount').html('$0');
-        }
-        $.each($('#sales-goals .channels .current-amount'), function(index, item){
-            if($(this).html() !== '-'){
-                $(this).parseNumber({format:"$#,###", locale:"us"});
-                $(this).formatNumber({format:"$#,###", locale:"us"});
-                if($(this).html() === '$'){
-                    $(this).html('$0');
-                }
-            }
-        });
-        $.each($('#sales-goals .channels .goal-amount'), function(index, item){
-            if($(this).html() !== '-'){
-                $(this).parseNumber({format:"$#,###", locale:"us"});
-                $(this).formatNumber({format:"$#,###", locale:"us"});
-                if($(this).html() === '$'){
-                    $(this).html('$0');
-                }
-            }
-        });
-    },
-    fillMeters: function(){
-        $.each($('#sales-goals .meter-group'), function(index, item){
-            var completed = wnt.filter[$(item).data('completed')];
-            var differenceCompleted = Math.round((wnt.filter[$(item).data('completed')] / wnt.filter.sgPeriodComplete) * 100);
-            if(differenceCompleted < 50) {
-                $(item).find('.meter-status').text('Behind');
-            } else if(differenceCompleted < 75) {
-                $(item).find('.meter-status').text('Behind');
-            } else if(differenceCompleted < 90) {
-                $(item).find('.meter-status').text('Slightly Behind');
-            } else if(differenceCompleted < 110) {
-                $(item).find('.meter-status').text('On Track');
-            } else {
-                $(item).find('.meter-status').text('Ahead');
-            }
-            $(item).find('.bar-meter-fill').css('width','0')
-                .animate({
-                    width: completed+'%'
-                },
-                2000,
-                'easeOutElastic'   // easeOutSine
-            );
-        });
-    },
-    onActionClick:function (event) {
-        var eventAction = $(event.target).attr('href');
-        switch(eventAction) {
-        case "#save":
-
-            saveImage("#sales-goals-widget", {}, "Sales Goals");
-            break;
-        case "#print":
-            printDiv("#sales-goals-widget");
-            break;
-        default:
-            return;
-        }
-        analytics.addEvent('Sales Goals', 'Plus Button Clicked', eventAction);
-        event.preventDefault();
-        
-    },
-    componentDidUpdate: function(){
-        this.formatNumbers();
-        $('#sales-goals .bar-meter-marker')
-            .animate({
-                left: this.state.markerPosition+'%'
-            },
-            2000,
-            'easeOutElastic'
-        );
-        this.fillMeters();
+    componentDidMount:function() {
+        this.loadGoals();
     },
     render: function() {
+        var state = this.state;
+        var goalsData = state.goals;
+        var goalsLeft = [];
+        var goalsRight = [];
+        var left = true;
+        for(var g in goalsData) {
+            
+            var goals = left ? goalsLeft : goalsRight;
+            var goalsOther = left ? goalsRight : goalsLeft;
+            
+            var data = goalsData[g];
+            goals.push(<Goals key={g} thisMonth={state.thisMonth} thisQuarterMonths={state.thisQuarterMonths} advance={state.advance} data={data} actions={this.state.actions}/>)
+            
+            goalsOther.push(<div key={g}></div>)
+            
+            left = !left;
+        }
         
         return (
-            <div>
-                <div className="widget" id="sales-goals">
-                    <h2>Sales Goals</h2>                    
-                    <ActionMenu actions={this.state.actions}/>
-                    <form>
-                        <select className="form-control" onChange={this.filterPeriod}>
-                            <option value="year">Current Year ({wnt.thisFiscalYear})</option>
-                            <option value="quarter">Current Quarter (Q{wnt.thisFiscalQuarter})</option>
-                            <option value="month">Current Month ({wnt.thisMonthText.substring(0,3)})</option>
-                        </select>
-                        <Caret className="filter-caret" />
-                    </form>
-                    <div id="sg-units">
-                        <div data-value="amount" className="filter-units selected">
-                            Dollars
-                            <div className="filter-highlight"></div>
-                        </div>
-                    </div>
-                    <Meter label="Total Sales" divID="meter-sales-total" amount={this.state.sales} goal={this.state.goalTotal} completed='sgGoalTotalComplete' />
-                    <h3>By Channel</h3>
-                    <div className="channels">
-                        <Meter label="Guest Services" divID="meter-sales-box" amount={this.state.boxoffice} goal={this.state.goalBox} completed='sgGoalBoxComplete' />
-                        <Meter label="Gift Store" divID="meter-sales-gift" amount={this.state.giftstore} goal={this.state.goalGift} completed='sgGoalGiftComplete' />
-                        <Meter label="Cafe" divID="meter-sales-cafe" amount={this.state.cafe} goal={this.state.goalCafe} completed='sgGoalCafeComplete' />
-                    </div>
-                </div>
+            <div className="row">
+                <div className="col-xs-6" id="goalsLeft" >{goalsLeft}</div>
+                <div className="col-xs-6" id="goalsRight" >{goalsRight}</div>
             </div>
         );
     }
+
 });
 
 if(document.getElementById('sales-goals-widget')){
