@@ -137,13 +137,13 @@ function sumObjects(values, units, keys) {
         for (var i in values) {
             var obj = values[i];
             if (!obj) continue;
-            sum+= obj[units];
+            sum+= parseFloat(obj[units]);
         }
     } else {
         for (var i in keys) {
             var obj = values[keys[i]];
             if (!obj) continue;
-            sum += obj[units];
+            sum += parseFloat(obj[units]);
         }
     }
     return sum;
@@ -156,11 +156,11 @@ function sumValues(values, keys) {
     var sum = 0;
     if (!keys) {
         for (var i in values) {
-            sum += values[i];
+            sum += parseFloat(values[i]);
         }
     } else {
         for (var i in keys) {
-            sum += values[keys[i]];
+            sum += parseFloat(values[keys[i]]);
         }
     }
     return sum;
