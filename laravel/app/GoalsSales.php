@@ -59,6 +59,7 @@ class GoalsSales {
 										foreach ($sum[$type] as $key => &$value) {
 											$value += $child["goals_$type"][$key];
 										}
+										unset($value);
 									} else {
 										$sum[$type] = $child["goals_$type"];
 									}
@@ -70,12 +71,14 @@ class GoalsSales {
 										foreach ($act[$num] as $key => &$value) {
 											$value += $a->$key;
 										}
+										unset($value);
 									} else {
-										$act[$num] = $a;
+										$act[$num] = clone $a;
 									}
 								}
 							}
 						}
+						unset($child);
 						$category['sub_categories'] = $children;
 						foreach($types as $type) {
 							if (array_key_exists($type, $sum)) {
