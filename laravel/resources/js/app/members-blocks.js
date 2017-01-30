@@ -109,20 +109,20 @@ var MembersBlocksSet = React.createClass({
         wnt.members = result;
 
         // Calculate Member Conversion
-        wnt.members.members_conversion = (result.membership_sales.units / result.total_admissions.units) * 100;
-        wnt.members.members_conversion_compareto_weekbefore = (result.membership_sales_compareto_weekbefore.units / result.total_admissions_compareto_weekbefore.units) * 100;
-        wnt.members.members_conversion_compareto_lastyear = (result.membership_sales_compareto_lastyear.units / result.total_admissions_compareto_lastyear.units) * 100;
-        wnt.members.members_conversion_compareto_rolling = (result.membership_sales_compareto_rolling.units / result.total_admissions_compareto_rolling.units) * 100;
+        wnt.members.members_conversion = (result.membership_sales.units / result.total_admissions.visits_unique) * 100;
+        wnt.members.members_conversion_compareto_weekbefore = (result.membership_sales_compareto_weekbefore.units / result.total_admissions_compareto_weekbefore.visits_unique) * 100;
+        wnt.members.members_conversion_compareto_lastyear = (result.membership_sales_compareto_lastyear.units / result.total_admissions_compareto_lastyear.visits_unique) * 100;
+        wnt.members.members_conversion_compareto_rolling = (result.membership_sales_compareto_rolling.units / result.total_admissions_compareto_rolling.visits_unique) * 100;
         // Calculate Capture Rate
-        wnt.members.capture_rate = (result.transactions.units / result.member_admissions.units) * 100;
-        wnt.members.capture_rate_compareto_weekbefore = (result.transactions_compareto_weekbefore.units / result.member_admissions_compareto_weekbefore.units) * 100;
-        wnt.members.capture_rate_compareto_lastyear = (result.transactions_compareto_lastyear.units / result.member_admissions_compareto_lastyear.units) * 100;
-        wnt.members.capture_rate_compareto_rolling = (result.transactions_compareto_rolling.units / result.member_admissions_compareto_rolling.units) * 100;
+        wnt.members.capture_rate = (result.transactions.units / result.member_admissions.visits_unique) * 100;
+        wnt.members.capture_rate_compareto_weekbefore = (result.transactions_compareto_weekbefore.units / result.member_admissions_compareto_weekbefore.visits_unique) * 100;
+        wnt.members.capture_rate_compareto_lastyear = (result.transactions_compareto_lastyear.units / result.member_admissions_compareto_lastyear.visits_unique) * 100;
+        wnt.members.capture_rate_compareto_rolling = (result.transactions_compareto_rolling.units / result.member_admissions_compareto_rolling.visits_unique) * 100;
         // Calculate Per Cap
-        wnt.members.per_cap = result.transactions.amount / result.member_admissions.units;
-        wnt.members.per_cap_compareto_weekbefore = result.transactions_compareto_weekbefore.amount / result.member_admissions_compareto_weekbefore.units;
-        wnt.members.per_cap_compareto_lastyear = result.transactions_compareto_lastyear.amount / result.member_admissions_compareto_lastyear.units;
-        wnt.members.per_cap_compareto_rolling = result.transactions_compareto_rolling.amount / result.member_admissions_compareto_rolling.units;
+        wnt.members.per_cap = result.transactions.amount / result.member_admissions.visits_unique;
+        wnt.members.per_cap_compareto_weekbefore = result.transactions_compareto_weekbefore.amount / result.member_admissions_compareto_weekbefore.visits_unique;
+        wnt.members.per_cap_compareto_lastyear = result.transactions_compareto_lastyear.amount / result.member_admissions_compareto_lastyear.visits_unique;
+        wnt.members.per_cap_compareto_rolling = result.transactions_compareto_rolling.amount / result.member_admissions_compareto_rolling.visits_unique;
 
         if(this.isMounted()) {
             this.setState({
