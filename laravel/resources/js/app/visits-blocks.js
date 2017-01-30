@@ -40,7 +40,7 @@ var VisitsBlock = React.createClass({
                 <div className="label">{this.props.label}</div>
                 <div className="stat">{this.props.stat}</div>
                 <div className="change">
-                    <ChangeArrow className="up" />
+                    <ChangeArrow className={this.props.arrowClass} />
                     <span className="compare-to">{this.props.comparedTo}</span>
                 </div>
             </div>
@@ -170,6 +170,8 @@ var VisitsBlocksSet = React.createClass({
                 var comparedStats = result[l+this.state.periodCompare];
                 var comparedTo = comparedStats[field] || 0;
                 
+                var arrowClass = parseFloat(stat) >= parseFloat(comparedTo) ? 'up' : 'down';
+                
                 if (field == "amount") {
                     stat = numeral(stat).format('$0,0');
                     comparedTo = numeral(comparedTo).format('$0,0');
@@ -182,6 +184,7 @@ var VisitsBlocksSet = React.createClass({
                 boxes.push(
                     <div key={l} className="col-xs-6 col-sm-4 col-lg-2" id="visits-total">
                         <VisitsBlock 
+                            arrowClass={arrowClass}
                             label={title} 
                             stat={stat} 
                             comparedTo={comparedTo} />
