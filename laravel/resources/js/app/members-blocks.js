@@ -168,10 +168,10 @@ var MembersBlocksSet = React.createClass({
 		var queries = {
 
             // Member Conversion = (Memberships Sold / Total Visitors) * 100
-            membership_sales: { specs: { type: 'sales', channel: 'membership' }, periods: wnt.today},
-            membership_sales_compareto_weekbefore: { specs: { type: 'sales', channel: 'membership' }, periods: sameDayWeekBefore},
-            membership_sales_compareto_lastyear: { specs: { type: 'sales', channel: 'membership' }, periods: sameDayLastYear},
-            membership_sales_compareto_rolling: { specs: { type: 'sales', channel: 'membership' },
+            membership_sales: { specs: { type: 'sales', category: 'membership' }, periods: wnt.today},
+            membership_sales_compareto_weekbefore: { specs: { type: 'sales', category: 'membership' }, periods: sameDayWeekBefore},
+            membership_sales_compareto_lastyear: { specs: { type: 'sales', category: 'membership' }, periods: sameDayLastYear},
+            membership_sales_compareto_rolling: { specs: { type: 'sales', category: 'membership' },
                 periods: {
                     from: wnt.yesterdaylastyear,
                     to: wnt.yesterday,
@@ -181,10 +181,10 @@ var MembersBlocksSet = React.createClass({
 
             // Capture Rate = (Members Transactions / Members Visitors) * 100
             // Per Cap = Store Sales to members / Members Visitors
-            transactions: { specs: { type: 'sales', channel: 'store', members:true }, periods: wnt.today},
-            transactions_compareto_weekbefore: { specs: { type: 'sales', channel: 'store', members:true }, periods: sameDayWeekBefore},
-            transactions_compareto_lastyear: { specs: { type: 'sales', channel: 'store', members:true }, periods: sameDayLastYear},
-            transactions_compareto_rolling: { specs: { type: 'sales', channel: 'store', members:true },
+            transactions: { specs: { type: 'sales', category: 'store', members:true }, periods: wnt.today},
+            transactions_compareto_weekbefore: { specs: { type: 'sales', category: 'store', members:true }, periods: sameDayWeekBefore},
+            transactions_compareto_lastyear: { specs: { type: 'sales', category: 'store', members:true }, periods: sameDayLastYear},
+            transactions_compareto_rolling: { specs: { type: 'sales', category: 'store', members:true },
                 periods: {
                     from: wnt.yesterdaylastyear,
                     to: wnt.yesterday,
