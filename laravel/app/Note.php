@@ -18,9 +18,9 @@ class Note extends Model
         return $this->belongsToMany('App\Tag');
     }
 
-    public function channels()
+    public function categories()
     {
-        return $this->belongsToMany('App\Channel');
+        return $this->belongsToMany('App\Category');
     }
 
 

@@ -27,7 +27,7 @@ class NoteController extends Controller
     }
 
     /**
-     * Return notes between [start, end) range with tags and channels
+     * Return notes between [start, end) range with tags and categories
      *
      * @param  $request->start   (yyyy-MM-ddTHH:mm:ss)
      * @param  $request->end   (yyyy-MM-ddTHH:mm:ss)
@@ -53,7 +53,7 @@ class NoteController extends Controller
 	        $venues[] = $request->venue_id;
         }
        
-        return Note::with(['channels', 'tags'])
+        return Note::with(['categories', 'tags'])
                     ->where('time_start', '<=', $request->end)
                     ->where('time_end', '>=', $request->start)
                     ->whereIn('venue_id', $venues)
@@ -121,7 +121,7 @@ class NoteController extends Controller
         	}
         	 
             $note->save();
-            $note->channels()->attach($request->channels);
+            $note->categories()->attach($request->categories);
             $note->tags()->attach($tagsId);
             $note->save();
         } catch (\Illuminate\Database\QueryException $e){
@@ -208,7 +208,7 @@ class NoteController extends Controller
         	}
         	 
             $note->save();
-            $note->channels()->sync($request->channels);
+            $note->categories()->sync($request->categories);
             $note->tags()->sync($tagsId);
             $note->save();
         } catch (\Illuminate\Database\QueryException $e){
@@ -232,7 +232,7 @@ class NoteController extends Controller
      */
     public function show($id)
     {
-       if($note = Note::with(['channels','tags'])->find($id)){
+       if($note = Note::with(['categories','tags'])->find($id)){
             if($note->venue_id != 0){
 		        if (Gate::denies('validate-venue', $note->venue_id)) {
 		            return Response::json(['result'=>'error', 'message'=>'invalid_venue_id'], 400);
