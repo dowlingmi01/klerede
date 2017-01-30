@@ -1,9 +1,9 @@
 DROP PROCEDURE IF EXISTS sp_compute_stats_members;
 CREATE PROCEDURE sp_compute_stats_members(IN in_venue_id integer, IN d_from date, IN d_to date)
 BEGIN
-SET @mydate = d_to;
 DECLARE corporate_category_id int
 ;
+SET @mydate = d_to;
 SELECT id INTO corporate_category_id FROM category WHERE code = 'membership_new_corporate'
 ;
 WHILE @mydate >= d_from DO
