@@ -19,7 +19,6 @@ var saveImage = require ('./kutils/save-image.js');
 var wnt = require ('./kcomponents/wnt.js');
 var categories = require ('./kcomponents/categories.js');
 var Channel = require('./kcomponents/channel.js');
-var ChannelNames = require('./kcomponents/channel-names');
 var Notes = require('./kcomponents/notes.js');
 
 var CalendarIcon = require('./svg-icons').CalendarIcon;
@@ -356,12 +355,17 @@ var DetailsRow = React.createClass({
     },
     getFontStyle:function (n) { //adjust % to show the whole number
         var style = {};
-        if (n >= 1e6 ) {
-            style.fontSize = "85%";
+        if( n >= 1e4) {
+            style.letterSpacing = '0px';
+        }
+        if (n >= 1e8 ) {
+            style.fontSize = "55%";
         } else if (n > 1e7) {
-            style.fontSize = "70%";
-        } else if (n > 1e8) {
-            style.fontSize = "60%";
+            style.fontSize = "65%";
+        } else if (n > 1e6) {
+            style.fontSize = "75%";
+        } else if (n > 1e5) {
+            style.fontSize = "85%";
         }
         return style;
     },
@@ -481,7 +485,7 @@ var DetailsHeader = React.createClass({
 });
 
 var ActivatedChannels = function(filter) {
-    var cList = categories();
+    var cList = categories.list();
     var channels = {};
     
     for (var i in cList) {
@@ -514,7 +518,7 @@ var Revenue2 = React.createClass({
         }
         
         var regularUnitsData = {
-            channelNames:ChannelNames(),
+            channelNames:categories.names(),
             channelActive:ActivatedChannels(),//{gate:"active", cafe: "active", store: "active", membership: "active"},
             attendanceDetailTitle:"Attendance"
         }
@@ -522,6 +526,7 @@ var Revenue2 = React.createClass({
         var attendanceData = {
             channelNames:regularUnitsData.channelNames,
             channelActive:ActivatedChannels(["guest_services", "programming"]),
+            visitsTypes:categories.visitsTypes(),
             attendanceDetailTitle:"Revenue"
         }
         return {
@@ -1658,6 +1663,9 @@ var Revenue2 = React.createClass({
                 var sign = isNotAttendanceTab ? "$" : "";
                 var detailsFormatNumber = isNotAttendanceTab ?  KUtils.number.formatAmount: KUtils.number.formatInteger;
             
+                var visitsTypes = this.state['attendance-tab'].visitsTypes;
+            
+                
                 for(var k in channelActive) {
 
                     var detailsRows = (count%2 == 0)? detailsRowsLeft : detailsRowsRight;
@@ -1667,6 +1675,11 @@ var Revenue2 = React.createClass({
                     
                         count++; //count only displayed channels
                         
+                        
+                        var currentUnits = rUnits;
+                        if(rUnits =="visits_unique") {
+                            currentUnits = visitsTypes[k] == "total" ? "visits" : "visits_unique";
+                        }
                         //Collect From/To data for Detail Rows
                         try {
                             if (dateSelected !== null) {
@@ -1676,9 +1689,9 @@ var Revenue2 = React.createClass({
                                 toData = result[toSufix][k];
                                 fromData = result[fromSufix][k];
                             }
-
-                            var to = toData[rUnits];
-                            var from = fromData[rUnits];
+                            
+                            var to = toData[currentUnits];
+                            var from = fromData[currentUnits];
                             
                             if(isPercap) {
                                 to /= visitors;
@@ -1703,8 +1716,15 @@ var Revenue2 = React.createClass({
                                 } catch(e) {
                                     console.log("getSubDetails() for error -> "+e, ttFromData, fromSubcats);
                                 }
-                                var fromNumber = fromSubcat[rUnits];
-                                var toNumber = toSubcat[rUnits];
+                                
+                                var currentUnits = rUnits;
+                                if(rUnits =="visits_unique") {
+                                    currentUnits = visitsTypes[subCat] == "total" ? "visits" : "visits_unique";
+                                }
+                                
+                                
+                                var fromNumber = fromSubcat[currentUnits];
+                                var toNumber = toSubcat[currentUnits];
                                 
                                 if((fromNumber==0 || fromNumber==undefined) && (toNumber==0 || toNumber == undefined) ) {
                                     continue;

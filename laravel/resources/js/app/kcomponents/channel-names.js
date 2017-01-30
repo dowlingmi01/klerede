@@ -1,6 +1,6 @@
 var categories = require('./categories');
 module.exports = function () {
-    var cats = categories();
+    var cats = categories.list();
     var names = {};
     return getNames(cats, names);
 }

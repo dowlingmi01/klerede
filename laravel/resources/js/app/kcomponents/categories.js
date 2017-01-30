@@ -18,21 +18,46 @@ function sortCats(cats) {
     return sorted;
 }
 
-module.exports = function() {
+function getCategories() {
     if (! categories) {
         categories = sortCats(wnt.categories);
     }
     return categories;
 }
 
+module.exports.list = function() {
+    return getCategories();
+}
 
-// function buildCats(catsArr) {
-//     var cats = {};
-//     for (var i=0; i<catsArr.length; i++) {
-//         //{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"};
-//         var c = catsArr[i];
-//         cats[c.key] = c;
-//         cats[c.key].subCategories = buildCats(c.sub_categories);
-//     }
-//     return cats;
-// }
+
+module.exports.names = function () {
+    var cats = getCategories();
+    var names = {};
+    return getNames(cats, names);
+}
+
+function getNames(cats, names) {
+    for (var i=0; i<cats.length; i++) {
+        //{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"};
+        var c = cats[i];
+        names[c.key] = c.name;
+        getNames(c.sub_categories, names);
+    }
+    return names;
+}
+
+module.exports.visitsTypes = function() {
+    var cats = getCategories();
+    var visits = {};
+    return getVisitsTypes(cats, visits);
+}
+
+function getVisitsTypes(cats, visits) {
+    for (var i=0; i<cats.length; i++) {
+        //{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"};
+        var c = cats[i];
+        visits[c.key] = c.visits_type;
+        getVisitsTypes(c.sub_categories, visits);
+    }
+    return visits;
+}
