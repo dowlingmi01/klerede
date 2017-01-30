@@ -387,7 +387,9 @@ var DetailsRow = React.createClass({
         var fromStyle = this.getFontStyle(from);
         var toStyle = this.getFontStyle(to);
 
-        var upDownClass = to > from ? "up" : "down";
+        var upDownClass = parseFloat(to) > parseFloat(from) ? "up" : "down";
+        
+        // console.debug(this.props.title, to, from, upDownClass)
         
         if(from !== 0 ) {
             var percent = 100*((to/from) - 1);

@@ -148,8 +148,9 @@ var AddNoteModal = React.createClass({
         
         var note = this.props.editNote;
         if (note) {
+            
             state.channelActive = channelInactive;
-            console.debug(note, channelInactive);
+            
             for (var i in note.categories) {
                 var ch = note.categories[i].code;
                 state.channelActive[ch] = "active";
@@ -158,6 +159,7 @@ var AddNoteModal = React.createClass({
                 var tag = note.tags[j];
                 state.selectedCategories.push({value:tag.id, label:tag.description, global:(tag.venue_id == 0) ? true : false})
             }
+            
             state.allDay = note.all_day ? true : false;
             state.dateStart = moment(note.time_start);
             state.dateEnd = moment(note.time_end);
