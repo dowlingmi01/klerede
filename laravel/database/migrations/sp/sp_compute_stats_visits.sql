@@ -3,6 +3,8 @@ CREATE PROCEDURE sp_compute_stats_visits(IN in_venue_id integer, IN in_date date
 BEGIN
      DECLARE visits_source varchar(255)
      ;
+     DECLARE ga_category_id, member_attendance_category_id int
+     ;
      DELETE FROM stat_visits
       WHERE venue_id = in_venue_id
         AND date = in_date
@@ -15,6 +17,10 @@ BEGIN
        FROM venue_variable
       WHERE venue_id = in_venue_id
         AND name = 'VISITS_SOURCE'
+     ;
+     SELECT id INTO ga_category_id FROM category WHERE code = 'ga'
+     ;
+     SELECT id INTO member_attendance_category_id FROM category WHERE code = 'member_attendance'
      ;
      IF visits_source = 'sales' THEN
           INSERT stat_visits
@@ -59,6 +65,25 @@ BEGIN
              AND v.time < in_date + interval 1 day
            GROUP BY v.venue_id, date(v.time), cd.category_id
           ;
-           
      END IF;
+     INSERT stat_visits
+          ( venue_id, date, year, quarter, month, category_id, week, members, visits
+          , visits_unique, created_at, updated_at )
+     SELECT venue_id, date, year, quarter, month, member_attendance_category_id, week, members, visits
+          , visits_unique, created_at, updated_at
+       FROM stat_visits x
+      WHERE category_id = ga_category_id
+        AND members = 1
+        AND venue_id = in_venue_id
+        AND date = in_date
+     ON DUPLICATE KEY UPDATE
+            visits = stat_visits.visits + values(visits)
+          , visits_unique = stat_visits.visits_unique + values(visits_unique)
+     ;
+     DELETE FROM stat_visits
+      WHERE category_id = ga_category_id
+        AND members = 1
+        AND venue_id = in_venue_id
+        AND date = in_date
+     ;
 END;
