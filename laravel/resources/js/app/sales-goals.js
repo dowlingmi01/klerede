@@ -90,6 +90,26 @@ var Goals = React.createClass({
         
         // console.debug(amountClass, unitsClass);
         
+        var unitsTab = [];
+        
+        if(data.goals_amount) {
+            unitsTab.push(
+                <div key="amount" data-value="amount" className={amountClass} onClick={(e)=>this.setUnits('amount')}>
+                    Dollars
+                    <div className="filter-highlight"></div>
+                </div>
+            )
+        }
+        if(data.goals_units) {
+            unitsTab.push(
+                <div key="units" data-value="amount" className={unitsClass} onClick={(e)=>this.setUnits('units')}>
+                    Units
+                    <div className="filter-highlight"></div>
+                </div>
+            )
+        }
+        
+        
         return(
             <div className="widget  multicolor-wrapper" id="sales-goals" style={{width:"100%", marginBottom:"15px"}}>
                 <h2>{data.name}</h2>                    
@@ -103,14 +123,7 @@ var Goals = React.createClass({
                     <Caret className="filter-caret" />
                 </form>
                 <div id="sg-units">
-                        <div data-value="amount" className={amountClass} onClick={(e)=>this.setUnits('amount')}>
-                            Dollars
-                            <div className="filter-highlight"></div>
-                        </div>
-                        <div data-value="amount" className={unitsClass} onClick={(e)=>this.setUnits('units')}>
-                            Units
-                            <div className="filter-highlight"></div>
-                        </div>
+                    {unitsTab}
                 </div>
                 <Meter label="TOTAL" divID="meter-sales-total" meterStatus={meterStatus} units={this.state.units} advance={advance} amount={amount} goal={goal} completed='sgGoalTotalComplete' />
                 {channels.length ?
