@@ -1,0 +1,13 @@
+venue_id,box_code,row,column
+1518,exhibit_visits,0,0
+1518,member_visits,0,1
+1518,general_visits,0,2
+1518,group_visits,0,3
+1518,education_visits,0,4
+1518,exhibit_amount,0,5
+1518,tours_nonmember_visits,1,0
+1518,tours_member_visits,1,1
+1518,4d_theater_visits,1,2
+1518,experiences_nonmember_visits,1,3
+1518,experiences_member_visits,1,4
+1518,other_attendance_visits,1,5

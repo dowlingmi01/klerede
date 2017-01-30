@@ -96,5 +96,57 @@
 		},
 		"result_field": "visits",
 		"title": "Laser dome evening"
+	},
+	"tours_member_visits": {
+		"specs": {
+			"category": "tours",
+			"type": "visits",
+			"members": true
+		},
+		"result_field": "visits",
+		"title": "Special tour members"
+	},
+	"tours_nonmember_visits": {
+		"specs": {
+			"category": "tours",
+			"type": "visits",
+			"members": false
+		},
+		"result_field": "visits",
+		"title": "Special tour non-members"
+	},
+	"experiences_member_visits": {
+		"specs": {
+			"category": "experiences",
+			"type": "visits",
+			"members": true
+		},
+		"result_field": "visits",
+		"title": "Special experience members"
+	},
+	"experiences_nonmember_visits": {
+		"specs": {
+			"category": "experiences",
+			"type": "visits",
+			"members": false
+		},
+		"result_field": "visits",
+		"title": "Special experience non-members"
+	},
+	"4d_theater_visits": {
+		"specs": {
+			"category": "4d_theater",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "4D Theater"
+	},
+	"other_attendance_visits": {
+		"specs": {
+			"category": "other_attendance",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Other admissions"
 	}
 }
