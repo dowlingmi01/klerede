@@ -4,6 +4,7 @@ var getDOMNode = require('../kutils/getDOMNode.js');
 
 var limitString = require('../kutils/string-utils.js').limitString;
 
+var categories = require ('../kcomponents/categories.js');
 var wnt = require ('./wnt.js');
 var NotesCalendarModal = require('../kcomponents/notes-calendar-modal.js');
 
@@ -113,9 +114,21 @@ var SelectOption = React.createClass({
 
 var AddNoteModal = React.createClass({
     getInitialState:function () {
+        var channelNames = categories.names(true);
+        //{gate:"active", cafe: "active", store: "active", membership: "active"}
+        var channelIDs = categories.ids(true);
+        
+        var channelActive = {};
+        var channelInactive = {};
+        
+        for(var code in channelNames) {
+            channelActive[code] = "active";
+            channelInactive[code] = "";
+        }
         var state = {
-            channelNames:{gate:"Box Office", cafe: "Cafe", store: "Gift Store", membership: "Membership"},
-            channelActive:{gate:"active", cafe: "active", store: "active", membership: "active"},
+            channelNames:channelNames,
+            channelActive:channelActive,
+            channelIDs:channelIDs,
             categoryList:[],
             selectedCategories:[],
             notify:"none",
@@ -135,9 +148,10 @@ var AddNoteModal = React.createClass({
         
         var note = this.props.editNote;
         if (note) {
-            state.channelActive = {gate:"", cafe: "", store: "", membership: ""};
-            for (var i in note.channels) {
-                var ch = note.channels[i].code;
+            state.channelActive = channelInactive;
+            console.debug(note, channelInactive);
+            for (var i in note.categories) {
+                var ch = note.categories[i].code;
                 state.channelActive[ch] = "active";
             }
             for (var j in note.tags) {
@@ -456,7 +470,7 @@ var AddNoteModal = React.createClass({
         for (var k in this.state.channelActive) {
             i++;
             if (this.state.channelActive[k] == 'active') {
-                channels.push(i);
+                channels.push(this.state.channelIDs[k]);
             }
         }
         

@@ -30,17 +30,20 @@ module.exports.list = function() {
 }
 
 
-module.exports.names = function () {
+module.exports.names = function (nonRecursive) {
     var cats = getCategories();
     var names = {};
-    return getNames(cats, names);
+    return getNames(cats, names, nonRecursive);
 }
 
-function getNames(cats, names) {
+function getNames(cats, names, nonRecursive) {
     for (var i=0; i<cats.length; i++) {
         //{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"};
         var c = cats[i];
         names[c.key] = c.name;
+
+        if(nonRecursive) continue;
+
         getNames(c.sub_categories, names);
     }
     return names;
@@ -61,3 +64,24 @@ function getVisitsTypes(cats, visits) {
     }
     return visits;
 }
+
+
+module.exports.ids = function (nonRecursive) {
+    var cats = getCategories();
+    var ids = {};
+    return getIDs(cats, ids, nonRecursive);
+}
+
+function getIDs(cats, ids, nonRecursive) {
+    for (var i=0; i<cats.length; i++) {
+        //{gate:"Guest Services", cafe: "Cafe", store: "Gift Store", membership: "Membership"};
+        var c = cats[i];
+        ids[c.key] = c.id;
+
+        if(nonRecursive) continue;
+
+        getNames(c.sub_categories, ids);
+    }
+    return ids;
+}
+

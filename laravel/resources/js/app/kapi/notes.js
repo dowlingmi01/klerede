@@ -18,7 +18,7 @@ module.exports = {
             all_day: all_day,
             time_start: time_start,
             time_end: time_end,
-            channels: channels,
+            categories: channels,
             tags: tags,
             new_tags: new_tags,
             venue_id: venueID
@@ -35,7 +35,7 @@ module.exports = {
             all_day: all_day,
             time_start: time_start,
             time_end: time_end,
-            channels: channels,
+            categories: channels,
             tags: tags,
             new_tags: new_tags
         };

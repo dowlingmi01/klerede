@@ -25,7 +25,8 @@ require('dotdotdot');
 
 //local components
 var AddNoteTip = require('./add-note-tip');
-var ChannelNames = require('../kcomponents/channel-names');
+// var ChannelNames = require('../kcomponents/channel-names');
+var categories = require ('../kcomponents/categories.js');
 var SVGButton = require('./svg-button');
 var wnt = require('../kcomponents/wnt');
 var du = require('../kutils/date-utils');
@@ -99,7 +100,7 @@ var NoteRow = React.createClass({
             description:"",
             fullDescription:"",
             showExpandCaret:false,
-            channelNames:ChannelNames
+            channelNames:categories.names(true)
         } 
     },
     toggleExpandNote:function() {
@@ -194,10 +195,10 @@ var NoteRow = React.createClass({
                 <div onClick={ notClickable ? null : this.onTagClick} key={k} className={"tag"+ (notClickable ? " not-clickable": "")} id={tag.id}>#{tag.description}</div>
             );
         }
-        
+
         var channels = [];
-        for (var l in data.channels) {
-            var channel = data.channels[l];
+        for (var l in data.categories) {
+            var channel = data.categories[l];
             // console.log("channel", channel.code, channel.id);
             var notClickable = (this.props.sortByType == "channel" && this.props.sortByID == channel.id);
             
@@ -384,7 +385,7 @@ var NotesCalendarModal = React.createClass({
                 }
                 break;
             case "channel":
-                var channels = data.channels;
+                var channels = data.categories;
                 for (var j in channels) {
                     if (channels[j].id == id) {
                         filtered.push(notes[i]);
