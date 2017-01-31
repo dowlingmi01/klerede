@@ -1,10 +1,7 @@
 category,code_from,code_to,is_unique_visitor,is_visitor,is_unit,venue_id,system
 other_sales,SPACES|,SPACES|Z,,,1,1518,siriusware
 other_sales,SPEVT|,SPEVT|Z,,,1,1518,siriusware
-4d_theater,ADONS|4DPOLAR|,ADONS|4DPOLAR|Z,,1,1,1518,siriusware
-4d_theater,ADONS|4DSALMON|,ADONS|4DSALMON|Z,,1,1,1518,siriusware
-4d_theater,ADONS|4DSEA|,ADONS|4DSEA|Z,,1,1,1518,siriusware
-4d_theater,ADONS|4DSPONGE|,ADONS|4DSPONGE|Z,,1,1,1518,siriusware
+4d_theater,ADONS|4D,ADONS|4DZ,,1,1,1518,siriusware
 tours,ADONS|BTS|,ADONS|BTS|Z,,1,1,1518,siriusware
 experiences,ED-PT|D101|,ED-PT|D101|Z,1,1,1,1518,siriusware
 experiences,ED-PT|DE1:00|,ED-PT|DE1:00|Z,1,1,1,1518,siriusware
