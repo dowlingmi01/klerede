@@ -921,9 +921,9 @@ var Revenue2 = React.createClass({
                 // console.debug(date, r[date].guest_services);
                 addAvg(sum, sales[date]);
                 addAvg(rSum, visitors_revenue[date]);
-                
-                vSum.visits += parseInt(visitors[date].visits)/13;
-                vSum.visits_unique += parseInt(visitors[date].visits_unique)/13;
+                var vdate = visitors[date] || {visits:0, visits_unique: 0};
+                vSum.visits += parseInt(vdate.visits)/13;
+                vSum.visits_unique += parseInt(vdate.visits_unique)/13;
             }
             w13avg[ dates[12*7+i] ] = sum;
             revenueW13avg[ dates[12*7+i] ] = rSum;
