@@ -41,7 +41,7 @@ BEGIN
            WHERE (p.is_visitor = 1 OR p.is_unique_visitor = 1)
              AND t.venue_id = in_venue_id
              AND v.valid_date = in_date
-           GROUP BY t.venue_id, v.valid_date, cd.category_id
+           GROUP BY t.venue_id, v.valid_date, cd.category_id, members
           ;
      ELSE
           INSERT stat_visits
@@ -63,7 +63,7 @@ BEGIN
              AND v.venue_id = in_venue_id
              AND v.time >= in_date
              AND v.time < in_date + interval 1 day
-           GROUP BY v.venue_id, date(v.time), cd.category_id
+           GROUP BY v.venue_id, date(v.time), cd.category_id, members
           ;
      END IF;
      INSERT stat_visits
