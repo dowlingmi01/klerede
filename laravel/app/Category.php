@@ -2,7 +2,7 @@
 
  
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use DB;
 use App\Venue;
 
 
@@ -69,8 +69,9 @@ class Category extends Model {
         foreach ($categories as $key => $value) {
             $element = $value;
              
-            $id = DB::table('category')->insertGetId([
-                    'parent_category_id' => $parent_id, 
+            DB::table('category')->insert([
+                    'id' => $element->id,
+                    'parent_category_id' => $parent_id,
                     'code' => $key,
                     'name' => $element->name,
                     'level' => $level,
@@ -80,7 +81,7 @@ class Category extends Model {
                     'updated_at' => date('y-m-d G:i')
                 ]);
             if(isset($element->sub_categories)){
-                Category::createTopCategory($element->sub_categories, $id, $level+1 );
+                Category::createTopCategory($element->sub_categories, $element->id, $level+1 );
             }
             $order++;
         }

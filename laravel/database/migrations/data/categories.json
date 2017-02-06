@@ -1,145 +1,178 @@
 {
 	"guest_services": {
+		"id": 1,
 		"name": "Guest Services",
 		"visits_type": "unique",
 		"sub_categories": {
 			"exhibit": {
+				"id": 2,
 				"name": "Total Exhibit",
 				"visits_type": "unique",
 				"sub_categories": {
 					"ga": {
+						"id": 3,
 						"name": "General Admission",
 						"visits_type": "unique"
 					},
 					"group": {
+						"id": 4,
 						"name": "Group Admissions",
 						"visits_type": "unique"
 					},
 					"education": {
+						"id": 5,
 						"name": "Education Admissions",
 						"visits_type": "unique"
 					},
 					"member_attendance": {
+						"id": 6,
 						"name": "Member Admissions",
 						"visits_type": "unique"
 					},
 					"other_attendance": {
+						"id": 7,
 						"name": "Other Admissions",
 						"visits_type": "unique"
 					}
 				}
 			},
 			"special_exhibit": {
+				"id": 8,
 				"name": "Special Exhibit",
 				"visits_type": "total"
 			},
 			"tours": {
+				"id": 9,
 				"name": "Tours",
 				"visits_type": "total"
 			},
 			"experiences": {
+				"id": 10,
 				"name": "Experiences",
 				"visits_type": "total"
 			},
 			"other_sales": {
+				"id": 11,
 				"name": "Other Sales",
 				"visits_type": "none"
 			}
 		}
 	},
 	"programming": {
+		"id": 12,
 		"name": "Programming",
 		"visits_type": "unique",
 		"sub_categories": {
 			"imax": {
+				"id": 13,
 				"name": "IMAX",
 				"visits_type": "total",
 				"sub_categories": {
 					"imax_studio": {
+						"id": 14,
 						"name": "Studio",
 						"visits_type": "total"
 					},
 					"imax_non_studio": {
+						"id": 15,
 						"name": "Non Studio",
 						"visits_type": "total"
 					}
 				}
 			},
 			"laser_show": {
+				"id": 16,
 				"name": "Laser Show",
 				"visits_type": "total",
 				"sub_categories": {
 					"laser_day": {
+						"id": 17,
 						"name": "Day",
 						"visits_type": "total"
 					},
 					"laser_night": {
+						"id": 18,
 						"name": "Night",
 						"visits_type": "total"
 					}
 				}
 			},
 			"planetarium": {
+				"id": 19,
 				"name": "Planetarium",
 				"visits_type": "total"
 			},
 			"4d_theater": {
+				"id": 20,
 				"name": "4D Theater",
 				"visits_type": "total"
 			}
 		}
 	},
 	"membership": {
+		"id": 21,
 		"name": "Membership",
 		"visits_type": "none",
 		"sub_categories": {
 			"membership_new": {
+				"id": 22,
 				"name": "New",
 				"visits_type": "none",
 				"sub_categories": {
 					"membership_new_individual": {
+						"id": 23,
 						"name": "Individual",
 						"visits_type": "none"
 					},
 					"membership_new_couple": {
+						"id": 24,
 						"name": "Couple",
 						"visits_type": "none"
 					},
 					"membership_new_family": {
+						"id": 25,
 						"name": "Family",
 						"visits_type": "none"
 					},
 					"membership_new_premium": {
+						"id": 26,
 						"name": "Premium",
 						"visits_type": "none"
 					},
 					"membership_new_corporate": {
+						"id": 27,
 						"name": "Corporate",
 						"visits_type": "none"
 					}
 				}
 			},
 			"membership_renewal": {
+				"id": 28,
 				"name": "Renewals",
 				"visits_type": "none",
 				"sub_categories": {
 					"membership_ren_individual": {
+						"id": 29,
 						"name": "Individual",
 						"visits_type": "none"
 					},
 					"membership_ren_couple": {
+						"id": 30,
 						"name": "Couple",
 						"visits_type": "none"
 					},
 					"membership_ren_family": {
+						"id": 31,
 						"name": "Family",
 						"visits_type": "none"
 					},
 					"membership_ren_premium": {
+						"id": 32,
 						"name": "Premium",
 						"visits_type": "none"
 					},
 					"membership_ren_corporate": {
+						"id": 33,
 						"name": "Corporate",
 						"visits_type": "none"
 					}
@@ -148,20 +181,24 @@
 		}
 	},
 	"fb": {
+		"id": 34,
 		"name": "Food & Beverage",
 		"visits_type": "none",
 		"sub_categories": {
 			"cafe": {
+				"id": 35,
 				"name": "Cafe",
 				"visits_type": "none"
 			},
 			"fb_other": {
+				"id": 36,
 				"name": "Other",
 				"visits_type": "none"
 			}
 		}
 	},
 	"store": {
+		"id": 37,
 		"name": "Gift Store",
 		"visits_type": "none"
 	}
