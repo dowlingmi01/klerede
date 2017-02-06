@@ -47,24 +47,10 @@ class ImportQueryInit extends Command {
 //			1204 => [1100, 1200, 1300, 1400, 1500, 1600, 1700, 1900, 2000, 2100],
 //			1518 => [2200],
 //			1204 => [2200],
-			1518 => [1100, 1200, 1300, 1400, 1500, 1600, 1700, 2200],
-			1204 => [1100, 1200, 1300, 1400, 1500, 1600, 1700, 2200],
+//			1518 => [1100, 1200, 1300, 1400, 1500, 1600, 1700, 2200],
+//			1204 => [1100, 1400, 1500, 1600, 1700, 2200],
+			1204 => [2300],
 		];
-
-		VenueVariable::setValue(1204, 'BOX_OFFICE_LAST_TRAN_ID', '0');
-		VenueVariable::setValue(1204, 'BOX_OFFICE_LAST_TRAN_DETAIL_ID', '0');
-		VenueVariable::setValue(1204, 'BOX_OFFICE_LAST_TRAN_MEMBER_INFO_ID', '0');
-		VenueVariable::setValue(1204, 'LAST_PASS_USAGE_ID', '0');
-		VenueVariable::setValue(1204, 'LAST_TICKET_USAGE_ID', '0');
-		VenueVariable::setValue(1204, 'MEMBERSHIP_LAST_UPDATE', '0');
-		VenueVariable::setValue(1518, 'BOX_OFFICE_LAST_TRAN_ID', '0');
-		VenueVariable::setValue(1518, 'BOX_OFFICE_LAST_TRAN_DETAIL_ID', '0');
-		VenueVariable::setValue(1518, 'BOX_OFFICE_LAST_TRAN_MEMBER_INFO_ID', '0');
-		VenueVariable::setValue(1518, 'LAST_PASS_USAGE_ID', '0');
-		VenueVariable::setValue(1518, 'LAST_TICKET_USAGE_ID', '0');
-		VenueVariable::setValue(1518, 'MEMBERSHIP_LAST_UPDATE', '0');
-
-		ImportQuery::where('status', 'pending')->update(['status'=>'executed']);
 
 		foreach($venues as $venue_id=>$iqcIds)
 			foreach ($iqcIds as $iqcId) {
