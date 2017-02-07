@@ -31,6 +31,22 @@
 		"result_field": "visits",
 		"title": "Group admissions"
 	},
+	"group_free_visits": {
+		"specs": {
+			"category": "group_free",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Group admissions - Free"
+	},
+	"group_paid_visits": {
+		"specs": {
+			"category": "group_paid",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Group admissions - Paid"
+	},
 	"education_visits": {
 		"specs": {
 			"category": "education",
@@ -38,6 +54,22 @@
 		},
 		"result_field": "visits",
 		"title": "Education admissions"
+	},
+	"education_free_visits": {
+		"specs": {
+			"category": "education_free",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Education admissions - Free"
+	},
+	"education_paid_visits": {
+		"specs": {
+			"category": "education_paid",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Education admissions - Paid"
 	},
 	"exhibit_amount": {
 		"specs": {
@@ -80,6 +112,14 @@
 		},
 		"result_field": "visits",
 		"title": "IMAX Studio"
+	},
+	"immersion_tours_visits": {
+		"specs": {
+			"category": "immersion_tours",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Immersion tour admissions"
 	},
 	"laser_day_visits": {
 		"specs": {
@@ -148,5 +188,21 @@
 		},
 		"result_field": "visits",
 		"title": "Other admissions"
+	},
+	"other_attendance_ca_visits": {
+		"specs": {
+			"category": "other_attendance_ca",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Community access admissions"
+	},
+	"other_attendance_comp_visits": {
+		"specs": {
+			"category": "other_attendance_comp",
+			"type": "visits"
+		},
+		"result_field": "visits",
+		"title": "Comp admissions"
 	}
 }

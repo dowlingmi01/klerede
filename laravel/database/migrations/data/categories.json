@@ -17,12 +17,36 @@
 					"group": {
 						"id": 4,
 						"name": "Group Admissions",
-						"visits_type": "unique"
+						"visits_type": "unique",
+						"sub_categories": {
+							"group_paid": {
+								"id": 38,
+								"name": "Paid Group Admissions",
+								"visits_type": "unique"
+							},
+							"group_free": {
+								"id": 39,
+								"name": "Free Group Admissions",
+								"visits_type": "unique"
+							}
+						}
 					},
 					"education": {
 						"id": 5,
 						"name": "Education Admissions",
-						"visits_type": "unique"
+						"visits_type": "unique",
+						"sub_categories": {
+							"education_paid": {
+								"id": 40,
+								"name": "Paid Education Admissions",
+								"visits_type": "unique"
+							},
+							"education_free": {
+								"id": 41,
+								"name": "Free Education Admissions",
+								"visits_type": "unique"
+							}
+						}
 					},
 					"member_attendance": {
 						"id": 6,
@@ -32,7 +56,19 @@
 					"other_attendance": {
 						"id": 7,
 						"name": "Other Admissions",
-						"visits_type": "unique"
+						"visits_type": "unique",
+						"sub_categories": {
+							"other_attendance_comp": {
+								"id": 42,
+								"name": "Comp Admissions",
+								"visits_type": "unique"
+							},
+							"other_attendance_ca": {
+								"id": 43,
+								"name": "Community Access Admissions",
+								"visits_type": "unique"
+							}
+						}
 					}
 				}
 			},
@@ -55,6 +91,11 @@
 				"id": 11,
 				"name": "Other Sales",
 				"visits_type": "none"
+			},
+			"immersion_tours": {
+				"id": 44,
+				"name": "Immersion Tours",
+				"visits_type": "total"
 			}
 		}
 	},
