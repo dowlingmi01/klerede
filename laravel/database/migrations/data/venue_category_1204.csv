@@ -7,13 +7,13 @@ venue_id,category,goals_period_type,goals_amount,goals_unit
 1204,ga,monthly,1,1
 1204,group,monthly,1,1
 1204,guest_services,none,,
-1204,imax,monthly,1,1
-1204,imax_non_studio,none,,
-1204,imax_studio,none,,
-1204,laser_day,none,,
-1204,laser_night,none,,
-1204,laser_show,monthly,1,1
-1204,member_attendance,none,,
+1204,imax,none,,
+1204,imax_non_studio,monthly,1,1
+1204,imax_studio,monthly,1,1
+1204,laser_day,monthly,1,1
+1204,laser_night,monthly,1,1
+1204,laser_show,none,,
+1204,member_attendance,monthly,,1
 1204,membership,none,,
 1204,membership_new,monthly,1,1
 1204,membership_new_corporate,none,,
@@ -31,5 +31,5 @@ venue_id,category,goals_period_type,goals_amount,goals_unit
 1204,other_sales,none,,
 1204,planetarium,none,,
 1204,programming,none,,
-1204,special_exhibit,monthly,1,1
+1204,special_exhibit,none,,
 1204,store,monthly,1,0

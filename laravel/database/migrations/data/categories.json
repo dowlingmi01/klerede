@@ -111,12 +111,12 @@
 				"sub_categories": {
 					"imax_studio": {
 						"id": 14,
-						"name": "Studio",
+						"name": "IMAX Studio",
 						"visits_type": "total"
 					},
 					"imax_non_studio": {
 						"id": 15,
-						"name": "Non Studio",
+						"name": "IMAX Non Studio",
 						"visits_type": "total"
 					}
 				}
@@ -128,12 +128,12 @@
 				"sub_categories": {
 					"laser_day": {
 						"id": 17,
-						"name": "Day",
+						"name": "Laser Day",
 						"visits_type": "total"
 					},
 					"laser_night": {
 						"id": 18,
-						"name": "Night",
+						"name": "Laser Night",
 						"visits_type": "total"
 					}
 				}
