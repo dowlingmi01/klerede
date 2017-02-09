@@ -85,7 +85,7 @@ class PscChanges extends Migration
 		VenueVariable::setValue(1204, 'CAFE_LAST_TRAN_ID', 0);
 		VenueVariable::setValue(1204, 'CAFE_LAST_TRAN_DETAIL_ID', 0);
 
-		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_psc.csv'));
+		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_1204.csv'));
 		DB::table('box_office_product_kind_map')->insert($bopkm_data);
 		DB::table('facility')->insert([
 			['venue_id'=>1204, 'code'=>'0/GATE10', 'is_ga'=> true ],

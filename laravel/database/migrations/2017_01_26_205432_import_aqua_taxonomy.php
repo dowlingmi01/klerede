@@ -18,8 +18,8 @@ class ImportAquaTaxonomy extends Migration
     {
 		VenueVariable::setValue(1518, 'BOP_COND', 'x.department NOT LIKE (\'*%\') AND (RTRIM(x.department) + \'|\' + RTRIM(x.category)) NOT IN (\'MISCREV|DR-ADM\', \'MISCREV|PAC-CONV\')');
 		VenueVariable::setValue(1518, 'BOP_ACCT_CODE_EXP', 'RTRIM(x.department) + \'|\' + CASE WHEN x.department != \'ADM-ENTRY\' THEN RTRIM(x.category) + \'|\' + RTRIM(x.item) ELSE user_code + \'|\' END');
-		VenueCategory::import(1518, 'venue_category_aqua.csv');
-		ProductCategoryMap::import(1518, 'pkm_aqua.csv');
+		VenueCategory::import(1518, 'venue_category_1518.csv');
+		ProductCategoryMap::import(1518, 'pkm_1518.csv');
     }
 
     /**

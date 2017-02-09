@@ -12,7 +12,7 @@ class ImportAquaBoxes extends Migration
      */
     public function up()
     {
-		$venue_data = App\Helpers\Helper::readCSV(database_path('migrations/data/boxes_aqua.csv'));
+		$venue_data = App\Helpers\Helper::readCSV(database_path('migrations/data/boxes_1518.csv'));
 		DB::table('dashboard_box_venue')->insert($venue_data);
     }
 

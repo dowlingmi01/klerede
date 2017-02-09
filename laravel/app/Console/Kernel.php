@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\ImportQueryProcess',
 		'App\Console\Commands\ImportFromProd',
 		'App\Console\Commands\UserCreate',
+		'App\Console\Commands\VenueDataReload',
 	];
 
 	/**

@@ -20,7 +20,7 @@ class DashboardBoxes extends Migration
 			$table->integer('column');
 			$table->timestamps();
 		});
-		$venue_data = App\Helpers\Helper::readCSV(database_path('migrations/data/boxes_psc.csv'));
+		$venue_data = App\Helpers\Helper::readCSV(database_path('migrations/data/boxes_1204.csv'));
 		DB::table('dashboard_box_venue')->insert($venue_data);
     }
 

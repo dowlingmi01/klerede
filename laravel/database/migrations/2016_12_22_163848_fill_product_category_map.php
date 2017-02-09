@@ -13,7 +13,7 @@ class FillProductCategoryMap extends Migration
      */
     public function up()
     {
-        ProductCategoryMap::import(1204, 'pkm_psc.csv');
+        ProductCategoryMap::import(1204, 'pkm_1204.csv');
     }
 
     /**

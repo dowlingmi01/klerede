@@ -13,7 +13,7 @@ class ImportGoals extends Migration
      */
     public function up()
     {
-		GoalsSales::import(1204, database_path('migrations/data/goals_psc.csv'));
+		GoalsSales::import(1204, database_path('migrations/data/goals_1204.csv'));
     }
 
     /**

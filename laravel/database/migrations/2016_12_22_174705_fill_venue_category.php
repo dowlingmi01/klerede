@@ -13,7 +13,7 @@ class FillVenueCategory extends Migration
      */
     public function up()
     {
-       VenueCategory::import(1204, 'venue_category_psc.csv');
+       VenueCategory::import(1204, 'venue_category_1204.csv');
     }
 
     /**
