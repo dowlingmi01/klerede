@@ -75,9 +75,11 @@ var Goals = React.createClass({
             var amount = cd.progress[period][units]; 
             var goal = cd.goals[period][units];
             var meterStatus = this.getMeterStatus(amount, goal, advance);
-            channels.push(
-                <Meter key={k} label={cd.name} divID="meter-sales-box" meterStatus={meterStatus} units={this.state.units} advance={advance} amount={amount} goal={goal} completed='sgGoalBoxComplete' />
-            )
+            if(cd['goals_' + units]) {
+                channels.push(
+                    <Meter key={k} label={cd.name} divID="meter-sales-box" meterStatus={meterStatus} units={this.state.units} advance={advance} amount={amount} goal={goal} completed='sgGoalBoxComplete' />
+                )
+            }
         }
 
         var amount = data.progress[period][units]; 
