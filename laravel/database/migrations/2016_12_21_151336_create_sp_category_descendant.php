@@ -23,6 +23,6 @@ class CreateSpCategoryDescendant extends Migration
      */
     public function down()
     {
-        DB::unprepared('drop procedure sp_compute_category_descendant');
+        DB::unprepared('drop procedure if exists sp_compute_category_descendant');
     }
 }
