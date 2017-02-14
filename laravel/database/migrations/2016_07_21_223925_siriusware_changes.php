@@ -49,7 +49,7 @@ class SiriuswareChanges extends Migration {
 		});
 		DB::unprepared('ALTER TABLE visit CHANGE acp_id workstation_id int NOT NULL');
 
-		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_naq.csv'));
+		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_1518.csv'));
 		DB::table('box_office_product_kind_map')->insert($bopkm_data);
 		DB::table('facility')->insert([
 			['venue_id'=>1588, 'code'=>'0',       'is_ga'=> true ],

@@ -30,7 +30,7 @@ class RevenueDateChanges extends Migration
 			DB::unprepared($sql);
 		}
 		DB::table('box_office_product_kind_map')->where('venue_id', 1518)->delete();
-		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_naq.csv'));
+		$bopkm_data = App\Helpers\Helper::readCSV(database_path('migrations/data/bopkm_1518.csv'));
 		DB::table('box_office_product_kind_map')->insert($bopkm_data);
     }
 
