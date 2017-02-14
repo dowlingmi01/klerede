@@ -204,9 +204,9 @@ var MembersBlocksSet = React.createClass({
             },
 
             member_admissions: { specs: { type: 'visits', members: true  }, periods: wnt.today },
-            member_admissions_compareto_weekbefore: { specs: { type: 'visits', category: 'exhibit', members: true  }, periods: sameDayWeekBefore },
-            member_admissions_compareto_lastyear: { specs: { type: 'visits', category: 'exhibit', members: true  }, periods: sameDayLastYear },
-            member_admissions_compareto_rolling: { specs: { type: 'visits', category: 'exhibit', members: true  },
+            member_admissions_compareto_weekbefore: { specs: { type: 'visits', members: true  }, periods: sameDayWeekBefore },
+            member_admissions_compareto_lastyear: { specs: { type: 'visits', members: true  }, periods: sameDayLastYear },
+            member_admissions_compareto_rolling: { specs: { type: 'visits', members: true  },
                 periods: {
                     from: wnt.yesterdaylastyear,
                     to: wnt.yesterday,

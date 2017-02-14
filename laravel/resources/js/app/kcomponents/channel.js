@@ -4,7 +4,7 @@ var CheckMark = require('../svg-icons').CheckMark;
 var Channel = React.createClass({
     render:function () {
         return(
-            <div className={"channel multicolor-wrapper "+this.props.empty}>
+            <div className={"channel multicolor-wrapper "+(this.props.className || "")+" "+this.props.empty}>
                 <div className={"circle-checkbox multicolorbg "+this.props.active} onClick={this.props.onClick}>
                     <CheckMark className="legend-check" />
                 </div> &nbsp;

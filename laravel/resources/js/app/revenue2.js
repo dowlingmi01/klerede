@@ -112,7 +112,7 @@ var GBar = React.createClass({
                 sectionH = (100*channel.data.percap/this.props.partialPercap) + "%";
             }
             sections.push(
-                <div key={i} className="gbar-section multicolorbg" style={{height:sectionH}} ></div>
+                <div key={i} className={"gbar-section multicolorbg "+(channel.key || "")} style={{height:sectionH}} ></div>
             );
         }
         var totalWidth = this.props.width;
@@ -161,7 +161,7 @@ var ChannelPopup = React.createClass({
         }
         
         return(
-            <div id="gift" className="details-row multicolor-wrapper">
+            <div id="gift" className={"details-row multicolor-wrapper "+(this.props.className || "")}>
                 <div className="col-xs-1">
                     <div className="circle multicolorbg"></div>
                 </div>
@@ -233,7 +233,7 @@ var WeatherPopup = React.createClass({
                 popupChannels.push(<div key={i}></div>);
                 continue;
             }
-            popupChannels.push(<ChannelPopup key={i} name={channels[i].name}  channelUnits={this.props.channelUnits} data={channels[i].data} units={this.props.units} />);
+            popupChannels.push(<ChannelPopup key={i} className={channels[i].key} name={channels[i].name}  channelUnits={this.props.channelUnits} data={channels[i].data} units={this.props.units} />);
         }
         
         var formattedDate = KUtils.date.weatherFormat(this.props.date, this.props.periodType);
@@ -1465,7 +1465,7 @@ var Revenue2 = React.createClass({
             }
             
             channelControls.push(
-                <Channel key={k} empty={empty} name={channelNames[k]} active={channelActive[k]} onClick={onClick} />
+                <Channel className={k} key={k} empty={empty} name={channelNames[k]} active={channelActive[k]} onClick={onClick} />
             );
         }
         
@@ -1497,7 +1497,8 @@ var Revenue2 = React.createClass({
                             if (!barIsEmpty && channelActive[k] == "active" ) {
                                 channels.push({
                                     name:channelNames[k],
-                                    data:barData[i][k]
+                                    data:barData[i][k],
+                                    key:k
                                 })
                             } else {
                                 channels.push({});
@@ -1759,7 +1760,7 @@ var Revenue2 = React.createClass({
                             detailsRows.push(
                                 <DetailsRow 
                                     key={k} from={from} to={to} title={unitsData.channelNames[k]}
-                                    className="parent-details multicolor-wrapper col-xs-12"
+                                    className={"parent-details multicolor-wrapper col-xs-12 "+k}
                                     formatNumber = {detailsFormatNumber}
                                     details={subDetails}
                                     sign={sign}

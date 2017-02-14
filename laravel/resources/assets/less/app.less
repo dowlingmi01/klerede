@@ -1001,7 +1001,7 @@ div.user-wrapper {
     background-color: @mediumgrey;
     height: 100%;
     transition: min-width .5s ease-in-out;
-    max-width: 0%;
+    max-width: 1%;
 }
 /* LEFT OFF HERE: Redoing dials as bars */
 #meter-sales-total,
@@ -2715,89 +2715,159 @@ div.dp-popup td.disabled {
 /*********** SOME GENERIC ITEMS FOR GRAPHICS **********/
 /******************************************************/
 
-.multicolor-wrapper:nth-child(1) .multicolor,
-.multicolor:nth-child(1) 
+.multicolor-wrapper.guest_services .multicolor
 {
-    color: @boxoffice;
+    color: @boxoffice !important;
 }
-.multicolor-wrapper:nth-child(2) .multicolor,
-.multicolor:nth-child(2), 
-.multicolor-wrapper:last-child .multicolor,
-.multicolor:last-child 
+// .multicolor-wrapper.guest_services .multicolor,
+// .multicolor-wrapper:nth-child(1) .multicolor,
+// .multicolor:nth-child(1)
+// {
+//     color: @boxoffice;
+// }
+
+.multicolor-wrapper.programming .multicolor
 {
-    color: @programming;
+    color: @programming !important;
 }
-.multicolor-wrapper:nth-child(3) .multicolor,
-.multicolor:nth-child(3) 
+// .multicolor-wrapper:nth-child(2) .multicolor,
+// .multicolor:nth-child(2),
+// .multicolor-wrapper:last-child .multicolor,
+// .multicolor:last-child
+// {
+//     color: @programming;
+// }
+
+.multicolor-wrapper.membership .multicolor
 {
-    color: @membership;
-}
-.multicolor-wrapper:nth-child(4) .multicolor,
-.multicolor:nth-child(4)
-{
-    color: @cafe;
-}
-.multicolor-wrapper:nth-child(5) .multicolor,
-.multicolor:nth-child(5)
-{
-    color: @giftstore;
+    color: @membership !important;
 }
 
-.multicolor-wrapper:nth-child(1) .multicolorbg,
-.multicolorbg:nth-child(1)
+// .multicolor-wrapper:nth-child(3) .multicolor,
+// .multicolor:nth-child(3)
+// {
+//     color: @membership;
+// }
+.multicolor-wrapper.fb .multicolor
 {
-    background-color: @boxoffice;
+    color: @cafe !important;
 }
-.multicolor-wrapper:nth-child(2) .multicolorbg,
-.multicolorbg:nth-child(2),
-.multicolor-wrapper:last-child .multicolorbg,
-.multicolorbg:last-child
+// .multicolor-wrapper:nth-child(4) .multicolor,
+// .multicolor:nth-child(4)
+// {
+//     color: @cafe;
+// }
+.multicolor-wrapper.store .multicolor
 {
-    background-color: @programming;
+    color: @giftstore !important;
 }
-.multicolor-wrapper:nth-child(3) .multicolorbg,
-.multicolorbg:nth-child(3)
+// .multicolor-wrapper:nth-child(5) .multicolor,
+// .multicolor:nth-child(5)
+// {
+//     color: @giftstore;
+// }
+
+.multicolor-wrapper.guest_services .multicolorbg,
+.multicolorbg.guest_services
 {
-    background-color: @membership;
-}
-.multicolor-wrapper:nth-child(4) .multicolorbg,
-.multicolorbg:nth-child(4)
-{
-    background-color: @cafe;
-}
-.multicolor-wrapper:nth-child(5) .multicolorbg,
-.multicolorbg:nth-child(5)
-{
-    background-color: @giftstore;
+    background-color: @boxoffice !important;
 }
 
-.multicolor-wrapper:nth-child(1) .multicolorfl,
-.multicolorfl:nth-child(1)
+// .multicolor-wrapper:nth-child(1) .multicolorbg,
+// .multicolorbg:nth-child(1)
+// {
+//     background-color: @boxoffice;
+// }
+.multicolor-wrapper.programming .multicolorbg,
+.multicolorbg.programming
+{
+    background-color: @programming !important;
+}
+// .multicolor-wrapper:nth-child(2) .multicolorbg,
+// .multicolorbg:nth-child(2),
+// .multicolor-wrapper:last-child .multicolorbg,
+// .multicolorbg:last-child
+// {
+//     background-color: @programming;
+// }
+.multicolor-wrapper.membership .multicolorbg,
+.multicolorbg.membership
+{
+    background-color: @membership !important;
+}
+// .multicolor-wrapper:nth-child(3) .multicolorbg,
+// .multicolorbg:nth-child(3)
+// {
+//     background-color: @membership;
+// }
+.multicolor-wrapper.fb .multicolorbg,
+.multicolorbg.fb
+{
+    background-color: @cafe !important;
+}
+// .multicolor-wrapper:nth-child(4) .multicolorbg,
+// .multicolorbg:nth-child(4)
+// {
+//     background-color: @cafe;
+// }
+.multicolor-wrapper.store .multicolorbg,
+.multicolorbg.store
+{
+    background-color: @giftstore !important;
+}
+// .multicolor-wrapper:nth-child(5) .multicolorbg,
+// .multicolorbg:nth-child(5)
+// {
+//     background-color: @giftstore;
+// }
+
+.multicolor-wrapper.guest_services .multicolorfl
 {
     fill: @boxoffice;
 }
-.multicolor-wrapper:nth-child(2) .multicolorfl,
-.multicolorfl:nth-child(2),
-.multicolor-wrapper:last-child .multicolorfl,
-.multicolorfl:last-child
+// .multicolor-wrapper:nth-child(1) .multicolorfl,
+// .multicolorfl:nth-child(1)
+// {
+//     fill: @boxoffice;
+// }
+.multicolor-wrapper.programming .multicolorfl
 {
     fill: @programming;
 }
-.multicolor-wrapper:nth-child(3) .multicolorfl,
-.multicolorfl:nth-child(3)
+// .multicolor-wrapper:nth-child(2) .multicolorfl,
+// .multicolorfl:nth-child(2),
+// .multicolor-wrapper:last-child .multicolorfl,
+// .multicolorfl:last-child
+// {
+//     fill: @programming;
+// }
+.multicolor-wrapper.membership .multicolorfl
 {
     fill: @membership;
 }
-.multicolor-wrapper:nth-child(4) .multicolorfl,
-.multicolorfl:nth-child(4)
+// .multicolor-wrapper:nth-child(3) .multicolorfl,
+// .multicolorfl:nth-child(3)
+// {
+//     fill: @membership;
+// }
+.multicolor-wrapper.fb .multicolorfl
 {
     fill: @cafe;
 }
-.multicolor-wrapper:nth-child(5) .multicolorfl,
-.multicolorfl:nth-child(5)
+// .multicolor-wrapper:nth-child(4) .multicolorfl,
+// .multicolorfl:nth-child(4)
+// {
+//     fill: @cafe;
+// }
+.multicolor-wrapper.store .multicolorfl
 {
     fill: @giftstore;
 }
+// .multicolor-wrapper:nth-child(5) .multicolorfl,
+// .multicolorfl:nth-child(5)
+// {
+//     fill: @giftstore;
+// }
 
 form.inline-block {
     vertical-align:middle;

@@ -113,7 +113,7 @@ var Goals = React.createClass({
         
         
         return(
-            <div className="widget  multicolor-wrapper" id="sales-goals" style={{width:"100%", marginBottom:"15px"}}>
+            <div className={"widget  multicolor-wrapper "+(this.props.className || "")} id="sales-goals" style={{width:"100%", marginBottom:"15px"}}>
                 <h2>{data.name}</h2>                    
                 <ActionMenu actions={this.props.actions}/>
                 <form>
@@ -321,9 +321,8 @@ var SalesGoals = React.createClass({
             
             var goals = left ? goalsLeft : goalsRight;
             var goalsOther = left ? goalsRight : goalsLeft;
-            
             var data = goalsData[g];
-            goals.push(<Goals key={g} thisMonth={state.thisMonth} thisQuarterMonths={state.thisQuarterMonths} advance={state.advance} data={data} actions={this.state.actions}/>)
+            goals.push(<Goals key={g} className={g} thisMonth={state.thisMonth} thisQuarterMonths={state.thisQuarterMonths} advance={state.advance} data={data} actions={this.state.actions}/>)
             
             goalsOther.push(<div key={g}></div>)
             

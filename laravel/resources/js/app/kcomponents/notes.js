@@ -567,7 +567,7 @@ var AddNoteModal = React.createClass({
             var channel = this.state.channelNames[k];
             var active = this.state.channelActive[k];
             channels.push(
-                <Channel empty={""} key={k} name={channel} active={active} onClick={this.onChannelClick.bind(this, k)} />
+                <Channel className={k} empty={""} key={k} name={channel} active={active} onClick={this.onChannelClick.bind(this, k)} />
             );
         }
         
