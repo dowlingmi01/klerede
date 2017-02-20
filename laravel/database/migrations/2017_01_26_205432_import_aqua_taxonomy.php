@@ -1,6 +1,7 @@
 <?php
 
 use App\GoalSalesMonthly;
+use App\GoalsSales;
 use App\ProductCategoryMap;
 use App\VenueCategory;
 use App\VenueVariable;
@@ -20,6 +21,7 @@ class ImportAquaTaxonomy extends Migration
 		VenueVariable::setValue(1518, 'BOP_ACCT_CODE_EXP', 'RTRIM(x.department) + \'|\' + CASE WHEN x.department != \'ADM-ENTRY\' THEN RTRIM(x.category) + \'|\' + RTRIM(x.item) ELSE user_code + \'|\' END');
 		VenueCategory::import(1518, 'venue_category_1518.csv');
 		ProductCategoryMap::import(1518, 'pkm_1518.csv');
+		GoalsSales::import(1518, database_path('migrations/data/goals_1518.csv'));
     }
 
     /**
