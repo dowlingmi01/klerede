@@ -18,7 +18,7 @@ use App\Stats, App\Channel, App\Category;
 use App\WeatherDaily;
 use App\Helpers\PermissionHelper;
 
-Route::get('/', 'WelcomeController@index');
+Route::get('/', function () { return redirect('dashboard');});
 
 Route::get('home', 'HomeController@index');
 
