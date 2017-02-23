@@ -20,8 +20,6 @@ use App\Helpers\PermissionHelper;
 
 Route::get('/', function () { return redirect('dashboard');});
 
-Route::get('home', 'HomeController@index');
-
 Route::group(['prefix'=>'api/v1'], function() {
 	Route::match(['get', 'post'], 'stats/query', function() {
 		$start = microtime(true);
@@ -134,7 +132,7 @@ Route::get('dashboard', function()
 {
     return View::make('dashboard', ['ga_id'=>config('app.ga_id')]);
 });
-
+/*
 Route::get('settings', function()
 {
     return View::make('settings', ['ga_id'=>config('app.ga_id')]);
@@ -144,7 +142,7 @@ Route::get('goals', function()
 {
     return View::make('goals', ['ga_id'=>config('app.ga_id')]);
 });
-
+*/
 Route::get('faqs', function()
 {
     return View::make('faqs', ['ga_id'=>config('app.ga_id')]);
