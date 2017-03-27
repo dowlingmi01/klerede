@@ -37,6 +37,8 @@ other_attendance_comp,ADM-ENTRY|BOG-F|,ADM-ENTRY|BOG-F|Z,1,1,1,1518,siriusware
 group_free,ADM-ENTRY|CAT-F|,ADM-ENTRY|CAT-F|Z,1,1,1,1518,siriusware
 group_paid,ADM-ENTRY|CAT-P|,ADM-ENTRY|CAT-P|Z,1,1,1,1518,siriusware
 other_attendance_ca,ADM-ENTRY|CO-F|,ADM-ENTRY|CO-F|Z,1,1,1,1518,siriusware
+other_attendance_ca,ADM-ENTRY|COO-F|,ADM-ENTRY|COO-F|Z,1,1,1,1518,siriusware
+other_attendance_ca,ADM-ENTRY|COR-F|,ADM-ENTRY|COR-F|Z,1,1,1,1518,siriusware
 group_paid,ADM-ENTRY|CONS-P|,ADM-ENTRY|CONS-P|Z,1,1,1,1518,siriusware
 education_free,ADM-ENTRY|ED-F|,ADM-ENTRY|ED-F|Z,1,1,1,1518,siriusware
 education_paid,ADM-ENTRY|ED-P|,ADM-ENTRY|ED-P|Z,1,1,1,1518,siriusware
