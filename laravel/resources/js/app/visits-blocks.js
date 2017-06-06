@@ -39,10 +39,13 @@ var VisitsBlock = React.createClass({
             <div className="stat-block">
                 <div className="label">{this.props.label}</div>
                 <div className="stat">{this.props.stat}</div>
-                <div className="change">
-                    <ChangeArrow className={this.props.arrowClass} />
-                    <span className="compare-to">{this.props.comparedTo}</span>
-                </div>
+                {
+                    this.props.comparedTo !== '' &&
+                    <div className="change">
+                        <ChangeArrow className={this.props.arrowClass} />
+                        <span className="compare-to">{this.props.comparedTo}</span>
+                    </div>
+                }
             </div>
         );
     }
@@ -61,7 +64,7 @@ var VisitsBlocksSet = React.createClass({
         return {
             
             actions:actions,
-            periodCompare:'prevWeek'
+            periodCompare:'goal'
         };
     },
     onActionClick:function (event) {
@@ -112,6 +115,9 @@ var VisitsBlocksSet = React.createClass({
                         kind: 'average'
                     }
                 };
+                queries[id+"goal"] = { specs: $.extend({}, box.specs), periods: wnt.today };
+                queries[id+"goal"].specs.type = 'goals';
+                queries[id+"goal"].specs.goal_type = box.result_field === 'amount' ? 'amount' : 'units';
             }
         }
         
@@ -168,19 +174,27 @@ var VisitsBlocksSet = React.createClass({
                 var stat = stats[field] || 0;
 
                 var comparedStats = result[l+this.state.periodCompare];
-                var comparedTo = comparedStats[field] || 0;
-                
-                var arrowClass = parseFloat(stat) >= parseFloat(comparedTo) ? 'up' : 'down';
-                
+                var comparedTo = comparedStats[field];
+
+                if(comparedTo === null && this.state.periodCompare === 'goal') {
+                    comparedTo = '';
+                    var arrowClass = 'up';
+                } else {
+                    comparedTo = comparedTo || 0;
+                    var arrowClass = parseFloat(stat) >= parseFloat(comparedTo) ? 'up' : 'down';
+                    if (field === "amount") {
+                        comparedTo = numeral(comparedTo).format('$0,0');
+                    } else {
+                        comparedTo = numeral(comparedTo).format('0,0');
+                    }
+                }
+
                 if (field == "amount") {
                     stat = numeral(stat).format('$0,0');
-                    comparedTo = numeral(comparedTo).format('$0,0');
                 } else {
                     stat = numeral(stat).format('0,0');
-                    comparedTo = numeral(comparedTo).format('0,0');
                 }
-                
-                
+
                 boxes.push(
                     <div key={l} className="col-xs-6 col-sm-4 col-lg-2" id="visits-total">
                         <VisitsBlock 
@@ -207,6 +221,7 @@ var VisitsBlocksSet = React.createClass({
                         <div className="filter">
                             <form>
                                 <select className="form-control" onChange={this.handleChange}>
+                                    <option value="goal">Compared to budget</option>
                                     <option value="prevWeek">Compared to same day previous week</option>
                                     <option value="lastYear">Compared to same day last year</option>
                                     <option value="lastYearAverage">Compared to average for the past year</option>
