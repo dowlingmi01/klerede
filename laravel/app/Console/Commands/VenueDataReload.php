@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Category;
 use App\DashboardBoxVenue;
+use App\GoalSalesDaily;
 use App\GoalsSales;
 use App\Product;
 use App\ProductCategoryMap;
@@ -52,5 +53,8 @@ class VenueDataReload extends Command
 		$fn = database_path('migrations/data/goals_'.$venue_id.'.csv');
 		if(file_exists($fn))
 			GoalsSales::import($venue_id, $fn);
+		$fn = database_path('migrations/data/goals_daily_units_'.$venue_id.'.csv');
+		if(file_exists($fn))
+			GoalSalesDaily::import($venue_id, 'units', $fn);
     }
 }
