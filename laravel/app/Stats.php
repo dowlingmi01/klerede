@@ -40,6 +40,8 @@ class Stats {
 			$table = 'stat_sales';
 		else if($specs->type == 'members')
 			$table = 'stat_members';
+		else if($specs->type == 'goals')
+			$table = 'goal_sales_daily';
 
 		$dbquery = DB::table($table);
 		$dbquery->where('venue_id', $venue_id);
@@ -123,6 +125,14 @@ class Stats {
 		} else {
 			if($specs->type == 'visits') {
 				$dbquery->addSelect(DB::raw('sum(visits) as visits, sum(visits_unique) as visits_unique'));
+			} else if($specs->type == 'goals') {
+				if( isset($specs->goal_type) && $specs->goal_type == 'amount') {
+					$dbquery->addSelect(DB::raw('sum(goal) as amount'));
+					$dbquery->where('type', 'amount');
+				} else {
+					$dbquery->addSelect(DB::raw('sum(goal) as visits, sum(goal) as visits_unique'));
+					$dbquery->where('type', 'units');
+				}
 			} else {
 				if($specs->type == 'sales') {
 					$dbquery->addSelect(DB::raw('sum(amount) as amount, sum(units) as units, sum(transactions) as transactions'));
@@ -137,7 +147,7 @@ class Stats {
 					$dbquery->groupBy('category_id');
 					$dbquery->addSelect(['code', 'category_id', 'parent_category_id']);
 				}
-				if($specs->type == 'visits') {
+				if($specs->type == 'visits' || $specs->type == 'goals' ) {
 					$dbquery->addSelect(DB::raw('avg(visits) as visits, avg(visits_unique) as visits_unique'));
 				} else if($specs->type == 'sales')
 					$dbquery->addSelect(DB::raw('avg(amount) as amount, avg(units) as units, avg(transactions) as transactions'));
