@@ -1,7 +1,7 @@
 {
 	"guest_services": {
 		"id": 1,
-		"name": "Guest Services",
+		"name": "Admissions",
 		"visits_type": "unique",
 		"sub_categories": {
 			"exhibit": {
