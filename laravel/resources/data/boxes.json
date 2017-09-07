@@ -7,6 +7,14 @@
 		"result_field": "visits",
 		"title": "Total exhibit admissions"
 	},
+	"guest_services_visits": {
+		"specs": {
+			"category": "guest_services",
+			"type": "visits"
+		},
+		"result_field": "visits_unique",
+		"title": "Total admissions"
+	},
 	"member_visits": {
 		"specs": {
 			"category": "member_attendance",
@@ -78,6 +86,14 @@
 		},
 		"result_field": "amount",
 		"title": "Total exhibit revenue"
+	},
+	"guest_services_amount": {
+		"specs": {
+			"category": "guest_services",
+			"type": "sales"
+		},
+		"result_field": "amount",
+		"title": "Total revenue"
 	},
 	"special_exhibit_member_visits": {
 		"specs": {
