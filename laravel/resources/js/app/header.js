@@ -48,6 +48,7 @@ var DarkenBackground = React.createClass({
 var User = React.createClass({
     getInitialState: function() {
         return {
+            roleID: this.props.roleID
         };
     },
     // userAccordion: function(event){
@@ -89,9 +90,9 @@ var User = React.createClass({
 		// event.stopPropagation();
 		// event.nativeEvent.stopImmediatePropagation();
 		// console.log(this.refs.roleSelect);
-        this.setState({ message: '' });
-		
+
 		var addUserRoleID = getDOMNode(this.refs.roleSelect).value;
+		this.setState({ message: '', roleID: addUserRoleID });
 		// console.log(addUserRoleID);
 		// patch:function (userID, firstName, lastName, email, roleID, venueID, onSuccess, onError) {
 		KAPI.users.patch(
@@ -112,7 +113,7 @@ var User = React.createClass({
 	},
 	onRoleChangeError:function (error) {
 		console.log(error);
-        this.setState({ message: 'Could not update user role.' });
+        this.setState({ message: 'Could not update user role.', roleID: this.props.roleID });
 		$(this.refs.confirm).hide();
 	},
     passwordReset: function(event){
@@ -164,7 +165,7 @@ var User = React.createClass({
                 <div className="quick-edit stop">
                     <div className="email">{this.props.email}</div>
                     <div className="roles">
-                        <Roles ref="roleSelect" onChange={this.onRoleChange} userLevel={this.props.userLevel} roles={this.props.roles} roleID={this.props.roleID}/>
+                        <Roles ref="roleSelect" onChange={this.onRoleChange} userLevel={this.props.userLevel} roles={this.props.roles} roleID={this.state.roleID}/>
                         &nbsp;{deleteUser}&nbsp; 
                         {passwordReset}
                     </div>
@@ -207,7 +208,7 @@ var Roles = React.createClass({
         }
         
         return (
-            <select defaultValue={roleID} className="form-control stop" id={this.props.id} onChange={this.props.onChange}>
+            <select value={roleID} className="form-control stop" id={this.props.id} onChange={this.props.onChange}>
 			{roles}
             </select>
         );
@@ -246,6 +247,11 @@ var Header = React.createClass({
 			addUserMessage:"",
 			addUserError:"",
 			darkenBackgroundActive:"",
+			defaultUserRoleID: 4,
+			addUserFirstName: '',
+			addUserLastName: '',
+			addUserEmail: '',
+			addUserRoleID: 4,
         };
         
         return state;
@@ -286,7 +292,7 @@ var Header = React.createClass({
 		};
 		
 		newState.accountType = newState.roleNames[newState.roleID];
-		newState.addUserRoleID = 4;
+		newState.addUserRoleID = this.state.defaultUserRoleID;
 		
 		this.setState(newState);
 	},
@@ -520,11 +526,22 @@ var Header = React.createClass({
 		console.log(response);
 		if (response.result == "ok") {
 			this.userMessage("New user added.");
-			this.refs.addUserForm.reset();
+			this.resetAddUserVariables();
 			this.getUsers();
 		} else {
             this.onAddUserError(response);
 		}
+	},
+	resetAddUserVariables: function() {
+		var newState = {
+			addUserFirstName: '',
+			addUserLastName: '',
+			addUserEmail: '',
+			addUserRoleID: this.state.defaultUserRoleID,
+		}
+		this.setState(newState, function() {
+			// this.refs.addUserForm.reset();
+		});
 	},
 	onAddUserError:function (response) {
 		console.log(response);
@@ -645,7 +662,9 @@ var Header = React.createClass({
                                     Manage Users
                                     <Caret className="utilities-caret" />
                               </div>;
-                            
+
+            var btnClass = this.state.addUserFirstName !== '' && this.state.addUserLastName !== '' && this.state.addUserEmail !== '' ? '' : ' disabled';
+
             manageUsers = <div id="manage-users" className={"utilities-set" + (this.state.currentUtilitiesSet=="manage-users"? " active" : "") } onClick={this.activateField}>
                             <h3>Manage Users <div onClick={this.closeUtility} className="close"><CloseIcon className="close-icon" /></div> </h3>
                             <div className="utility-group">
@@ -653,11 +672,11 @@ var Header = React.createClass({
                             </div>
                             <form ref="addUserForm" className="utility-group form-group" onFocus={this.closeUser}>
                                 <h4>Add a User</h4>
-                                <input type="text" id="fName" className="form-control" placeholder="First Name" defaultValue={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} autoComplete="off" />
-                                <input type="text" id="lName" className="form-control" placeholder="Last Name" defaultValue={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} autoComplete="off" />
-                                <input type="text" id="email" className="form-control" placeholder="Email Address" defaultValue={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} autoComplete="off" />
+                                <input type="text" id="fName" className="form-control" placeholder="First Name" value={this.state.addUserFirstName} data-field="addUserFirstName" onChange={this.changeField} autoComplete="off" />
+                                <input type="text" id="lName" className="form-control" placeholder="Last Name" value={this.state.addUserLastName} data-field="addUserLastName" onChange={this.changeField} autoComplete="off" />
+                                <input type="text" id="email" className="form-control" placeholder="Email Address" value={this.state.addUserEmail} data-field="addUserEmail" onChange={this.changeField} autoComplete="off" />
                                 <Roles ref="roleSelect" onChange={this.onAddUserRoleChange} userLevel={this.state.userLevel} roles={this.state.roles} roleID={this.state.addUserRoleID}/>
-                                <input type="submit" defaultValue="Save User" className="btn disabled" onClick={this.addUser} />
+                                <input type="submit" defaultValue="Save User" className={"btn" + btnClass} onClick={this.addUser} />
                                 <div className="message">{this.state.addUserMessage}</div>
                                 <div className="error">{this.state.addUserError}</div>
                             </form>
