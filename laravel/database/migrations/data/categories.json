@@ -242,5 +242,10 @@
 		"id": 37,
 		"name": "Gift Store",
 		"visits_type": "none"
+	},
+	"photos": {
+		"id": 45,
+		"name": "Photos",
+		"visits_type": "none"
 	}
 }
