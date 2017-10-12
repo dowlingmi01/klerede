@@ -6,7 +6,7 @@
 		"sub_categories": {
 			"exhibit": {
 				"id": 2,
-				"name": "Total Exhibit",
+				"name": "Total",
 				"visits_type": "unique",
 				"sub_categories": {
 					"ga": {
