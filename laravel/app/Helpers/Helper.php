@@ -46,4 +46,11 @@ class Helper {
 		}
 		return $months;
 	}
+	public static function shallowClone($object){
+		$result = new \stdClass();
+		foreach ($object as $key => $value) {
+			$result->{$key} = $value;
+		}
+		return $result;
+	}
 }

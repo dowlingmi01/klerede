@@ -73,7 +73,7 @@ class GoalsSales {
 										}
 										unset($value);
 									} else {
-										$act[$num] = clone $a;
+										$act[$num] = Helper::shallowClone($a); // instead of clone $a; Workaround for https://bugs.php.net/bug.php?id=75692
 									}
 								}
 							}
